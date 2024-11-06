@@ -9,5 +9,4 @@ public class EaplannerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(EaplannerApplication.class, args);
 	}
-
 }
