@@ -11,3 +11,4 @@ Welcome to the Exchange Days Management Web App! This application helps you part
 ## Developer Contacts
 
 Deniz Altunkapan(3721629): st187784@stud.uni-stuttgart.de
+Maximilian Peresunchak(3232875): st152466@stud.uni-stuttgart.de
