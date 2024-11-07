@@ -6,13 +6,15 @@ public class ExchangeDay {
 
     private Long id;
     private LocalDate date;
+    private String name;
     private String location;
     private String description;
 
     public ExchangeDay() {
     }
 
-    public ExchangeDay(Long id, LocalDate date, String location, String description) {
+    public ExchangeDay(Long id, LocalDate date, String name, String location, String description) {
+        this.name = name;
         this.id = id;
         this.date = date;
         this.location = location;
@@ -33,6 +35,12 @@ public class ExchangeDay {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getLocation() {
