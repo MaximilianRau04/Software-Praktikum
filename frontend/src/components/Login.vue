@@ -1,7 +1,7 @@
 <template>
-  <div class="container">
+  <div class="login">
     <div class="login-box">
-      <h1 class="green">Login</h1>
+      <h2 class="green">Login</h2>
       <form @submit.prevent="handleLogin">
         <div class="input-group">
           <label for="username">Username</label>
@@ -40,7 +40,7 @@ const handleLogin = () => {
 </script>
 
 <style scoped>
-.container {
+.login {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -56,7 +56,7 @@ const handleLogin = () => {
   text-align: center;
 }
 
-h1 {
+.green {
   font-weight: 500;
   font-size: 2.6rem;
   color: #009EE2;
