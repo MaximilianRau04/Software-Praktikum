@@ -16,7 +16,7 @@ public class ExchangeDayRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private static final String INSERT_SQL = "INSERT INTO exchange_day (date, location, description) VALUES (?, ?, ?)";
+    private static final String INSERT_SQL = "INSERT INTO exchange_day (date, name, location, description) VALUES (?, ?, ?)";
     private static final String SELECT_ALL_SQL = "SELECT * FROM exchange_day";
     private static final String SELECT_BY_ID_SQL = "SELECT * FROM exchange_day WHERE id = ?";
 
@@ -38,6 +38,7 @@ public class ExchangeDayRepository {
             return new ExchangeDay(
                     rs.getLong("id"),
                     rs.getDate("date").toLocalDate(),
+                    rs.getString("name"),
                     rs.getString("location"),
                     rs.getString("description")
             );
