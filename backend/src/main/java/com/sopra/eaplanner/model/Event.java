@@ -1,5 +1,7 @@
 package com.sopra.eaplanner.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalTime;
@@ -23,10 +25,11 @@ public class Event {
     @JoinColumn(name = "exchange_day_id", nullable = false)
     private ExchangeDay exchangeDay;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name="organizer_id", nullable = false)
     private User organizer;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(
             name = "user_event",
             joinColumns = @JoinColumn(name = "event_id"),

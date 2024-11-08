@@ -1,5 +1,8 @@
 package com.sopra.eaplanner.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -19,6 +22,7 @@ public class ExchangeDay {
     private String description;
 
     @OneToMany(mappedBy = "exchangeDay", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Event> events = new ArrayList<>();
 
     public Long getId() {
