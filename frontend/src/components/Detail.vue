@@ -1,5 +1,5 @@
 <template>
-    <p>Das ist die Detailseite eines Workshops</p>
+    <p>Detailseite eines Workshops</p>
   </template>
   
   <script>
