@@ -1,17 +1,14 @@
 <script setup>
 import { RouterView } from 'vue-router';
-import { Close, Header, HeaderNav } from "agnostic-vue";
 </script>
 
 <template>
-  <Header isHeaderContentStart>
-    <template v-slot:headernav>
-      <HeaderNav>
-        <RouterLink to="/" class="nav-button">login</RouterLink>
-        <RouterLink to="/main" class="nav-button">main</RouterLink>
-      </HeaderNav>
-    </template>
-  </Header>
+  <header class="header">
+    <nav class="header-nav">
+      <RouterLink to="/" class="nav-button">login</RouterLink>
+      <RouterLink to="/main" class="nav-button">main</RouterLink>
+    </nav>
+  </header>
 
   <main>
     <RouterView />
@@ -29,6 +26,19 @@ html, body {
 
 #app {
   height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 10px;
+  background-color: #333;
+}
+
+.header-nav {
+  display: flex;
+  gap: 10px;
 }
 
 .nav-button {
