@@ -1,23 +1,30 @@
 package com.sopra.eaplanner.model;
 
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String username;
     private String surname;
     private String lastname;
-    private boolean isAdmin;
 
-    public User() {
+    public enum Role {
+        ADMIN, USER
     }
 
-    public User(Long id, String username, String surname, String lastname, boolean isAdmin) {
-        this.id = id;
-        this.username = username;
-        this.surname = surname;
-        this.lastname = lastname;
-        this.isAdmin = isAdmin;
-    }
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @ManyToMany(mappedBy = "registeredUsers")
+    private List<Event> registeredEvents = new ArrayList<Event>();
 
     public Long getId() {
         return id;
@@ -51,11 +58,16 @@ public class User {
         this.lastname = lastname;
     }
 
-    public boolean isAdmin() {
-        return isAdmin;
+    public Role getRole() {
+        return role;
     }
 
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
+    public void setRole(Role role) {
+        this.role = role;
     }
+
+    public List<Event> getRegisteredEvents() {
+        return registeredEvents;
+    }
+
 }

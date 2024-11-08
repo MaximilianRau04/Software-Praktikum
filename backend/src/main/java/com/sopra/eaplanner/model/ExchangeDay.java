@@ -1,25 +1,25 @@
 package com.sopra.eaplanner.model;
 
-import java.time.LocalDate;
+import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
 public class ExchangeDay {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private LocalDate date;
     private String name;
     private String location;
     private String description;
 
-    public ExchangeDay() {
-    }
-
-    public ExchangeDay(Long id, LocalDate date, String name, String location, String description) {
-        this.name = name;
-        this.id = id;
-        this.date = date;
-        this.location = location;
-        this.description = description;
-    }
+    @OneToMany(mappedBy = "exchangeDay", cascade = CascadeType.ALL)
+    private List<Event> events = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -36,12 +36,10 @@ public class ExchangeDay {
     public void setDate(LocalDate date) {
         this.date = date;
     }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
+
+    public String getName() {return name;}
+
+    public void setName(String name) {this.name = name;}
 
     public String getLocation() {
         return location;
@@ -57,5 +55,12 @@ public class ExchangeDay {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Event> getEvents() {
+        return events;
+    }
+    public void setEvents(List<Event> events) {
+        this.events = events;
     }
 }

@@ -5,22 +5,34 @@ import com.sopra.eaplanner.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
 
     @Autowired
-    private EventService service;
+    private EventService eventService;
 
     @GetMapping
-    public List<Event> getEventsByExchangeDayId(Long exchangeDayId) {
-        return service.getEventsByExchangeDayId(exchangeDayId);
+    public Iterable<Event> getAllEvents() {
+        return eventService.getAllEvents();
+    }
+
+    @GetMapping("/{id}")
+    public Optional<Event> getEventById(@PathVariable Long id) {
+        return eventService.getEventById(id);
     }
 
     @PostMapping
-    public int addEvent(@RequestBody Event event) {
-        return service.saveEvent(event);
+    public Event createEvent(@RequestBody Event event) {
+        return eventService.createEvent(event);
+    }
+
+    // TODO: PutMapping here
+
+    @DeleteMapping("/{id}")
+    public void deleteEvent(@PathVariable Long id) {
+        eventService.deleteEvent(id);
     }
 }

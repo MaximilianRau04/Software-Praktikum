@@ -16,13 +16,15 @@
 import Upcoming from './Upcoming.vue';
 import Detail from './Detail.vue';
 import ScrollableDivs from './Scrollable.vue';
+import ExchangeDayList from './ExchangeDayList.vue';
 
 export default {
   name: 'MainPage',
   components: {
       Upcoming,
       ScrollableDivs,
-      Detail
+      Detail,
+      ExchangeDayList
   },
   data() {
       return {

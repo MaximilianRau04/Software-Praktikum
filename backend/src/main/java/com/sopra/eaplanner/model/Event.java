@@ -1,31 +1,38 @@
 package com.sopra.eaplanner.model;
 
-import java.sql.Time;
+import jakarta.persistence.*;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
 public class Event {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
-    private Time startTime;
-    private Time endTime;
-    private String location;
-    private String trainer;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private String room;
     private String description;
 
-    private Long exchangeDayId;
+    @ManyToOne
+    @JoinColumn(name = "exchange_day_id", nullable = false)
+    private ExchangeDay exchangeDay;
 
-    public Event() {
-    }
+    @ManyToOne
+    private User organizer;
 
-    public Event(Long id, String name, Time startTime, Time endTime, String location, String description, Long exchangeDayId) {
-        this.id = id;
-        this.name = name;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.location = location;
-        this.description = description;
-        this.exchangeDayId = exchangeDayId;
-    }
+    @ManyToMany
+    @JoinTable(
+            name = "user_event",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> registeredUsers = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -43,28 +50,28 @@ public class Event {
         this.name = name;
     }
 
-    public Time getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Time startTime) {
+    public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public Time getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Time endTime) {
+    public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
 
-    public String getLocation() {
-        return location;
+    public String getRoom() {
+        return room;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setRoom(String room) {
+        this.room = room;
     }
 
     public String getDescription() {
@@ -75,19 +82,25 @@ public class Event {
         this.description = description;
     }
 
-    public Long getExchangeDayId() {
-        return exchangeDayId;
+    public ExchangeDay getExchangeDay() {
+        return exchangeDay;
     }
 
-    public void setExchangeDayId(Long exchangeDayId) {
-        this.exchangeDayId = exchangeDayId;
+    public void setExchangeDay(ExchangeDay exchangeDay) {
+        this.exchangeDay = exchangeDay;
     }
 
-    public String getTrainer() {
-        return trainer;
+    public User getOrganizer() {
+        return organizer;
     }
 
-    public void setTrainer(String trainer) {
-        this.trainer = trainer;
+    public void setOrganizer(User organizer) {
+        this.organizer = organizer;
+    }
+    public List<User> getRegisteredUsers() {
+        return registeredUsers;
+    }
+    public void setRegisteredUsers(List<User> registeredUsers) {
+        this.registeredUsers = registeredUsers;
     }
 }

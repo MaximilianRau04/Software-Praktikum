@@ -5,18 +5,27 @@ import com.sopra.eaplanner.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository repository;
 
-    public int saveUser(User user) {
+    public User createUser(User user) {
         return repository.save(user);
     }
 
-    public User getUser(Long id) {
-        return repository.findByUsername(id);
+    public Iterable<User> getAllUsers() {
+        return repository.findAll();
     }
+
+    public Optional<User> getUserById(Long id) {
+        return repository.findById(id);
+    }
+
+    public void deleteUser(Long id) {
+        repository.deleteById(id);
+    }
+
 }
