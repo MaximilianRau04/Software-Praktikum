@@ -1,30 +1,48 @@
-package com.sopra.eaplanner.model;
+package com.sopra.eaplanner.event;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sopra.eaplanner.exchangeday.ExchangeDay;
+import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO: Add EventDTO to be able to GET events without recursion with exchangedays
+
 @Entity
+@Table(name = "events")
 public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Name cannot be null")
+    @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters")
     private String name;
+
+    @NotNull(message = "Start time must be set")
     private LocalTime startTime;
+
+    @NotNull(message = "End time must be set")
     private LocalTime endTime;
+
+    @Size(max = 50, message = "Room name cannot exceed 50 characters")
     private String room;
+
+    @Size(max = 255, message = "Description cannot exceed 255 characters")
     private String description;
 
+    @NotNull(message = "Exchange day must be specified")
     @ManyToOne
     @JoinColumn(name = "exchange_day_id", nullable = false)
     private ExchangeDay exchangeDay;
 
+    @NotNull(message = "Organizer must be specified")
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name="organizer_id", nullable = false)
     private User organizer;

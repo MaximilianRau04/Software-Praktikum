@@ -1,6 +1,5 @@
-package com.sopra.eaplanner.repository;
+package com.sopra.eaplanner.exchangeday;
 
-import com.sopra.eaplanner.model.ExchangeDay;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

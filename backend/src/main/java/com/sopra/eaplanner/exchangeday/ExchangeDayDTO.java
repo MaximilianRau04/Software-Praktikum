@@ -1,30 +1,28 @@
-package com.sopra.eaplanner.model;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
+package com.sopra.eaplanner.exchangeday;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-public class ExchangeDay {
+public class ExchangeDayDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private LocalDate date;
     private String name;
     private String location;
     private String description;
+    private List<Long> eventIds;
 
-    @OneToMany(mappedBy = "exchangeDay", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Event> events = new ArrayList<>();
 
+    public ExchangeDayDTO(Long id, LocalDate date, String name, String location, String description, List<Long> eventIds) {
+        this.id = id;
+        this.date = date;
+        this.name = name;
+        this.location = location;
+        this.description = description;
+        this.eventIds = eventIds;
+    }
+
+    // Getter und Setter
     public Long getId() {
         return id;
     }
@@ -41,9 +39,13 @@ public class ExchangeDay {
         this.date = date;
     }
 
-    public String getName() {return name;}
+    public String getName() {
+        return name;
+    }
 
-    public void setName(String name) {this.name = name;}
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getLocation() {
         return location;
@@ -61,10 +63,11 @@ public class ExchangeDay {
         this.description = description;
     }
 
-    public List<Event> getEvents() {
-        return events;
+    public List<Long> getEventIds() {
+        return eventIds;
     }
-    public void setEvents(List<Event> events) {
-        this.events = events;
+
+    public void setEventIds(List<Long> eventIds) {
+        this.eventIds = eventIds;
     }
 }

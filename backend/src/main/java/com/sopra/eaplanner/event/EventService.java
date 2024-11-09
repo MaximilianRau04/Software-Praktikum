@@ -1,7 +1,5 @@
-package com.sopra.eaplanner.service;
+package com.sopra.eaplanner.event;
 
-import com.sopra.eaplanner.model.Event;
-import com.sopra.eaplanner.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

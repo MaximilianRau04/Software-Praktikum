@@ -1,37 +1,36 @@
-package com.sopra.eaplanner.controller;
+package com.sopra.eaplanner.event;
 
-import com.sopra.eaplanner.model.Event;
-import com.sopra.eaplanner.service.EventService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/events")
+@RequestMapping("/api")
 public class EventController {
 
     @Autowired
     private EventService eventService;
 
-    @GetMapping
+    @GetMapping("/events")
     public Iterable<Event> getAllEvents() {
         return eventService.getAllEvents();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/events/{id}")
     public Optional<Event> getEventById(@PathVariable Long id) {
         return eventService.getEventById(id);
     }
 
-    @PostMapping
-    public Event createEvent(@RequestBody Event event) {
-        return eventService.createEvent(event);
+    @PostMapping("/events")
+    public Event createEvent(@Valid @RequestBody Event requestBody) {
+        return eventService.createEvent(requestBody);
     }
 
     // TODO: PutMapping here
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/events/{id}")
     public void deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
     }

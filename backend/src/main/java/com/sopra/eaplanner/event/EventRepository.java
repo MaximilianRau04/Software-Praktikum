@@ -1,6 +1,5 @@
-package com.sopra.eaplanner.repository;
+package com.sopra.eaplanner.event;
 
-import com.sopra.eaplanner.model.Event;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,6 +1,5 @@
-package com.sopra.eaplanner.repository;
+package com.sopra.eaplanner.user;
 
-import com.sopra.eaplanner.model.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
