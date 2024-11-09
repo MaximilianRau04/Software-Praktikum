@@ -6,7 +6,7 @@
             <div class="profile-image">
               <img :src="workshop.image" alt="Profile Image">
             </div>
-            <div class="infos">
+              <div class="infos">
               <h2>{{ workshop.name }}</h2>
               <p>{{ workshop.location }}</p>
               <p>{{ workshop.date }}</p>

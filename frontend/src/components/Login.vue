@@ -29,7 +29,6 @@ const handleLogin = () => {
   console.log('Username:', username.value);
   console.log('Password:', password.value);
 
-  // Dummy check for demonstration
   if (username.value === 'user' && password.value === 'pass') {
     router.push('/main');
     console.log("Richtig");
@@ -46,6 +45,7 @@ const handleLogin = () => {
   align-items: center;
   height: 100vh;
   background-color: #EAEAEA;
+  margin:0px;
 }
 
 .login-box {
