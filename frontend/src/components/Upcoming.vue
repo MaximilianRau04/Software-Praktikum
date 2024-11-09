@@ -10,7 +10,7 @@
             <p>{{ workshop.location }}</p>
             <p>{{ workshop.date }}</p>
           </div>
-          <button class="details" @click="showAlert">See Details</button>
+          <button class="details" @click="showAlert">Anmeldung</button>
         </div>
         <div class="description-box">
           <div class="label">Beschreibung:</div>
@@ -20,9 +20,9 @@
   </div>
 </template>
 
-
 <script>
 import ScrollableDivs from './Scrollable.vue';
+
 
 export default {
   name: 'Upcoming',
