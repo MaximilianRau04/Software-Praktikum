@@ -1,0 +1,16 @@
+.exchange-day-details {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.exchange-day-details h1 {
+  margin-top: 0;
+}
+
+.exchange-day-details p {
+  margin: 0.5rem 0;
+}

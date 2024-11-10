@@ -1,4 +1,3 @@
 export default {
-    // URL of the RESTful API
-    apiBaseUrl: "http://localhost:8080/api"
+    apiBaseUrl: "/api" // Use relative path to allow Vite's proxy
 };

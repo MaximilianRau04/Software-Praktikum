@@ -10,8 +10,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-
-//TODO: Add EventDTO to be able to GET events without recursion with exchangedays
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "events")
@@ -40,6 +39,7 @@ public class Event {
     @NotNull(message = "Exchange day must be specified")
     @ManyToOne
     @JoinColumn(name = "exchange_day_id", nullable = false)
+    @JsonBackReference
     private ExchangeDay exchangeDay;
 
     @NotNull(message = "Organizer must be specified")

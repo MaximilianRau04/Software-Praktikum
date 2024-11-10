@@ -1,46 +1,10 @@
 <script setup>
 import { RouterView } from 'vue-router';
+import './assets/app.css';
 </script>
 
 <template>
-
-
   <main>
     <RouterView />
   </main>
 </template>
-
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-}
-
-#app {
-  height: 100%;
-}
-
-.header {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 10px;
-  
-}
-
-.header-nav {
-  display: flex;
-  gap: 10px;
-}
-
-.wrapper {
-  text-align: center;
-  margin: 20px;
-}
-
-main {
-  padding: 20px;
-}
-</style>
