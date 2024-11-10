@@ -1,115 +1,44 @@
+<script setup lang="ts">
+import { RouterLink } from 'vue-router';
+import { ref, onMounted } from "vue";
+import ScrollableDivs from './Scrollable.vue';
+import ExchangeDayDetails from './ExchangeDayDetails.vue'; 
+import config from "../config";
+import '../assets/main.css';
+
+import { ExchangeDay, exchangeDays, selectedExchangeDay } from '../types/ExchangeDay'; 
+
+function fetchAllExchangeDays() {
+  fetch(`${config.apiBaseUrl}/exchange-days`) 
+    .then(response => response.json())
+    .then(data => data as ExchangeDay[])
+    .then(data => {
+      exchangeDays.value = data;
+    })
+    .catch(error => console.error(error));
+}
+
+function selectExchangeDay(exchangeDay: ExchangeDay) {
+  selectedExchangeDay.value = exchangeDay;
+}
+
+onMounted(() => fetchAllExchangeDays());
+</script>
+
 <template>
-  <Header isHeaderContentStart>
-    <template v-slot:headernav>
-      <HeaderNav>
-        <HeaderNavItem>
-          <RouterLink to="/">login</RouterLink>
-        </HeaderNavItem>
-        <HeaderNavItem>
-          <RouterLink to="/main">main</RouterLink>
-        </HeaderNavItem>
-      </HeaderNav>
-    </template>
-  </Header>
+  <header class="header">
+    <nav class="header-nav">
+      <RouterLink to="/" class="nav-button">login</RouterLink>
+      <RouterLink to="/main" class="nav-button">main</RouterLink>
+    </nav>
+  </header>
   <div class="container">
-    <div class="leftSide" v-if="isVisible">
-      <Upcoming :isVisible="isVisible" @toggle-visibility="toggleVisibility" />
-    </div>
-    <div class="leftSide" v-else="isVisible">
-      <Detail :isVisible="isVisible" @toggle-visibility="toggleVisibility" />
+    <div class="leftSide">
+      <ExchangeDayDetails :exchangeDay="selectedExchangeDay" />
     </div>
     <div class="rightSide">
-      <ScrollableDivs :items="workshops" />
+      <ScrollableDivs :items="exchangeDays" @select-exchange-day="selectExchangeDay" />
     </div>
   </div>
 </template>
 
-<script>
-import Upcoming from './Upcoming.vue';
-import Detail from './Detail.vue';
-import ScrollableDivs from './Scrollable.vue';
-
-export default {
-  name: 'MainPage',
-  components: {
-    Upcoming,
-    Detail,
-    ScrollableDivs
-  },
-  data() {
-    return {
-      isVisible: true,
-      workshops: []
-    };
-  },
-  methods: {
-    toggleVisibility() {
-      this.isVisible = !this.isVisible;
-    }
-  }
-};
-</script>
-
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  background-color: #01172F;
-}
-
-#app {
-  height: 100%;
-}
-
-.header {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 10px;
-  background-color: #f6f3f3;
-}
-
-.header-nav {
-  display: flex;
-  gap: 10px;
-}
-
-.nav-button {
-  display: inline-block;
-  background-color: #0288d1;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  margin: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.nav-button:hover {
-  background-color: #0277bd;
-}
-
-.container {
-  display: flex;
-  height: calc(100% - 50px); /* Adjust based on header height */
-}
-
-.leftSide, .rightSide {
-  flex: 1;
-  padding: 20px;
-}
-
-.leftSide {
-  background-color: #f0f0f0;
-}
-
-.rightSide {
-  background-color: #e0e0e0;
-  overflow-y: auto;
-}
-</style>

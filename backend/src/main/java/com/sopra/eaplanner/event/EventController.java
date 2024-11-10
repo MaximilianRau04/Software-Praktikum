@@ -19,8 +19,8 @@ public class EventController {
     }
 
     @GetMapping("/events/{id}")
-    public Optional<Event> getEventById(@PathVariable Long id) {
-        return eventService.getEventById(id);
+    public EventDTO getEventById(@PathVariable Long id) {
+        return eventService.getEventWithCostumerIds(id);
     }
 
     @PostMapping("/events")

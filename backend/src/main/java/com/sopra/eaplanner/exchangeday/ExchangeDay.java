@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "exchange_days")
 public class ExchangeDay {
@@ -31,6 +33,7 @@ public class ExchangeDay {
     private String description;
 
     @OneToMany(mappedBy = "exchangeDay", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Event> events = new ArrayList<>();
 
     public Long getId() {
