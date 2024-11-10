@@ -1,6 +1,6 @@
 # Exchange Days Management
 
-Welcome to the Exchange Days Management Web App! This application helps you participate in "Exchange Days" by viewing workshops and training events, registering easily, and providing Feedback to continuously improve your experience.
+Welcome to the Exchange Days Management Web App! This application helps you participate in "Exchange Days" by viewing workshops and training events, registering easily, and providing Feedback to continuously improve your experience. You can find it here: http://193.196.54.172:8000
 
 ## How to Use the App
 
