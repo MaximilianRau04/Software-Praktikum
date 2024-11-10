@@ -137,18 +137,18 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/exchange-days
+POST http://193.196.54.172:8080/api/exchange-days
 Content-Type: application/json
 
 {
   "date": "2025-12-10",
-  "name": "Itestra Exchange Day 2",
+  "name": "Itestra Exchange Day",
   "location": "München",
   "description": "A day dedicated to learning GitHub with Itestra!"
 }
 
 ###
-POST http://localhost:8080/api/events
+POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
@@ -176,4 +176,15 @@ Content-Type: application/json
 "exchangeDay": {
 "id": 2
 }
+}
+
+###
+POST http://193.196.54.172:8000/api/users
+Content-Type: application/json
+
+{
+  "username": "mperreks",
+  "surname": "Maximilian",
+  "lastname": "Peresunchak",
+  "role": "ADMIN"
 }

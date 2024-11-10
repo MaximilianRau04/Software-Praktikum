@@ -1,16 +1,68 @@
-.exchange-day-details {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.exchangeDayDetails {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  background-color: #EAEAEA;
+  border: 1px solid black;
+  border-radius: 8px;
+  margin: 0px auto;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+  height: 85vh;
+  overflow: hidden;
 }
 
-.exchange-day-details h1 {
-  margin-top: 0;
-}
+  h1 {
+    margin-top: 0px;
+  }
 
-.exchange-day-details p {
-  margin: 0.5rem 0;
-}
+  .scrollableEvents {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-right: 10px;
+  }
+
+  .exchangeDayInfos h1 {
+    font-size: 30px;
+    color: black;
+    font-weight: bold;
+    margin-bottom: 0px;
+  }
+
+  .exchangeDayInfos p {
+    font-size: 20px;
+    color: black;
+    margin: 2px 0;
+  }
+
+
+
+  h2 {
+    font-size: 20px;
+    color: #000000;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+  }
+
+  .event-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 5px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .event-item h3 {
+    font-size: 18px;
+    color: black;
+    margin: 0 0 8px;
+  }
+
+  .event-item p {
+    font-size: 14px;
+    color: #666;
+    margin: 4px 0;
+  }

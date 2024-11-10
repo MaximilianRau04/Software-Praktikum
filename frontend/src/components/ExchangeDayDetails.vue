@@ -1,14 +1,18 @@
 <template>
-  <div v-if="selectedExchangeDay" class="exchange-day-details">
-    <h1>{{ selectedExchangeDay.name }}</h1>
-    <p><strong>Location:</strong> {{ selectedExchangeDay.location }}</p>
-    <p><strong>Description:</strong> {{ selectedExchangeDay.description }}</p>
-    <p><strong>Date:</strong> {{ formatDate(selectedExchangeDay.date) }}</p>
-    <p>Id: {{ selectedExchangeDay.id }}</p>
+  <div v-if="selectedExchangeDay" class="exchangeDayDetails">
+    <div class="exchangeDayInfos">
+      <h1>{{ selectedExchangeDay.name }}</h1>
+      <p><strong>Location:</strong> {{ selectedExchangeDay.location }}</p>
+      <p><strong>Description:</strong> {{ selectedExchangeDay.description }}</p>
+      <p><strong>Date:</strong> {{ formatDate(selectedExchangeDay.date) }}</p>
+      <p>Id: {{ selectedExchangeDay.id }}</p>
+    </div>
     
-    <h2>Events</h2>
-    <div v-for="event in events" :key="event.id">
-      <EventDetails :event="event" />
+    <div class="scrollableEvents"> 
+      <h2>Events</h2>
+      <div v-for="event in events" :key="event.id">
+        <EventDetails :event="event" />
+      </div>
     </div>
   </div>
 </template>
