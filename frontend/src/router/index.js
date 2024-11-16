@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../components/Login.vue';
 import main from '../components/MainPage.vue';
 import MainPage from '../components/MainPage.vue';
-
+import Create from '../components/Create.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,9 +13,14 @@ const router = createRouter({
       component: Login
     },
     {
-      path: '/main',
+      path: '/home',
       name: 'main',
       component: MainPage
+    },
+    {
+      path: '/events',
+      name: 'create',
+      component: Create
     }
   ]
 });

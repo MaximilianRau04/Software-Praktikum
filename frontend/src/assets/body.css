@@ -1,11 +1,11 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 100vh; /* Set height to viewport height */
+  height: 100vh; 
   width: 100%;
   background-color: white;
-  overflow: hidden; /* Hide overflow to ensure content stays above the fold */
-  box-sizing: border-box; /* Use border-box for consistent sizing */
+  overflow: hidden; 
+  box-sizing: border-box; 
 }
 
 #app {

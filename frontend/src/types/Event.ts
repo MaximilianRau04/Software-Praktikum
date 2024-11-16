@@ -1,4 +1,3 @@
-import { ref } from 'vue';
 export interface Event {
     id: number;
     name: string;

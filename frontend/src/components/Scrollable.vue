@@ -73,10 +73,10 @@ export default {
 
 <style scoped>
 .scroll-container {
-  max-height: 100vh; /* Der Container nutzt die gesamte Höhe des Viewports */
-  overflow-y: auto; /* Aktiviert Scrollen, wenn der Inhalt größer ist als der verfügbare Platz */
-  box-sizing: border-box; /* Padding und Border werden in der Höhe berücksichtigt */
-  padding: 10px; /* Optional: Innenabstand für die Scrollleiste */
+  max-height: 100vh; 
+  overflow-y: auto; 
+  box-sizing: border-box; 
+  padding: 10px; 
   height: 85vh;
 }
 
