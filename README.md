@@ -13,7 +13,7 @@ Welcome to the Exchange Days Management Web App! This application helps you part
 
 ## How the App Works
 
-When you first access the application, you will be directed to a login page. Here, enter the Username **"user"** and the Password **"pass"** to proceed. Once authenticated, you will be redirected to the main page, where the application fetches all saved Exchange Days and their associated workshops from the database.
+The app does not use any authentication. After using the registration-formular, you will be redirected to the main page, where the application fetches all saved Exchange Days and their associated workshops from the database.
 
 
 ## Developer Contacts
