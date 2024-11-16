@@ -2,14 +2,12 @@
   <div class="event-details">
     <h2>{{ event.name }}</h2>
     
-    <!-- Event-Details mit engerem Abstand -->
     <p><strong>Description:</strong> {{ event.description || 'No Description' }}</p>
     <p><strong>Event ID:</strong> {{ event.id }}</p>
     <p><strong>StartTime:</strong> {{ event.startTime || 'No Starttime' }}</p>
     <p><strong>Endtime:</strong> {{ event.endTime || 'No Endtime' }}</p>
     <p><strong>Room:</strong> {{ event.room || 'No Room' }}</p>
     
-    <!-- Registrierungs-Button in der unteren rechten Ecke -->
     <button @click="register(event.id)" class="register-button">Register</button>
   </div>
 </template>
@@ -60,4 +58,3 @@ p {
   background-color: #005FA3;
 }
 </style>
-

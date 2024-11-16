@@ -188,3 +188,6 @@ Content-Type: application/json
   "lastname": "Peresunchak",
   "role": "ADMIN"
 }
+
+###
+GET http://193.196.52.69/api/recipe/5
