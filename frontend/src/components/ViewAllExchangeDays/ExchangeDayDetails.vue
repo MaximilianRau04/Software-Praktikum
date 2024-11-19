@@ -10,20 +10,21 @@
     
     <div class="scrollableEvents"> 
       <h2>Events</h2>
-      <div v-for="event in events" :key="event.id">
+      <div v-for="event in events" :key="event.id" v-if="events.length > 0">
         <EventDetails :event="event" />
       </div>
+      <p v-else>No events found.</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps, onMounted, ref, watch } from "vue";
-import EventDetails from './EventDetails.vue';
-import config from "../config";
-import '../assets/exchangeDayDetails.css'; 
-import { ExchangeDay, exchangeDays, selectedExchangeDay } from '../types/ExchangeDay'; 
-import { Event } from '../types/Event';
+import EventDetails from '@/components/ViewAllExchangeDays/EventDetails.vue';
+import config from "../../config";
+import '../../assets/exchangeDayDetails.css'; 
+import { ExchangeDay, exchangeDays, selectedExchangeDay } from '../../types/ExchangeDay'; 
+import { Event } from '../../types/Event';
 
 
 const props = defineProps<{
@@ -101,4 +102,3 @@ onMounted(() => {
   }
 });
 </script>
-

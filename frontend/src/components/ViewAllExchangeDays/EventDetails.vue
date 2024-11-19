@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { defineProps } from "vue";
-import { Event } from '../types/Event';
+import { Event } from '../../types/Event';
 
 const props = defineProps<{ event: Event }>();
 

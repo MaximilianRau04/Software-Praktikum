@@ -19,7 +19,7 @@
 
 <script>
 import { defineProps, defineEmits, onMounted, ref } from "vue";
-import config from "../config";
+import config from "../../config";
 
 export default {
   name: "ScrollableDivs",

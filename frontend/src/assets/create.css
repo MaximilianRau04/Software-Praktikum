@@ -1,0 +1,60 @@
+.action-button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .action-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  .create-box {
+    max-width: 350px; 
+    margin: 10px auto; 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 6px; 
+    background-color: #f9f9f9; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  }
+
+  .create-box h2 {
+    font-size: 16px; 
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .input-group {
+    max-width: 90%;
+    margin-bottom: 8px; 
+  }
+
+  .input-group label {
+    display: block;
+    font-size: 13px; 
+    margin-bottom: 3px;
+  }
+
+  .input-group input {
+    width: 100%;
+    padding: 6px; 
+    font-size: 13px; 
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  .roll-enter-active, .roll-leave-active {
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+  }
+
+  .roll-enter-from, .roll-leave-to {
+    max-height: 0;
+    padding: 0;
+    opacity: 0;
+  }
+
+  .roll-enter-to, .roll-leave-from {
+    opacity: 1;
+  }
