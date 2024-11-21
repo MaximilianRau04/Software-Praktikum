@@ -67,7 +67,6 @@ const handleLogin = () => {
   };
   router.push({
   path: '/home',
-  query: userData, 
 });
 }
 

@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div class="events">
-      <button @click="toggleWorkshopBox" class="action-button" type="button":disabled="showExchangeDayBox">Neuer Workshop</button>
-      <button @click="toggleExchangeDay" class="action-button" type="button":disabled="showWorkshopBox">Neuer Exchange Day</button>
+      <button @click="toggleWorkshopBox" class="action-button" type="button"><img src="@/images/plus.png" alt="Plus" class="plus-icon" width="35" height="35" />Neuer Workshop</button>
+      <button @click="toggleExchangeDay" class="action-button" type="button"><img src="@/images/plus.png" alt="Plus" class="plus-icon" width="35" height="35" />Neuer Exchange Day</button>
 
       <transition name="roll">
         <div v-if="showWorkshopBox" class="create-box">
@@ -34,12 +34,12 @@
       </transition>
 
       <transition name="roll">
-        <div v-if="showExchangeDayBox" class="create-box">
+        <div v-if="showExchangeDay" class="create-box">
           <h2 class="login-header">Neuer Exchange Day</h2>
           <form @submit.prevent="createExchangeDay">
             <div class="input-group">
               <label for="name2">Name</label>
-              <input type="text" id="name2" v-model="name2" required />
+              <input type="text" id="name2" v-model="exchangeName" required />
             </div>
             <div class="input-group">
               <label for="date">Datum</label>
@@ -51,7 +51,7 @@
             </div>
             <div class="input-group">
               <label for="description">Beschreibung</label>
-              <input type="description" id="description" v-model="description" required />
+              <input type="description" id="description" v-model="exchangeDescription" required />
             </div>
             <button type="submit" class="login-button">Exchange Day erstellen</button>
           </form>
@@ -68,16 +68,23 @@ import '../../assets/create.css';
 import { ref } from 'vue';
 
 const showWorkshopBox = ref(false);
+const showExchangeDay = ref(false);
+
 const name = ref('');
 const description = ref('');
 const startTime = ref('');
 const endTime = ref('');
 const room = ref('');
 
+const exchangeName = ref('');
+const exchangeDescription = ref('');
+const date = ref('');
+const location = ref('');
+
 const toggleWorkshopBox = () => {
   showWorkshopBox.value = !showWorkshopBox.value;
   if (showWorkshopBox.value) {
-    showExchangeDayBox.value = false; 
+    showExchangeDay.value = false; 
   }
 };
 
@@ -95,33 +102,42 @@ const CreateWorkshop = () => {
     endTime: endTime.value, 
     room: room.value 
   });
+
+  showWorkshopBox.value = false;
+
+  name.value = '';
+  description.value = '';
+  startTime.value = '';
+  endTime.value = '';
+  room.value = '';
 };
 
-const showExchangeDayBox = ref(false);
-const name2 = ref('');
-const date= ref('');
-const location = ref('');
-const description2 = ref('');
-
 const toggleExchangeDay = () => {
-  showExchangeDayBox.value = !showExchangeDayBox.value;
-  if (showExchangeDayBox.value) {
+  showExchangeDay.value = !showExchangeDay.value;
+  if (showExchangeDay.value) {
     showWorkshopBox.value = false; 
   }
 };
 
 const createExchangeDay = () => {
   alert(`Exchange Day erstellt: 
-  Name: ${name2.value}
+  Name: ${exchangeName.value}
   Datum: ${date.value}
   Ort: ${location.value}
-  Beschreibung: ${description2.value}`);
+  Beschreibung: ${exchangeDescription.value}`);
   console.log('ExchangeDay erstellt:', { 
-    name2: name2.value, 
+    name2: exchangeName.value, 
     date: date.value, 
     location: location.value,
-    description2: description2.value,
+    description2: exchangeDescription.value,
   });
+
+  showExchangeDay.value = false;
+
+  exchangeName.value = '';
+  exchangeDescription.value = '';
+  date.value = '';
+  location.value = '';
 };
 
 </script>
