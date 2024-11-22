@@ -1,7 +1,7 @@
 .action-button {
-  margin: 10px;
-  padding: 14px 28px; 
-  font-size: 18px; 
+  margin: 8px; 
+  padding: 10px 20px; 
+  font-size: 16px; 
   cursor: pointer;
   background-color: #0288d1;
   color: white;
@@ -22,48 +22,48 @@
 }
 
 .action-button i {
-  margin-right: 8px; 
+  margin-right: 6px; 
 }
 
 .action-button img {
-  margin-right: 8px;
+  margin-right: 6px;
 }
 
 .create-box {
-  max-width: 350px;
-  margin: 20px auto;
-  padding: 20px; 
-  border-radius: 10px;
+  max-width: 350px; 
+  margin: 12px auto; 
+  padding: 12px; 
+  border-radius: 6px; 
   background-color: #fff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); 
 }
 
 .create-box h2 {
-  font-size: 20px; 
-  margin-bottom: 15px;
+  font-size: 18px; 
+  margin-bottom: 12px;
   text-align: center;
   color: #333;
 }
 
 .input-group {
   max-width: 90%;
-  margin-bottom: 15px; 
+  margin-bottom: 10px; 
 }
 
 .input-group label {
   display: block;
   font-size: 14px; 
-  margin-bottom: 5px;
+  margin-bottom: 4px;
   color: #555;
 }
 
 .input-group input,
 .input-group select {
   width: 100%;
-  padding: 10px; 
-  border: 1px solid #ccc; 
-  border-radius: 6px; 
-  box-sizing: border-box; 
+  padding: 8px; 
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
   font-size: 14px; 
 }
 
