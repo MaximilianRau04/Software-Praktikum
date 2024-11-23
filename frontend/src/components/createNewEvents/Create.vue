@@ -75,7 +75,7 @@
 import '../../assets/create.css'; 
 import { ref } from 'vue';
 import axios from 'axios';
-import { c } from 'vite/dist/node/types.d-aGj9QkWt';
+
 
 const showWorkshopBox = ref(false);
 const showExchangeDay = ref(false);

@@ -15,6 +15,7 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
 import { Event } from '../../types/Event';
+import '../../assets/event-details.css'; 
 
 const props = defineProps<{ event: Event }>();
 
@@ -22,39 +23,3 @@ const register = (eventId: number) => {
   alert(`You have registered for event ID: ${eventId}`);
 };
 </script>
-
-<style scoped>
-.event-details {
-  background-color: #009EE2;
-  border: 1px solid #ccd;
-  border-radius: 8px;
-  padding: 0.5rem;
-  margin-bottom: 1.5rem;
-  position: relative;
-}
-
-h2 {
-  margin: 0 0 0.5rem 0;
-}
-
-p {
-  margin: 0.2rem 0;
-}
-
-.register-button {
-  background-color: black;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  font-size: 1.1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  position: absolute;
-  bottom: 0.5rem; 
-  right: 0.5rem; 
-}
-
-.register-button:hover {
-  background-color: #005FA3;
-}
-</style>

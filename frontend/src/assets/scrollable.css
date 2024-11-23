@@ -1,0 +1,61 @@
+.scroll-container {
+    max-height: 100vh; 
+    overflow-y: auto; 
+    box-sizing: border-box; 
+    padding: 10px; 
+    height: 85vh;
+  }
+  
+  .exchangeDay-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .list-item {
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .list-item:hover {
+    transform: scale(0.95);
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .date-box {
+    background-color: #333;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px 10px; 
+    margin-right: 20px;
+    border-radius: 5px;
+    text-align: center;
+    height: 40px;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+  }
+  
+  .infos {
+    flex: 1;
+  }
+  
+  .infos h2 {
+    margin: 0;
+    font-size: 20px;
+  }
+  
+  .infos p {
+    margin: 5px 0;
+    font-size: 14px;
+  }

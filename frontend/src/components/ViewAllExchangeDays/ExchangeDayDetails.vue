@@ -22,7 +22,7 @@
 import { defineProps, onMounted, ref, watch } from "vue";
 import EventDetails from '@/components/ViewAllExchangeDays/EventDetails.vue';
 import config from "../../config";
-import '../../assets/exchangeDayDetails.css'; 
+import '../../assets/exchange-day-details.css'; 
 import { ExchangeDay, exchangeDays, selectedExchangeDay } from '../../types/ExchangeDay'; 
 import { Event } from '../../types/Event';
 
