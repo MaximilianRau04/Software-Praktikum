@@ -1,9 +1,8 @@
-package com.sopra.eaplanner.event;
+package com.sopra.eaplanner.event.dtos;
 
+import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.exchangeday.ExchangeDay;
-import com.sopra.eaplanner.user.User;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -14,21 +13,19 @@ public class EventDTO {
     private String name;
     private String room;
     private String description;
-    private ExchangeDay exchangeDay;
-    private User organizer;
+    private Long exchangeDayId;
+    private Long organizerId;
     private List<Long> registeredUserIds;
 
-    public EventDTO(Long id, LocalTime startTime, LocalTime endTime, String name,
-                    String room, String description, ExchangeDay exchangeDay, User organizer,
-                    List<Long> registeredUserIds) {
+    public EventDTO(Long id, Event event, List<Long> registeredUserIds) {
         this.id = id;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.name = name;
-        this.room = room;
-        this.description = description;
-        this.exchangeDay = exchangeDay;
-        this.organizer = organizer;
+        this.startTime = event.getStartTime();
+        this.endTime = event.getEndTime();
+        this.name = event.getName();
+        this.room = event.getRoom();
+        this.description = event.getDescription();
+        this.exchangeDayId = event.getExchangeDay().getId();
+        this.organizerId = event.getOrganizer().getId();
         this.registeredUserIds = registeredUserIds;
     }
 
@@ -56,12 +53,12 @@ public class EventDTO {
         return description;
     }
 
-    public ExchangeDay getExchangeDay() {
-        return exchangeDay;
+    public Long getExchangeDayId() {
+        return exchangeDayId;
     }
 
-    public User getOrganizer() {
-        return organizer;
+    public Long getOrganizerId() {
+        return organizerId;
     }
 
     public List<Long> getRegisteredUserIds() {

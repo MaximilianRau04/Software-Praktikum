@@ -22,6 +22,15 @@ public class ExchangeDayDTO {
         this.eventIds = eventIds;
     }
 
+    public ExchangeDayDTO(ExchangeDay exchangeDay, List<Long> eventIds) {
+        this.id = exchangeDay.getId();
+        this.date = exchangeDay.getDate();
+        this.name = exchangeDay.getName();
+        this.location = exchangeDay.getLocation();
+        this.description = exchangeDay.getDescription();
+        this.eventIds = eventIds;
+    }
+
     // Getter und Setter
     public Long getId() {
         return id;

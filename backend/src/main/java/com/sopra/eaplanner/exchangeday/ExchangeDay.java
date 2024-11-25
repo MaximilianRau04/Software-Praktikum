@@ -36,6 +36,16 @@ public class ExchangeDay {
     @JsonManagedReference
     private List<Event> events = new ArrayList<>();
 
+    public ExchangeDay() {}
+
+    public ExchangeDay(Long id, LocalDate date, String name, String location, String description) {
+        this.id = id;
+        this.date = date;
+        this.name = name;
+        this.location = location;
+        this.description = description;
+    }
+
     public Long getId() {
         return id;
     }
@@ -75,7 +85,15 @@ public class ExchangeDay {
     public List<Event> getEvents() {
         return events;
     }
+
     public void setEvents(List<Event> events) {
         this.events = events;
+    }
+
+    public void addEvent(Event event) {
+        events.add(event);
+    }
+    public void removeEvent(Event event) {
+        events.remove(event);
     }
 }

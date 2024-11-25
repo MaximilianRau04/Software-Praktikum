@@ -1,6 +1,10 @@
 package com.sopra.eaplanner.user;
 
 import com.sopra.eaplanner.event.Event;
+import com.sopra.eaplanner.feedback.Feedback;
+import com.sopra.eaplanner.forumpost.ForumPost;
+import com.sopra.eaplanner.reward.Reward;
+import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -22,8 +26,8 @@ public class User {
     @Pattern(regexp = "^[a-zA-Z0-9]+", message = "Username must be alphanumeric")
     private String username;
 
-    @Size(max = 50, message = "Surname cannot exceed 50 characters")
-    private String surname;
+    @Size(max = 50, message = "firstname cannot exceed 50 characters")
+    private String firstname;
 
     @Size(max = 50, message = "Lastname cannot exceed 50 characters")
     private String lastname;
@@ -38,6 +42,18 @@ public class User {
 
     @ManyToMany(targetEntity = Event.class)
     private List<Event> registeredEvents = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Feedback> feedbacks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ForumPost> forumPosts = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private TrainerProfile trainerProfile;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reward> rewards = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -55,12 +71,12 @@ public class User {
         this.username = username;
     }
 
-    public String getSurname() {
-        return surname;
+    public String getFirstname() {
+        return firstname;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
     }
 
     public String getLastname() {
@@ -95,14 +111,54 @@ public class User {
         registeredEvents.remove(event);
     }
 
-    public void updateInformation(User user){
-        if(user.getSurname() != null){
-            setSurname(user.getSurname());
+    public List<Feedback> getFeedbacks() {
+        return feedbacks;
+    }
+
+    public void setFeedbacks(List<Feedback> feedbacks) {
+        this.feedbacks = feedbacks;
+    }
+
+    public void addFeedback(Feedback feedback) {
+        feedbacks.add(feedback);
+    }
+
+    public void removeFeedback(Feedback feedback) {
+        feedbacks.remove(feedback);
+    }
+
+    public TrainerProfile getTrainerProfile() {
+        return trainerProfile;
+    }
+
+    public void setTrainerProfile(TrainerProfile trainerProfile) {
+        this.trainerProfile = trainerProfile;
+    }
+
+    public List<Reward> getRewards() {
+        return rewards;
+    }
+
+    public void setRewards(List<Reward> rewards) {
+        this.rewards = rewards;
+    }
+
+    public void addReward(Reward reward) {
+        rewards.add(reward);
+    }
+
+    public void removeReward(Reward reward) {
+        rewards.remove(reward);
+    }
+
+    public void updateInformation(User user) {
+        if (user.getFirstname() != null) {
+            setFirstname(user.getFirstname());
         }
-        if(user.getLastname() != null){
+        if (user.getLastname() != null) {
             setLastname(user.getLastname());
         }
-        if(user.getRole() != null){
+        if (user.getRole() != null) {
             setRole(user.getRole());
         }
     }

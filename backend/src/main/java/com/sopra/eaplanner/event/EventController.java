@@ -1,10 +1,9 @@
 package com.sopra.eaplanner.event;
 
+import com.sopra.eaplanner.event.dtos.EventDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -20,11 +19,11 @@ public class EventController {
 
     @GetMapping("/events/{id}")
     public EventDTO getEventById(@PathVariable Long id) {
-        return eventService.getEventWithCostumerIds(id);
+        return eventService.getEventWithUserIds(id);
     }
 
     @PostMapping("/events")
-    public Event createEvent(@Valid @RequestBody Event requestBody) {
+    public Event createEvent(@Valid @RequestBody EventDTO requestBody) {
         return eventService.createEvent(requestBody);
     }
 
