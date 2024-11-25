@@ -7,6 +7,19 @@ html, body {
 .header-nav {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.nav-left {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-right {
+  display: flex;
+  gap: 20px;
+  margin-left: auto;
 }
 
 .nav-button {
@@ -16,11 +29,41 @@ html, body {
 }
 
 .container {
+  margin-top:0px;
   display: flex;
   padding: 1rem;
+  padding:0px;
 }
 
-.leftSide, .rightSide {
+.leftSide{
+  flex: 2;
+  padding: 0px;
+}
+
+.rightSide{
   flex: 1;
-  padding: 1rem;
+  padding: 0px;
+  position: relative;
+  padding-right: 20px;
+  z-index: 2;
+}
+
+.scrollableEvents {
+  position: relative;
+  overflow-y: auto;
+  flex-grow: 1;
+  padding-right: 10px;
+}
+
+.rightSide::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 20px;
+  width:100%;
+  height: 150px; 
+  background: linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+  pointer-events: none;
+  z-index: 1;
 }

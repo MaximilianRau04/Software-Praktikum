@@ -1,25 +1,30 @@
 <template>
-  <div v-if="selectedExchangeDay" class="exchange-day-details">
-    <h1>{{ selectedExchangeDay.name }}</h1>
-    <p><strong>Location:</strong> {{ selectedExchangeDay.location }}</p>
-    <p><strong>Description:</strong> {{ selectedExchangeDay.description }}</p>
-    <p><strong>Date:</strong> {{ formatDate(selectedExchangeDay.date) }}</p>
-    <p>Id: {{ selectedExchangeDay.id }}</p>
+  <div v-if="selectedExchangeDay" class="exchangeDayDetails">
+    <div class="exchangeDayInfos">
+      <h1>{{ selectedExchangeDay.name }}</h1>
+      <p><strong>Location:</strong> {{ selectedExchangeDay.location }}</p>
+      <p><strong>Description:</strong> {{ selectedExchangeDay.description }}</p>
+      <p><strong>Date:</strong> {{ formatDate(selectedExchangeDay.date) }}</p>
+      <p>Id: {{ selectedExchangeDay.id }}</p>
+    </div>
     
-    <h2>Events</h2>
-    <div v-for="event in events" :key="event.id">
-      <EventDetails :event="event" />
+    <div class="scrollableEvents"> 
+      <h2>Events</h2>
+      <div v-for="event in events" :key="event.id" v-if="events.length > 0">
+        <EventDetails :event="event" />
+      </div>
+      <p v-else>No events found.</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps, onMounted, ref, watch } from "vue";
-import EventDetails from './EventDetails.vue';
-import config from "../config";
-import '../assets/exchangeDayDetails.css'; 
-import { ExchangeDay, exchangeDays, selectedExchangeDay } from '../types/ExchangeDay'; 
-import { Event } from '../types/Event';
+import EventDetails from '@/components/ViewAllExchangeDays/EventDetails.vue';
+import config from "../../config";
+import '../../assets/exchange-day-details.css'; 
+import { ExchangeDay, exchangeDays, selectedExchangeDay } from '../../types/ExchangeDay'; 
+import { Event } from '../../types/Event';
 
 
 const props = defineProps<{
@@ -97,4 +102,3 @@ onMounted(() => {
   }
 });
 </script>
-

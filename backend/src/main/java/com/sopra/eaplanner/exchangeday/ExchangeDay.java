@@ -2,6 +2,7 @@ package com.sopra.eaplanner.exchangeday;
 
 import com.sopra.eaplanner.event.Event;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "exchange_days")
@@ -19,7 +21,8 @@ public class ExchangeDay {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name ="id")
     private Long id;
-
+    @DateTimeFormat(pattern = "dd.MM.yyyy")
+    @Future(message = "Date must be in the future")
     @NotNull(message = "Date cannot be null")
     private LocalDate date;
 
