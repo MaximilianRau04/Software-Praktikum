@@ -55,6 +55,8 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reward> rewards = new ArrayList<>();
 
+    public User() {}
+
     public Long getId() {
         return id;
     }

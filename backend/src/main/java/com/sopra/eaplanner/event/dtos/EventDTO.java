@@ -1,9 +1,9 @@
 package com.sopra.eaplanner.event.dtos;
 
 import com.sopra.eaplanner.event.Event;
-import com.sopra.eaplanner.exchangeday.ExchangeDay;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EventDTO {
@@ -15,7 +15,9 @@ public class EventDTO {
     private String description;
     private Long exchangeDayId;
     private Long organizerId;
-    private List<Long> registeredUserIds;
+    private List<Long> registeredUserIds = new ArrayList<>();
+
+    public EventDTO() {}
 
     public EventDTO(Long id, Event event, List<Long> registeredUserIds) {
         this.id = id;
