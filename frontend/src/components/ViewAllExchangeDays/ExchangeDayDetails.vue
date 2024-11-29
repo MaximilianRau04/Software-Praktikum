@@ -1,5 +1,15 @@
+<!--
+ This component displays the details of a selected exchange day and its associated events.
+  
+ State (Refs):
+  - `selectedExchangeDay`: Stores the currently selected exchange day details.
+  - `events`: An array of events associated with the exchange day.
+-->
+
 <template>
   <div v-if="selectedExchangeDay" class="exchangeDayDetails">
+
+    <!-- Displaying exchange day details -->
     <div class="exchangeDayInfos">
       <h1>{{ selectedExchangeDay.name }}</h1>
       <p><strong>Location:</strong> {{ selectedExchangeDay.location }}</p>
@@ -8,9 +18,11 @@
       <p>Id: {{ selectedExchangeDay.id }}</p>
     </div>
     
+    <!-- Displaying associated events -->
     <div class="scrollableEvents"> 
       <h2>Events</h2>
       <div v-for="event in events" :key="event.id" v-if="events.length > 0">
+         <!-- show event information -->
         <EventDetails :event="event" />
       </div>
       <p v-else>No events found.</p>
@@ -23,7 +35,8 @@ import { defineProps, onMounted, ref, watch } from "vue";
 import EventDetails from '@/components/ViewAllExchangeDays/EventDetails.vue';
 import config from "../../config";
 import '../../assets/exchange-day-details.css'; 
-import { ExchangeDay, exchangeDays, selectedExchangeDay } from '../../types/ExchangeDay'; 
+import { ExchangeDay, exchangeDays } from '../../types/ExchangeDay'; 
+const selectedExchangeDay = ref<ExchangeDay | null>(null);
 import { Event } from '../../types/Event';
 
 
@@ -33,11 +46,22 @@ const props = defineProps<{
 
 const events = ref<Event[]>([]);
 
+/**
+ * Formats a timestamp into a human-readable date string.
+ * 
+ * @param {number} timestamp - The date in milliseconds.
+ * @returns {string} - The formatted date string in 'DD.MM.YYYY' format.
+ */
 function formatDate(timestamp: number): string {
   const date = new Date(timestamp);
   return date.toLocaleDateString("de-DE");
 }
 
+/**
+ * Fetches the details of a selected exchange day from the API.
+ * 
+ * @param {number} id - The ID of the exchange day to fetch.
+ */
 async function fetchExchangeDayDetails(id: number) {
   try {
     const response = await fetch(`${config.apiBaseUrl}/exchange-days/${id}`);
@@ -46,6 +70,7 @@ async function fetchExchangeDayDetails(id: number) {
     const data = await response.json();
     console.log("ExchangeDay data loaded:", data);
 
+    // Store the fetched exchange day details in `selectedExchangeDay
     selectedExchangeDay.value = {
       id: data.id,
       name: data.name,
@@ -55,6 +80,7 @@ async function fetchExchangeDayDetails(id: number) {
       events: data.eventIds || []
     };
 
+     // Fetch details of associated events, if available
     if (Array.isArray(data.eventIds) && data.eventIds.length > 0) {
       console.log("Event IDs found:", data.eventIds);
       await fetchEventDetails(data.eventIds);
@@ -67,6 +93,11 @@ async function fetchExchangeDayDetails(id: number) {
   }
 }
 
+/**
+ * Fetches the details of events associated with the exchange day.
+ * 
+ * @param {number[]} eventIds - Array of event IDs to fetch.
+ */
 async function fetchEventDetails(eventIds: number[]) {
 
   const fetchedEvents: Event[] = [];
@@ -82,11 +113,16 @@ async function fetchEventDetails(eventIds: number[]) {
     }
   });
 
+  // Wait for all event fetch operations to complete
   await Promise.all(eventFetches); 
   events.value = fetchedEvents; 
   console.log("All events loaded:", events.value);
 }
 
+
+/**
+ * Watch for changes to the `exchangeDay` prop and fetch new details when it changes.
+ */
 watch(
   () => props.exchangeDay?.id,
   (newId, oldId) => {
@@ -96,6 +132,9 @@ watch(
   }
 );
 
+/**
+ * On component mount, fetch the details of the initial `exchangeDay` if provided.
+ */
 onMounted(() => {
   if (props.exchangeDay?.id != null) {
     fetchExchangeDayDetails(props.exchangeDay.id);
