@@ -38,6 +38,7 @@ html, body {
 .leftSide{
   flex: 2;
   padding: 0px;
+  margin-left: 10px;
 }
 
 .rightSide{

@@ -1,18 +1,18 @@
-<!-- 
- This component displays a scrollable list of Exchange Days. 
-  Emits `select-exchange-day` when an item is clicked.
--->
 <template>
   <div class="scroll-container">
-      <!-- Container for the list of Exchange Days -->
+    <!-- Date filter input to select a date -->
+    <div class="date-filter">
+      <input type="date" id="date-picker" v-model="selectedDate" @change="filterExchangeDays" />
+    </div>
+    
+    <!-- List of Exchange Days that gets filtered based on the selected date -->
     <div class="exchangeDay-list">
-        <!-- Loop through exchangeDays array and render each Exchange Day -->
-      <div v-for="(exchangeDay, index) in exchangeDays" :key="index" @click="selectExchangeDay(exchangeDay)" class="list-item">
+      <div v-for="(exchangeDay, index) in filteredExchangeDays" :key="index" @click="selectExchangeDay(exchangeDay)" class="list-item">
         <div class="header">
           <div class="date-box">
             <div><p>{{ formatDate(exchangeDay.date) }}</p></div>
           </div>
-            <!-- Exchange Day details -->
+          <!-- Exchange Day details -->
           <div class="infos">
             <h2>{{ exchangeDay.name }}</h2>
             <p>{{ exchangeDay.location }}</p>
@@ -33,7 +33,8 @@ export default {
   name: "ScrollableDivs",
   setup(props, { emit }) {
     const exchangeDays = ref([]);
-    const defaultImage = new URL('@/assets/itestra.jpg', import.meta.url).href;
+    const filteredExchangeDays = ref([]);
+    const selectedDate = ref('');
 
     /**
      * Fetches all Exchange Days from the API and stores them in the `exchangeDays` ref.
@@ -42,16 +43,15 @@ export default {
       fetch(`${config.apiBaseUrl}/exchange-days`)
         .then(response => response.json())
         .then(data => {
-          console.log(data);
-          // Populate exchangeDays with data from the API
           exchangeDays.value = data.map(item => ({
             name: item.name,
-            image: defaultImage,
             location: item.location,
             date: item.date,
             description: item.description,
             id: item.id
           }));
+
+          filteredExchangeDays.value = exchangeDays.value;
         })
         .catch(error => console.error("Error fetching exchange days:", error));
     }
@@ -63,6 +63,7 @@ export default {
     function selectExchangeDay(workshop) {
       emit('select-exchange-day', workshop); 
     }
+
     /**
      * Formats a timestamp into "DD.MM.YYYY" format.
      * @param {number} timestamp - The timestamp to format.
@@ -73,22 +74,34 @@ export default {
       return date.toLocaleDateString("de-DE");
     }
 
-    function splitDate(dateString) {
-      return dateString.split('.').map(Number);
+    /**
+     * Filters the exchange days based on the selected date.
+     */
+    function filterExchangeDays() {
+      if (!selectedDate.value) {
+        // If no date is selected, display all exchange days
+        filteredExchangeDays.value = exchangeDays.value;
+        return;
+      }
+      // Filter by selected date, ensuring that only days matching the date are shown
+      const filterDate = new Date(selectedDate.value).setHours(0, 0, 0, 0);
+      filteredExchangeDays.value = exchangeDays.value.filter(day => {
+        const dayDate = new Date(day.date).setHours(0, 0, 0, 0);
+        return dayDate === filterDate;
+      });
     }
 
-   // Fetch data when the component is mounted
+    // Fetch data when the component is mounted
     onMounted(() => fetchExchangeDays());
 
     return {
       exchangeDays,
-      defaultImage,
+      filteredExchangeDays,
+      selectedDate,
       formatDate,
-      splitDate,
-      selectExchangeDay  
+      selectExchangeDay,
+      filterExchangeDays
     };
   }
 };
 </script>
-
-

@@ -6,7 +6,17 @@ html, body {
 }
 
 #app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
   height: 100%;
+}
+
+main {
+  padding: 0px;
+  max-height: 85vh;
+  box-sizing: border-box;
 }
 
 .header {
@@ -14,7 +24,6 @@ html, body {
   justify-content: flex-start;
   align-items: center;
   padding: 10px;
-  
 }
 
 .header-nav {
@@ -25,8 +34,4 @@ html, body {
 .wrapper {
   text-align: center;
   margin: 20px;
-}
-
-main {
-  padding: 20px;
 }

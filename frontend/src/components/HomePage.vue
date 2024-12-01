@@ -16,8 +16,8 @@
 <script>
 import MainPage from '@/components/ViewAllExchangeDays/MainPage.vue';
 import Create from '@/components/CreateNewEvents/Create.vue';
-import Sidebar from '@/components/Navigation/sidebar.vue';
-import HeaderTop from '@/components/Navigation/header.vue';
+import Sidebar from '@/components/navigation/sidebar.vue';
+import HeaderTop from '@/components/navigation/header.vue';
 
 export default {
   components: {
