@@ -13,8 +13,13 @@ Welcome to the Exchange Days Management Web App! This application helps you part
 
 ## How the App Works
 
-The app does not use any authentication. After using the registration-formular, you will be redirected to the main page, where the application fetches all saved Exchange Days and their associated workshops from the database.
+The app does not use any authentication. After using the registration-formular, you will be redirected to the main page, where the application fetches all saved Exchange Days and their associated workshops from the database. On the left side, there is a sidebar for navigating between the different components. By clicking the "Create" button, you can create either a new exchange day or a new workshop. After successfully creating one, it will appear on the main page.
 
+## Features
+- View and register for Exchange Days and workshops.
+- Create new Exchange Days and workshops with an intuitive interface.
+- Navigate seamlessly between components using the sidebar.
+- Responsive design for optimal user experience across devices.
 
 ## Developer Contacts
 

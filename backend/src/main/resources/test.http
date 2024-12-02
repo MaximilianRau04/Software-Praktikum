@@ -1,0 +1,40 @@
+POST http://localhost:8080/api/events
+Content-Type: application/json
+
+{
+  "name": "Spring Boot Fundamentals",
+  "description": "Bla Bla",
+  "room": "0.108",
+  "exchangeDayId": 1,
+  "organizerId": 1,
+  "startTime": "13:00:00",
+  "endTime": "14:00:00"
+}
+
+
+###
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "username": "mperreks",
+  "firstname": "Maximilian",
+  "lastname": "Peresunchak",
+  "role": "ADMIN"
+}
+###
+POST http://localhost:8080/api/exchange-days
+Content-Type: application/json
+
+{
+  "date": "2024-11-30",
+  "name": "Spring Boot Exchange Day",
+  "location": "Berlin",
+  "description": "A day dedicated to learning Spring Boot with multiple sessions."
+}
+###
+GET http://localhost:8080/api/exchange-days
+###
+GET http://localhost:8080/api/events
+###
+GET http://localhost:8080/api/users

@@ -15,10 +15,12 @@ public class ExchangeDayService {
     private ExchangeDayRepository exchangeDayRepository;
 
     public ExchangeDay createExchangeDay(ExchangeDay exchangeDay) {
+
+
         return exchangeDayRepository.save(exchangeDay);
     }
 
-    public Iterable<ExchangeDay> getAllExchangeDays(){
+    public Iterable<ExchangeDay> getAllExchangeDays() {
         return exchangeDayRepository.findAll();
     }
 
@@ -31,29 +33,19 @@ public class ExchangeDayService {
         return exchangeDayRepository.save(exchangeDayUpdates);
     }
 
-    public void deleteExchangeDayById(Long id){
+    public void deleteExchangeDayById(Long id) {
         exchangeDayRepository.deleteById(id);
     }
 
-    // Methode, um alle Event-IDs für ein bestimmtes ExchangeDay zu holen
     public ExchangeDayDTO getExchangeDayWithEventIds(Long exchangeDayId) {
-        // Hole das ExchangeDay
-        ExchangeDay exchangeDay = exchangeDayRepository.findById(exchangeDayId)
-                .orElseThrow(() -> new RuntimeException("ExchangeDay nicht gefunden"));
 
-        // Hole die Event-IDs
+        ExchangeDay exchangeDay = exchangeDayRepository.findById(exchangeDayId)
+                .orElseThrow(() -> new RuntimeException("ExchangeDay with the id " + exchangeDayId + " not found"));
+
         List<Long> eventIds = exchangeDay.getEvents().stream()
                 .map(Event::getId)
                 .collect(Collectors.toList());
 
-        // Erstelle das DTO und gebe es zurück
-        return new ExchangeDayDTO(
-                exchangeDay.getId(),
-                exchangeDay.getDate(),
-                exchangeDay.getName(),
-                exchangeDay.getLocation(),
-                exchangeDay.getDescription(),
-                eventIds
-        );
+        return new ExchangeDayDTO(exchangeDay, eventIds);
     }
 }

@@ -12,9 +12,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public User createUser(User requestBody) {
-        return userRepository.save(requestBody);
-    }
+    public User createUser(User requestBody) { return userRepository.save(requestBody); }
 
     public Iterable<User> getAllUsers() {
         return userRepository.findAll();

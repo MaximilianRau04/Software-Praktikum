@@ -1,22 +1,42 @@
 package com.sopra.eaplanner.event;
 
+import com.sopra.eaplanner.event.dtos.EventDTO;
 import com.sopra.eaplanner.exchangeday.ExchangeDay;
-import com.sopra.eaplanner.exchangeday.ExchangeDayDTO;
+import com.sopra.eaplanner.exchangeday.ExchangeDayRepository;
 import com.sopra.eaplanner.user.User;
+import com.sopra.eaplanner.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
-    public Event createEvent(Event event) {
-        return eventRepository.save(event);
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ExchangeDayRepository exchangeDayRepository;
+
+    public Event createEvent(EventDTO event) {
+        ExchangeDay exchangeDay = exchangeDayRepository.findById(event.getExchangeDayId())
+                .orElseThrow(() -> new RuntimeException("ExchangeDay not found."));
+
+        User eventOrganizer = userRepository.findById(event.getOrganizerId())
+                .orElseThrow(() -> new RuntimeException("Organizer not found."));
+
+        List<User> registeredUsers = event.getRegisteredUserIds()
+                .stream()
+                .map((id)-> userRepository.findById(id).orElseThrow(()-> new RuntimeException("Event not found.")))
+                .toList();
+
+        Event eventToSave = new Event(event, exchangeDay, eventOrganizer, registeredUsers);
+
+        return eventRepository.save(eventToSave);
     }
 
     public Iterable<Event> getAllEvents() {
@@ -31,24 +51,14 @@ public class EventService {
         eventRepository.deleteById(id);
     }
 
-    public EventDTO getEventWithCostumerIds(Long eventId) {
+    public EventDTO getEventWithUserIds(Long eventId) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event nicht gefunden"));
+                .orElseThrow(() -> new RuntimeException("Event not found."));
 
-        List<Long> eventIds = event.getRegisteredUsers().stream()
+        List<Long> registeredUserIds = event.getRegisteredUsers().stream()
                 .map(User::getId)
-                .collect(Collectors.toList());
+                .toList();
 
-        return new EventDTO(
-                eventId,
-                event.getStartTime(),
-                event.getEndTime(),
-                event.getName(),
-                event.getRoom(),
-                event.getDescription(),
-                event.getExchangeDay(),
-                event.getOrganizer(),
-                eventIds
-        );
+        return new EventDTO(eventId, event, registeredUserIds);
     }
 }

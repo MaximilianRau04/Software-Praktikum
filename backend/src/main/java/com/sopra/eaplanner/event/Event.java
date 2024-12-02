@@ -1,15 +1,18 @@
 package com.sopra.eaplanner.event;
 
+import com.sopra.eaplanner.event.dtos.EventDTO;
 import com.sopra.eaplanner.exchangeday.ExchangeDay;
+import com.sopra.eaplanner.feedback.Feedback;
+import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
@@ -44,8 +47,12 @@ public class Event {
 
     @NotNull(message = "Organizer must be specified")
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name="organizer_id", nullable = false)
+    @JoinColumn(name = "organizer_id", nullable = false)
     private User organizer;
+
+    @ManyToOne
+    @JoinColumn(name = "trainer_profile_id")
+    private TrainerProfile trainerProfile;
 
     @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(
@@ -54,6 +61,36 @@ public class Event {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<User> registeredUsers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Feedback> feedbacks = new ArrayList<>();
+
+    public Event() {
+    }
+
+    public Event(Long id, String name, LocalTime startTime, LocalTime endTime, String room, String description, ExchangeDay exchangeDay, User organizer, TrainerProfile trainerProfile) {
+        this.id = id;
+        this.name = name;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.room = room;
+        this.description = description;
+        this.exchangeDay = exchangeDay;
+        this.organizer = organizer;
+        this.trainerProfile = trainerProfile;
+    }
+
+    public Event(EventDTO eventDTO, ExchangeDay exchangeDay, User organizer, List<User> registeredUsers) {
+        this.id = eventDTO.getId();
+        this.name = eventDTO.getName();
+        this.startTime = eventDTO.getStartTime();
+        this.endTime = eventDTO.getEndTime();
+        this.room = eventDTO.getRoom();
+        this.description = eventDTO.getDescription();
+        this.exchangeDay = exchangeDay;
+        this.organizer = organizer;
+        this.registeredUsers = registeredUsers;
+    }
 
     public Long getId() {
         return id;
@@ -118,10 +155,28 @@ public class Event {
     public void setOrganizer(User organizer) {
         this.organizer = organizer;
     }
+
+    public TrainerProfile getTrainerProfile() {
+        return trainerProfile;
+    }
+
+    public void setTrainerProfile(TrainerProfile trainerProfile) {
+        this.trainerProfile = trainerProfile;
+    }
+
     public List<User> getRegisteredUsers() {
         return registeredUsers;
     }
+
     public void setRegisteredUsers(List<User> registeredUsers) {
         this.registeredUsers = registeredUsers;
+    }
+
+    public List<Feedback> getFeedbacks() {
+        return feedbacks;
+    }
+
+    public void setFeedbacks(List<Feedback> feedbacks) {
+        this.feedbacks = feedbacks;
     }
 }

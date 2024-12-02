@@ -1,0 +1,55 @@
+POST http://193.196.54.172:8000/api/events
+Content-Type: application/json
+
+{
+  "name": "Spring Boot Fundamentals",
+  "startTime": "14:00:00",
+  "endTime": "15:00:00",
+  "room": "Room A",
+  "description": "Spring Boot",
+  "organizer": {
+    "id": 15,
+    "username": "mperreks",
+    "surname": "Maximilian",
+    "lastname": "Peresunchak",
+    "role": "ADMIN"
+  },
+  "exchangeDay": {
+    "id": 6,
+    "date": "2024-11-25",
+    "name": "Spring Boot Exchange Day",
+    "location": "Berlin",
+    "description": "A day dedicated to learning Spring Boot with multiple sessions.",
+    "events": []
+  }
+
+}
+###
+POST http://193.196.54.172:8000/api/users
+Content-Type: application/json
+
+{
+  "username": "mperreks",
+  "surname": "Maximilian",
+  "lastname": "Peresunchak",
+  "role": "ADMIN"
+}
+###
+POST http://193.196.54.172:8000/api/exchange-days
+Content-Type: application/json
+
+{
+  "date": "2024-11-25",
+  "name": "Spring Boot Exchange Day",
+  "location": "Berlin",
+  "description": "A day dedicated to learning Spring Boot with multiple sessions."
+}
+###
+GET http://193.196.54.172:8000/api/exchange-days
+###
+GET http://193.196.54.172:8000/api/events
+###
+GET http://193.196.54.172:8000/api/users
+
+
+
