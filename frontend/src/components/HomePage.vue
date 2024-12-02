@@ -15,7 +15,7 @@
 
 <script>
 import MainPage from '@/components/ViewAllExchangeDays/MainPage.vue';
-import Create from '@/components/CreateNewEvents/Create.vue';
+import Create from '@/components/createNewEvents/Create.vue';
 import Sidebar from '@/components/navigation/sidebar.vue';
 import HeaderTop from '@/components/navigation/header.vue';
 

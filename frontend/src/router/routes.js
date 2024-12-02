@@ -1,6 +1,6 @@
 import Login from '../components/Login.vue';
 import MainPage from '../components/ViewAllExchangeDays/MainPage.vue';
-import Create from '../components/CreateNewEvents/Create.vue';
+import Create from '../components/createNewEvents/Create.vue';
 import HomePage from '@/components/HomePage.vue';
 
 export default [
