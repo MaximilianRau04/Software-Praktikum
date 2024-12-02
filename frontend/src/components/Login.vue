@@ -1,52 +1,36 @@
-<!--
-This component handles user authentication by providing both registration and login forms within the same interface. 
-The user can toggle between the "Register" and "Login" views using a dynamic button. 
-
-Key Features:
-- Registration: Collects username, first name, last name, email, and admin status.
-- Login: Accepts only a username for authentication.
-- Dynamic form rendering based on the `isRegistered` state.
-- Redirects to the `/home` route upon form submission.
--->
 <template>
   <div class="login">
     <div class="create-box">
-       <!-- Dynamic header based on registration state -->
       <h2 class="login-header" v-if="!isRegistered">Registrieren</h2>
       <h2 class="login-header" v-else>Login</h2>
-      <!-- Form for registration/login -->
       <form @submit.prevent="handleLogin">
-        <!-- Username field -->
         <div class="input-group">
           <label for="username">Benutzername</label>
           <input type="text" id="username" v-model="username" required />
         </div>
-         <!-- Fields displayed only for registration -->
+
         <div class="input-group" v-if="!isRegistered">
           <label for="firstname">Vorname</label>
-          <input type="text" id="prename" v-model="prename" required />
+          <input type="text" id="firstname" v-model="firstname" required />
         </div>
+
         <div class="input-group" v-if="!isRegistered">
           <label for="lastname">Nachname</label>
           <input type="text" id="lastname" v-model="lastname" required />
         </div>
+
         <div class="input-group" v-if="!isRegistered">
-          <label for="email">E-Mail</label>
-          <input type="email" id="email" v-model="email" required />
+          <label for="role">Rolle</label>
+          <select v-model="role" required>
+            <option value="USER">Benutzer</option>
+            <option value="ADMIN">Admin</option>
+          </select>
         </div>
-        <!-- Admin checkbox for registration -->
-        <div class="input-group">
-        <label for="admin" id="admin" v-if="!isRegistered">
-        Admin?
-        <input type="checkbox" v-model="admin" />
-        </label>
-        <!-- Submit button -->
-        </div>
-         <!-- Toggle button to switch views -->
+
         <button type="submit" class="login-button" v-if="!isRegistered">Registrieren</button>
         <button type="submit" class="login-button" v-else>Anmelden</button>
-        <button class="login-button" v-if="!isRegistered" @click="changeToLogin">Bereits registriert?</button>
 
+        <button class="login-button" v-if="!isRegistered" @click="changeToLogin">Bereits registriert?</button>
         <button class="login-button" v-else @click="changeToLogin">Registrieren?</button>
       </form>
     </div>
@@ -56,40 +40,73 @@ Key Features:
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { globalState } from '@/types/User';
+import type { User } from '@/types/User';
 import '../assets/login.css';
 
 const router = useRouter();
 
-// State variables
 const isRegistered = ref(false);
 const username = ref('');
-const prename = ref('');
+const firstname = ref('');
 const lastname = ref('');
-const email = ref('');
-const admin = ref(false);
+const role = ref('USER');
 
-/**
- * Handles the registration/login process.
- * Redirects to the home page after collecting user data.
- */
-const handleLogin = () => {
-  const userData = {
-    username: username.value,
-    prename: prename.value,
-    lastname: lastname.value,
-    email: email.value,
-    admin: admin.value.toString(),
-  };
-  router.push({
-  path: '/home', // Redirect to home page
-});
-}
+const apiUrl = 'http://193.196.54.172:8000/api/users';
 
-/**
- * Toggles between "Register" and "Login" views.
- */
+/* Handles user login and registration */
+const handleLogin = async () => {
+  try {
+    if (isRegistered.value) {
+      const response = await fetch(`${apiUrl}/search?username=${username.value}`);
+      if (!response.ok) throw new Error('Benutzer nicht gefunden');
+
+      const userData: User = await response.json();
+
+      if (userData && userData.id) {
+        globalState.setUser(userData);
+
+        localStorage.setItem('userId', userData.id);
+        localStorage.setItem('username', userData.username);
+        localStorage.setItem('firstname', userData.firstname || '');
+        localStorage.setItem('lastname', userData.lastname || '');
+        localStorage.setItem('role', userData.role || 'USER');
+
+        router.push('/home');
+      } else {
+        alert('Anmeldung fehlgeschlagen. Benutzer nicht gefunden.');
+      }
+    } else {
+      const userData: User = {
+        username: username.value,
+        firstname: firstname.value,
+        lastname: lastname.value,
+        role: role.value,
+      };
+
+      const response = await fetch(`${apiUrl}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+
+      const data: User = await response.json();
+
+      if (response.ok && data.id) {
+        alert('Registrierung erfolgreich');
+        isRegistered.value = true;
+      } else {
+        alert('Registrierung fehlgeschlagen. Bereits registriert?');
+      }
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert(isRegistered.value ? 'Anmeldung fehlgeschlagen' : 'Fehler bei der Registrierung');
+  }
+};
+
+/* Toggles between registration and login */
 const changeToLogin = () => {
   isRegistered.value = !isRegistered.value;
 };
 </script>
-

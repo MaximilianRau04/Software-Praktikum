@@ -21,12 +21,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     @NotNull(message = "Username cannot be null")
     @Size(min = 3, max = 16, message = "Username must be between 3 and 16 characters long")
     @Pattern(regexp = "^[a-zA-Z0-9]+", message = "Username must be alphanumeric")
     private String username;
 
-    @Size(max = 50, message = "firstname cannot exceed 50 characters")
+    @Size(max = 50, message = "Firstname cannot exceed 50 characters")
     private String firstname;
 
     @Size(max = 50, message = "Lastname cannot exceed 50 characters")
@@ -97,71 +98,9 @@ public class User {
         this.role = role;
     }
 
-    public List<Event> getRegisteredEvents() {
-        return registeredEvents;
-    }
-
-    public void setRegisteredEvents(List<Event> registeredEvents) {
-        this.registeredEvents = registeredEvents;
-    }
-
-    public void addEvent(Event event) {
-        registeredEvents.add(event);
-    }
-
-    public void removeEvent(Event event) {
-        registeredEvents.remove(event);
-    }
-
-    public List<Feedback> getFeedbacks() {
-        return feedbacks;
-    }
-
-    public void setFeedbacks(List<Feedback> feedbacks) {
-        this.feedbacks = feedbacks;
-    }
-
-    public void addFeedback(Feedback feedback) {
-        feedbacks.add(feedback);
-    }
-
-    public void removeFeedback(Feedback feedback) {
-        feedbacks.remove(feedback);
-    }
-
-    public TrainerProfile getTrainerProfile() {
-        return trainerProfile;
-    }
-
-    public void setTrainerProfile(TrainerProfile trainerProfile) {
-        this.trainerProfile = trainerProfile;
-    }
-
-    public List<Reward> getRewards() {
-        return rewards;
-    }
-
-    public void setRewards(List<Reward> rewards) {
-        this.rewards = rewards;
-    }
-
-    public void addReward(Reward reward) {
-        rewards.add(reward);
-    }
-
-    public void removeReward(Reward reward) {
-        rewards.remove(reward);
-    }
-
     public void updateInformation(User user) {
-        if (user.getFirstname() != null) {
-            setFirstname(user.getFirstname());
-        }
-        if (user.getLastname() != null) {
-            setLastname(user.getLastname());
-        }
-        if (user.getRole() != null) {
-            setRole(user.getRole());
-        }
+        if (user.getFirstname() != null) setFirstname(user.getFirstname());
+        if (user.getLastname() != null) setLastname(user.getLastname());
+        if (user.getRole() != null) setRole(user.getRole());
     }
 }

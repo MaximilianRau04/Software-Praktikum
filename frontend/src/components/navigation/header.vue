@@ -10,17 +10,29 @@
       </div>
 
       <div class="user-info">
-        <div class="user-label">User</div>
+        <div class="user-label">{{ currentUser.username || 'Guest' }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { globalState } from '@/types/User';
+
 export default {
   props: {
     dataOpenSideBar: Boolean,
     toggleSidebar: Function,
+  },
+  data() {
+    return {
+      value: '',
+    };
+  },
+  computed: {
+    currentUser() {
+      return globalState.user;
+    },
   },
   methods: {
     handleToggleSidebar() {
@@ -29,7 +41,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 .header-container {
@@ -77,10 +88,14 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 8px 30px;
-  margin-right: 10px;
+  margin-right: 2%;
+  border: 2px solid #01172F;
+  border-radius: 8px;
+  background-color: #ffffff;
 }
 
+
 .user-label {
-  font-size: 16px;
+  font-size: 20px;
 }
 </style>

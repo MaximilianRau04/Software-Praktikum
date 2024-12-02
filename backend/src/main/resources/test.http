@@ -11,7 +11,6 @@ Content-Type: application/json
   "endTime": "14:00:00"
 }
 
-
 ###
 POST http://localhost:8080/api/users
 Content-Type: application/json
@@ -36,5 +35,7 @@ Content-Type: application/json
 GET http://localhost:8080/api/exchange-days
 ###
 GET http://localhost:8080/api/events
+###
+GET http://localhost:8080/api/users/search?username=mperreks2
 ###
 GET http://localhost:8080/api/users
