@@ -21,8 +21,9 @@ public class EaplannerApplication {
 			public void addCorsMappings(@Nonnull CorsRegistry registry) {
 				// allow CORS requests for all resources and HTTP methods from the frontend origin
 				registry.addMapping("/**")
-						.allowedMethods("OPTIONS", "HEAD", "GET", "PUT", "POST", "DELETE")
-						.allowedOrigins("http://localhost:5173");
+						.allowedMethods("*")
+						.allowedOriginPatterns("*")
+						.allowCredentials(true);
 			}
 		};
 	}
