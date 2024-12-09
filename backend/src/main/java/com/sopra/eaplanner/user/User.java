@@ -1,5 +1,6 @@
 package com.sopra.eaplanner.user;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.forumpost.ForumPost;
@@ -45,6 +46,7 @@ public class User {
     private List<Event> registeredEvents = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Feedback> feedbacks = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -96,6 +98,37 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public List<Event> getRegisteredEvents() {
+        return registeredEvents;
+    }
+    public void setRegisteredEvents(List<Event> registeredEvents) {
+        this.registeredEvents = registeredEvents;
+    }
+    public List<Feedback> getFeedbacks() {
+        return feedbacks;
+    }
+    public void setFeedbacks(List<Feedback> feedbacks) {
+        this.feedbacks = feedbacks;
+    }
+    public List<ForumPost> getForumPosts() {
+        return forumPosts;
+    }
+    public void setForumPosts(List<ForumPost> forumPosts) {
+        this.forumPosts = forumPosts;
+    }
+    public TrainerProfile getTrainerProfile() {
+        return trainerProfile;
+    }
+    public void setTrainerProfile(TrainerProfile trainerProfile) {
+        this.trainerProfile = trainerProfile;
+    }
+    public List<Reward> getRewards() {
+        return rewards;
+    }
+    public void setRewards(List<Reward> rewards) {
+        this.rewards = rewards;
     }
 
     public void updateInformation(User user) {

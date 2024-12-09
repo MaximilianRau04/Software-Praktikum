@@ -1,8 +1,10 @@
 package com.sopra.eaplanner.user;
 
+import com.sopra.eaplanner.user.dtos.UserDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Optional;
 
 @RestController
@@ -18,7 +20,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public Optional<User> getUserById(@PathVariable Long id) {
+    public User getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
@@ -28,13 +30,23 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public User createUser(@Valid @RequestBody User requestBody) {
+    public User createUser(@Valid @RequestBody UserDTO requestBody) {
         return userService.createUser(requestBody);
     }
 
     @PutMapping("/users/{id}")
-    public User updateUser(@PathVariable Long id, @Valid @RequestBody User requestBody) {
+    public User updateUser(@PathVariable Long id, @Valid @RequestBody UserDTO requestBody) {
         return userService.updateUser(id, requestBody);
+    }
+
+    @PutMapping("/users/{userId}/eventRegistration")
+    public User registerUserToEvent(@PathVariable Long userId, @RequestParam Long eventId) {
+        return userService.registerUserToEvent(userId, eventId);
+    }
+
+    @PutMapping("users/{userId}/eventRemoval")
+    public User removeUserFromEvent(@PathVariable Long userId, @RequestParam Long eventId) {
+        return userService.removeUserFromEvent(userId, eventId);
     }
 
     @DeleteMapping("/users/{id}")
