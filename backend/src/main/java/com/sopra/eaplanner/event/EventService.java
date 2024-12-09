@@ -31,7 +31,7 @@ public class EventService {
 
         List<User> registeredUsers = event.getRegisteredUserIds()
                 .stream()
-                .map((id)-> userRepository.findById(id).orElseThrow(()-> new RuntimeException("Event not found.")))
+                .map((id)-> userRepository.findById(id).orElseThrow(()-> new RuntimeException("Registered User "+ id +" not found.")))
                 .toList();
 
         Event eventToSave = new Event(event, exchangeDay, eventOrganizer, registeredUsers);

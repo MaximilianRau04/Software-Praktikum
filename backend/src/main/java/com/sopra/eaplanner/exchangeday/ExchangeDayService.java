@@ -15,8 +15,6 @@ public class ExchangeDayService {
     private ExchangeDayRepository exchangeDayRepository;
 
     public ExchangeDay createExchangeDay(ExchangeDay exchangeDay) {
-
-
         return exchangeDayRepository.save(exchangeDay);
     }
 
