@@ -1,6 +1,8 @@
 package com.sopra.eaplanner.event;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sopra.eaplanner.event.dtos.EventDTO;
+import com.sopra.eaplanner.event.participation.EventParticipation;
 import com.sopra.eaplanner.exchangeday.ExchangeDay;
 import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
@@ -12,6 +14,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -60,15 +63,25 @@ public class Event {
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
+    @JsonManagedReference
     private List<User> registeredUsers = new ArrayList<>();
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Feedback> feedbacks = new ArrayList<>();
+
+    private String attendanceToken;
+
+    private String qrCodeFilePath;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EventParticipation> participations = new ArrayList<>();
+
 
     public Event() {
     }
 
-    public Event(Long id, String name, LocalTime startTime, LocalTime endTime, String room, String description, ExchangeDay exchangeDay, User organizer, TrainerProfile trainerProfile) {
+    public Event(Long id, String name, LocalTime startTime, LocalTime endTime, String room, String description, ExchangeDay exchangeDay, User organizer, TrainerProfile trainerProfile, String attendanceToken, String qrCodeFilePath) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -78,6 +91,8 @@ public class Event {
         this.exchangeDay = exchangeDay;
         this.organizer = organizer;
         this.trainerProfile = trainerProfile;
+        this.qrCodeFilePath = qrCodeFilePath;
+        this.attendanceToken = generateAttendanceToken();
     }
 
     public Event(EventDTO eventDTO, ExchangeDay exchangeDay, User organizer, List<User> registeredUsers) {
@@ -90,6 +105,7 @@ public class Event {
         this.exchangeDay = exchangeDay;
         this.organizer = organizer;
         this.registeredUsers = registeredUsers;
+        this.attendanceToken = generateAttendanceToken();
     }
 
     public Long getId() {
@@ -178,5 +194,46 @@ public class Event {
 
     public void setFeedbacks(List<Feedback> feedbacks) {
         this.feedbacks = feedbacks;
+    }
+
+    public String getAttendanceToken() {
+        return attendanceToken;
+    }
+
+    public void setAttendanceToken(String attendanceToken) {
+        this.attendanceToken = attendanceToken;
+    }
+
+    public void setQrCodeFilePath(String qrCodeFilePath) {
+        this.qrCodeFilePath = qrCodeFilePath;
+    }
+
+    public List<EventParticipation> getParticipations() {
+        return participations;
+    }
+
+    public void setParticipations(List<EventParticipation> participations) {
+        this.participations = participations;
+    }
+
+    public String getQrCodeFilePath() {
+        return qrCodeFilePath;
+    }
+
+    private String generateAttendanceToken() {
+        Random random = new Random();
+        Random charSet = new Random();
+        StringBuilder url = new StringBuilder();
+        int randomPortionLength = 10;
+
+        for (int i = 0; i < randomPortionLength; i++) {
+            if (charSet.nextBoolean()) {
+                url.append(random.nextInt(9));
+            } else {
+                url.append((char) ('a' + random.nextInt(26)));
+            }
+        }
+
+        return url.toString();
     }
 }

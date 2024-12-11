@@ -2,6 +2,7 @@ package com.sopra.eaplanner.user;
 
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.EventRepository;
+import com.sopra.eaplanner.event.participation.EventParticipationService;
 import com.sopra.eaplanner.user.dtos.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,8 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private EventRepository eventRepository;
+    @Autowired
+    private EventParticipationService eventParticipationService;
 
     public Optional<User> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -86,6 +89,7 @@ public class UserService {
         userRepository.save(userToRegister);
 
         eventForRegistration.getRegisteredUsers().add(userToRegister);
+        eventParticipationService.createAttendance(userToRegister, eventForRegistration);
         eventRepository.save(eventForRegistration);
         return userToRegister;
     }
@@ -100,6 +104,7 @@ public class UserService {
         userRepository.save(userToRemove);
 
         eventForRemoval.getRegisteredUsers().remove(userToRemove);
+        eventParticipationService.deleteAttendance(userToRemove, eventForRemoval);
         eventRepository.save(eventForRemoval);
 
         return userToRemove;

@@ -17,7 +17,8 @@ public class EventDTO {
     private Long organizerId;
     private List<Long> registeredUserIds = new ArrayList<>();
 
-    public EventDTO() {}
+    public EventDTO() {
+    }
 
     public EventDTO(Long id, Event event, List<Long> registeredUserIds) {
         this.id = id;
@@ -65,6 +66,42 @@ public class EventDTO {
 
     public List<Long> getRegisteredUserIds() {
         return registeredUserIds;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRoom(String room) {
+        this.room = room;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setExchangeDayId(Long exchangeDayId) {
+        this.exchangeDayId = exchangeDayId;
+    }
+
+    public void setOrganizerId(Long organizerId) {
+        this.organizerId = organizerId;
+    }
+
+    public void setRegisteredUserIds(List<Long> registeredUserIds) {
+        this.registeredUserIds = registeredUserIds;
     }
 }
 

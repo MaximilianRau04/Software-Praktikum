@@ -2,7 +2,7 @@ POST http://localhost:8080/api/events
 Content-Type: application/json
 
 {
-  "name": "Spring Boot Fundamentals",
+  "name": "Local QR might go crazy",
   "description": "Bla Bla",
   "room": "0.108",
   "exchangeDayId": 1,
@@ -39,3 +39,75 @@ GET http://localhost:8080/api/events
 GET http://localhost:8080/api/users/search?username=mperreks2
 ###
 GET http://localhost:8080/api/users
+
+###
+POST http://localhost:8080/api/feedbacks
+Content-Type: application/json
+
+{
+  "comment": "I didnt like this event one bit because...",
+  "score": 1,
+  "anonymousFeedback": true,
+  "eventId": 2,
+  "userId": 1
+}
+
+###
+POST http://localhost:8080/api/feedbacks
+Content-Type: application/json
+
+{
+  "overallScore": 1,
+  "organisationalScore": 2,
+  "relevanceScore": 3,
+  "understandabilityScore": 3,
+  "contentDepthScore": 4,
+  "practicalityScore": 2,
+  "reasonabilityScore": 1,
+  "competencyScore": 3,
+  "presentabilityScore": 2,
+  "interactivityScore": 5,
+  "timeManagementScore": 2,
+  "participationScore": 1,
+  "atmosphereScore": 5,
+  "communicationScore": 3,
+  "enjoymentComment": "I liked this workshop, because you mentioned some new things that I didnt know beforehand.",
+  "improvementComment": "You should try to involve the people inside the workshop and maybe set up questions before, so that you have anchors throughout.",
+  "requestComment": "I want to learn more about Java reflection and maybe some more things on Java 23 features.",
+  "personalImprovementComment": "I learned that this workshop really prepares you to work with docker and cubernetes.",
+  "isEventRecommended": true,
+  "recommendationComment": "I would definitely recommend this workshop to anyone that wants to work in web deployment.",
+  "similarEventParticipationScore": 5,
+  "anonymousFeedback": false,
+  "eventId": 2,
+  "userId": 1
+}
+
+###
+DELETE http://localhost:8080/api/feedbacks/3
+
+
+###
+GET http://localhost:8080/api/feedbacks
+
+###
+GET http://localhost:8080/api/feedbacks/1
+
+###
+GET http://localhost:8080/api/events/2/feedbacks
+
+###
+POST http://localhost:8080/api/events/attendance
+Content-Type: application/json
+
+{
+  "token": "8%7s0w5wh661",
+  "userId": 1
+}
+
+###
+PUT http://localhost:8080/api/users/2/eventRegistration?eventId=10
+
+###
+GET http://localhost:8080/api/events/10/qr-code
+

@@ -1,7 +1,9 @@
 package com.sopra.eaplanner.user;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sopra.eaplanner.event.Event;
+import com.sopra.eaplanner.event.participation.EventParticipation;
 import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.forumpost.ForumPost;
 import com.sopra.eaplanner.reward.Reward;
@@ -43,6 +45,7 @@ public class User {
     private Role role;
 
     @ManyToMany(targetEntity = Event.class)
+    @JsonBackReference
     private List<Event> registeredEvents = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -58,7 +61,11 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reward> rewards = new ArrayList<>();
 
-    public User() {}
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EventParticipation> participations = new ArrayList<>();
+
+    public User() {
+    }
 
     public Long getId() {
         return id;
@@ -103,30 +110,39 @@ public class User {
     public List<Event> getRegisteredEvents() {
         return registeredEvents;
     }
+
     public void setRegisteredEvents(List<Event> registeredEvents) {
         this.registeredEvents = registeredEvents;
     }
+
     public List<Feedback> getFeedbacks() {
         return feedbacks;
     }
+
     public void setFeedbacks(List<Feedback> feedbacks) {
         this.feedbacks = feedbacks;
     }
+
     public List<ForumPost> getForumPosts() {
         return forumPosts;
     }
+
     public void setForumPosts(List<ForumPost> forumPosts) {
         this.forumPosts = forumPosts;
     }
+
     public TrainerProfile getTrainerProfile() {
         return trainerProfile;
     }
+
     public void setTrainerProfile(TrainerProfile trainerProfile) {
         this.trainerProfile = trainerProfile;
     }
+
     public List<Reward> getRewards() {
         return rewards;
     }
+
     public void setRewards(List<Reward> rewards) {
         this.rewards = rewards;
     }

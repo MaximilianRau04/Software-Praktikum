@@ -1,37 +1,37 @@
 package com.sopra.eaplanner.feedback;
 
-import com.sopra.eaplanner.event.Event;
-import com.sopra.eaplanner.event.dtos.EventDTO;
+import com.sopra.eaplanner.feedback.dtos.FeedbackRequestDTO;
+import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/feedback")
 public class FeedbackController {
 
     @Autowired
     private FeedbackService feedbackService;
 
-    @GetMapping("/feedbacks")
-    public Iterable<Event> getAllFeedbacks() {
-        return null;
+    @GetMapping("")
+    public Iterable<Feedback> getAllFeedbacks() {
+        return feedbackService.getAllFeedbacks();
     }
 
-    @GetMapping("/feedbacks/{id}")
-    public EventDTO getFeedbackById(@PathVariable Long id) {
-        return null;
+    @GetMapping("/{id}")
+    public Feedback getFeedbackById(@PathVariable Long id) {
+        return feedbackService.getFeedbackById(id);
     }
 
-    @PostMapping("/feedbacks")
-    public Event createFeedback(@Valid @RequestBody Event requestBody) {
-        return null;
+    @PostMapping("")
+    public FeedbackResponseDTO createFeedback(@Valid @RequestBody FeedbackRequestDTO requestBody) {
+        return feedbackService.createFeedback(requestBody);
     }
 
     // TODO: PutMapping here
 
-    @DeleteMapping("/feedbacks/{id}")
+    @DeleteMapping("/{id}")
     public void deleteFeedback(@PathVariable Long id) {
-        return;
+        feedbackService.deleteFeedback(id);
     }
 }
