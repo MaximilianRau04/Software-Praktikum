@@ -2,11 +2,14 @@
   <div class="sidebar" :class="{ 'sidebar-visible': dataOpenSideBar, 'sidebar-close': !dataOpenSideBar }">
     <div class="content">
       <div class="menu">
-        <div class="menu-item" @click="switchComponent('MainPage')">
+        <div class="menu-item" @click="navigateTo('/home')">
           <span>Home</span>
         </div>
-        <div class="menu-item" @click="switchComponent('Create')">
+        <div class="menu-item" @click="navigateTo('/events/planning')">
           <span>Create Events</span>
+        </div>
+        <div class="menu-item" @click="navigateTo('/feedback')">
+          <span>Feedback</span>
         </div>
       </div>
     </div>
@@ -19,8 +22,8 @@ export default {
     dataOpenSideBar: Boolean,
   },
   methods: {
-    switchComponent(componentName) {
-      this.$emit('changeComponent', componentName);
+    navigateTo(route) {
+      this.$router.push(route);
     },
   },
 };

@@ -7,7 +7,7 @@
       <headerTop :dataOpenSideBar="openSidebar" :toggleSidebar="toggleSidebar" />
       <!-- Dynamic content area that renders the current component -->
       <div class="content-area">
-        <component :is="currentComponent" />
+        <router-view />
       </div>
     </div>
   </div>
@@ -15,7 +15,8 @@
 
 <script>
 import MainPage from '@/components/ViewAllExchangeDays/MainPage.vue';
-import Create from '@/components/createNewEvents/Create.vue';
+import EventPlanning from '@/components/createNewEvents/EventPlanning.vue';
+import GiveFeedback from '@/components/feedback/GiveFeedback.vue';
 import Sidebar from '@/components/navigation/sidebar.vue';
 import HeaderTop from '@/components/navigation/header.vue';
 
@@ -24,7 +25,8 @@ export default {
     Sidebar, // Sidebar component for navigation
     HeaderTop, // Header component with toggle button
     MainPage,  // Default component for main view
-    Create, // Component for creating new events
+    EventPlanning, // Component for creating new events
+    GiveFeedback, // Component for giving Feedback
   },
   data() {
     return {

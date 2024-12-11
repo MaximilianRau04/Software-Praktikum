@@ -1,7 +1,8 @@
 import Login from '../components/Login.vue';
 import MainPage from '../components/ViewAllExchangeDays/MainPage.vue';
-import Create from '../components/createNewEvents/Create.vue';
+import EventPlanning from '../components/createNewEvents/EventPlanning.vue';
 import HomePage from '@/components/HomePage.vue';
+import GiveFeedback from '@/components/feedback/GiveFeedback.vue'
 
 export default [
   {
@@ -16,8 +17,18 @@ export default [
       {
         name: 'home',
         path: '/home',
-        component: HomePage,
+        component: MainPage,
       },
+      {
+        path: '/events/planning',
+        name: 'eventPlanning',
+        component: EventPlanning
+      },
+      {
+        path: '/events/:eventId/attendance',
+        name: 'feedback',
+        component: GiveFeedback,
+      }
     ]
   },
   {
@@ -25,14 +36,4 @@ export default [
     name: 'login',
     component: Login
   },
-  {
-    path: '/home',
-    name: 'main',
-    component: MainPage
-  },
-  {
-    path: '/events',
-    name: 'create',
-    component: Create
-  }
 ];
