@@ -66,7 +66,7 @@ export default {
   border-radius: 0.375rem;
   cursor: pointer;
   color: #009EE2;
-  font-style: bold;
+  font-weight: bold;
   font-size: larger;
   transition: color 0.2s ease-in-out;
 }
