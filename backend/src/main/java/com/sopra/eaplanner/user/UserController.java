@@ -8,48 +8,48 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @GetMapping("/users/search")
+    @GetMapping("/search")
     public Optional<User> getUserByUsername(@RequestParam("username") String username) {
         return userService.getUserByUsername(username);
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
-    @GetMapping("/users")
+    @GetMapping("")
     public Iterable<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
-    @PostMapping("/users")
+    @PostMapping("")
     public User createUser(@Valid @RequestBody UserDTO requestBody) {
         return userService.createUser(requestBody);
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping("/{id}")
     public User updateUser(@PathVariable Long id, @Valid @RequestBody UserDTO requestBody) {
         return userService.updateUser(id, requestBody);
     }
 
-    @PutMapping("/users/{userId}/eventRegistration")
+    @PutMapping("/{userId}/eventRegistration")
     public User registerUserToEvent(@PathVariable Long userId, @RequestParam Long eventId) {
         return userService.registerUserToEvent(userId, eventId);
     }
 
-    @PutMapping("users/{userId}/eventRemoval")
+    @PutMapping("/{userId}/eventRemoval")
     public User removeUserFromEvent(@PathVariable Long userId, @RequestParam Long eventId) {
         return userService.removeUserFromEvent(userId, eventId);
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     }

@@ -7,30 +7,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/trainerProfiles")
 public class TrainerProfileController {
-
+    // TODO: Work in progress
     @Autowired
     private TrainerProfileService trainerProfileService;
 
-    @GetMapping("/trainerProfiles")
+    @GetMapping("")
     public Iterable<Event> getAllTrainerProfiles() {
         return null;
     }
 
-    @GetMapping("/trainerProfiles/{id}")
+    @GetMapping("/{id}")
     public EventDTO getTrainerProfilePostById(@PathVariable Long id) {
         return null;
     }
 
-    @PostMapping("/trainerProfiles")
+    @PostMapping("")
     public Event createTrainerProfile(@Valid @RequestBody Event requestBody) {
         return null;
     }
 
     // TODO: PutMapping here
 
-    @DeleteMapping("/trainerProfiles/{id}")
+    @DeleteMapping("/{id}")
     public void deleteTrainerProfile(@PathVariable Long id) {
         return;
     }

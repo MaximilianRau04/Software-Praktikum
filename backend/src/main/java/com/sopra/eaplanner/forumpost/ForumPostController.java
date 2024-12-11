@@ -5,30 +5,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/forumposts")
 public class ForumPostController {
 
     @Autowired
     private ForumPostService forumPostService;
 
-    @GetMapping("/forumposts")
+    @GetMapping("")
     public Iterable<ForumPost> getAllForumPosts() {
         return forumPostService.getForumPosts();
     }
 
-    @GetMapping("/forumposts/{id}")
+    @GetMapping("/{id}")
     public ForumPost getForumPostById(@PathVariable Long id) {
         return forumPostService.getForumPost(id);
     }
 
-    @PostMapping("/forumposts")
+    @PostMapping("")
     public ForumPost createForumPost(@Valid @RequestBody ForumPost requestBody) {
         return forumPostService.createForumPost(requestBody);
     }
 
     // TODO: PutMapping here
 
-    @DeleteMapping("/forumposts/{id}")
+    @DeleteMapping("/{id}")
     public void deleteForumPost(@PathVariable Long id) {
         forumPostService.deleteForumPost(id);
     }

@@ -7,30 +7,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/forumthreads")
 public class ForumThreadController {
-
+    // TODO: work in progress
     @Autowired
     private ForumThreadService forumThreadService;
 
-    @GetMapping("/forumthreads")
+    @GetMapping("")
     public Iterable<Event> getAllForumThreads() {
         return null;
     }
 
-    @GetMapping("/forumthreads/{id}")
+    @GetMapping("/{id}")
     public EventDTO getForumThreadById(@PathVariable Long id) {
         return null;
     }
 
-    @PostMapping("/forumthreads")
+    @PostMapping("")
     public Event createForumThread(@Valid @RequestBody Event requestBody) {
         return null;
     }
 
     // TODO: PutMapping here
 
-    @DeleteMapping("/forumthreads/{id}")
+    @DeleteMapping("/{id}")
     public void deleteForumThread(@PathVariable Long id) {
         return;
     }
