@@ -1,3 +1,8 @@
+<!--
+This component handles the login and registration of users.
+It provides input fields for the username, first name, last name, and role.
+After filling out the form inputs, the user can either register or log in, depending on the current view.
+-->
 <template>
   <div class="login">
     <div class="create-box">
@@ -55,9 +60,12 @@ const role = ref('USER');
 const apiUrl = 'http://193.196.54.172:8000/api/users';
 const LOCAL_API_URL = 'http://localhost:8080/api/users';
 
-/* Handles user login and registration */
+/**
+ * Handles the login or registration of a user.
+ */
 const handleLogin = async () => {
   try {
+    // Check if the user is already registered
     if (isRegistered.value) {
       const response = await fetch(`${apiUrl}/search?username=${username.value}`);
       if (!response.ok) throw new Error('Benutzer nicht gefunden');
@@ -66,7 +74,8 @@ const handleLogin = async () => {
 
       if (userData && userData.id) {
         globalState.setUser(userData);
-
+        
+        // Store user data in local storage
         localStorage.setItem('userId', userData.id);
         localStorage.setItem('username', userData.username);
         localStorage.setItem('firstname', userData.firstname || '');
@@ -85,6 +94,7 @@ const handleLogin = async () => {
         role: role.value,
       };
 
+      // Register the user 
       const response = await fetch(`${apiUrl}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -106,7 +116,9 @@ const handleLogin = async () => {
   }
 };
 
-/* Toggles between registration and login */
+/**
+ * Changes the view between login and registration.
+ */
 const changeToLogin = () => {
   isRegistered.value = !isRegistered.value;
 };

@@ -1,8 +1,13 @@
+<!--
+  This component allows for the planning and creation of new events.
+  It provides an user interface to input and save event details.
+  After filling out the form inputs, the user can save the event, which will then be displayed in the application.
+-->
 <template>
   <div class="container">
     <div class="events">
       <button @click="toggleWorkshopBox" class="action-button" type="button">
-        <img src="@/images/plus.png" alt="Plus" class="plus-icon" width="35" height="35" /> Neuer Workshop
+        <img src="@/images/plus.png" alt="Plus" class="plus-icon" width="35" height="35" /> New Workshop
       </button>
       <button @click="toggleExchangeDayBox" class="action-button" type="button">
         <img src="@/images/plus.png" alt="Plus" class="plus-icon" width="35" height="35" /> Neuer Exchange Day
@@ -84,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import '../../assets/create.css'; 
+import '../../assets/event-planning.css'; 
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import config from "../../config";
@@ -92,6 +97,7 @@ import config from "../../config";
 const showWorkshopBox = ref(false);
 const showExchangeDay = ref(false);
 
+// Workshop form data
 const name = ref('');
 const description = ref('');
 const startTime = ref('');
@@ -99,9 +105,11 @@ const endTime = ref('');
 const room = ref('');
 const exchangeDaySelect = ref('');
 const organizerSelect = ref('');
+
 const exchangeDays = ref([]);
 const users = ref([]);
 
+// Exchange Day form data
 const exchangeName = ref('');
 const exchangeDescription = ref('');
 const date = ref('');
@@ -112,6 +120,9 @@ const exchangeApiUrl = `${config.apiBaseUrl}/exchange-days`;
 
 const router = useRouter();
 
+/**
+ * Fetches all Exchange Days and users from the API when the component is mounted.
+ */
 onMounted(async () => {
   try {
     const response = await fetch(`${config.apiBaseUrl}/exchange-days`);
@@ -128,16 +139,25 @@ onMounted(async () => {
   }
 });
 
+/**
+ * Toggles the visibility of the Workshop form.
+ */
 const toggleWorkshopBox = () => {
   showWorkshopBox.value = !showWorkshopBox.value;
   if (showWorkshopBox.value) showExchangeDay.value = false;
 };
 
+/**
+ * Toggles the visibility of the Exchange Day form.
+ */
 const toggleExchangeDayBox = () => {
   showExchangeDay.value = !showExchangeDay.value;
   if (showExchangeDay.value) showWorkshopBox.value = false;
 };
 
+/**
+ * Creates a new Workshop using the form data.
+ */
 const createWorkshop = async () => {
   try {
     const response = await fetch(apiUrl, {
@@ -168,6 +188,9 @@ const createWorkshop = async () => {
   }
 };
 
+/**
+ * Creates a new Exchange Day using the form data.
+ */
 const createExchangeDay = async () => {
   try {
     const response = await fetch(exchangeApiUrl, {
@@ -195,6 +218,9 @@ const createExchangeDay = async () => {
   }
 };
 
+/**
+ * Resets the Workshop form fields.
+ */
 const resetWorkshopForm = () => {
   name.value = '';
   startTime.value = '';
@@ -206,6 +232,9 @@ const resetWorkshopForm = () => {
   showWorkshopBox.value = false;
 };
 
+/**
+ * Resets the Exchange Day form fields.
+ */
 const resetExchangeDayForm = () => {
   exchangeName.value = '';
   exchangeDescription.value = '';

@@ -19,6 +19,7 @@ import EventPlanning from '@/components/createNewEvents/EventPlanning.vue';
 import GiveFeedback from '@/components/feedback/GiveFeedback.vue';
 import Sidebar from '@/components/navigation/sidebar.vue';
 import HeaderTop from '@/components/navigation/header.vue';
+import EventRegistrations from './ViewAllExchangeDays/EventRegistrations.vue';
 
 export default {
   components: {
@@ -27,6 +28,7 @@ export default {
     MainPage,  // Default component for main view
     EventPlanning, // Component for creating new events
     GiveFeedback, // Component for giving Feedback
+    EventRegistrations, // Component for viewing registered events
   },
   data() {
     return {

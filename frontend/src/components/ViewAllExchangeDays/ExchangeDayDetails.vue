@@ -1,11 +1,7 @@
 <!--
- This component displays the details of a selected exchange day and its associated events.
-  
- State (Refs):
-  - `selectedExchangeDay`: Stores the currently selected exchange day details.
-  - `events`: An array of events associated with the exchange day.
+ * This Vue component displays detailed information about a selected exchange day,
+ * including its name, location, description, date, and associated events.
 -->
-
 <template>
   <div v-if="selectedExchangeDay" class="exchangeDayDetails">
 
