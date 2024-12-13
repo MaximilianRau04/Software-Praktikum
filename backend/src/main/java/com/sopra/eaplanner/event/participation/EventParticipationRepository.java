@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface EventParticipationRepository extends JpaRepository<EventParticipation, Long> {
     Optional<EventParticipation> findByUserAndEvent(User user, Event event);
+
+    boolean existsByUserAndEvent(User user, Event event);
 }

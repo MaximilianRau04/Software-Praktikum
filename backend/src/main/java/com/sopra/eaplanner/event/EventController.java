@@ -1,9 +1,12 @@
 package com.sopra.eaplanner.event;
 
-import com.sopra.eaplanner.event.dtos.EventDTO;
+import com.sopra.eaplanner.event.dtos.EventResponseDTO;
+import com.sopra.eaplanner.event.dtos.EventRequestDTO;
 import com.sopra.eaplanner.event.participation.ConfirmAttendanceDTO;
+import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.feedback.FeedbackService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
+import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -12,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -25,16 +29,31 @@ public class EventController {
     FeedbackService feedbackService;
 
     @GetMapping("")
-    public Iterable<Event> getAllEvents() {
+    public Iterable<EventResponseDTO> getAllEvents() {
         return eventService.getAllEvents();
     }
 
     @GetMapping("/{id}")
-    public EventDTO getEventById(@PathVariable Long id) {
-        return eventService.getEventWithUserIds(id);
+    public EventResponseDTO getEventById(@PathVariable Long id) {
+        return eventService.getEventById(id);
     }
 
-    @GetMapping("/{eventId}/feedbacks")
+    @GetMapping("/{id}/registeredUsers")
+    public Iterable<UserResponseDTO> getRegisteredUsers(@PathVariable Long id) {
+        return eventService.getRegisteredUsers(id);
+    }
+
+    @GetMapping("/{id}/organizer")
+    public UserResponseDTO getOrganizerById(@PathVariable Long id) {
+        return eventService.getOrganizerByEventId(id);
+    }
+
+    @GetMapping("/{id}/exchange-day")
+    public ExchangeDayResponseDTO getExchangeDayById(@PathVariable Long id) {
+        return eventService.getExchangeDayByEventId(id);
+    }
+
+    @GetMapping("/{eventId}/feedback")
     public List<FeedbackResponseDTO> getFeedbacksForEvent(@PathVariable Long eventId) {
         return feedbackService.getFeedbacksFromEventId(eventId);
     }
@@ -49,8 +68,11 @@ public class EventController {
     }
 
     @PostMapping("")
-    public Event createEvent(@Valid @RequestBody EventDTO requestBody) throws Exception {
-        return eventService.createEvent(requestBody);
+    public ResponseEntity<EventResponseDTO> createEvent(@Valid @RequestBody EventRequestDTO requestBody) throws Exception {
+        EventResponseDTO savedDTO = eventService.createEvent(requestBody);
+        URI location = URI.create("/api/events/" + savedDTO.getId());
+
+        return ResponseEntity.created(location).body(savedDTO);
     }
 
     @PostMapping("/{eventId}/attendance")

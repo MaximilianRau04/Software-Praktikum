@@ -1,37 +1,36 @@
-package com.sopra.eaplanner.exchangeday;
+package com.sopra.eaplanner.exchangeday.dtos;
+
+import com.sopra.eaplanner.exchangeday.ExchangeDay;
 
 import java.time.LocalDate;
-import java.util.List;
 
-public class ExchangeDayDTO {
+public class ExchangeDayResponseDTO {
 
     private Long id;
     private LocalDate date;
     private String name;
     private String location;
     private String description;
-    private List<Long> eventIds;
 
+    public ExchangeDayResponseDTO() {
+    }
 
-    public ExchangeDayDTO(Long id, LocalDate date, String name, String location, String description, List<Long> eventIds) {
+    public ExchangeDayResponseDTO(Long id, LocalDate date, String name, String location, String description) {
         this.id = id;
         this.date = date;
         this.name = name;
         this.location = location;
         this.description = description;
-        this.eventIds = eventIds;
     }
 
-    public ExchangeDayDTO(ExchangeDay exchangeDay, List<Long> eventIds) {
+    public ExchangeDayResponseDTO(ExchangeDay exchangeDay) {
         this.id = exchangeDay.getId();
         this.date = exchangeDay.getDate();
         this.name = exchangeDay.getName();
         this.location = exchangeDay.getLocation();
         this.description = exchangeDay.getDescription();
-        this.eventIds = eventIds;
     }
 
-    // Getter und Setter
     public Long getId() {
         return id;
     }
@@ -70,13 +69,5 @@ public class ExchangeDayDTO {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public List<Long> getEventIds() {
-        return eventIds;
-    }
-
-    public void setEventIds(List<Long> eventIds) {
-        this.eventIds = eventIds;
     }
 }

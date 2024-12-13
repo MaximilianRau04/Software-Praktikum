@@ -1,7 +1,7 @@
 package com.sopra.eaplanner.reward;
 
 import com.sopra.eaplanner.event.Event;
-import com.sopra.eaplanner.event.dtos.EventDTO;
+import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ public class RewardController {
     }
 
     @GetMapping("/{id}")
-    public EventDTO getForumPostById(@PathVariable Long id) {
+    public EventResponseDTO getForumPostById(@PathVariable Long id) {
         return null;
     }
 

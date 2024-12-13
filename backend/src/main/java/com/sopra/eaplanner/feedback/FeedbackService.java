@@ -2,12 +2,11 @@ package com.sopra.eaplanner.feedback;
 
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.EventRepository;
-import com.sopra.eaplanner.event.EventService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackRequestDTO;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserRepository;
-import com.sopra.eaplanner.user.UserService;
+import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,10 +26,14 @@ public class FeedbackService {
 
     @Autowired
     private UserRepository userRepository;
-    private Event eventForFeedback;
 
-    public Iterable<Feedback> getAllFeedbacks() {
-        return feedbackRepository.findAll();
+    public Iterable<FeedbackResponseDTO> getAllFeedbacks() {
+        Iterable<Feedback> feedbacks = feedbackRepository.findAll();
+        List<FeedbackResponseDTO> dtos = new ArrayList<>();
+        for (Feedback feedback : feedbacks) {
+            dtos.add(new FeedbackResponseDTO(feedback));
+        }
+        return dtos;
     }
 
     public List<FeedbackResponseDTO> getFeedbacksFromEventId(Long eventId) {
@@ -42,25 +45,38 @@ public class FeedbackService {
         return foundFeedbacks;
     }
 
-    public Feedback getFeedbackById(Long id) {
-        if (!feedbackRepository.existsById(id)) {
-            throw new EntityNotFoundException("Feedback with id " + id + " not found");
+    public FeedbackResponseDTO getFeedbackById(Long id) {
+        Feedback feedback = feedbackRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Feedback not found."));
+
+        return new FeedbackResponseDTO(feedback);
+    }
+
+    public UserResponseDTO getFeedbackAuthor(Long id) {
+        Optional<Feedback> feedback = feedbackRepository.findById(id);
+        if (feedback.isEmpty()) {
+            throw new EntityNotFoundException("Feedback not found");
         }
-        return feedbackRepository.findById(id).get();
+
+        if (feedback.get().isAnonymousFeedback()) {
+            throw new EntityNotFoundException("Anonymous Feedback");
+        }
+
+        return new UserResponseDTO(feedback.get().getUser());
     }
 
     public FeedbackResponseDTO createFeedback(FeedbackRequestDTO requestBody) {
-        if (!eventRepository.existsById(requestBody.getEventId())) {
-            throw new EntityNotFoundException("Event with id " + requestBody.getEventId() + " not found");
-        }
-        if (!userRepository.existsById(requestBody.getUserId())) {
-            throw new EntityNotFoundException("User with id " + requestBody.getUserId() + " not found");
+        Optional<Event> eventForFeedback = eventRepository.findById(requestBody.getEventId());
+        if (eventForFeedback.isEmpty()) {
+            throw new EntityNotFoundException("Event not found");
         }
 
-        Event eventForFeedback = eventRepository.findById(requestBody.getEventId()).get();
-        User organizerOfEvent = userRepository.findById(requestBody.getUserId()).get();
+        Optional<User> feedbackAuthor = userRepository.findById(requestBody.getUserId());
+        if (feedbackAuthor.isEmpty()) {
+            throw new EntityNotFoundException("User not found");
+        }
 
-        Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback, organizerOfEvent);
+        Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback.get(), feedbackAuthor.get());
         feedbackToSave = feedbackRepository.save(feedbackToSave);
         return new FeedbackResponseDTO(feedbackToSave);
     }

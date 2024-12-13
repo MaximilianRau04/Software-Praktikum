@@ -1,7 +1,7 @@
 package com.sopra.eaplanner.trainerprofile;
 
 import com.sopra.eaplanner.event.Event;
-import com.sopra.eaplanner.event.dtos.EventDTO;
+import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ public class TrainerProfileController {
     }
 
     @GetMapping("/{id}")
-    public EventDTO getTrainerProfilePostById(@PathVariable Long id) {
+    public EventResponseDTO getTrainerProfilePostById(@PathVariable Long id) {
         return null;
     }
 

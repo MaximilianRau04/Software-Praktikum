@@ -1,7 +1,7 @@
 package com.sopra.eaplanner.event;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.sopra.eaplanner.event.dtos.EventDTO;
+import com.sopra.eaplanner.event.dtos.EventRequestDTO;
 import com.sopra.eaplanner.event.participation.EventParticipation;
 import com.sopra.eaplanner.exchangeday.ExchangeDay;
 import com.sopra.eaplanner.feedback.Feedback;
@@ -12,9 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -51,20 +49,21 @@ public class Event {
     @NotNull(message = "Organizer must be specified")
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "organizer_id", nullable = false)
+    @JsonManagedReference
     private User organizer;
 
     @ManyToOne
     @JoinColumn(name = "trainer_profile_id")
     private TrainerProfile trainerProfile;
 
-    @ManyToMany(cascade = CascadeType.MERGE)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "user_event",
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     @JsonManagedReference
-    private List<User> registeredUsers = new ArrayList<>();
+    private Set<User> registeredUsers = new HashSet<>();
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -75,6 +74,7 @@ public class Event {
     private String qrCodeFilePath;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<EventParticipation> participations = new ArrayList<>();
 
 
@@ -95,8 +95,7 @@ public class Event {
         this.attendanceToken = generateAttendanceToken();
     }
 
-    public Event(EventDTO eventDTO, ExchangeDay exchangeDay, User organizer, List<User> registeredUsers) {
-        this.id = eventDTO.getId();
+    public Event(EventRequestDTO eventDTO, ExchangeDay exchangeDay, User organizer) {
         this.name = eventDTO.getName();
         this.startTime = eventDTO.getStartTime();
         this.endTime = eventDTO.getEndTime();
@@ -104,7 +103,6 @@ public class Event {
         this.description = eventDTO.getDescription();
         this.exchangeDay = exchangeDay;
         this.organizer = organizer;
-        this.registeredUsers = registeredUsers;
         this.attendanceToken = generateAttendanceToken();
     }
 
@@ -180,11 +178,11 @@ public class Event {
         this.trainerProfile = trainerProfile;
     }
 
-    public List<User> getRegisteredUsers() {
+    public Set<User> getRegisteredUsers() {
         return registeredUsers;
     }
 
-    public void setRegisteredUsers(List<User> registeredUsers) {
+    public void setRegisteredUsers(Set<User> registeredUsers) {
         this.registeredUsers = registeredUsers;
     }
 

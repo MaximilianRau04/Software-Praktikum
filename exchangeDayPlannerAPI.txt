@@ -1,0 +1,48 @@
+EXCHANGE-DAYS
+
+GET url/api/exchange-days // all exchange-days
+GET url/api/exchange-days/{id} // one exchange-day with id
+GET url/api/exchange-days/{id}/events // all events under the exchange-day with id
+
+POST, PUT, DELETE defaults
+
+
+EVENTS
+
+GET url/api/events // all events
+GET url/api/events/{id} // one event with id
+GET url/api/events/{id}/registeredUsers // all registeredUsers under event with id
+GET url/api/events/{id}/organizer // the organizer as User for the event
+GET url/api/events/{id}/exchange-day // the exchange-day that the event belongs to
+GET url/api/events/{id}/feedback // all feedback that was given the event with id
+GET url/api/events/{id}/qr-code // the qr-code of the event as .png file
+
+POST, DELETE defaults
+PUT TODO
+POST url/api/events/{id}/attendance // confirm attendance after scanning qr-code
+
+FEEDBACK
+
+GET url/api/feedback // all feedback
+GET url/api/feedback/{id} // one feedback with id
+GET url/api/feedback/{id}/author // the Author as User from the feedback (if not anonymous)
+
+POST, DELETE default
+PUT TODO
+
+
+USERS
+
+GET url/api/users // all users
+GET url/api/users/{id} // one user with the id
+GET url/api/users/search?username= // one user with username param search
+GET url/api/users/{id}/registeredEvents // all events that the user with id is registered to
+GET url/api/users/{id}/feedback // all feedback that the user with id has given
+GET url/api/users/{id}/participations // all attendances of the user with id, confirmed or not
+
+POST url/api/users // default
+PUT url/api/users/{id} // default
+DELETE url/api/users/{id} //default
+
+POST url/api/users/{id}/eventRegistration?eventId= // register user with id to event as param eventId
+DELETE url/api/users/{id}/eventRegistration?eventId= // remove user with id from event as param eventId

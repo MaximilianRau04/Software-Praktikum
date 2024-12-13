@@ -2,15 +2,20 @@ package com.sopra.eaplanner.user;
 
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.EventRepository;
+import com.sopra.eaplanner.event.dtos.EventResponseDTO;
+import com.sopra.eaplanner.event.participation.EventParticipationDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationService;
-import com.sopra.eaplanner.user.dtos.UserDTO;
+import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
+import com.sopra.eaplanner.user.dtos.UserRequestDTO;
+import com.sopra.eaplanner.user.dtos.UserResponseDTO;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -22,68 +27,84 @@ public class UserService {
     @Autowired
     private EventParticipationService eventParticipationService;
 
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public UserResponseDTO getUserByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        return new UserResponseDTO(user);
     }
 
-    public User getUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found."));
+    public UserResponseDTO getUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        return new UserResponseDTO(user);
     }
 
-    public Iterable<User> getAllUsers() {
-        return userRepository.findAll();
+    public Iterable<UserResponseDTO> getAllUsers() {
+        Iterable<User> users = userRepository.findAll();
+        List<UserResponseDTO> dtos = new ArrayList<>();
+        for (User user : users) {
+            dtos.add(new UserResponseDTO(user));
+        }
+        return dtos;
     }
 
-    public User createUser(UserDTO user) {
+    public Iterable<EventResponseDTO> getRegisteredEvents(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        List<Event> registeredEvents = user.getRegisteredEventIds()
+        return user.getRegisteredEvents()
                 .stream()
-                .map(eventId -> eventRepository.findById(eventId)
-                        .orElseThrow(() -> new RuntimeException("Event not found with ID: " + eventId)))
-                .toList();
-
-        User newUser = new User();
-        newUser.setUsername(user.getUsername());
-        newUser.setFirstname(user.getFirstname());
-        newUser.setLastname(user.getLastname());
-        newUser.setRole(user.getRole());
-        newUser.setRegisteredEvents(registeredEvents);
-
-        return userRepository.save(newUser);
+                .map(EventResponseDTO::new)
+                .collect(Collectors.toSet());
     }
 
-    public User updateUser(Long id, UserDTO user) {
+    public Iterable<FeedbackResponseDTO> getGivenFeedback(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        return user.getFeedbacks()
+                .stream()
+                .map(FeedbackResponseDTO::new)
+                .collect(Collectors.toSet());
+    }
+
+    public Iterable<EventParticipationDTO> getParticipations(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        return user.getParticipations()
+                .stream()
+                .map(EventParticipationDTO::new)
+                .collect(Collectors.toSet());
+    }
+
+    public UserResponseDTO createUser(UserRequestDTO requestBody) {
+        User userToSave = userRepository.save(new User(requestBody));
+        return new UserResponseDTO(userToSave);
+    }
+
+    public User updateUser(Long id, UserRequestDTO user) {
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + id + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new EntityExistsException("Username already in use.");
+        }
 
         existingUser.setFirstname(user.getFirstname());
         existingUser.setLastname(user.getLastname());
         existingUser.setRole(user.getRole());
-
-        List<Event> existingEvents = existingUser.getRegisteredEvents();
-
-        List<Event> newEvents = user.getRegisteredEventIds().stream()
-                .map(eventId -> eventRepository.findById(eventId)
-                        .orElseThrow(() -> new RuntimeException("Event not found with ID: " + eventId)))
-                .toList();
-
-        for (Event event : newEvents) {
-            if (!existingEvents.contains(event)) {
-                existingEvents.add(event);
-            }
-        }
-
-        existingUser.setRegisteredEvents(existingEvents);
 
         return userRepository.save(existingUser);
     }
 
     public User registerUserToEvent(Long userId, Long eventId) {
         User userToRegister = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
         Event eventForRegistration = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + eventId + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Event not found"));
 
         userToRegister.getRegisteredEvents().add(eventForRegistration);
         userRepository.save(userToRegister);
@@ -96,15 +117,16 @@ public class UserService {
 
     public User removeUserFromEvent(Long userId, Long eventId) {
         User userToRemove = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
         Event eventForRemoval = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + eventId + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Event not found"));
 
         userToRemove.getRegisteredEvents().remove(eventForRemoval);
-        userRepository.save(userToRemove);
 
         eventForRemoval.getRegisteredUsers().remove(userToRemove);
         eventParticipationService.deleteAttendance(userToRemove, eventForRemoval);
+
+        userRepository.save(userToRemove);
         eventRepository.save(eventForRemoval);
 
         return userToRemove;
@@ -113,4 +135,5 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+
 }

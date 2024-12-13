@@ -1,6 +1,7 @@
 package com.sopra.eaplanner.exchangeday;
 
 import com.sopra.eaplanner.event.Event;
+import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayRequestDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
@@ -19,7 +20,7 @@ public class ExchangeDay {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name ="id")
+    @Column(name = "id")
     private Long id;
     @DateTimeFormat(pattern = "dd.MM.yyyy")
     @Future(message = "Date must be in the future")
@@ -39,7 +40,8 @@ public class ExchangeDay {
     @JsonManagedReference
     private List<Event> events = new ArrayList<>();
 
-    public ExchangeDay() {}
+    public ExchangeDay() {
+    }
 
     public ExchangeDay(Long id, LocalDate date, String name, String location, String description) {
         this.id = id;
@@ -47,6 +49,13 @@ public class ExchangeDay {
         this.name = name;
         this.location = location;
         this.description = description;
+    }
+
+    public ExchangeDay(ExchangeDayRequestDTO dto) {
+        this.date = dto.getDate();
+        this.name = dto.getName();
+        this.location = dto.getLocation();
+        this.description = dto.getDescription();
     }
 
     public Long getId() {
@@ -65,9 +74,13 @@ public class ExchangeDay {
         this.date = date;
     }
 
-    public String getName() {return name;}
+    public String getName() {
+        return name;
+    }
 
-    public void setName(String name) {this.name = name;}
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getLocation() {
         return location;
@@ -91,12 +104,5 @@ public class ExchangeDay {
 
     public void setEvents(List<Event> events) {
         this.events = events;
-    }
-
-    public void addEvent(Event event) {
-        events.add(event);
-    }
-    public void removeEvent(Event event) {
-        events.remove(event);
     }
 }

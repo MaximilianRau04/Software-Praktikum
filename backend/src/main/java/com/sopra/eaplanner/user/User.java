@@ -8,13 +8,14 @@ import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.forumpost.ForumPost;
 import com.sopra.eaplanner.reward.Reward;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
+import com.sopra.eaplanner.user.dtos.UserRequestDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -44,27 +45,35 @@ public class User {
     @NotNull(message = "Role must be specified")
     private Role role;
 
-    @ManyToMany(targetEntity = Event.class)
+    @ManyToMany(mappedBy = "registeredUsers")
     @JsonBackReference
-    private List<Event> registeredEvents = new ArrayList<>();
+    private Set<Event> registeredEvents = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<Feedback> feedbacks = new ArrayList<>();
+    private Set<Feedback> feedbacks = new HashSet<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ForumPost> forumPosts = new ArrayList<>();
+    private Set<ForumPost> forumPosts = new HashSet<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private TrainerProfile trainerProfile;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Reward> rewards = new ArrayList<>();
+    private Set<Reward> rewards = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EventParticipation> participations = new ArrayList<>();
+    @JsonManagedReference
+    private Set<EventParticipation> participations = new HashSet<>();
 
     public User() {
+    }
+
+    public User(UserRequestDTO user) {
+        this.username = user.getUsername();
+        this.firstname = user.getFirstname();
+        this.lastname = user.getLastname();
+        this.role = user.getRole();
     }
 
     public Long getId() {
@@ -107,27 +116,27 @@ public class User {
         this.role = role;
     }
 
-    public List<Event> getRegisteredEvents() {
+    public Set<Event> getRegisteredEvents() {
         return registeredEvents;
     }
 
-    public void setRegisteredEvents(List<Event> registeredEvents) {
+    public void setRegisteredEvents(Set<Event> registeredEvents) {
         this.registeredEvents = registeredEvents;
     }
 
-    public List<Feedback> getFeedbacks() {
+    public Set<Feedback> getFeedbacks() {
         return feedbacks;
     }
 
-    public void setFeedbacks(List<Feedback> feedbacks) {
+    public void setFeedbacks(Set<Feedback> feedbacks) {
         this.feedbacks = feedbacks;
     }
 
-    public List<ForumPost> getForumPosts() {
+    public Set<ForumPost> getForumPosts() {
         return forumPosts;
     }
 
-    public void setForumPosts(List<ForumPost> forumPosts) {
+    public void setForumPosts(Set<ForumPost> forumPosts) {
         this.forumPosts = forumPosts;
     }
 
@@ -139,12 +148,20 @@ public class User {
         this.trainerProfile = trainerProfile;
     }
 
-    public List<Reward> getRewards() {
+    public Set<Reward> getRewards() {
         return rewards;
     }
 
-    public void setRewards(List<Reward> rewards) {
+    public void setRewards(Set<Reward> rewards) {
         this.rewards = rewards;
+    }
+
+    public Set<EventParticipation> getParticipations() {
+        return participations;
+    }
+
+    public void setParticipations(Set<EventParticipation> participations) {
+        this.participations = participations;
     }
 
     public void updateInformation(User user) {

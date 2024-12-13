@@ -2,6 +2,7 @@ package com.sopra.eaplanner.feedback;
 
 import com.sopra.eaplanner.feedback.dtos.FeedbackRequestDTO;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
+import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +15,18 @@ public class FeedbackController {
     private FeedbackService feedbackService;
 
     @GetMapping("")
-    public Iterable<Feedback> getAllFeedbacks() {
+    public Iterable<FeedbackResponseDTO> getAllFeedbacks() {
         return feedbackService.getAllFeedbacks();
     }
 
     @GetMapping("/{id}")
-    public Feedback getFeedbackById(@PathVariable Long id) {
+    public FeedbackResponseDTO getFeedbackById(@PathVariable Long id) {
         return feedbackService.getFeedbackById(id);
+    }
+
+    @GetMapping("/{id}/author")
+    public UserResponseDTO getFeedbackAuthor(@PathVariable Long id) {
+        return feedbackService.getFeedbackAuthor(id);
     }
 
     @PostMapping("")

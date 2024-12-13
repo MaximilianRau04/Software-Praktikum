@@ -1,5 +1,6 @@
 package com.sopra.eaplanner.event.participation;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
@@ -14,10 +15,12 @@ public class EventParticipation {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
+    @JsonBackReference
     private Event event;
 
     private boolean confirmed;

@@ -46,8 +46,6 @@ public class FeedbackResponseDTO {
 
     private Integer similarEventParticipationScore;
 
-    private Optional<Long> userId;
-
     public FeedbackResponseDTO(Feedback feedback) {
         this.id = feedback.getId();
         this.overallScore = feedback.getOverallScore();
@@ -74,11 +72,6 @@ public class FeedbackResponseDTO {
         this.isEventRecommended = feedback.getIsEventRecommended();
         this.recommendationComment = feedback.getRecommendationComment();
         this.similarEventParticipationScore = feedback.getSimilarEventParticipationScore();
-        if (feedback.isAnonymousFeedback()) {
-            this.userId = Optional.empty();
-        } else {
-            this.userId = Optional.of(feedback.getUser().getId());
-        }
     }
 
     public Long getId() {
@@ -279,13 +272,5 @@ public class FeedbackResponseDTO {
 
     public void setSimilarEventParticipationScore(Integer similarEventParticipationScore) {
         this.similarEventParticipationScore = similarEventParticipationScore;
-    }
-
-    public Optional<Long> getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Optional<Long> userId) {
-        this.userId = userId;
     }
 }

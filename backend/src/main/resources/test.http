@@ -2,11 +2,11 @@ POST http://localhost:8080/api/events
 Content-Type: application/json
 
 {
-  "name": "Local QR might go crazy",
+  "name": "Fresh Try ResponseEntities",
   "description": "Bla Bla",
   "room": "0.108",
-  "exchangeDayId": 1,
-  "organizerId": 1,
+  "exchangeDayId": 6,
+  "organizerId": 3,
   "startTime": "13:00:00",
   "endTime": "14:00:00"
 }
@@ -16,7 +16,7 @@ POST http://localhost:8080/api/users
 Content-Type: application/json
 
 {
-  "username": "mperreks",
+  "username": "maxTwo",
   "firstname": "Maximilian",
   "lastname": "Peresunchak",
   "role": "ADMIN"
@@ -26,9 +26,9 @@ POST http://localhost:8080/api/exchange-days
 Content-Type: application/json
 
 {
-  "date": "2024-11-30",
-  "name": "Spring Boot Exchange Day",
-  "location": "Berlin",
+  "date": "2024-12-30",
+  "name": "Fresh",
+  "location": "Frankfurt",
   "description": "A day dedicated to learning Spring Boot with multiple sessions."
 }
 ###
@@ -36,28 +36,18 @@ GET http://localhost:8080/api/exchange-days
 ###
 GET http://localhost:8080/api/events
 ###
-GET http://localhost:8080/api/users/search?username=mperreks2
+GET http://localhost:8080/api/users/1/feedback
 ###
-GET http://localhost:8080/api/users
+GET http://localhost:8080/api/feedback
+###
+GET http://localhost:8080/api/users/search?username=maxTwo
 
 ###
-POST http://localhost:8080/api/feedbacks
+POST http://localhost:8080/api/feedback
 Content-Type: application/json
 
 {
-  "comment": "I didnt like this event one bit because...",
-  "score": 1,
-  "anonymousFeedback": true,
-  "eventId": 2,
-  "userId": 1
-}
-
-###
-POST http://localhost:8080/api/feedbacks
-Content-Type: application/json
-
-{
-  "overallScore": 1,
+  "overallScore": 5,
   "organisationalScore": 2,
   "relevanceScore": 3,
   "understandabilityScore": 3,
@@ -71,6 +61,9 @@ Content-Type: application/json
   "participationScore": 1,
   "atmosphereScore": 5,
   "communicationScore": 3,
+  "networkingScore": 2,
+  "comfortabilityScore": 3,
+  "equipmentScore": 1,
   "enjoymentComment": "I liked this workshop, because you mentioned some new things that I didnt know beforehand.",
   "improvementComment": "You should try to involve the people inside the workshop and maybe set up questions before, so that you have anchors throughout.",
   "requestComment": "I want to learn more about Java reflection and maybe some more things on Java 23 features.",
@@ -78,36 +71,35 @@ Content-Type: application/json
   "isEventRecommended": true,
   "recommendationComment": "I would definitely recommend this workshop to anyone that wants to work in web deployment.",
   "similarEventParticipationScore": 5,
-  "anonymousFeedback": false,
-  "eventId": 2,
+  "anonymousFeedback": true,
+  "eventId": 11,
   "userId": 1
 }
 
 ###
-DELETE http://localhost:8080/api/feedbacks/3
-
-
-###
-GET http://localhost:8080/api/feedbacks
+DELETE http://localhost:8080/api/feedback/3
 
 ###
-GET http://localhost:8080/api/feedbacks/1
+GET http://localhost:8080/api/events/11/feedback
 
 ###
-GET http://localhost:8080/api/events/2/feedbacks
-
-###
-POST http://localhost:8080/api/events/attendance
+POST http://localhost:8080/api/events/11/attendance
 Content-Type: application/json
 
 {
-  "token": "8%7s0w5wh661",
+  "token": "dwh054q3d2",
   "userId": 1
 }
 
 ###
-PUT http://localhost:8080/api/users/2/eventRegistration?eventId=10
+POST http://localhost:8080/api/users/1/eventRegistration?eventId=11
 
 ###
-GET http://localhost:8080/api/events/10/qr-code
+DELETE http://localhost:8080/api/users/1/eventRegistration?eventId=11
+
+###
+GET http://localhost:8080/api/events/11/qr-code
+
+###
+DELETE http://localhost:8080/api/events/10
 
