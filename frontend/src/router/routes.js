@@ -1,3 +1,4 @@
+import EventRegistrations from '@/components/ViewAllExchangeDays/EventRegistrations.vue';
 import Login from '../components/Login.vue';
 import MainPage from '../components/ViewAllExchangeDays/MainPage.vue';
 import EventPlanning from '../components/createNewEvents/EventPlanning.vue';
@@ -28,6 +29,11 @@ export default [
         path: '/events/:eventId/attendance',
         name: 'feedback',
         component: GiveFeedback,
+      },
+      {
+        path: '/events/registrations',
+        name: 'eventRegistrations',
+        component: EventRegistrations,
       }
     ]
   },

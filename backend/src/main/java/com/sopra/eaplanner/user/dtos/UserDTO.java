@@ -23,9 +23,7 @@ public class UserDTO {
         this.registeredEventIds = registeredEventIds;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
     public String getUsername() {
         return username;
@@ -34,6 +32,7 @@ public class UserDTO {
     public String getFirstname() {
         return firstname;
     }
+
     public String getLastname() {
         return lastname;
     }

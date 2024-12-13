@@ -1,3 +1,7 @@
+<!--
+This Vue component is responsible for displaying a scrollable list of other Exchange Days.
+Users can select a date to filter the list of Exchange Days based on the selected date.
+-->
 <template>
   <div class="scroll-container">
     <!-- Date filter input to select a date -->
@@ -58,7 +62,7 @@ export default {
 
     /**
      * Emits the selected Exchange Day to the parent component.
-     * @param {Object} exchangeDay - The selected Exchange Day.
+     * @param {Object} workshop - The selected workshop
      */
     function selectExchangeDay(workshop) {
       emit('select-exchange-day', workshop); 

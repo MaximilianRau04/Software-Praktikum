@@ -8,6 +8,9 @@
         <div class="menu-item" @click="navigateTo('/events/planning')">
           <span>Create Events</span>
         </div>
+        <div class="menu-item" @click="navigateTo('/events/registrations')">
+          <span>Registered Events</span>
+        </div>
         <div class="menu-item" @click="navigateTo('/feedback')">
           <span>Feedback</span>
         </div>
