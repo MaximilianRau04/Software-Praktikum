@@ -5,5 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class UserNotRegisteredException extends RuntimeException {
-    public UserNotRegisteredException(String message) {}
+    public UserNotRegisteredException(String message) {
+        super(message);
+    }
 }

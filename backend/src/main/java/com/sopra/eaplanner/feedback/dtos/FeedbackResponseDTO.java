@@ -2,8 +2,6 @@ package com.sopra.eaplanner.feedback.dtos;
 
 import com.sopra.eaplanner.feedback.Feedback;
 
-import java.util.Optional;
-
 public class FeedbackResponseDTO {
     private Long id;
 

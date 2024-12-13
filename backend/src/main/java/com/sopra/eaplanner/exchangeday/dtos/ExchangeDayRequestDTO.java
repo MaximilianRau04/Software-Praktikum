@@ -29,12 +29,6 @@ public class ExchangeDayRequestDTO {
     public ExchangeDayRequestDTO() {
     }
 
-    public ExchangeDayRequestDTO(String name, String location, String description) {
-        this.name = name;
-        this.location = location;
-        this.description = description;
-    }
-
     public @Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getDate() {
         return date;
     }

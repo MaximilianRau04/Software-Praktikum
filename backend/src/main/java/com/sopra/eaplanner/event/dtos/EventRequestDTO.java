@@ -33,16 +33,6 @@ public class EventRequestDTO {
     public EventRequestDTO(){
     }
 
-    public EventRequestDTO(String name, LocalTime startTime, LocalTime endTime, String room, String description, Long exchangeDayId, Long organizerId) {
-        this.name = name;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.room = room;
-        this.description = description;
-        this.exchangeDayId = exchangeDayId;
-        this.organizerId = organizerId;
-    }
-
     public void setOrganizerId(@NotNull(message = "Organizer must be specified") Long organizerId) {
         this.organizerId = organizerId;
     }

@@ -8,12 +8,10 @@ import com.sopra.eaplanner.exceptions.InvalidTokenException;
 import com.sopra.eaplanner.exceptions.UserNotRegisteredException;
 import com.sopra.eaplanner.exchangeday.ExchangeDay;
 import com.sopra.eaplanner.exchangeday.ExchangeDayRepository;
-import com.sopra.eaplanner.exchangeday.ExchangeDayService;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.qrcode.QRCodeService;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserRepository;
-import com.sopra.eaplanner.user.UserService;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,20 +44,14 @@ public class EventService {
     @Autowired
     private ExchangeDayRepository exchangeDayRepository;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private ExchangeDayService exchangeDayService;
-
-    public EventResponseDTO createEvent(EventRequestDTO event) throws Exception {
-        ExchangeDay exchangeDay = exchangeDayRepository.findById(event.getExchangeDayId())
+    public EventResponseDTO createEvent(EventRequestDTO requestBody) throws Exception {
+        ExchangeDay exchangeDay = exchangeDayRepository.findById(requestBody.getExchangeDayId())
                 .orElseThrow(() -> new EntityNotFoundException("ExchangeDay not found."));
 
-        User eventOrganizer = userRepository.findById(event.getOrganizerId())
+        User eventOrganizer = userRepository.findById(requestBody.getOrganizerId())
                 .orElseThrow(() -> new EntityNotFoundException("Organizer not found."));
 
-        Event savedEvent = eventRepository.save(new Event(event, exchangeDay, eventOrganizer));
+        Event savedEvent = eventRepository.save(new Event(requestBody, exchangeDay, eventOrganizer));
         generateAndSaveQRCode(savedEvent);
         eventRepository.save(savedEvent);
 
@@ -67,7 +59,6 @@ public class EventService {
     }
 
     public void confirmAttendance(Long eventId, ConfirmAttendanceDTO requestBody) {
-
         Event event = validateEventToken(eventId, requestBody.getToken());
         User user = userRepository.findById(requestBody.getUserId()).orElseThrow(() -> new EntityNotFoundException("User not found."));
 
@@ -89,36 +80,30 @@ public class EventService {
     }
 
     public EventResponseDTO getEventById(Long id) {
-        if (!eventRepository.existsById(id)) {
-            throw new EntityNotFoundException("Event not found.");
-        }
-        return new EventResponseDTO(eventRepository.findById(id).get());
+        Event event = eventRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Event not found."));
+
+        return new EventResponseDTO(event);
     }
 
     public Iterable<UserResponseDTO> getRegisteredUsers(Long id) {
-        if (!eventRepository.existsById(id)) {
-            throw new EntityNotFoundException("Event not found");
-        }
-        return eventRepository.findById(id)
-                .get()
-                .getRegisteredUsers()
+        Event event = eventRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Event not found."));
+
+        return event.getRegisteredUsers()
                 .stream()
                 .map(UserResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
     public UserResponseDTO getOrganizerByEventId(Long id) {
-        if (!eventRepository.existsById(id)) {
-            throw new EntityNotFoundException("Event not found");
-        }
-        return userService.getUserById(id);
+        Event event = eventRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Event not found."));
+
+        return new UserResponseDTO(event.getOrganizer());
     }
 
     public ExchangeDayResponseDTO getExchangeDayByEventId(Long id) {
-        if (!eventRepository.existsById(id)) {
-            throw new EntityNotFoundException("Event not found");
-        }
-        return exchangeDayService.getExchangeDayById(id);
+        Event event = eventRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Event not found."));
+
+        return new ExchangeDayResponseDTO(event.getExchangeDay());
     }
 
     public void deleteEvent(Long id) {
@@ -131,8 +116,8 @@ public class EventService {
         eventRepository.deleteById(id);
     }
 
-    public Resource getQRCode(Long eventId) throws IOException {
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event not found."));
+    public Resource getQRCode(Long id) throws IOException {
+        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
         Path filePath = Paths.get(event.getQrCodeFilePath());
         Resource file = new UrlResource(filePath.toUri());
 
@@ -143,14 +128,14 @@ public class EventService {
         return file;
     }
 
-    private void generateAndSaveQRCode(Event event) throws Exception {
-        String eventUrl = generateEventUrl(event.getId(), event.getAttendanceToken());
+    private void generateAndSaveQRCode(Event requestBody) throws Exception {
+        String eventUrl = generateEventUrl(requestBody.getId(), requestBody.getAttendanceToken());
         byte[] qrCode = QRCodeService.getQRCodeImage(eventUrl, 300, 300);
 
-        String fileName = "qrcode_event_" + event.getId() + ".png";
+        String fileName = "qrcode_event_" + requestBody.getId() + ".png";
         QRCodeService.saveQRCode(qrCode, fileName);
 
-        event.setQrCodeFilePath(QRCodeService.QR_CODE_DIR + "/" + fileName);
+        requestBody.setQrCodeFilePath(QRCodeService.QR_CODE_DIR + "/" + fileName);
     }
 
     private Event validateEventToken(Long eventId, String token) {

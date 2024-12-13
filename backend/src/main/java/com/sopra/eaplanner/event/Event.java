@@ -81,7 +81,7 @@ public class Event {
     public Event() {
     }
 
-    public Event(Long id, String name, LocalTime startTime, LocalTime endTime, String room, String description, ExchangeDay exchangeDay, User organizer, TrainerProfile trainerProfile, String attendanceToken, String qrCodeFilePath) {
+    public Event(Long id, String name, LocalTime startTime, LocalTime endTime, String room, String description, ExchangeDay exchangeDay, User organizer, TrainerProfile trainerProfile, String qrCodeFilePath) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;

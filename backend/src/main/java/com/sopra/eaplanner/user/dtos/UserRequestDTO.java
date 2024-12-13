@@ -1,7 +1,6 @@
 package com.sopra.eaplanner.user.dtos;
 
 import com.sopra.eaplanner.user.User;
-import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
@@ -26,13 +25,6 @@ public class UserRequestDTO {
     private User.Role role;
 
     public UserRequestDTO() {
-    }
-
-    public UserRequestDTO(User user) {
-        this.username = user.getUsername();
-        this.firstname = user.getFirstname();
-        this.lastname = user.getLastname();
-        this.role = user.getRole();
     }
 
     public String getUsername() {

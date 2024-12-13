@@ -31,25 +31,20 @@ public class ExchangeDayService {
     }
 
     public Iterable<EventResponseDTO> getExchangeDayEvents(Long id) {
-        if (!exchangeDayRepository.existsById(id)) {
-            throw new EntityNotFoundException("Exchange Day not found");
-        }
-        return exchangeDayRepository.findById(id)
-                .get()
-                .getEvents()
+        ExchangeDay exchangeDay = exchangeDayRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Exchange day not found"));
+
+        return exchangeDay.getEvents()
                 .stream()
                 .map(EventResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
     public ExchangeDayResponseDTO getExchangeDayById(Long id) {
-        if (!exchangeDayRepository.existsById(id)) {
-            throw new EntityNotFoundException("Exchange Day not found");
-        }
-        return new ExchangeDayResponseDTO(exchangeDayRepository.findById(id).get());
+        ExchangeDay exchangeDay = exchangeDayRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Exchange day not found"));
+
+        return new ExchangeDayResponseDTO(exchangeDay);
     }
 
-    // can do better
     public ExchangeDayResponseDTO updateExchangeDay(Long id, ExchangeDayRequestDTO requestBody) {
         ExchangeDay exchangeDay = exchangeDayRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Exchange Day not found"));
 

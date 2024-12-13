@@ -10,17 +10,6 @@ public class UserResponseDTO {
     private String lastname;
     private User.Role role;
 
-    public UserResponseDTO() {
-    }
-
-    public UserResponseDTO(Long id, String username, String firstname, String lastname, User.Role role) {
-        this.id = id;
-        this.username = username;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.role = role;
-    }
-
     public UserResponseDTO(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
