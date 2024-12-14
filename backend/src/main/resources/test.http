@@ -98,8 +98,11 @@ POST http://localhost:8080/api/users/1/eventRegistration?eventId=11
 DELETE http://localhost:8080/api/users/1/eventRegistration?eventId=11
 
 ###
-GET http://localhost:8080/api/events/11/qr-code
+GET http://localhost:8080/api/events/10/qr-code
 
 ###
-DELETE http://localhost:8080/api/events/10
-
+GET http://localhost:8080/api/events/5/qr-code
+###
+GET http://localhost:8080/api/users
+###
+GET http://localhost:8080/api/events/5

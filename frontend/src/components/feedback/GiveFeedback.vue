@@ -156,13 +156,10 @@
   </div>
 </template>
 
-
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-
-const apiUrl = 'http://193.196.54.172:8000/api';
+import config from '@/config';
 
 const overallFields = [
   { key: 'overallScore', label: 'Gesamteindruck', explanation: 'Bewertung des allgemeinen Eindrucks des Workshops.' },
@@ -239,7 +236,7 @@ const submitFeedback = async () => {
   // TODO: daten validieren
 
   try {
-    const feedbackResponse = await fetch(`${apiUrl}/feedback`, {
+    const feedbackResponse = await fetch(`${config.apiBaseUrl}/feedback`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(feedbackData.value),
@@ -251,7 +248,7 @@ const submitFeedback = async () => {
       return;
     }
 
-    const attendanceResponse = await fetch(`${apiUrl}/events/${eventId.value}/attendance`, {
+    const attendanceResponse = await fetch(`${config.apiBaseUrl}/events/${eventId.value}/attendance`, {
       method: "POST",
       headers:{
         'Content-Type': 'application/json',
@@ -350,9 +347,9 @@ if (userId) {
   color: #666;
   margin-top: 5px;
   line-height: 1.6;
-  word-wrap: break-word; /* Der Text wird umgebrochen, wenn er die Breite überschreitet */
-  white-space: pre-line; /* Hiermit wird der Text bei Zeilenumbrüchen im Quellcode korrekt angezeigt */
-  word-break: break-word; /* Umgeht große Wörter, die den Container sprengen würden */
+  word-wrap: break-word; 
+  white-space: pre-line; 
+  word-break: break-word; 
   max-width: 350px;
 }
 

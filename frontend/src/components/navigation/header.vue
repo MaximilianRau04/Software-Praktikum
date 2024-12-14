@@ -10,7 +10,8 @@
       </div>
 
       <div class="user-info">
-        <div class="user-label">{{ currentUser.username || 'Gast' }}</div>
+        <div class="user-la
+        bel">{{ currentUser.username || 'Gast' }}</div>
       </div>
     </div>
   </div>

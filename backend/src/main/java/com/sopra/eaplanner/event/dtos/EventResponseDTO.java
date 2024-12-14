@@ -11,6 +11,7 @@ public class EventResponseDTO {
     private String name;
     private String room;
     private String description;
+    private Long organizer;
 
     public EventResponseDTO() {
     }
@@ -22,6 +23,7 @@ public class EventResponseDTO {
         this.name = event.getName();
         this.room = event.getRoom();
         this.description = event.getDescription();
+        this.organizer = event.getOrganizer().getId();
     }
 
     public EventResponseDTO(Event event){
@@ -31,6 +33,7 @@ public class EventResponseDTO {
         this.name = event.getName();
         this.room = event.getRoom();
         this.description = event.getDescription();
+        this.organizer = event.getOrganizer().getId();
     }
 
     public Long getId() {
@@ -79,6 +82,14 @@ public class EventResponseDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getOrganizer() {
+        return organizer;
+    }
+
+    public void setOrganizer(Long organizer) {
+        this.organizer = organizer;
     }
 }
 

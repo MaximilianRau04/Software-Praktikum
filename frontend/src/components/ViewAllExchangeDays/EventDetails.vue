@@ -1,7 +1,3 @@
-<!--
-  This Vue component is responsible for displaying the details of a specific event.
-  It is used to provide detailed information about an event
--->
 <template>
   <div class="event-details">
     <h2>{{ event.name }}</h2>
@@ -11,7 +7,10 @@
     <p><strong>Endzeit:</strong> {{ event.endTime || 'No Endtime' }}</p>
     <p><strong>Raum:</strong> {{ event.room || 'No Room' }}</p>
 
-    <button @click="register(event.id)" class="register-button" :disabled="isAlreadyRegistered">
+    <button 
+      @click="register(event.id)" 
+      class="register-button" 
+      :disabled="isAlreadyRegistered">
       {{ isAlreadyRegistered ? "Bereits registriert" : "Registrieren" }}
     </button>
   </div>
@@ -22,65 +21,63 @@ import { ref, onMounted } from "vue";
 import '../../assets/event-details.css';
 import { Event } from '../../types/Event';
 import { defineProps } from 'vue';
+import config from '../../config';
 
 const props = defineProps<{ event: Event }>();
 const isAlreadyRegistered = ref(false);
-const apiUrl = 'http://localhost:8080/api/users';
 const userId = localStorage.getItem('userId');
 
+/**
+ * Checks if the user is already registered for the event.
+ */
+const checkRegistrationStatus = async () => {
+  if (!userId) {
+    console.error("User ID not found in local storage.");
+    return;
+  }
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/${userId}/registeredEvents`);
+    if (!response.ok) throw new Error("Failed to fetch user data.");
+
+    const registeredEvents = await response.json();
+    console.log("Registered Events:", registeredEvents);
+
+    isAlreadyRegistered.value = registeredEvents.some((event: { id: number }) => event.id === props.event.id);
+  } catch (error) {
+    console.error("Error checking registration status:", error);
+    isAlreadyRegistered.value = false; 
+  }
+};
 
 /**
- * Registers the current user for the event.
- * @param {number} eventId - The ID of the event to register for.
+ * Registers the user for the event.
+ * @param eventId The ID of the event to register for.
  */
 const register = async (eventId: number) => {
   try {
     if (!userId) throw new Error("User ID not found in local storage.");
 
-    const response = await fetch(`${apiUrl}/${userId}/eventRegistration?eventId=${eventId}`, {
+    const response = await fetch(`${config.apiBaseUrl}/users/${userId}/eventRegistration?eventId=${eventId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
     });
+
     if (response.status === 404) {
       alert("Registrierung fehlgeschlagen. Bitte erneut versuchen.");
-      throw new Error(response.statusText);
-    }
-    if (response.status === 409){
+    } else if (response.status === 409) {
       alert("Sie sind bereits registriert.");
-      throw new Error(response.statusText);
-    } 
-
-    alert(`Sie wurden erfolgreich zu ${props.event.name} angemeldet.`)
+    } else if (response.ok) {
+      alert(`Sie wurden erfolgreich zu ${props.event.name} angemeldet.`);
+      isAlreadyRegistered.value = true;
+    }
   } catch (error) {
     console.error("Error registering for event:", error);
   }
 };
 
-const remove = async(eventId: number)=> {
-  try{
-    if (!userId) throw new Error("User ID not found in local storage.");
-
-    const response = await fetch(`${apiUrl}/${userId}/eventRegistration?eventId=${eventId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (response.status === 404) {
-      alert("Registrierung nicht vorhanden.");
-      throw new Error(response.statusText);
-    }
-
-    alert(`Sie wurden erfolgreich von ${props.event.name} abgemeldet.`)
-
-  }catch(error){
-    console.error("Error registering for event:", error);
-  }
-}
-
 onMounted(() => {
-
+  checkRegistrationStatus();
 });
 </script>

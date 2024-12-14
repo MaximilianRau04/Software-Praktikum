@@ -49,6 +49,7 @@ export default {
           exchangeDays.value = data.map(item => ({
             name: item.name,
             location: item.location,
+           
             date: item.date,
             description: item.description,
             id: item.id
@@ -82,11 +83,9 @@ export default {
      */
     function filterExchangeDays() {
       if (!selectedDate.value) {
-        // If no date is selected, display all exchange days
         filteredExchangeDays.value = exchangeDays.value;
         return;
       }
-      // Filter by selected date, ensuring that only days matching the date are shown
       const filterDate = new Date(selectedDate.value).setHours(0, 0, 0, 0);
       filteredExchangeDays.value = exchangeDays.value.filter(day => {
         const dayDate = new Date(day.date).setHours(0, 0, 0, 0);
@@ -94,7 +93,6 @@ export default {
       });
     }
 
-    // Fetch data when the component is mounted
     onMounted(() => fetchExchangeDays());
 
     return {

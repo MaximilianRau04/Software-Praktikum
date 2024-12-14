@@ -3,7 +3,7 @@ import Login from '../components/Login.vue';
 import MainPage from '../components/ViewAllExchangeDays/MainPage.vue';
 import EventPlanning from '../components/createNewEvents/EventPlanning.vue';
 import HomePage from '@/components/HomePage.vue';
-import GiveFeedback from '@/components/feedback/GiveFeedback.vue'
+import GiveFeedback from '@/components/feedback/GiveFeedback.vue';
 
 export default [
   {

@@ -118,8 +118,6 @@ const location = ref('');
 const apiUrl = `${config.apiBaseUrl}/events`;
 const exchangeApiUrl = `${config.apiBaseUrl}/exchange-days`;
 
-const TEST_EXCHANGE_API_URL = 'http://localhost:8080/api/exchange-days';
-
 const router = useRouter();
 
 /**

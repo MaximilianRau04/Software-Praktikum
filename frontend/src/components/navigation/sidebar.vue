@@ -5,14 +5,17 @@
         <div class="menu-item" @click="navigateTo('/home')">
           <span>Home</span>
         </div>
-        <div class="menu-item" @click="navigateTo('/events/planning')">
-          <span>Event Planung</span>
+        <div class="menu-item" @click="navigateTo('/events/planning')" v-if="currentUser.role == 'ADMIN'">
+        <span>Event Planung</span>
         </div>
         <div class="menu-item" @click="navigateTo('/events/registrations')">
           <span>Meine Events</span>
         </div>
-        <div class="menu-item" @click="navigateTo('/feedback')">
+        <div class="menu-item" @click="navigateTo('/feedback')" v-if="currentUser.role == 'ADMIN'">
           <span>Mein Feedback</span>
+        </div>
+        <div class="menu-item log-out" @click="navigateTo('/')">
+          <span>Log Out</span>
         </div>
       </div>
     </div>
@@ -20,6 +23,7 @@
 </template>
 
 <script>
+import { globalState } from '@/types/User';
 export default {
   props: {
     dataOpenSideBar: Boolean,
@@ -27,6 +31,12 @@ export default {
   methods: {
     navigateTo(route) {
       this.$router.push(route);
+    },
+    
+  },
+  computed: {
+    currentUser() {
+      return globalState.user;
     },
   },
 };
@@ -77,4 +87,12 @@ export default {
 .menu-item:hover {
   color: #fff;
 }
+
+.log-out{
+  position: absolute;
+  bottom: 1%;
+  left: 10px;
+
+}
+
 </style>

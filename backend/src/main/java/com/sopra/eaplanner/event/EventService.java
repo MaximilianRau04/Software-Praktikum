@@ -28,8 +28,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class EventService {
-    // "http://193.196.54.172:8000/events/";
-    private static final String EVENT_ENDPOINT = "http://localhost:8080/events/";
+    private static final String EVENT_ENDPOINT = "http://193.196.54.172:8000/api/events/";
     private static final String TOKEN_SUFFIX = "/attendance?token=";
 
     @Autowired

@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class QRCodeService {
-    public static final String QR_CODE_DIR = "C:/Users/maxpe/var/www/appdata/qrcodes";
+    public static final String QR_CODE_DIR = System.getProperty("user.home") + "/Downloads/";
 
     public static void generateQRCodeImage(String url, int width, int height, String filePath) throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
