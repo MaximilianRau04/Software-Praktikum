@@ -22,6 +22,6 @@ export const globalState = reactive({
     Object.assign(this.user, user);
   },
   clearUser() {
-    this.user = { id: null, username: null, firstname: null, lastname: null, role: null };
+    this.user = { id: null, username: null, firstname: null, lastname: null, role: null, registeredEvents: [] };
   },
 });
