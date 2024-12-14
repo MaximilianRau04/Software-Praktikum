@@ -36,7 +36,7 @@ const checkRegistrationStatus = async () => {
     return;
   }
   try {
-    const response = await fetch(`${config.apiBaseUrl}/${userId}/registeredEvents`);
+    const response = await fetch(`${config.apiBaseUrl}/users/${userId}/registeredEvents`);
     if (!response.ok) throw new Error("Failed to fetch user data.");
 
     const registeredEvents = await response.json();

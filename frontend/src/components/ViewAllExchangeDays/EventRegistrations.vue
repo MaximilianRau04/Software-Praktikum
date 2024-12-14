@@ -45,7 +45,7 @@ if (!userId) {
 }
 
 const openQRCode = (eventId: number) => {
-  const qrCodeUrl = `${config.apiBaseUrl}/exchange-days/events/${eventId}/qr-code`; 
+  const qrCodeUrl = `${config.apiBaseUrl}/events/${eventId}/qr-code`; 
   window.open(qrCodeUrl, '_blank');
 };
 
