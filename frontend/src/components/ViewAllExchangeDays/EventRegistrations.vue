@@ -12,7 +12,8 @@
               <p><strong>Startzeit: </strong> {{ event.startTime }}</p>
               <p><strong>Endzeit: </strong>{{ event.endTime }}</p>
               <p><strong>Raum: </strong> {{ event.room }}</p>
-              <button v-if="isOrganizer(event.organizer)" class="showQR-button" @click="openQRCode(event.id)">QR-Code anzeigen</button>
+              <button class="openFeedback-button" @click="openFeedback(event.id)">Feedback anzeigen</button>
+              <button class="showQR-button" @click="openQRCode(event.id)">QR-Code anzeigen</button>
               <button class="unregister-button" @click="unregisterFromEvent(event.id)">Abmelden</button>
             </div>
           </li>
@@ -71,6 +72,10 @@ const fetchRegisteredEvents = async () => {
   }
 };
 
+const openFeedback = (eventId: number) => {
+  router.push({ name: 'feedbackSummary', params: { eventId: eventId.toString() } });
+};
+
 /**
  * Unregisters the current user from an event.
  * @param {number} eventId - The ID of the event to unregister from.
@@ -103,20 +108,6 @@ const unregisterFromEvent = async (eventId: number) => {
     alert('Die Abmeldung ist fehlgeschlagen. Bitte versuche es erneut.');
   };
 }
-
-/**
- * Navigates to the QR code feedback page for the given event.
- * @param {number} eventId - The ID of the event to show the QR code feedback for.
- */
- const showQRCode = (eventId: number) => {
-  const event = registeredEvents.value.find((event) => event.id === eventId);
-  if (!event) {
-    alert("Event nicht gefunden.");
-    return;
-  }
-
-  router.push(`/events/${eventId}/qrCode`);
-};
 
 /**
  * Checks if the current user is the organizer of the event.
@@ -202,12 +193,13 @@ p {
 }
 
 .unregister-button,
-.showQR-button {
+.showQR-button,
+.openFeedback-button {
   background-color: black;
   color: white;
   border: none;
-  padding: 0.6rem 1.2rem;
-  font-size: 1.1rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
   border-radius: 6px;
   cursor: pointer;
   position: absolute;
@@ -223,13 +215,21 @@ p {
   left: 10px;
 }
 
+.openFeedback-button {
+  left: 10px;
+  bottom: 60px;
+}
+
+
 .unregister-button:hover,
-.showQR-button:hover {
+.showQR-button:hover,
+.openFeedback-button:hover {
   background-color: #005FA3;
 }
 
 .unregister-button:active,
-.showQR-button:active {
+.showQR-button:active,
+.openFeedback-button:active {
   background-color: #000000;
   transform: scale(0.98);
 }

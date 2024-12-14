@@ -11,9 +11,6 @@
         <div class="menu-item" @click="navigateTo('/events/registrations')">
           <span>Meine Events</span>
         </div>
-        <div class="menu-item" @click="navigateTo('/feedback')" v-if="currentUser.role == 'ADMIN'">
-          <span>Mein Feedback</span>
-        </div>
         <div class="menu-item log-out" @click="navigateTo('/')">
           <span>Log Out</span>
         </div>
