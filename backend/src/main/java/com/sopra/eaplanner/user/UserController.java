@@ -74,10 +74,8 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}/eventRegistration")
-    public ResponseEntity<UserResponseDTO> removeUserFromEvent(@PathVariable Long userId, @RequestParam Long eventId) {
-        User user = userService.removeUserFromEvent(userId, eventId);
-        URI location = URI.create("/api/users/" + user.getId());
-        return ResponseEntity.created(location).body(new UserResponseDTO(user));
+    public void removeUserFromEvent(@PathVariable Long userId, @RequestParam Long eventId) {
+        userService.removeUserFromEvent(userId, eventId);
     }
 
     @DeleteMapping("/{id}")
