@@ -6,6 +6,7 @@ import com.sopra.eaplanner.event.participation.ConfirmAttendanceDTO;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.feedback.FeedbackService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
+import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,11 @@ public class EventController {
     @GetMapping("/{eventId}/feedback")
     public List<FeedbackResponseDTO> getFeedbacksForEvent(@PathVariable Long eventId) {
         return feedbackService.getFeedbacksFromEventId(eventId);
+    }
+
+    @GetMapping("/{id}/summary")
+    public FeedbackSummaryDTO getFeedbackSummary(@PathVariable Long id) {
+        return feedbackService.generateFeedbackSummary(id);
     }
 
     @GetMapping("/{eventId}/qr-code")
