@@ -11,10 +11,7 @@
     <p><strong>Endzeit:</strong> {{ event.endTime || 'No Endtime' }}</p>
     <p><strong>Raum:</strong> {{ event.room || 'No Room' }}</p>
 
-    <button 
-      @click="register(event.id)" 
-      class="register-button" 
-      :disabled="isAlreadyRegistered">
+    <button @click="register(event.id)" class="register-button" :disabled="isAlreadyRegistered">
       {{ isAlreadyRegistered ? "Bereits registriert" : "Registrieren" }}
     </button>
   </div>
@@ -22,49 +19,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import '../../assets/event-details.css';
 import { Event } from '../../types/Event';
 import { defineProps } from 'vue';
-import '../../assets/event-details.css';
 
-// Define props
 const props = defineProps<{ event: Event }>();
 const isAlreadyRegistered = ref(false);
 const apiUrl = 'http://localhost:8080/api/users';
 const userId = localStorage.getItem('userId');
-const user = ref<any>(null); 
 
-/**
- * Checks the registration status of the current user for the event.
- */
-const checkRegistrationStatus = async () => {
-  if (!userId) {
-    console.error("User ID not found in local storage.");
-    return;
-  }
-
-  try {
-    const response = await fetch(`${apiUrl}/${userId}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch user data.");
-    }
-    
-    user.value = await response.json();
-    console.log("User data:", user.value); 
-    
-    if (user.value && Array.isArray(user.value.registeredEvents)) {
-
-      const registeredEventIds = user.value.registeredEvents.map(event => event.id);
-
-      isAlreadyRegistered.value = registeredEventIds.includes(props.event.id);
-    } else {
-      console.warn("User data does not contain registeredEvents.");
-      isAlreadyRegistered.value = false;
-    }
-  } catch (error) {
-    console.error("Error checking registration status:", error);
-    isAlreadyRegistered.value = false;
-  }
-};
 
 /**
  * Registers the current user for the event.
@@ -73,47 +36,51 @@ const checkRegistrationStatus = async () => {
 const register = async (eventId: number) => {
   try {
     if (!userId) throw new Error("User ID not found in local storage.");
+
     const response = await fetch(`${apiUrl}/${userId}/eventRegistration?eventId=${eventId}`, {
-      method: "PUT",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
     });
-    if (!response.ok) throw new Error("Failed to fetch user data.");
-
-    const userData = await response.json();
-    const registeredEventIds = userData.registeredEventIds || [];
-
-    if (registeredEventIds.includes(eventId)) {
-      alert("Du bist bereits für dieses Event registriert.");
-      return;
+    if (response.status === 404) {
+      alert("Registrierung fehlgeschlagen. Bitte erneut versuchen.");
+      throw new Error(response.statusText);
     }
+    if (response.status === 409){
+      alert("Sie sind bereits registriert.");
+      throw new Error(response.statusText);
+    } 
 
-    const putResponse = await fetch(`${apiUrl}/${userId}/eventRemoval?eventId=${eventId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId,
-        eventId,
-      }),
-    });
-
-    if (putResponse.ok) {
-      alert(`Erfolgreich registriert für Event: ${props.event.name}`);
-      isAlreadyRegistered.value = true;
-    } else {
-      throw new Error("Registrierung fehlgeschlagen.");
-    }
+    alert(`Sie wurden erfolgreich zu ${props.event.name} angemeldet.`)
   } catch (error) {
     console.error("Error registering for event:", error);
-    alert("Registrierung fehlgeschlagen. Bitte erneut versuchen.");
   }
 };
 
+const remove = async(eventId: number)=> {
+  try{
+    if (!userId) throw new Error("User ID not found in local storage.");
+
+    const response = await fetch(`${apiUrl}/${userId}/eventRegistration?eventId=${eventId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.status === 404) {
+      alert("Registrierung nicht vorhanden.");
+      throw new Error(response.statusText);
+    }
+
+    alert(`Sie wurden erfolgreich von ${props.event.name} abgemeldet.`)
+
+  }catch(error){
+    console.error("Error registering for event:", error);
+  }
+}
 
 onMounted(() => {
-  checkRegistrationStatus();
+
 });
 </script>

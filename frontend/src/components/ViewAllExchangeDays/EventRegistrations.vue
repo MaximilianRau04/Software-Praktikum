@@ -28,12 +28,13 @@
 import { ref, onMounted } from "vue";
 import { Event } from '../../types/Event';
 import config from '../../config';
-import '../../assets/exchange-day-details.css'; 
-import '../../assets/event-details.css'; 
+import '../../assets/exchange-day-details.css';
+import '../../assets/event-details.css';
+import { EventParticipation } from "@/types/EventParticipation";
 
 const registeredEvents = ref<Event[]>([]);
 
-const apiUrl = 'http://localhost:8080/api';
+const apiUrl = 'http://localhost:8080/api/users';
 const userId = localStorage.getItem('userId');
 
 if (!userId) {
@@ -43,30 +44,22 @@ if (!userId) {
 /**
  * Fetches the registered events for the current user.
  */
- const fetchRegisteredEvents = async () => {
+const fetchRegisteredEvents = async () => {
   try {
     console.log('Fetching user data...');
-    
-    // fetch user data
-    const response = await fetch(`${apiUrl}/users/${userId}`);
-    if (!response.ok) throw new Error("Failed to fetch user data.");
-    
-    const userData = await response.json();
-    console.log('User data retrieved:', userData);
-    
-    // Check if the user data contains the registeredEvents property
-    if (!userData.registeredEvents) {
-      console.warn("User data does not contain registeredEvents. Initializing it as an empty array.");
-      userData.registeredEvents = [];
-    }
-    
-    // Set the registered events to the user data
-    const events = userData.registeredEvents;
-    console.log('Registered Events:', events);
 
-    registeredEvents.value = events; 
-    console.log('Registered events loaded:', registeredEvents.value);
-    
+    // fetch user data
+    const response = await fetch(`${apiUrl}/${userId}/participations`);
+    if (!response.ok) throw new Error("Failed to fetch participations.");
+
+    const responseData: EventParticipation[] = await response.json();
+    console.log('User data retrieved:', responseData);
+
+
+    // Set the registered events to the user data
+    registeredEvents.value = responseData.map(participation => participation.event);
+    console.log('Registered Events loaded:', registeredEvents.value);
+
   } catch (error) {
     console.error("Error fetching registered events:", error);
     registeredEvents.value = [];
@@ -83,27 +76,31 @@ const unregisterFromEvent = async (eventId: number) => {
   }
   // put request to remove event from user
   try {
-    const putResponse = await fetch(`${apiUrl}/${userId}/eventRemoval?event=${eventId}`, {
-      method: "PUT",
+    if (!userId) throw new Error("User ID not found in local storage.");
+
+    const response = await fetch(`${apiUrl}/${userId}/eventRegistration?eventId=${eventId}`, {
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        userId,
-        eventId,
-      }),
     });
+    console.log(response.status);
+    console.log(`${apiUrl}/${userId}/eventRegistration?eventId=${eventId}`);
+    if (response.status === 404) {
+      alert("Registrierung nicht vorhanden.");
+      throw new Error(response.statusText);
+    }
 
-    if (!putResponse.ok) throw new Error("Failed to unregister from event.");
+    const event = registeredEvents.value.find(event => event.id === eventId);
 
     // Update the registered events after unregistration
     registeredEvents.value = registeredEvents.value.filter(event => event.id !== eventId);
-    alert('Erfolgreich vom Event abgemeldet.');
+    alert(`Sie wurden erfolgreich von ${event.name} abgemeldet.`)
   } catch (error) {
     console.error("Error unregistering from event:", error);
     alert('Die Abmeldung ist fehlgeschlagen. Bitte versuche es erneut.');
-  }
-};
+  };
+}
 
 onMounted(() => {
   fetchRegisteredEvents();
@@ -139,7 +136,7 @@ h1 {
 }
 
 .event-item {
-  background-color: #009EE2; 
+  background-color: #009EE2;
   border: 1px solid #ccd;
   border-radius: 8px;
   padding: 15px;
@@ -147,24 +144,24 @@ h1 {
   position: relative;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s ease, transform 0.3s ease;
-  list-style-type: none; 
+  list-style-type: none;
 }
 
 .event-item:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transform: translateY(-5px); 
+  transform: translateY(-5px);
 }
 
 
 .event-details {
   padding: 0.5rem;
-  font-size: 16px; 
-  color: #fff; 
+  font-size: 16px;
+  color: #fff;
 }
 
 
 .event-details p {
-  font-size: 18px; 
+  font-size: 18px;
 }
 
 h2 {
@@ -194,12 +191,12 @@ p {
 }
 
 .unregister-button:hover {
-  background-color: #005FA3; 
+  background-color: #005FA3;
 }
 
 .unregister-button:active {
   background-color: #000000;
-  transform: scale(0.98); 
+  transform: scale(0.98);
 }
 
 .event-item h3 {
@@ -229,5 +226,4 @@ h2 {
   font-size: 16px;
   margin-top: 20px;
 }
-
 </style>
