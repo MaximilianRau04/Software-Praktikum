@@ -6,11 +6,11 @@
       </div>
 
       <div class="search-container">
-        <input type="text" v-model="value" class="search-input" placeholder="Search..." />
+        <input type="text" v-model="value" class="search-input" placeholder="Suche..." />
       </div>
 
       <div class="user-info">
-        <div class="user-label">{{ currentUser.username || 'Guest' }}</div>
+        <div class="user-label">{{ currentUser.username || 'Gast' }}</div>
       </div>
     </div>
   </div>

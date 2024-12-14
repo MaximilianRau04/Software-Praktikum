@@ -6,13 +6,13 @@
           <span>Home</span>
         </div>
         <div class="menu-item" @click="navigateTo('/events/planning')">
-          <span>Create Events</span>
+          <span>Event Planung</span>
         </div>
         <div class="menu-item" @click="navigateTo('/events/registrations')">
-          <span>Registered Events</span>
+          <span>Meine Events</span>
         </div>
         <div class="menu-item" @click="navigateTo('/feedback')">
-          <span>Feedback</span>
+          <span>Mein Feedback</span>
         </div>
       </div>
     </div>

@@ -7,7 +7,7 @@
   <div class="container">
     <div class="events">
       <button @click="toggleWorkshopBox" class="action-button" type="button">
-        <img src="@/images/plus.png" alt="Plus" class="plus-icon" width="35" height="35" /> New Workshop
+        <img src="@/images/plus.png" alt="Plus" class="plus-icon" width="35" height="35" /> Neuer Workshop
       </button>
       <button @click="toggleExchangeDayBox" class="action-button" type="button">
         <img src="@/images/plus.png" alt="Plus" class="plus-icon" width="35" height="35" /> Neuer Exchange Day
@@ -117,6 +117,8 @@ const location = ref('');
 
 const apiUrl = `${config.apiBaseUrl}/events`;
 const exchangeApiUrl = `${config.apiBaseUrl}/exchange-days`;
+
+const TEST_EXCHANGE_API_URL = 'http://localhost:8080/api/exchange-days';
 
 const router = useRouter();
 
