@@ -3,10 +3,11 @@
     <form class="feedback-form" @submit.prevent="submitFeedback">
       <!-- Overall Section -->
       <div class="section">
-        <h3 class="section-title">Overall</h3>
+        <h3 class="section-title">Gesamtbewertung</h3>
         <div v-for="(field, index) in overallFields" :key="index" class="feedback-row">
           <div class="feedback-label">
             <span>{{ field.label }}</span>
+            <p class="explanation">{{ field.explanation }}</p> <!-- Explanation below the label -->
           </div>
           <div class="rating-group">
             <div v-for="rating in 5" :key="rating" class="rating-circle"
@@ -20,10 +21,11 @@
 
       <!-- Content and Structure Section -->
       <div class="section">
-        <h3 class="section-title">Content and Structure</h3>
+        <h3 class="section-title">Inhalt und Struktur</h3>
         <div v-for="(field, index) in contentFields" :key="index" class="feedback-row">
           <div class="feedback-label">
             <span>{{ field.label }}</span>
+            <p class="explanation">{{ field.explanation }}</p> <!-- Explanation below the label -->
           </div>
           <div class="rating-group">
             <div v-for="rating in 5" :key="rating" class="rating-circle"
@@ -41,6 +43,7 @@
         <div v-for="(field, index) in trainerFields" :key="index" class="feedback-row">
           <div class="feedback-label">
             <span>{{ field.label }}</span>
+            <p class="explanation">{{ field.explanation }}</p> <!-- Explanation below the label -->
           </div>
           <div class="rating-group">
             <div v-for="rating in 5" :key="rating" class="rating-circle"
@@ -54,10 +57,11 @@
 
       <!-- Participation Section -->
       <div class="section">
-        <h3 class="section-title">Participation</h3>
+        <h3 class="section-title">Teilnahme</h3>
         <div v-for="(field, index) in participationFields" :key="index" class="feedback-row">
           <div class="feedback-label">
             <span>{{ field.label }}</span>
+            <p class="explanation">{{ field.explanation }}</p> <!-- Explanation below the label -->
           </div>
           <div class="rating-group">
             <div v-for="rating in 5" :key="rating" class="rating-circle"
@@ -71,10 +75,11 @@
 
       <!-- Equipment and Organisation Section -->
       <div class="section">
-        <h3 class="section-title">Equipment and Organisation</h3>
+        <h3 class="section-title">Ausrüstung und Organisation</h3>
         <div v-for="(field, index) in organisationFields" :key="index" class="feedback-row">
           <div class="feedback-label">
             <span>{{ field.label }}</span>
+            <p class="explanation">{{ field.explanation }}</p> <!-- Explanation below the label -->
           </div>
           <div class="rating-group">
             <div v-for="rating in 5" :key="rating" class="rating-circle"
@@ -88,10 +93,11 @@
 
       <!-- Comments Section -->
       <div class="section">
-        <h3 class="section-title">Comments</h3>
+        <h3 class="section-title">Kommentare</h3>
         <div v-for="(field, index) in commentFields" :key="index" class="feedback-row">
           <div class="feedback-label">
             <span>{{ field.label }}</span>
+            <p class="explanation">{{ field.explanation }}</p> <!-- Explanation below the label -->
           </div>
           <div class="feedback-input">
             <textarea :name="field.key" v-model="feedbackData[field.key]" :maxlength="field.maxlength"
@@ -102,10 +108,11 @@
 
       <!-- Recommendation Section -->
       <div class="section">
-        <h3 class="section-title">Recommendations</h3>
+        <h3 class="section-title">Empfehlungen</h3>
         <div v-for="(field, index) in recommendationFields" :key="index" class="feedback-row">
           <div class="feedback-label">
             <span>{{ field.label }}</span>
+            <p class="explanation">{{ field.explanation }}</p> <!-- Explanation below the label -->
           </div>
 
           <div class="feedback-input">
@@ -117,11 +124,11 @@
             <div v-else-if="field.key === 'isEventRecommended'" class="boolean-options">
               <label>
                 <input type="radio" :name="field.key" value="true" v-model="feedbackData[field.key]" />
-                Yes
+                Ja
               </label>
               <label>
                 <input type="radio" :name="field.key" value="false" v-model="feedbackData[field.key]" />
-                No
+                Nein
               </label>
             </div>
             <div v-else-if="field.key === 'similarEventParticipationScore'">
@@ -139,15 +146,16 @@
       <div class="section submit-section">
         <div class="anonymous-feedback">
         </div>
-        <button type="submit" class="submit-button">Submit Feedback</button>
+        <button type="submit" class="submit-button">Feedback absenden</button>
         <label>
           <input type="checkbox" v-model="feedbackData.anonymousFeedback" />
-          Submit as anonymous?
+          Anonym absenden?
         </label>
       </div>
     </form>
   </div>
 </template>
+
 
 
 <script setup lang="ts">
@@ -157,48 +165,48 @@ import { useRoute, useRouter } from 'vue-router';
 const apiUrl = 'http://193.196.54.172:8000/api';
 
 const overallFields = [
-  { key: 'overallScore', label: 'Overall Impression' },
-  { key: 'organisationalScore', label: 'Organisation' },
-  { key: 'relevanceScore', label: 'Relevance' },
+  { key: 'overallScore', label: 'Gesamteindruck', explanation: 'Bewertung des allgemeinen Eindrucks des Workshops.' },
+  { key: 'organisationalScore', label: 'Organisation', explanation: 'Bewertung der Organisation und Logistik des Workshops.' },
+  { key: 'relevanceScore', label: 'Relevanz', explanation: 'Bewertung der Relevanz des Inhalts des Workshops für die Teilnehmer.' },
 ];
 
 const contentFields = [
-  { key: 'understandabilityScore', label: 'Understandability' },
-  { key: 'contentDepthScore', label: 'Content Depth' },
-  { key: 'practicalityScore', label: 'Practicality' },
-  { key: 'reasonabilityScore', label: 'Reasonability' },
+  { key: 'understandabilityScore', label: 'Verständlichkeit', explanation: 'Bewertung der Verständlichkeit des präsentierten Inhalts.' },
+  { key: 'contentDepthScore', label: 'Inhaltliche Tiefe', explanation: 'Bewertung der Tiefe und Detailgenauigkeit des vermittelten Inhalts.' },
+  { key: 'practicalityScore', label: 'Praktikabilität', explanation: 'Bewertung der Praktikabilität und Anwendbarkeit des Inhalts im Arbeitsalltag.' },
+  { key: 'reasonabilityScore', label: 'Nachvollziehbarkeit', explanation: 'Bewertung, ob der Inhalt logisch und nachvollziehbar war.' },
 ];
 
 const trainerFields = [
-  { key: 'competencyScore', label: 'Competency' },
-  { key: 'presentabilityScore', label: 'Presentability' },
-  { key: 'interactivityScore', label: 'Interactivity' },
-  { key: 'timeManagementScore', label: 'Time Management' },
+  { key: 'competencyScore', label: 'Kompetenz', explanation: 'Bewertung der Fachkenntnisse des Trainers.' },
+  { key: 'presentabilityScore', label: 'Präsentation', explanation: 'Bewertung der Präsentationsfähigkeiten und des Auftretens des Trainers.' },
+  { key: 'interactivityScore', label: 'Interaktivität', explanation: 'Bewertung, wie interaktiv der Workshop war und wie gut der Trainer die Teilnehmer eingebunden hat.' },
+  { key: 'timeManagementScore', label: 'Zeitmanagement', explanation: 'Bewertung des Zeitmanagements und der Strukturierung des Workshops.' },
 ];
 
 const participationFields = [
-  { key: 'participationScore', label: 'Participation' },
-  { key: 'atmosphereScore', label: 'Atmosphere' },
-  { key: 'networkingScore', label: 'Networking' },
+  { key: 'participationScore', label: 'Teilnahme', explanation: 'Bewertung der eigenen Beteiligung und Aktivität während des Workshops.' },
+  { key: 'atmosphereScore', label: 'Atmosphäre', explanation: 'Bewertung der allgemeinen Atmosphäre und Stimmung im Workshop.' },
+  { key: 'networkingScore', label: 'Networking', explanation: 'Bewertung der Möglichkeit, während des Workshops neue Kontakte zu knüpfen.' },
 ];
 
 const organisationFields = [
-  { key: 'equipmentScore', label: 'Equipment' },
-  { key: 'comfortabilityScore', label: 'Comfortability' },
-  { key: 'communicationScore', label: 'Communication' },
+  { key: 'equipmentScore', label: 'Ausrüstung', explanation: 'Bewertung der bereitgestellten Ausrüstung und technischen Mittel.' },
+  { key: 'comfortabilityScore', label: 'Komfort', explanation: 'Bewertung des Komforts, z. B. Sitzmöglichkeiten, Raumklima, etc.' },
+  { key: 'communicationScore', label: 'Kommunikation', explanation: 'Bewertung der Kommunikation und Informationen vor und während des Workshops.' },
 ];
 
 const commentFields = [
-  { key: 'enjoymentComment', label: 'What did you enjoy most?', maxlength: 200 },
-  { key: 'improvementComment', label: 'What could be improved?', maxlength: 200 },
-  { key: 'requestComment', label: 'Any requests for future events?', maxlength: 200 },
+  { key: 'enjoymentComment', label: 'Was hat Ihnen am meisten gefallen?', maxlength: 200, explanation: 'Platz für Kommentare darüber, was Ihnen am meisten Spaß gemacht hat.' },
+  { key: 'improvementComment', label: 'Was könnte verbessert werden?', maxlength: 200, explanation: 'Platz für Kommentare zu möglichen Verbesserungen.' },
+  { key: 'requestComment', label: 'Haben Sie Anregungen für zukünftige Events?', maxlength: 200, explanation: 'Platz für Vorschläge oder Wünsche für zukünftige Veranstaltungen.' },
 ];
 
 const recommendationFields = [
-  { key: 'personalImprovementComment', label: 'What is something you have learned?', maxlength: 200 },
-  { key: 'isEventRecommended', label: 'Would you recommend this Workshop?' },
-  { key: 'recommendationComment', label: 'Why or why not?', maxlength: 200 },
-  { key: 'similarEventParticipationScore', label: 'How likely are you to take part in a similar workshop?' }
+  { key: 'personalImprovementComment', label: 'Was haben Sie persönlich gelernt?', maxlength: 200, explanation: 'Platz für Kommentare darüber, was Sie aus dem Workshop gelernt haben.' },
+  { key: 'isEventRecommended', label: 'Würden Sie diesen Workshop empfehlen?', explanation: 'Frage, ob Sie den Workshop anderen empfehlen würden.' },
+  { key: 'recommendationComment', label: 'Warum oder warum nicht?', maxlength: 200, explanation: 'Platz für eine Erklärung, warum oder warum nicht empfohlen wird.' },
+  { key: 'similarEventParticipationScore', label: 'Wie wahrscheinlich ist es, dass Sie an einem ähnlichen Workshop teilnehmen?', explanation: 'Bewertung, wie wahrscheinlich es ist, dass Sie an einem ähnlichen Event teilnehmen würden.' }
 ];
 
 const feedbackData = ref<Record<string, any>>({});
@@ -335,6 +343,17 @@ if (userId) {
   flex: 1 0 auto;
   min-width: 50px;
   white-space: nowrap;
+}
+
+.explanation {
+  font-size: 0.8em;
+  color: #666;
+  margin-top: 5px;
+  line-height: 1.6;
+  word-wrap: break-word; /* Der Text wird umgebrochen, wenn er die Breite überschreitet */
+  white-space: pre-line; /* Hiermit wird der Text bei Zeilenumbrüchen im Quellcode korrekt angezeigt */
+  word-break: break-word; /* Umgeht große Wörter, die den Container sprengen würden */
+  max-width: 350px;
 }
 
 .rating-group {
