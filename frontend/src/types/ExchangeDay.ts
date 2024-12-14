@@ -6,7 +6,6 @@ export interface ExchangeDay {
   date: number;
   description: string;
   location: string;
-  events: number[];
 }
 
 export const exchangeDays = ref<ExchangeDay[]>([]);
