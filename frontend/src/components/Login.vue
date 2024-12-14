@@ -57,7 +57,7 @@ const firstname = ref('');
 const lastname = ref('');
 const role = ref('USER');
 
-const apiUrl = "http://localhost:8080/api/users";// 'http://193.196.54.172:8000/api/users';
+const apiUrl = 'http://193.196.54.172:8000/api/users';
 
 /**
  * Handles the login or registration of a user.
