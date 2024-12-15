@@ -158,7 +158,7 @@ const toggleExchangeDayBox = () => {
 /**
  * Creates a new Workshop using the form data.
  */
-const createWorkshop = async () => {
+ const createWorkshop = async () => {
   try {
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -178,6 +178,7 @@ const createWorkshop = async () => {
       const data = await response.json();
       console.log('Workshop erstellt:', data);
       alert(`Workshop erstellt: ${data.name}`);
+
       resetWorkshopForm();
     } else {
       alert('Fehler beim Erstellen des Workshops.');
@@ -187,6 +188,7 @@ const createWorkshop = async () => {
     alert('Fehler beim Erstellen des Workshops.');
   }
 };
+
 
 /**
  * Creates a new Exchange Day using the form data.

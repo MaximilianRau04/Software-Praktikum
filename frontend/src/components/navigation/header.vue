@@ -10,15 +10,18 @@
       </div>
 
       <div class="user-info">
-        <div class="user-la
-        bel">{{ currentUser.username || 'Gast' }}</div>
+        <div class="user-label">{{ currentUser.username || 'Gast' }}</div>
+
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { ref, onMounted } from 'vue';
 import { globalState } from '@/types/User';
+import Cookies from 'js-cookie';
+import '../../assets/header.css';
 
 export default {
   props: {
@@ -39,64 +42,35 @@ export default {
     handleToggleSidebar() {
       this.toggleSidebar();
     },
+    handleLogin() {
+      this.$router.push('/login');
+    },
+    logout() {
+      Cookies.remove('userId');
+      Cookies.remove('username');
+      Cookies.remove('firstname');
+      Cookies.remove('lastname');
+      Cookies.remove('role');
+      globalState.setUser(null);
+      this.$router.push('/login');
+    },
+    toggleToRegistration() {
+      this.$router.push('/register');
+    },
+  },
+  onMounted() {
+    const userId = Cookies.get('userId');
+    if (userId) {
+      const userData = {
+        id: userId,
+        username: Cookies.get('username'),
+        firstname: Cookies.get('firstname'),
+        lastname: Cookies.get('lastname'),
+        role: Cookies.get('role'),
+      };
+      globalState.setUser(userData);
+    }
   },
 };
 </script>
 
-<style scoped>
-.header-container {
-  width: 100%;
-  background-color: #f3f4f6;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 50px;
-}
-
-.sidebar-toggle {
-  padding: 8px;
-  cursor: pointer;
-}
-
-.sidebar-icon {
-  width: 30px;
-  height: 30px;
-  transition: transform 0.3s ease;
-}
-
-.sidebar-toggle:hover .sidebar-icon {
-  transform: scale(1.1);
-}
-
-.search-container {
-  padding: 8px 16px;
-}
-
-.search-input {
-  height: 40px;
-  width: 400px;
-  padding: 8px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 30px;
-  margin-right: 2%;
-  border: 2px solid #01172F;
-  border-radius: 8px;
-  background-color: #ffffff;
-}
-
-
-.user-label {
-  font-size: 20px;
-}
-</style>

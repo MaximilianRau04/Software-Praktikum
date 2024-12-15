@@ -5,5 +5,4 @@ export interface Event {
   endTime: string;
   startTime: string;
   room: string;
-  organizer?: string;
 }

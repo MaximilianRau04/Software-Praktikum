@@ -22,17 +22,18 @@ import '../../assets/event-details.css';
 import { Event } from '../../types/Event';
 import { defineProps } from 'vue';
 import config from '../../config';
+import Cookies from 'js-cookie';
 
 const props = defineProps<{ event: Event }>();
 const isAlreadyRegistered = ref(false);
-const userId = localStorage.getItem('userId');
+const userId = Cookies.get("userId");
 
 /**
  * Checks if the user is already registered for the event.
  */
 const checkRegistrationStatus = async () => {
   if (!userId) {
-    console.error("User ID not found in local storage.");
+    console.error("User ID not found");
     return;
   }
   try {
@@ -55,7 +56,7 @@ const checkRegistrationStatus = async () => {
  */
 const register = async (eventId: number) => {
   try {
-    if (!userId) throw new Error("User ID not found in local storage.");
+    if (!userId) throw new Error("User ID not found in cookies.");
 
     const response = await fetch(`${config.apiBaseUrl}/users/${userId}/eventRegistration?eventId=${eventId}`, {
       method: "POST",

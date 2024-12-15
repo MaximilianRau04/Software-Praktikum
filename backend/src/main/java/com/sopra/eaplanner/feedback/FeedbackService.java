@@ -44,51 +44,64 @@ public class FeedbackService {
     }
 
     public List<FeedbackResponseDTO> getFeedbacksFromEventId(Long eventId) {
-        List<Feedback> feedbacksForEvent = feedbackRepository.findByEventId(eventId);
-        List<FeedbackResponseDTO> foundFeedbacks = new ArrayList<>();
-        for (Feedback feedback : feedbacksForEvent) {
-            foundFeedbacks.add(new FeedbackResponseDTO(feedback));
-        }
-        return foundFeedbacks;
+        return feedbackRepository.findByEventId(eventId).stream()
+                .map(FeedbackResponseDTO::new)
+                .toList();
     }
 
     public FeedbackResponseDTO getFeedbackById(Long id) {
         Feedback feedback = feedbackRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Feedback not found."));
-
         return new FeedbackResponseDTO(feedback);
     }
 
     public FeedbackSummaryDTO generateFeedbackSummary(Long eventId) {
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event not found."));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EntityNotFoundException("Event not found."));
         List<FeedbackResponseDTO> feedback = getFeedbacksFromEventId(eventId);
 
         FeedbackSummaryDTO summary = new FeedbackSummaryDTO(
                 eventId,
                 event.getName(),
-                event.getOrganizer().getFirstname() + event.getOrganizer().getLastname());
+                event.getOrganizer().getFirstname() + " " + event.getOrganizer().getLastname()
+        );
 
         Map<String, FeedbackStatistics> numericalStats = new HashMap<>();
-        List<Integer> overallScores = feedback.stream().map(FeedbackResponseDTO::getOverallScore).toList();
-        numericalStats.put("overallScore", calculateStatistics(overallScores));
 
-        // TODO: Implement all fields from FeedbackResponseDTO.class
+        addStatistic(numericalStats, "overallScore", feedback, FeedbackResponseDTO::getOverallScore);
+        addStatistic(numericalStats, "organisationalScore", feedback, FeedbackResponseDTO::getOrganisationalScore);
+        addStatistic(numericalStats, "relevanceScore", feedback, FeedbackResponseDTO::getRelevanceScore);
+        addStatistic(numericalStats, "understandabilityScore", feedback, FeedbackResponseDTO::getUnderstandabilityScore);
+        addStatistic(numericalStats, "contentDepthScore", feedback, FeedbackResponseDTO::getContentDepthScore);
+        addStatistic(numericalStats, "practicalityScore", feedback, FeedbackResponseDTO::getPracticalityScore);
+        addStatistic(numericalStats, "reasonabilityScore", feedback, FeedbackResponseDTO::getReasonabilityScore);
+        addStatistic(numericalStats, "competencyScore", feedback, FeedbackResponseDTO::getCompetencyScore);
+        addStatistic(numericalStats, "presentabilityScore", feedback, FeedbackResponseDTO::getPresentabilityScore);
+        addStatistic(numericalStats, "interactivityScore", feedback, FeedbackResponseDTO::getInteractivityScore);
+        addStatistic(numericalStats, "timeManagementScore", feedback, FeedbackResponseDTO::getTimeManagementScore);
+        addStatistic(numericalStats, "participationScore", feedback, FeedbackResponseDTO::getParticipationScore);
+        addStatistic(numericalStats, "atmosphereScore", feedback, FeedbackResponseDTO::getAtmosphereScore);
+        addStatistic(numericalStats, "networkingScore", feedback, FeedbackResponseDTO::getNetworkingScore);
+        addStatistic(numericalStats, "equipmentScore", feedback, FeedbackResponseDTO::getEquipmentScore);
+        addStatistic(numericalStats, "comfortabilityScore", feedback, FeedbackResponseDTO::getComfortabilityScore);
+        addStatistic(numericalStats, "communicationScore", feedback, FeedbackResponseDTO::getCommunicationScore);
+        addStatistic(numericalStats, "similarEventParticipationScore", feedback, FeedbackResponseDTO::getSimilarEventParticipationScore);
 
         summary.setNumericalFeedback(numericalStats);
 
         List<CommentAnalysis> comments = feedback.stream()
-                .map(userFeedback -> new CommentAnalysis(userFeedback.getImprovementComment(), analyzeSentiment(userFeedback.getImprovementComment()))).toList();
+                .map(f -> new CommentAnalysis(f.getImprovementComment(), analyzeSentiment(f.getImprovementComment())))
+                .toList();
 
-        // TODO: Maybe add some other fields around the comments that users give aside from improvement comment
         summary.setComments(comments);
-
         summary.setCommonWords(generateWordCloud(feedback));
 
         return summary;
     }
 
     public UserResponseDTO getFeedbackAuthor(Long id) {
-        Feedback feedback = feedbackRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Feedback not found."));
+        Feedback feedback = feedbackRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Feedback not found"));
 
         if (feedback.isAnonymousFeedback()) {
             throw new EntityNotFoundException("Anonymous Feedback");
@@ -98,11 +111,14 @@ public class FeedbackService {
     }
 
     public FeedbackResponseDTO createFeedback(FeedbackRequestDTO requestBody) {
-        Event eventForFeedback = eventRepository.findById(requestBody.getEventId()).orElseThrow(()-> new EntityNotFoundException("Event not found."));
+        Event eventForFeedback = eventRepository.findById(requestBody.getEventId())
+                .orElseThrow(() -> new EntityNotFoundException("Event not found"));
 
-        User feedbackAuthor = userRepository.findById(requestBody.getUserId()).orElseThrow(()-> new EntityNotFoundException("User not found."));
+        User feedbackAuthor = userRepository.findById(requestBody.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback, feedbackAuthor);
+
         feedbackToSave = feedbackRepository.save(feedbackToSave);
         eventParticipationService.postFeedback(feedbackAuthor,eventForFeedback);
 
@@ -122,6 +138,22 @@ public class FeedbackService {
         return new FeedbackStatistics(average, median, scores.size());
     }
 
+    private double calculateMedian(List<Integer> scores) {
+        if (scores == null || scores.isEmpty()) {
+            return 0.0;
+        }
+
+        List<Integer> scoreList = new ArrayList<>(scores);
+        Collections.sort(scoreList);
+
+        int size = scoreList.size();
+        if (size % 2 == 0) {
+            return (scoreList.get(size / 2 - 1) + scoreList.get(size / 2)) / 2.0;
+        } else {
+            return scoreList.get(size / 2);
+        }
+    }
+
     private List<String> generateWordCloud(List<FeedbackResponseDTO> feedback) {
         Map<String, Long> wordFrequency = feedback.stream()
                 .flatMap(f -> Arrays.stream(f.getImprovementComment().split("\\s+")))
@@ -134,19 +166,22 @@ public class FeedbackService {
                 .toList();
     }
 
-    private double calculateMedian(List<Integer> scores) {
-        if (scores == null || scores.isEmpty()) {
-            return 0.0;
-        }
+    private String analyzeSentiment(String text) {
+        // TODO: Find and integrate a library for sentiment analysis
+        return "Not implemented yet.";
+    }
 
-        Collections.sort(scores);
+    private <T> void addStatistic(Map<String, FeedbackStatistics> stats,
+                                  String key,
+                                  List<FeedbackResponseDTO> feedback,
+                                  Function<FeedbackResponseDTO, T> extractor) {
+        List<Integer> values = feedback.stream()
+                .map(extractor)
+                .filter(Objects::nonNull)
+                .map(val -> (Integer) val)
+                .collect(Collectors.toList());
 
-        int size = scores.size();
-        if (size % 2 == 0) {
-            return (scores.get(size / 2 - 1) + scores.get(size / 2)) / 2.0;
-        } else {
-            return scores.get(size / 2);
-        }
+        stats.put(key, calculateStatistics(values));
     }
 
     // TODO: Find library that can extract the general vibe from a String provided.

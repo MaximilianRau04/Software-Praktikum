@@ -160,6 +160,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import config from '@/config';
+import Cookies from 'js-cookie';
 
 const overallFields = [
   { key: 'overallScore', label: 'Gesamteindruck', explanation: 'Bewertung des allgemeinen Eindrucks des Workshops.' },
@@ -215,6 +216,9 @@ const token = ref('');
 const route = useRoute();
 const router = useRouter();
 
+/*
+ * Submits the feedback data to the server.
+**/
 const submitFeedback = async () => {
   if (!userId.value) {
     alert("Please login first.");
@@ -275,8 +279,11 @@ const confirmAttendance = async () => {
   }
 };
 
+/*
+ * Fetches the user ID from cookies and the event ID from the route.
+**/
 onMounted(() => {
-  const storedUserId = localStorage.getItem('userId');
+  const storedUserId = Cookies.get('userId');
   if (storedUserId) {
     userId.value = parseInt(storedUserId, 10);
   }

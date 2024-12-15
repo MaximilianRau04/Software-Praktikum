@@ -1,8 +1,3 @@
-<!--
-This component handles the login and registration of users.
-It provides input fields for the username, first name, last name, and role.
-After filling out the form inputs, the user can either register or log in, depending on the current view.
--->
 <template>
   <div class="login">
     <div class="create-box">
@@ -47,7 +42,9 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { globalState } from '@/types/User';
 import type { User } from '@/types/User';
+import config from '@/config.js';
 import '../assets/login.css';
+import Cookies from 'js-cookie';
 
 const router = useRouter();
 
@@ -64,22 +61,21 @@ const apiUrl = 'http://193.196.54.172:8000/api/users';
  */
 const handleLogin = async () => {
   try {
-    // Check if the user is already registered
     if (isRegistered.value) {
-      const response = await fetch(`${apiUrl}/search?username=${username.value}`);
+      const response = await fetch(`${config.apiBaseUrl}/users/search?username=${username.value}`);
       if (!response.ok) throw new Error('Benutzer nicht gefunden');
 
       const userData: User = await response.json();
 
       if (userData && userData.id) {
         globalState.setUser(userData);
-        
-        // Store user data in local storage
-        localStorage.setItem('userId', userData.id);
-        localStorage.setItem('username', userData.username);
-        localStorage.setItem('firstname', userData.firstname || '');
-        localStorage.setItem('lastname', userData.lastname || '');
-        localStorage.setItem('role', userData.role || 'USER');
+
+        // Set user data in cookies
+        Cookies.set('userId', userData.id, { expires: 7 });
+        Cookies.set('username', userData.username, { expires: 7 });
+        Cookies.set('firstname', userData.firstname || '', { expires: 7 });
+        Cookies.set('lastname', userData.lastname || '', { expires: 7 });
+        Cookies.set('role', userData.role || 'USER', { expires: 7 });
 
         router.push('/home');
       } else {
@@ -93,8 +89,7 @@ const handleLogin = async () => {
         role: role.value,
       };
 
-      // Register the user 
-      const response = await fetch(`${apiUrl}`, {
+      const response = await fetch(`${config.apiBaseUrl}/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),

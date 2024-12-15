@@ -37,6 +37,3 @@ GET http://193.196.54.172:8000/api/exchange-days
 GET http://193.196.54.172:8000/api/events
 ###
 GET http://193.196.54.172:8000/api/users?username=mperreks
-
-
-

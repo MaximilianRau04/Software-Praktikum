@@ -4,6 +4,7 @@ import MainPage from '../components/ViewAllExchangeDays/MainPage.vue';
 import EventPlanning from '../components/createNewEvents/EventPlanning.vue';
 import HomePage from '@/components/HomePage.vue';
 import GiveFeedback from '@/components/feedback/GiveFeedback.vue';
+import FeedbackSummary from '@/components/feedback/FeedbackSummary.vue';
 
 export default [
   {
@@ -34,6 +35,11 @@ export default [
         path: '/events/registrations',
         name: 'eventRegistrations',
         component: EventRegistrations,
+      },
+      {
+        path: '/feedback/:eventId',
+        name: 'feedbackSummary',
+        component: FeedbackSummary
       }
     ]
   },

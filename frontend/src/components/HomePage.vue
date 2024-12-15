@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
      <!-- Sidebar for navigation -->
-    <sidebar :dataOpenSideBar="openSidebar" @changeComponent="changeComponent" />
+    <sidebar :dataOpenSideBar="openSidebar" @changeComponent="changeComponent" @toggleSidebar="toggleSidebar" />
      <!-- Main content area -->
     <div class="main-content">
       <headerTop :dataOpenSideBar="openSidebar" :toggleSidebar="toggleSidebar" />
@@ -32,29 +32,29 @@ export default {
   },
   data() {
     return {
-      openSidebar: true,
+      openSidebar: false,
       currentComponent: 'MainPage',
     };
   },
   methods: {
-  /**
-   * Toggles the visibility of the sidebar.
-   */
+    /**
+     * Toggles the visibility of the sidebar.
+     */
     toggleSidebar() {
       this.openSidebar = !this.openSidebar;
     },
+    
     /**
      * Updates the currently displayed component.
      * @param {string} componentName - The name of the component to display.
      */
     changeComponent(componentName) {
       this.currentComponent = componentName;
+      this.toggleSidebar();
     },
   },
 };
 </script>
-
-
 
 <style scoped>
 /* Container for the entire dashboard layout */
