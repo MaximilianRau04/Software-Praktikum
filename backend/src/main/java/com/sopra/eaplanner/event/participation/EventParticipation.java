@@ -23,18 +23,22 @@ public class EventParticipation {
     @JsonBackReference
     private Event event;
 
-    private boolean confirmed;
-
+    private boolean participationConfirmed;
     private LocalDateTime confirmationTime;
+
+    private boolean feedbackGiven;
+    private LocalDateTime feedbackTime;
 
     public EventParticipation() {
     }
 
-    public EventParticipation(User user, Event event, boolean confirmed, LocalDateTime confirmationTime) {
+    public EventParticipation(User user, Event event, boolean participationConfirmed, LocalDateTime confirmationTime, boolean feedbackGiven, LocalDateTime feedbackTime) {
         this.user = user;
         this.event = event;
-        this.confirmed = confirmed;
+        this.participationConfirmed = participationConfirmed;
         this.confirmationTime = confirmationTime;
+        this.feedbackGiven = feedbackGiven;
+        this.feedbackTime = feedbackTime;
     }
 
     public EventParticipation(User user, Event event) {
@@ -66,12 +70,12 @@ public class EventParticipation {
         this.event = event;
     }
 
-    public boolean isConfirmed() {
-        return confirmed;
+    public boolean isParticipationConfirmed() {
+        return participationConfirmed;
     }
 
-    public void setConfirmed(boolean confirmed) {
-        this.confirmed = confirmed;
+    public void setParticipationConfirmed(boolean confirmed) {
+        this.participationConfirmed = confirmed;
     }
 
     public LocalDateTime getConfirmationTime() {
@@ -80,6 +84,22 @@ public class EventParticipation {
 
     public void setConfirmationTime(LocalDateTime confirmationTime) {
         this.confirmationTime = confirmationTime;
+    }
+
+    public boolean isFeedbackGiven() {
+        return feedbackGiven;
+    }
+
+    public void setFeedbackGiven(boolean feedbackGiven) {
+        this.feedbackGiven = feedbackGiven;
+    }
+
+    public LocalDateTime getFeedbackTime() {
+        return feedbackTime;
+    }
+
+    public void setFeedbackTime(LocalDateTime feedbackTime) {
+        this.feedbackTime = feedbackTime;
     }
 
 }
