@@ -221,11 +221,7 @@ const submitFeedback = async () => {
     return;
   }
 
-  console.log(eventId.value);
-  console.log(token.value);
-  console.log(userId.value);
-
-  if(!eventId.value || !token.value){
+  if (!eventId.value || !token.value) {
     alert('Ungültige Daten. Bitte scannen sie den QR-Code erneut.');
     return;
   }
@@ -242,32 +238,40 @@ const submitFeedback = async () => {
       body: JSON.stringify(feedbackData.value),
     });
 
-    if(!feedbackResponse.ok){
+    if (!feedbackResponse.ok) {
       alert('Fehler beim Senden des Feedbacks.');
       // TODO: Ansage von Fehlern oder prompt, um daten anzufügen
       return;
     }
 
-    const attendanceResponse = await fetch(`${config.apiBaseUrl}/events/${eventId.value}/attendance`, {
-      method: "POST",
-      headers:{
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        token: token.value,
-        userId: userId.value,
-      }),
-    });
-
-    if(!attendanceResponse.ok){
-      alert('Fehler bem Bestätigen der Anwesenheit.');
-      return;
-    }
     alert('Feedback erfolgreich übermittelt und Anwesenheit bestätigt!');
     router.push('/home');
   } catch (error) {
     console.error('Error submitting feedback:', error);
     alert('An error occurred while submitting feedback.');
+  }
+};
+
+const confirmAttendance = async () => {
+  try{
+    const attendanceResponse = await fetch(`${config.apiBaseUrl}/events/${eventId.value}/attendance`, {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      token: token.value,
+      userId: userId.value,
+    }),
+  });
+
+  if (!attendanceResponse.ok) {
+    alert('Fehler bem Bestätigen der Anwesenheit.');
+    return;
+  }
+  }catch(error){
+    console.error('Error confirming attendance:', error);
+    alert('An error occurred confirming attendance.');
   }
 };
 
@@ -277,14 +281,16 @@ onMounted(() => {
     userId.value = parseInt(storedUserId, 10);
   }
 
-if (userId) {
-  console.log('User is logged in with ID:', userId);
-} else {
-  console.log('User is not logged in.');
-}
+  if (userId) {
+    console.log('User is logged in with ID:', userId);
+  } else {
+    console.log('User is not logged in.');
+  }
 
   eventId.value = route.params.eventId as string;
   token.value = route.query.token as string;
+
+  confirmAttendance();
 });
 </script>
 
@@ -347,9 +353,9 @@ if (userId) {
   color: #666;
   margin-top: 5px;
   line-height: 1.6;
-  word-wrap: break-word; 
-  white-space: pre-line; 
-  word-break: break-word; 
+  word-wrap: break-word;
+  white-space: pre-line;
+  word-break: break-word;
   max-width: 350px;
 }
 
