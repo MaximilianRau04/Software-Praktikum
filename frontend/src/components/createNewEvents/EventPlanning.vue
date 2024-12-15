@@ -125,7 +125,7 @@ const router = useRouter();
  */
 onMounted(async () => {
   try {
-    const response = await fetch(`${config.apiBaseUrl}/exchange-days`);
+    const response = await fetch(`exchangeApiUrl`);
     exchangeDays.value = await response.json();
   } catch (error) {
     console.error('Fehler beim Laden der Exchange Days:', error);

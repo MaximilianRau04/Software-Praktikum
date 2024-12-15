@@ -22,10 +22,11 @@ import '../../assets/event-details.css';
 import { Event } from '../../types/Event';
 import { defineProps } from 'vue';
 import config from '../../config';
+import Cookies from 'js-cookie';
 
 const props = defineProps<{ event: Event }>();
 const isAlreadyRegistered = ref(false);
-const userId = localStorage.getItem('userId');
+const userId = Cookies.get("userId");
 
 /**
  * Checks if the user is already registered for the event.

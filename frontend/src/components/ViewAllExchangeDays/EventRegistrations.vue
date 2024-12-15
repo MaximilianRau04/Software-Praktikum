@@ -34,12 +34,13 @@ import '../../assets/exchange-day-details.css';
 import '../../assets/event-details.css';
 import { EventParticipation } from "@/types/EventParticipation";
 import { Router, useRouter } from "vue-router";  
+import Cookies from 'js-cookie';
 
 const router = useRouter();
 
 const registeredEvents = ref<Event[]>([]);
 
-const userId = localStorage.getItem('userId');
+const userId = Cookies.get("userId");
 
 if (!userId) {
   throw new Error("User ID not found in local storage.");
