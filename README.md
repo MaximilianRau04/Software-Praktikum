@@ -21,6 +21,9 @@ The app does not use any authentication. After using the registration-formular, 
 - Navigate seamlessly between components using the sidebar.
 - Responsive design for optimal user experience across devices.
 
+## Documentation
+- [API Documentation](docs/API.md)
+
 ## Developer Contacts
 
 Deniz Altunkapan(3721629): st187784@stud.uni-stuttgart.de  
