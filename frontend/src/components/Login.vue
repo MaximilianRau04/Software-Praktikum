@@ -47,6 +47,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { globalState } from '@/types/User';
 import type { User } from '@/types/User';
+import config from '@/config.js';
 import '../assets/login.css';
 
 const router = useRouter();
@@ -66,7 +67,7 @@ const handleLogin = async () => {
   try {
     // Check if the user is already registered
     if (isRegistered.value) {
-      const response = await fetch(`${apiUrl}/search?username=${username.value}`);
+      const response = await fetch(`${config.apiBaseUrl}/users/search?username=${username.value}`);
       if (!response.ok) throw new Error('Benutzer nicht gefunden');
 
       const userData: User = await response.json();
@@ -94,7 +95,7 @@ const handleLogin = async () => {
       };
 
       // Register the user 
-      const response = await fetch(`${apiUrl}`, {
+      const response = await fetch(`${config.apiBaseUrl}/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
