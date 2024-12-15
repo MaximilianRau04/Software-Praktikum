@@ -16,7 +16,11 @@ public class FeedbackSummaryDTO {
 
     public FeedbackSummaryDTO() {}
 
-    public FeedbackSummaryDTO(Long eventId, String eventName, String organizerName) {}
+    public FeedbackSummaryDTO(Long eventId, String eventName, String organizerName) {
+        this.eventId = eventId;
+        this.eventName = eventName;
+        this.organizerName = organizerName;
+    }
     public Long getEventId() {
         return eventId;
     }
