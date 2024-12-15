@@ -184,8 +184,4 @@ public class FeedbackService {
         stats.put(key, calculateStatistics(values));
     }
 
-    // TODO: Find library that can extract the general vibe from a String provided.
-    private String analyzeSentiment(String text) {
-        return "Not implemented yet.";
-    }
 }
