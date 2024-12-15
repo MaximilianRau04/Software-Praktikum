@@ -89,7 +89,9 @@ public class EventController {
     // TODO: PutMapping here
 
     @DeleteMapping("/{id}")
-    public void deleteEvent(@PathVariable Long id) {
+    public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
+
         eventService.deleteEvent(id);
+        return ResponseEntity.noContent().build();
     }
 }
