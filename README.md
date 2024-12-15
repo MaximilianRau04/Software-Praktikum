@@ -40,7 +40,7 @@ npm run dev
 
 ## How to Test the App
 
-Follow the steps in [How to Use the App](How-to-Use-the-App) to set up the environment.
+Follow the steps in [How to Use the App](how-to-use-the-app) to set up the environment.
 
 1. Open a terminal and navigate to the /backend folder:
 ```
