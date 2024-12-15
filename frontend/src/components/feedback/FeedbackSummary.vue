@@ -2,58 +2,64 @@
   <div class="event-summary">
     <h1>Event Summary</h1>
 
-    <div v-if="isLoading">
+    <div v-if="isLoading" class="loading">
       <p>Loading...</p>
     </div>
 
-    <div v-else-if="error">
-      <p class="error">Error: {{ error }}</p>
+    <div v-else-if="error" class="error">
+      <p>Error: {{ error }}</p>
     </div>
 
     <div v-else>
+      <!-- General Information -->
       <div class="general-info">
         <h2>General Information</h2>
-        <p><strong>Event ID:</strong> {{ data.eventId || 'undefined' }}</p>
-        <p><strong>Event Name:</strong> {{ data.eventName || 'undefined' }}</p>
-        <p><strong>Organizer Name:</strong> {{ data.organizerName || 'undefined' }}</p>
+        <table>
+          <tr><td><strong>Event ID:</strong></td><td>{{ data.eventId || 'undefined' }}</td></tr>
+          <tr><td><strong>Event Name:</strong></td><td>{{ data.eventName || 'undefined' }}</td></tr>
+          <tr><td><strong>Organizer:</strong></td><td>{{ data.organizerName || 'undefined' }}</td></tr>
+        </table>
       </div>
 
+      <!-- Numerical Feedback -->
       <div class="numerical-feedback">
         <h2>Numerical Feedback</h2>
-        <table v-if="Object.keys(data.numericalFeedback).length > 0">
+        <table v-if="numericalFeedbackCategories.length">
           <thead>
             <tr>
               <th>Category</th>
-              <th>Average Score</th>
-              <th>Median Score</th>
+              <th>Average</th>
+              <th>Median</th>
               <th>Response Count</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(scoreData, category) in data.numericalFeedback" :key="category">
+            <tr v-for="(feedback, category) in data.numericalFeedback" :key="category">
               <td>{{ formatKey(category) }}</td>
-              <td>{{ scoreData.average }}</td>
-              <td>{{ scoreData.median }}</td>
-              <td>{{ scoreData.responseCount }}</td>
+              <td>{{ feedback.average }}</td>
+              <td>{{ feedback.median }}</td>
+              <td>{{ feedback.responseCount }}</td>
             </tr>
           </tbody>
         </table>
-        <p v-else>No numerical feedback available.</p>
+        <p v-else style="text-align: center; color: #7f8c8d;">No feedback data available.</p>
       </div>
 
+      <!-- Common Words -->
       <div class="common-words">
         <h2>Common Words</h2>
         <ul>
-          <li v-for="(word, index) in data.commonWords" :key="index">{{ word }}</li>
+          <li v-for="word in data.commonWords" :key="word">{{ word }}</li>
         </ul>
       </div>
 
+      <!-- Comments -->
       <div class="comments">
         <h2>Comments</h2>
         <ul>
           <li v-for="(comment, index) in data.comments" :key="index">
-            <p><strong>Comment:</strong> {{ comment.comment }}</p>
-            <p><strong>Sentiment:</strong> {{ comment.sentiment || 'undefined' }}</p>
+            <p><strong>Comment {{ index + 1 }}:</strong> {{ comment.comment }}</p>
+            <p><strong>Sentiment:</strong> {{ comment.sentiment }}</p>
           </li>
         </ul>
       </div>
@@ -73,9 +79,14 @@ export default {
       error: null
     };
   },
-  computed:{
-    eventId(){
+  computed: {
+    eventId() {
       return this.$route.params.eventId;
+    },
+    numericalFeedbackCategories() {
+      return this.data && this.data.numericalFeedback
+        ? Object.keys(this.data.numericalFeedback)
+        : [];
     }
   },
   methods: {
@@ -93,7 +104,8 @@ export default {
       }
     },
     formatKey(key) {
-      return key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
+      if (!key || typeof key !== 'string') return 'Unknown';
+      return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
     }
   },
   mounted() {
@@ -102,58 +114,65 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .event-summary {
   font-family: Arial, sans-serif;
-  padding: 20px;
-  max-width: 800px;
+  padding: 15px;
   margin: 0 auto;
-  background-color: #f9f9f9;
+  background: #f4f6f8;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-height: 80vh;
+  min-height: 400px; 
   overflow-y: auto;
-  max-height: 90vh;
-}
-
-.general-info, .numerical-feedback, .common-words, .comments {
-  margin-bottom: 20px;
-  padding: 15px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
 }
 
 h1, h2 {
-  color: #2c3e50;
-  margin-bottom: 10px;
+  color: #34495e;
+  text-align: center;
 }
 
-ul {
-  list-style-type: disc;
-  padding-left: 20px;
-}
-
-p {
-  margin: 5px 0;
+.loading {
+  text-align: center;
+  font-size: 1.2em;
+  color: #3498db;
 }
 
 .error {
-  color: red;
+  color: #e74c3c;
+  text-align: center;
   font-weight: bold;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  margin: 20px 0;
+  background: #ecf0f1;
+  border-radius: 5px;
+  overflow: hidden;
 }
 
-th, td {
-  padding: 8px;
+table th, table td {
+  border: 1px solid #bdc3c7;
+  padding: 10px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
 }
 
-th {
-  background-color: #f4f4f4;
+table th {
+  background-color: #34495e;
+  color: #ecf0f1;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  background: #ecf0f1;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 5px;
 }
 </style>

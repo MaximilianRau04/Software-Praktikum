@@ -12,8 +12,8 @@
               <p><strong>Startzeit: </strong> {{ event.startTime }}</p>
               <p><strong>Endzeit: </strong>{{ event.endTime }}</p>
               <p><strong>Raum: </strong> {{ event.room }}</p>
-              <button class="openFeedback-button" @click="openFeedback(event.id)">Feedback anzeigen</button>
-              <button class="showQR-button" @click="openQRCode(event.id)">QR-Code anzeigen</button>
+              <button class="openFeedback-button" @click="openFeedback(event.id)" v-if="isOrganizer(event)">Feedback anzeigen</button>
+              <button class="showQR-button" @click="openQRCode(event.id)" v-if="isOrganizer(event)">QR-Code anzeigen</button>
               <button class="unregister-button" @click="unregisterFromEvent(event.id)">Abmelden</button>
             </div>
           </li>
@@ -45,33 +45,20 @@ if (!userId) {
   throw new Error("User ID not found in local storage.");
 }
 
+/**
+ * Opens the QR code for the event in a new tab.
+ * @param {number} eventId - The ID of the event to open the QR code for.
+ */
 const openQRCode = (eventId: number) => {
   const qrCodeUrl = `${config.apiBaseUrl}/events/${eventId}/qr-code`; 
   window.open(qrCodeUrl, '_blank');
 };
 
+
 /**
- * Fetches the registered events for the current user.
+ * Opens the feedback summary for the event.
+ * @param {number} eventId - The ID of the event to open the feedback for.
  */
-const fetchRegisteredEvents = async () => {
-  try {
-    console.log('Fetching user data...');
-
-    const response = await fetch(`${config.apiBaseUrl}/users/${userId}/participations`);
-    if (!response.ok) throw new Error("Failed to fetch participations.");
-
-    const responseData: EventParticipation[] = await response.json();
-    console.log('User data retrieved:', responseData);
-
-    registeredEvents.value = responseData.map(participation => participation.event);
-    console.log('Registered Events loaded:', registeredEvents.value);
-
-  } catch (error) {
-    console.error("Error fetching registered events:", error);
-    registeredEvents.value = [];
-  }
-};
-
 const openFeedback = (eventId: number) => {
   router.push({ name: 'feedbackSummary', params: { eventId: eventId.toString() } });
 };
@@ -89,8 +76,6 @@ const unregisterFromEvent = async (eventId: number) => {
 
     const response = await fetch(`${config.apiBaseUrl}/users/${userId}/eventRegistration?eventId=${eventId}`, {
       method: "DELETE",
-      headers: {
-      },
     });
     console.log(response.status);
 
@@ -110,13 +95,55 @@ const unregisterFromEvent = async (eventId: number) => {
 }
 
 /**
+ * Fetches the registered events for the current user.
+ */
+ const fetchRegisteredEvents = async () => {
+  try {
+    console.log('Fetching user data...');
+
+    const response = await fetch(`${config.apiBaseUrl}/users/${userId}/registeredEvents`);
+    if (!response.ok) throw new Error("Failed to fetch participations.");
+
+    const responseData: Event[] = await response.json();
+    console.log('User data retrieved:', responseData);
+
+    registeredEvents.value = responseData;
+    console.log('Registered Events loaded:', registeredEvents.value);
+
+  } catch (error) {
+    console.error("Error fetching registered events:", error);
+    registeredEvents.value = [];
+  }
+}
+
+/**
+ * Fetches the organizer of a specific event.
+ * @param {number} eventId - The ID of the event to get the organizer for.
+ * @returns {Promise<string>} - The ID of the event's organizer.
+ */
+const fetchEventOrganizer = async (eventId: number): Promise<string> => {
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/events/${eventId}/organizer`);
+    if (!response.ok) throw new Error("Failed to fetch event organizer.");
+
+    const data = await response.json();
+    return data.id;
+  } catch (error) {
+    console.error("Error fetching event organizer:", error);
+    return "";
+  }
+};
+
+/**
  * Checks if the current user is the organizer of the event.
- * @param {String} organizerId - The ID of the event organizer.
+ * @param {Event} event - The event object to check against.
  * @returns {boolean} - True if the user is the organizer, otherwise false.
  */
-const isOrganizer = (organizerId: String): boolean => {
-  return organizerId == userId!;
+const isOrganizer = async (event: Event): Promise<boolean> => {
+  const organizerId = await fetchEventOrganizer(event.id);
+  return organizerId === userId;
 };
+
 
 onMounted(() => {
   fetchRegisteredEvents();
@@ -124,31 +151,12 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.exchangeDayDetails {
-  display: flex;
-  flex-direction: column;
-  padding: 15px;
-  background-color: #EAEAEA;
-  border: 1px solid black;
-  border-radius: 8px;
-  margin: 20px auto;
-  font-family: Arial, sans-serif;
-  box-sizing: border-box;
-  height: 85vh;
-  overflow: hidden;
-}
 
 h1 {
   margin-top: 0;
   font-size: 24px;
   font-weight: bold;
   color: #333;
-}
-
-.scrollableEvents {
-  overflow-y: auto;
-  flex-grow: 1;
-  padding-right: 10px;
 }
 
 .event-item {
@@ -198,8 +206,8 @@ p {
   background-color: black;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
   border-radius: 6px;
   cursor: pointer;
   position: absolute;
@@ -212,7 +220,7 @@ p {
 }
 
 .showQR-button {
-  left: 10px;
+  left: 8px;
 }
 
 .openFeedback-button {
@@ -232,18 +240,6 @@ p {
 .openFeedback-button:active {
   background-color: #000000;
   transform: scale(0.98);
-}
-
-.event-item h3 {
-  font-size: 18px;
-  color: black;
-  margin: 0 0 8px;
-}
-
-.event-item p {
-  font-size: 14px;
-  color: #000000;
-  margin: 4px 0;
 }
 
 h2 {

@@ -215,6 +215,9 @@ const token = ref('');
 const route = useRoute();
 const router = useRouter();
 
+/*
+ * Submits the feedback data to the server.
+**/
 const submitFeedback = async () => {
   if (!userId.value) {
     alert("Please login first.");
@@ -271,6 +274,9 @@ const submitFeedback = async () => {
   }
 };
 
+/*
+ * Fetches the user ID from local storage and the event ID from the route.
+**/
 onMounted(() => {
   const storedUserId = localStorage.getItem('userId');
   if (storedUserId) {
