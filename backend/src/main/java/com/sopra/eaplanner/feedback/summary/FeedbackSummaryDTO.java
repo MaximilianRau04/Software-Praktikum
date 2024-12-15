@@ -16,7 +16,11 @@ public class FeedbackSummaryDTO {
 
     public FeedbackSummaryDTO() {}
 
-    public FeedbackSummaryDTO(Long eventId, String eventName, String organizerName) {}
+    public FeedbackSummaryDTO(Long eventId, String eventName, String organizerName) {
+        this.eventId = eventId;
+        this.eventName = eventName;
+        this.organizerName = organizerName;
+    }
     public Long getEventId() {
         return eventId;
     }
@@ -59,6 +63,11 @@ public class FeedbackSummaryDTO {
     public void setComments(List<CommentAnalysis> comments) {
         this.comments = comments;
     }
+
+    public static FeedbackSummaryDTO mockWith(Long eventId, String eventName, String organizerName) {
+        return new FeedbackSummaryDTO(eventId, eventName, organizerName);
+    }
+
 
     public static class FeedbackStatistics{
         private double average;

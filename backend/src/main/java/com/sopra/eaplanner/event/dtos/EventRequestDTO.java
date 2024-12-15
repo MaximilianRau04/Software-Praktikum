@@ -26,9 +26,8 @@ public class EventRequestDTO {
     @NotNull(message = "Exchange day must be specified")
     private Long exchangeDayId;
 
-    public @NotNull(message = "Organizer must be specified") Long getOrganizerId() {
-        return organizerId;
-    }
+    @NotNull(message = "Organizer must be specified")
+    private Long organizerId;
 
     public EventRequestDTO(){
     }
@@ -85,6 +84,21 @@ public class EventRequestDTO {
         this.name = name;
     }
 
-    @NotNull(message = "Organizer must be specified")
-    private Long organizerId;
+    public @NotNull(message = "Organizer must be specified") Long getOrganizerId() {
+        return organizerId;
+    }
+
+    public static EventRequestDTO mockWith(String name, LocalTime startTime, LocalTime endTime, String description, String room, Long exchangeDayId, Long organizerId) {
+        return new EventRequestDTO(name, startTime, endTime, room, description, exchangeDayId, organizerId);
+    }
+
+    private EventRequestDTO(String name, LocalTime startTime, LocalTime endTime, String room, String description, Long exchangeDayId, Long organizerId) {
+        this.name = name;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.room = room;
+        this.description = description;
+        this.exchangeDayId = exchangeDayId;
+        this.organizerId = organizerId;
+    }
 }

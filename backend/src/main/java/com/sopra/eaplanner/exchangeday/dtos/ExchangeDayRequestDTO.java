@@ -60,4 +60,15 @@ public class ExchangeDayRequestDTO {
     public void setDescription(@Size(max = 255, message = "Description cannot exceed 255 characters") String description) {
         this.description = description;
     }
+
+    public static ExchangeDayRequestDTO mockWith(LocalDate date, String name, String location, String description) {
+        return new ExchangeDayRequestDTO(date, name, location, description);
+    }
+
+    private ExchangeDayRequestDTO(LocalDate date, String name, String location, String description) {
+        this.date = date;
+        this.name = name;
+        this.location = location;
+        this.description = description;
+    }
 }

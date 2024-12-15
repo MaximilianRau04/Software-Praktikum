@@ -42,4 +42,15 @@ public class UserRequestDTO {
     public User.Role getRole() {
         return role;
     }
+
+    public static UserRequestDTO mockWith(String username, String firstname, String lastname, User.Role role) {
+        return new UserRequestDTO(username, firstname, lastname, role);
+    }
+
+    private UserRequestDTO(String username, String firstname, String lastname, User.Role role) {
+        this.username = username;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.role = role;
+    }
 }

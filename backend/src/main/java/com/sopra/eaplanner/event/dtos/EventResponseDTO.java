@@ -11,7 +11,6 @@ public class EventResponseDTO {
     private String name;
     private String room;
     private String description;
-    private Long organizer;
 
     public EventResponseDTO() {
     }
@@ -23,7 +22,6 @@ public class EventResponseDTO {
         this.name = event.getName();
         this.room = event.getRoom();
         this.description = event.getDescription();
-        this.organizer = event.getOrganizer().getId();
     }
 
     public EventResponseDTO(Event event){
@@ -33,7 +31,6 @@ public class EventResponseDTO {
         this.name = event.getName();
         this.room = event.getRoom();
         this.description = event.getDescription();
-        this.organizer = event.getOrganizer().getId();
     }
 
     public Long getId() {
@@ -84,12 +81,18 @@ public class EventResponseDTO {
         this.description = description;
     }
 
-    public Long getOrganizer() {
-        return organizer;
+
+    public static EventResponseDTO mockWith(Long id, LocalTime startTime, LocalTime endTime, String name, String room, String description) {
+        return new EventResponseDTO(id, startTime, endTime, name, room, description);
     }
 
-    public void setOrganizer(Long organizer) {
-        this.organizer = organizer;
+    private EventResponseDTO(Long id, LocalTime startTime, LocalTime endTime, String name, String room, String description) {
+        this.id = id;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.name = name;
+        this.room = room;
+        this.description = description;
     }
 }
 
