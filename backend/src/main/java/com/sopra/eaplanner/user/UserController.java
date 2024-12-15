@@ -62,7 +62,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @Valid @RequestBody UserRequestDTO requestBody) {
+    public UserResponseDTO updateUser(@PathVariable Long id, @Valid @RequestBody UserRequestDTO requestBody) {
         return userService.updateUser(id, requestBody);
     }
 
@@ -74,12 +74,14 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}/eventRegistration")
-    public void removeUserFromEvent(@PathVariable Long userId, @RequestParam Long eventId) {
+    public ResponseEntity<?> removeUserFromEvent(@PathVariable Long userId, @RequestParam Long eventId) {
         userService.removeUserFromEvent(userId, eventId);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }

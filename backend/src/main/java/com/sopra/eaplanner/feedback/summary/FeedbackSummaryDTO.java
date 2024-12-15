@@ -64,6 +64,11 @@ public class FeedbackSummaryDTO {
         this.comments = comments;
     }
 
+    public static FeedbackSummaryDTO mockWith(Long eventId, String eventName, String organizerName) {
+        return new FeedbackSummaryDTO(eventId, eventName, organizerName);
+    }
+
+
     public static class FeedbackStatistics{
         private double average;
         private double median;

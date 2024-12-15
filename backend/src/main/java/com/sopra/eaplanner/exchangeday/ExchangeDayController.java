@@ -46,7 +46,8 @@ public class ExchangeDayController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteExchangeDay(@PathVariable Long id) {
+    public ResponseEntity<?> deleteExchangeDay(@PathVariable Long id) {
         exchangeDayService.deleteExchangeDayById(id);
+        return ResponseEntity.noContent().build();
     }
 }

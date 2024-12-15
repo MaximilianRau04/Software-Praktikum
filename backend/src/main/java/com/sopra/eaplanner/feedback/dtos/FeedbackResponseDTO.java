@@ -271,4 +271,111 @@ public class FeedbackResponseDTO {
     public void setSimilarEventParticipationScore(Integer similarEventParticipationScore) {
         this.similarEventParticipationScore = similarEventParticipationScore;
     }
+
+
+    public static FeedbackResponseDTO mockWith(
+            Integer overallScore,
+            Integer organisationalScore,
+            Integer relevanceScore,
+            Integer understandabilityScore,
+            Integer contentDepthScore,
+            Integer practicalityScore,
+            Integer reasonabilityScore,
+            Integer competencyScore,
+            Integer presentabilityScore,
+            Integer interactivityScore,
+            Integer timeManagementScore,
+            Integer participationScore,
+            Integer atmosphereScore,
+            Integer networkingScore,
+            Integer equipmentScore,
+            Integer comfortabilityScore,
+            Integer communicationScore,
+            String enjoymentComment,
+            String improvementComment,
+            String requestComment,
+            String personalImprovementComment,
+            boolean isEventRecommended,
+            String recommendationComment,
+            Integer similarEventParticipationScore
+    ) {
+        return new FeedbackResponseDTO(
+                overallScore,
+                organisationalScore,
+                relevanceScore,
+                understandabilityScore,
+                contentDepthScore,
+                practicalityScore,
+                reasonabilityScore,
+                competencyScore,
+                presentabilityScore,
+                interactivityScore,
+                timeManagementScore,
+                participationScore,
+                atmosphereScore,
+                networkingScore,
+                equipmentScore,
+                comfortabilityScore,
+                communicationScore,
+                enjoymentComment,
+                improvementComment,
+                requestComment,
+                personalImprovementComment,
+                isEventRecommended,
+                recommendationComment,
+                similarEventParticipationScore
+        );
+    }
+
+    private FeedbackResponseDTO(
+            Integer overallScore,
+            Integer organisationalScore,
+            Integer relevanceScore,
+            Integer understandabilityScore,
+            Integer contentDepthScore,
+            Integer practicalityScore,
+            Integer reasonabilityScore,
+            Integer competencyScore,
+            Integer presentabilityScore,
+            Integer interactivityScore,
+            Integer timeManagementScore,
+            Integer participationScore,
+            Integer atmosphereScore,
+            Integer networkingScore,
+            Integer equipmentScore,
+            Integer comfortabilityScore,
+            Integer communicationScore,
+            String enjoymentComment,
+            String improvementComment,
+            String requestComment,
+            String personalImprovementComment,
+            boolean isEventRecommended,
+            String recommendationComment,
+            Integer similarEventParticipationScore
+    ) {
+        this.overallScore = overallScore;
+        this.organisationalScore = organisationalScore;
+        this.relevanceScore = relevanceScore;
+        this.understandabilityScore = understandabilityScore;
+        this.contentDepthScore = contentDepthScore;
+        this.practicalityScore = practicalityScore;
+        this.reasonabilityScore = reasonabilityScore;
+        this.competencyScore = competencyScore;
+        this.presentabilityScore = presentabilityScore;
+        this.interactivityScore = interactivityScore;
+        this.timeManagementScore = timeManagementScore;
+        this.participationScore = participationScore;
+        this.atmosphereScore = atmosphereScore;
+        this.networkingScore = networkingScore;
+        this.equipmentScore = equipmentScore;
+        this.comfortabilityScore = comfortabilityScore;
+        this.communicationScore = communicationScore;
+        this.enjoymentComment = enjoymentComment;
+        this.improvementComment = improvementComment;
+        this.requestComment = requestComment;
+        this.personalImprovementComment = personalImprovementComment;
+        this.isEventRecommended = isEventRecommended;
+        this.recommendationComment = recommendationComment;
+        this.similarEventParticipationScore = similarEventParticipationScore;
+    }
 }

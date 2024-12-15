@@ -11,16 +11,20 @@ public class EventParticipationDTO {
     private UserResponseDTO user;
     private EventResponseDTO event;
 
-    private boolean confirmed;
-
+    private boolean participationConfirmed;
     private LocalDateTime confirmationTime;
+
+    private boolean feedbackGiven;
+    private LocalDateTime feedbackTime;
 
     public EventParticipationDTO(EventParticipation eventParticipation) {
         this.id = eventParticipation.getId();
         this.user = new UserResponseDTO(eventParticipation.getUser());
         this.event = new EventResponseDTO(eventParticipation.getEvent());
-        this.confirmed = eventParticipation.isConfirmed();
+        this.participationConfirmed = eventParticipation.isParticipationConfirmed();
         this.confirmationTime = eventParticipation.getConfirmationTime();
+        this.feedbackGiven = eventParticipation.isFeedbackGiven();
+        this.feedbackTime = eventParticipation.getFeedbackTime();
     }
 
     public Long getId() {
@@ -35,11 +39,18 @@ public class EventParticipationDTO {
         return event;
     }
 
-    public boolean getIsConfirmed() {
-        return confirmed;
+    public boolean getParticipationConfirmed() {
+        return participationConfirmed;
     }
 
     public LocalDateTime getConfirmationTime() {
         return confirmationTime;
+    }
+
+    public boolean getFeedbackGiven() {
+        return feedbackGiven;
+    }
+    public LocalDateTime getFeedbackTime() {
+        return feedbackTime;
     }
 }

@@ -15,14 +15,6 @@ public class ExchangeDayResponseDTO {
     public ExchangeDayResponseDTO() {
     }
 
-    public ExchangeDayResponseDTO(Long id, LocalDate date, String name, String location, String description) {
-        this.id = id;
-        this.date = date;
-        this.name = name;
-        this.location = location;
-        this.description = description;
-    }
-
     public ExchangeDayResponseDTO(ExchangeDay exchangeDay) {
         this.id = exchangeDay.getId();
         this.date = exchangeDay.getDate();
@@ -68,6 +60,18 @@ public class ExchangeDayResponseDTO {
     }
 
     public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public static ExchangeDayResponseDTO mockWith(Long id, LocalDate date, String name, String location, String description) {
+        return new ExchangeDayResponseDTO(id, date, name, location, description);
+    }
+
+    private ExchangeDayResponseDTO(Long id, LocalDate date, String name, String location, String description) {
+        this.id = id;
+        this.date = date;
+        this.name = name;
+        this.location = location;
         this.description = description;
     }
 }

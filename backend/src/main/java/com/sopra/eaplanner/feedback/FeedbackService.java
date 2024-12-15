@@ -2,6 +2,7 @@ package com.sopra.eaplanner.feedback;
 
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.EventRepository;
+import com.sopra.eaplanner.event.participation.EventParticipationService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackRequestDTO;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO;
@@ -29,6 +30,9 @@ public class FeedbackService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EventParticipationService eventParticipationService;
 
     public Iterable<FeedbackResponseDTO> getAllFeedbacks() {
         Iterable<Feedback> feedbacks = feedbackRepository.findAll();
@@ -107,14 +111,17 @@ public class FeedbackService {
     }
 
     public FeedbackResponseDTO createFeedback(FeedbackRequestDTO requestBody) {
-        Event event = eventRepository.findById(requestBody.getEventId())
+        Event eventForFeedback = eventRepository.findById(requestBody.getEventId())
                 .orElseThrow(() -> new EntityNotFoundException("Event not found"));
 
         User feedbackAuthor = userRepository.findById(requestBody.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        Feedback feedbackToSave = new Feedback(requestBody, event, feedbackAuthor);
+        Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback, feedbackAuthor);
+
         feedbackToSave = feedbackRepository.save(feedbackToSave);
+        eventParticipationService.postFeedback(feedbackAuthor,eventForFeedback);
+
         return new FeedbackResponseDTO(feedbackToSave);
     }
 
@@ -175,5 +182,10 @@ public class FeedbackService {
                 .collect(Collectors.toList());
 
         stats.put(key, calculateStatistics(values));
+    }
+
+    // TODO: Find library that can extract the general vibe from a String provided.
+    private String analyzeSentiment(String text) {
+        return "Not implemented yet.";
     }
 }

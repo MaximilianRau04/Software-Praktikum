@@ -85,7 +85,7 @@ public class UserService {
         return new UserResponseDTO(userToSave);
     }
 
-    public User updateUser(Long id, UserRequestDTO user) {
+    public UserResponseDTO updateUser(Long id, UserRequestDTO user) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
@@ -93,11 +93,20 @@ public class UserService {
             throw new EntityExistsException("Username already in use.");
         }
 
-        existingUser.setFirstname(user.getFirstname());
-        existingUser.setLastname(user.getLastname());
-        existingUser.setRole(user.getRole());
+        if (!user.getUsername().isBlank()) {
+            existingUser.setUsername(user.getUsername());
+        }
+        if (!user.getFirstname().isBlank()) {
+            existingUser.setFirstname(user.getFirstname());
+        }
+        if (!user.getLastname().isBlank()) {
+            existingUser.setLastname(user.getLastname());
+        }
+        if (user.getRole() != null) {
+            existingUser.setRole(user.getRole());
+        }
 
-        return userRepository.save(existingUser);
+        return new UserResponseDTO(userRepository.save(existingUser));
     }
 
     public User registerUserToEvent(Long userId, Long eventId) {

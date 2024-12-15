@@ -5,7 +5,10 @@ import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/feedback")
@@ -30,14 +33,17 @@ public class FeedbackController {
     }
 
     @PostMapping("")
-    public FeedbackResponseDTO createFeedback(@Valid @RequestBody FeedbackRequestDTO requestBody) {
-        return feedbackService.createFeedback(requestBody);
+    public ResponseEntity<FeedbackResponseDTO> createFeedback(@Valid @RequestBody FeedbackRequestDTO requestBody) {
+        FeedbackResponseDTO savedDTO = feedbackService.createFeedback(requestBody);
+        URI location = URI.create("/api/feedback/" + savedDTO.getId());
+        return ResponseEntity.created(location).body(savedDTO);
     }
 
     // TODO: PutMapping here
 
     @DeleteMapping("/{id}")
-    public void deleteFeedback(@PathVariable Long id) {
+    public ResponseEntity<?> deleteFeedback(@PathVariable Long id) {
         feedbackService.deleteFeedback(id);
+        return ResponseEntity.noContent().build();
     }
 }

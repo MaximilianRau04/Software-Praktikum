@@ -14,15 +14,6 @@ public class EventParticipationService {
     @Autowired
     private EventParticipationRepository eventParticipationRepository;
 
-    public void confirmAttendance(User user, Event event) {
-        EventParticipation eventParticipation = eventParticipationRepository.findByUserAndEvent(user, event)
-                .orElseThrow(() -> new EntityNotFoundException("Participation not found"));
-
-        eventParticipation.setConfirmed(true);
-        eventParticipation.setConfirmationTime(LocalDateTime.now());
-        eventParticipationRepository.save(eventParticipation);
-    }
-
     public void createAttendance(User user, Event event) {
         if (eventParticipationRepository.existsByUserAndEvent(user, event)) {
             throw new EntityExistsException("Event is already being attended.");
@@ -30,9 +21,27 @@ public class EventParticipationService {
         eventParticipationRepository.save(new EventParticipation(user, event));
     }
 
+    public void confirmAttendance(User user, Event event) {
+        EventParticipation eventParticipation = eventParticipationRepository.findByUserAndEvent(user, event)
+                .orElseThrow(() -> new EntityNotFoundException("Participation not found"));
+
+        eventParticipation.setParticipationConfirmed(true);
+        eventParticipation.setConfirmationTime(LocalDateTime.now());
+        eventParticipationRepository.save(eventParticipation);
+    }
+
     public void deleteAttendance(User user, Event event) {
         EventParticipation eventParticipation = eventParticipationRepository.findByUserAndEvent(user, event)
                 .orElseThrow(() -> new EntityNotFoundException("Participation not found"));
         eventParticipationRepository.delete(eventParticipation);
+    }
+
+    public void postFeedback(User user, Event event) {
+        EventParticipation eventParticipation = eventParticipationRepository.findByUserAndEvent(user, event)
+                .orElseThrow(() -> new EntityNotFoundException("Participation not found"));
+
+        eventParticipation.setFeedbackGiven(true);
+        eventParticipation.setFeedbackTime(LocalDateTime.now());
+        eventParticipationRepository.save(eventParticipation);
     }
 }
