@@ -2,6 +2,7 @@ package com.sopra.eaplanner.feedback;
 
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.EventRepository;
+import com.sopra.eaplanner.event.participation.EventParticipationService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackRequestDTO;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO;
@@ -29,6 +30,9 @@ public class FeedbackService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EventParticipationService eventParticipationService;
 
     public Iterable<FeedbackResponseDTO> getAllFeedbacks() {
         Iterable<Feedback> feedbacks = feedbackRepository.findAll();
@@ -84,31 +88,24 @@ public class FeedbackService {
     }
 
     public UserResponseDTO getFeedbackAuthor(Long id) {
-        Optional<Feedback> feedback = feedbackRepository.findById(id);
-        if (feedback.isEmpty()) {
-            throw new EntityNotFoundException("Feedback not found");
-        }
+        Feedback feedback = feedbackRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Feedback not found."));
 
-        if (feedback.get().isAnonymousFeedback()) {
+        if (feedback.isAnonymousFeedback()) {
             throw new EntityNotFoundException("Anonymous Feedback");
         }
 
-        return new UserResponseDTO(feedback.get().getUser());
+        return new UserResponseDTO(feedback.getUser());
     }
 
     public FeedbackResponseDTO createFeedback(FeedbackRequestDTO requestBody) {
-        Optional<Event> eventForFeedback = eventRepository.findById(requestBody.getEventId());
-        if (eventForFeedback.isEmpty()) {
-            throw new EntityNotFoundException("Event not found");
-        }
+        Event eventForFeedback = eventRepository.findById(requestBody.getEventId()).orElseThrow(()-> new EntityNotFoundException("Event not found."));
 
-        Optional<User> feedbackAuthor = userRepository.findById(requestBody.getUserId());
-        if (feedbackAuthor.isEmpty()) {
-            throw new EntityNotFoundException("User not found");
-        }
+        User feedbackAuthor = userRepository.findById(requestBody.getUserId()).orElseThrow(()-> new EntityNotFoundException("User not found."));
 
-        Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback.get(), feedbackAuthor.get());
+        Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback, feedbackAuthor);
         feedbackToSave = feedbackRepository.save(feedbackToSave);
+        eventParticipationService.postFeedback(feedbackAuthor,eventForFeedback);
+
         return new FeedbackResponseDTO(feedbackToSave);
     }
 
@@ -154,6 +151,6 @@ public class FeedbackService {
 
     // TODO: Find library that can extract the general vibe from a String provided.
     private String analyzeSentiment(String text) {
-        return "Not imlemented yet.";
+        return "Not implemented yet.";
     }
 }
