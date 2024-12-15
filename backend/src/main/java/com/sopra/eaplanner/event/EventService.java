@@ -12,6 +12,7 @@ import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.qrcode.QRCodeService;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserRepository;
+import com.sopra.eaplanner.user.UserService;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,9 @@ public class EventService {
     private UserRepository userRepository;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private ExchangeDayRepository exchangeDayRepository;
 
     public EventResponseDTO createEvent(EventRequestDTO requestBody) throws Exception {
@@ -51,6 +55,7 @@ public class EventService {
                 .orElseThrow(() -> new EntityNotFoundException("Organizer not found."));
 
         Event savedEvent = eventRepository.save(new Event(requestBody, exchangeDay, eventOrganizer));
+        userService.registerUserToEvent(eventOrganizer.getId(), savedEvent.getId()); // TODO: Implement proper organizer handling
         generateAndSaveQRCode(savedEvent);
         eventRepository.save(savedEvent);
 
