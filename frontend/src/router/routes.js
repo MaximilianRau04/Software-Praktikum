@@ -37,7 +37,7 @@ export default [
         component: EventRegistrations,
       },
       {
-        path: 'feedback',
+        path: '/feedback/:eventId',
         name: 'feedbackSummary',
         component: FeedbackSummary
       }

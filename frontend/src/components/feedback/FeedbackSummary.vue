@@ -62,14 +62,10 @@
 </template>
 
 <script>
+import config from '@/config';
+
 export default {
   name: 'EventSummary',
-  props: {
-    eventId: {
-      type: String,
-      required: true
-    }
-  },
   data() {
     return {
       data: null,
@@ -77,10 +73,15 @@ export default {
       error: null
     };
   },
+  computed:{
+    eventId(){
+      return this.$route.params.eventId;
+    }
+  },
   methods: {
     async fetchData() {
       try {
-        const response = await fetch(`/events/${this.eventId}/summary`);
+        const response = await fetch(`${config.apiBaseUrl}/events/${this.eventId}/summary`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
