@@ -5,6 +5,21 @@
     <div v-if="isLoading">
       <p>Events werden geladen...</p>
     </div>
+    
+    <div v-if="showQRCodeModal" class="qr-modal-overlay">
+      <div class="qr-modal">
+        <h2>QR-Code für Event Nr.{{ eventId }}</h2>
+        <img :src="qrCodeUrl" alt="QR Code" />
+
+        <p><a :href="qrCodeUrl">{{ qrCodeUrl }}</a></p>
+
+        <a :href="qrCodeUrl" :download="'event-' + eventId + '-qr-code.png'">
+          <button class="download-button">QR-Code herunterladen</button>
+        </a>
+        <button @click="closeQRCodeModal" class="close-modal-button">Schließen</button>
+      </div>
+    </div>
+
     <div v-else class="scrollableEvents">
       <div v-if="registeredEvents.length > 0">
         <ul>
@@ -49,24 +64,37 @@ import { Event } from '../../types/Event';
 import config from '../../config';
 import { useRouter } from "vue-router";  
 import Cookies from 'js-cookie';
+import '../../assets/event-registrations.css';
 
 const router = useRouter();
 const registeredEvents = ref<Event[]>([]);
 const organizerStatus = ref<{ [eventId: number]: boolean }>({});
 const isLoading = ref(true);
 const userId = Cookies.get("userId");
+const showQRCodeModal = ref(false);
+const qrCodeUrl = ref("");
+const eventId = ref<number | null>(null);
 
 if (!userId) {
   throw new Error("User ID not found in cookies.");
 }
 
 /**
- * Opens the QR code page for a specific event in a new tab.
- * @param {number} eventId - The ID of the event.
+ * Opens the QR code modal for a specific event.
+ * @param {number} id - The ID of the event.
  */
-const openQRCode = (eventId: number) => {
-  const qrCodeUrl = `${config.apiBaseUrl}/events/${eventId}/qr-code`;
-  window.open(qrCodeUrl, '_blank');
+const openQRCode = (id: number) => {
+  eventId.value = id;
+  qrCodeUrl.value = `${config.apiBaseUrl}/events/${id}/qr-code`; 
+  showQRCodeModal.value = true;
+};
+
+
+/**
+ * Closes the QR code modal.
+ */
+const closeQRCodeModal = () => {
+  showQRCodeModal.value = false;
 };
 
 /**
@@ -169,112 +197,3 @@ onMounted(() => {
   fetchRegisteredEvents();
 });
 </script>
-
-<style scoped>
-
-h1 {
-  margin-top: 0;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-}
-
-.event-item {
-  background-color: #009EE2;
-  border: 1px solid #ccd;
-  border-radius: 8px;
-  padding: 15px;
-  margin: 5px 0;
-  position: relative;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-  list-style-type: none;
-}
-
-.event-item:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transform: translateY(-5px);
-}
-
-
-.event-details {
-  padding: 0.5rem;
-  font-size: 16px;
-  color: #fff;
-}
-
-
-.event-details p {
-  font-size: 18px;
-}
-
-h2 {
-  font-size: 20px;
-  color: #ffffff;
-  margin-bottom: 0.5rem;
-}
-
-p {
-  margin: 0.2rem 0;
-  color: #000000;
-  font-size: 14px;
-}
-
-.unregister-button,
-.showQR-button,
-.openFeedback-button {
-  background-color: black;
-  color: white;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.85rem;
-  border-radius: 6px;
-  cursor: pointer;
-  position: absolute;
-  bottom: 10px;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.unregister-button {
-  right: 10px;
-}
-
-.showQR-button {
-  left: 8px;
-}
-
-.openFeedback-button {
-  left: 10px;
-  bottom: 60px;
-}
-
-
-.unregister-button:hover,
-.showQR-button:hover,
-.openFeedback-button:hover {
-  background-color: #005FA3;
-}
-
-.unregister-button:active,
-.showQR-button:active,
-.openFeedback-button:active {
-  background-color: #000000;
-  transform: scale(0.98);
-}
-
-h2 {
-  font-size: 20px;
-  color: #000000;
-  margin-top: 20px;
-  margin-bottom: 5px;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 5px;
-}
-
-.empty-state {
-  text-align: center;
-  color: #888;
-  font-size: 16px;
-  margin-top: 20px;
-}
-</style>
