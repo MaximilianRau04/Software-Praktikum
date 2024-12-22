@@ -33,15 +33,13 @@ const userId = Cookies.get("userId");
  */
 const checkRegistrationStatus = async () => {
   if (!userId) {
-    console.error("User ID not found");
-    return;
+      return;
   }
   try {
     const response = await fetch(`${config.apiBaseUrl}/users/${userId}/registeredEvents`);
     if (!response.ok) throw new Error("Failed to fetch user data.");
 
     const registeredEvents = await response.json();
-    console.log("Registered Events:", registeredEvents);
 
     isAlreadyRegistered.value = registeredEvents.some((event: { id: number }) => event.id === props.event.id);
   } catch (error) {
@@ -56,7 +54,10 @@ const checkRegistrationStatus = async () => {
  */
 const register = async (eventId: number) => {
   try {
-    if (!userId) throw new Error("User ID not found in cookies.");
+    if (!userId) {
+      window.alert("Bitte melden sie sich zuvor an.");
+      return;
+    }
 
     const response = await fetch(`${config.apiBaseUrl}/users/${userId}/eventRegistration?eventId=${eventId}`, {
       method: "POST",
