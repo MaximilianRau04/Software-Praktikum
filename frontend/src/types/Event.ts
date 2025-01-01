@@ -5,4 +5,5 @@ export interface Event {
   endTime: string;
   startTime: string;
   room: string;
+  forumThreads: object[];
 }

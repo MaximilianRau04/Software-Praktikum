@@ -5,8 +5,8 @@ Content-Type: application/json
   "name": "Fresh Try ResponseEntities",
   "description": "Bla Bla",
   "room": "0.108",
-  "exchangeDayId": 6,
-  "organizerId": 3,
+  "exchangeDayId": 1,
+  "organizerId": 2,
   "startTime": "13:00:00",
   "endTime": "14:00:00"
 }
@@ -26,7 +26,7 @@ POST http://localhost:8080/api/exchange-days
 Content-Type: application/json
 
 {
-  "date": "2024-12-30",
+  "date": "2025-12-30",
   "name": "Fresh",
   "location": "Frankfurt",
   "description": "A day dedicated to learning Spring Boot with multiple sessions."
@@ -72,8 +72,7 @@ Content-Type: application/json
   "recommendationComment": "I would definitely recommend this workshop to anyone that wants to work in web deployment.",
   "similarEventParticipationScore": 5,
   "anonymousFeedback": true,
-  "eventId": 11,
-  "userId": 1
+  "eventId": 11
 }
 
 ###
@@ -106,3 +105,25 @@ GET http://localhost:8080/api/events/5/qr-code
 GET http://localhost:8080/api/users
 ###
 GET http://localhost:8080/api/events/5
+###
+POST http://localhost:8080/api/forumposts
+Content-Type: application/json
+
+{
+  "forumThreadId": 1,
+  "content": "I am really looking forward to this event. I hope it will be as good as the last one."
+}
+###
+POST http://localhost:8080/api/forumthreads
+Content-Type: application/json
+
+{
+  "eventId": 1,
+  "title": "Event Discussion",
+  "description": "Discuss everything about the event here."
+}
+###
+GET http://localhost:8080/api/events/1/forumposts
+###
+GET http://localhost:8080/api/forumthreads/1
+

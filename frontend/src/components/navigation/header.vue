@@ -58,6 +58,9 @@ export default {
       this.$router.push('/register');
     },
   },
+  /**
+   * Check if user is already logged in
+   */
   onMounted() {
     const userId = Cookies.get('userId');
     if (userId) {

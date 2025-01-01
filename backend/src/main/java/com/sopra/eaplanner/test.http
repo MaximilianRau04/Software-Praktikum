@@ -59,6 +59,7 @@ Content-Type: application/json
   "location": "Munich",
   "description": "A day focused on modern frontend development technologies such as React, Vue, and Angular."
 }
+
 ###
 ###
 POST http://193.196.54.172:8000/api/exchange-days

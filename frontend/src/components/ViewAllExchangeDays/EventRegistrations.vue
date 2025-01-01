@@ -42,6 +42,11 @@
               </button>
 
               <button 
+                class="forum-button" @click="openForum(event.id)">
+                Diskussionsforum anzeigen
+              </button>
+
+              <button 
                 class="unregister-button" 
                 @click="unregisterFromEvent(event.id)">
                 Abmelden
@@ -102,6 +107,14 @@ const closeQRCodeModal = () => {
  */
 const openFeedback = (eventId: number) => {
   router.push({ name: 'feedbackSummary', params: { eventId: eventId.toString() } });
+};
+
+/**
+ * Navigates to the feedback summary page for a specific event.
+ * @param {number} eventId - The ID of the event.
+ */
+ const openForum = (eventId: number) => {
+  router.push({ name: 'forum', params: { eventId: eventId.toString() } });
 };
 
 /**
@@ -224,21 +237,27 @@ h1 {
 }
   
 .event-details {
-    padding: 0.5rem;
     font-size: 16px;
     color: #fff;
+    white-space: normal;
+    overflow-wrap: break-word;
 }
   
 .event-details p {
     font-size: 18px;
+    max-width: 80%;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
+
   
 p {
-    margin: 0.2rem 0;
     color: #000;
     font-size: 14px;
 }
   
+.forum-button,
 .unregister-button,
 .showQR-button,
 .openFeedback-button {
@@ -259,12 +278,18 @@ p {
 }
   
 .showQR-button {
-    left: 8px;
+    right: 10px;
+    bottom: 30%
 }
   
 .openFeedback-button {
-    left: 10px;
-    bottom: 60px;
+    right: 10px;
+    bottom: 55%;
+}
+
+.forum-button {
+    right: 10px;
+    bottom: 80%;
 }
   
 .unregister-button:hover,

@@ -90,6 +90,9 @@ export default {
     }
   },
   methods: {
+    /**
+     * Fetches event summary data from the API
+     */
     async fetchData() {
       try {
         const response = await fetch(`${config.apiBaseUrl}/events/${this.eventId}/summary`);

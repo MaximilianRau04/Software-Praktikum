@@ -1,11 +1,11 @@
 package com.sopra.eaplanner.forumthread;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.forumpost.ForumPost;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,11 +21,12 @@ public class ForumThread {
 
     @ManyToOne
     @JoinColumn(name = "event_id")
-    @NotNull
+    @JsonBackReference
     private Event event;
 
     @OneToMany(mappedBy = "forumThread", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ForumPost> forumPosts = new ArrayList<>();
+    @JsonManagedReference
+    private List<ForumPost> forumPosts;
 
     public ForumThread() {
     }

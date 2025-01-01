@@ -5,6 +5,7 @@ import EventPlanning from '../components/createNewEvents/EventPlanning.vue';
 import HomePage from '@/components/HomePage.vue';
 import GiveFeedback from '@/components/feedback/GiveFeedback.vue';
 import FeedbackSummary from '@/components/feedback/FeedbackSummary.vue';
+import Forum from '@/components/forum/Forum.vue';
 
 export default [
   {
@@ -40,6 +41,12 @@ export default [
         path: '/feedback/:eventId',
         name: 'feedbackSummary',
         component: FeedbackSummary
+      },
+      {
+        path: '/forum/:eventId',
+        name: 'forum',
+        component: Forum,
+        props: true
       }
     ]
   },
