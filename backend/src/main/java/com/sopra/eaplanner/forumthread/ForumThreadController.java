@@ -34,12 +34,12 @@ public class ForumThreadController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ForumThread> getForumThreadById(@PathVariable Long id) {
+    public ResponseEntity<ForumThreadResponseDTO> getForumThreadById(@PathVariable Long id) {
         Optional<ForumThread> forumThread = forumThreadService.getForumThreadById(id);
         if (forumThread.isPresent()) {
             List<ForumPost> posts = forumPostRepository.findByForumThreadId(id);
             forumThread.get().setForumPosts(posts);
-            return ResponseEntity.ok(forumThread.get());
+            return ResponseEntity.ok(new ForumThreadResponseDTO(forumThread.get()));
         } else {
             return ResponseEntity.notFound().build();
         }

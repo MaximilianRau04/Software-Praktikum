@@ -3,6 +3,10 @@ package com.sopra.eaplanner.user;
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationDTO;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
+import com.sopra.eaplanner.forumpost.ForumPost;
+import com.sopra.eaplanner.forumpost.ForumPostResponseDTO;
+import com.sopra.eaplanner.reward.Reward;
+import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.user.dtos.UserRequestDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.annotation.PostConstruct;
@@ -45,9 +49,20 @@ public class UserController {
         return userService.getGivenFeedback(id);
     }
 
-    //TODO: @GetMapping("/{id}/forumPosts")
-    //TODO: @GetMapping("/{id}/trainerProfile")
-    //TODO: @GetMapping("/{id}/rewards")
+    @GetMapping("/{id}/forumPosts")
+    public Iterable<ForumPostResponseDTO> getUserForumPosts(@PathVariable Long id) {
+        return userService.getUserForumPosts(id);
+    }
+
+    @GetMapping("/{id}/trainerProfile")
+    public TrainerProfile getTrainerProfile(@PathVariable Long id) {
+        return userService.getTrainerProfile(id);
+    }
+
+    @GetMapping("/{id}/rewards")
+    public Iterable<Reward> getUserRewards(@PathVariable Long id) {
+        return userService.getUserRewards(id);
+    }
 
     @GetMapping("/{id}/participations")
     public Iterable<EventParticipationDTO> getParticipations(@PathVariable Long id) {

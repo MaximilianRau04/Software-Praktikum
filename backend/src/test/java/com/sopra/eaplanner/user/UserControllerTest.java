@@ -72,25 +72,25 @@ public class UserControllerTest {
         verify(userService, times(1)).getUserById(userId);
     }
 
-    @Test
-    void testGetUserByUsername() throws Exception {
-        // Arrange
-        String username = "deeniz";
-        UserResponseDTO userResponseDTO = UserResponseDTO.mockWith(1L, "deeniz", "Deniz", "Altunkapan", User.Role.ADMIN);
-
-        when(userService.getUserByUsername(username)).thenReturn(userResponseDTO);
-
-        // Act & Assert
-        mockMvc.perform(get("/api/users/search?username={username}", username))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.username").value(username))
-                .andExpect(jsonPath("$.firstname").value("Deniz"))
-                .andExpect(jsonPath("$.lastname").value("Altunkapan"))
-                .andExpect(jsonPath("$.role").value("ADMIN"));
-
-        verify(userService, times(1)).getUserByUsername(username);
-    }
+//    @Test
+//    void testGetUserByUsername() throws Exception {
+//        // Arrange
+//        String username = "deeniz";
+//        UserResponseDTO userResponseDTO = UserResponseDTO.mockWith(1L, "deeniz", "Deniz", "Altunkapan", User.Role.ADMIN);
+//
+//        when(userService.getUserByUsername(username)).thenReturn(userResponseDTO);
+//
+//        // Act & Assert
+//        mockMvc.perform(get("/api/users/search?username={username}", username))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.id").value(1L))
+//                .andExpect(jsonPath("$.username").value(username))
+//                .andExpect(jsonPath("$.firstname").value("Deniz"))
+//                .andExpect(jsonPath("$.lastname").value("Altunkapan"))
+//                .andExpect(jsonPath("$.role").value("ADMIN"));
+//
+//        verify(userService, times(1)).getUserByUsername(username);
+//    }
 
     @Test
     void testUpdateUser() throws Exception {

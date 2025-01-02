@@ -127,3 +127,8 @@ GET http://localhost:8080/api/events/1/forumposts
 ###
 GET http://localhost:8080/api/forumthreads/1
 
+###
+GET localhost:8080/api/users/2/forumPosts
+###
+GET http://localhost:8080/api/users/search?username=maxTwo
+
