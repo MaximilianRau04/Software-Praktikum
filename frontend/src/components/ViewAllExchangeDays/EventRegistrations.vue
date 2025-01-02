@@ -5,6 +5,21 @@
     <div v-if="isLoading">
       <p>Events werden geladen...</p>
     </div>
+    
+    <div v-if="showQRCodeModal" class="qr-modal-overlay">
+      <div class="qr-modal">
+        <h2>QR-Code für Event Nr.{{ eventId }}</h2>
+        <img :src="qrCodeUrl" alt="QR Code" />
+
+        <p><a :href="qrCodeUrl">{{ qrCodeUrl }}</a></p>
+
+        <a :href="qrCodeUrl" :download="'event-' + eventId + '-qr-code.png'">
+          <button class="download-button">QR-Code herunterladen</button>
+        </a>
+        <button @click="closeQRCodeModal" class="close-modal-button">Schließen</button>
+      </div>
+    </div>
+
     <div v-else class="scrollableEvents">
       <div v-if="registeredEvents.length > 0">
         <ul>
@@ -24,6 +39,11 @@
               <button 
                 class="showQR-button" @click="openQRCode(event.id)" v-if="organizerStatus[event.id]">
                 QR-Code anzeigen
+              </button>
+
+              <button 
+                class="forum-button" @click="openForum(event.id)">
+                Diskussionsforum anzeigen
               </button>
 
               <button 
@@ -55,18 +75,30 @@ const registeredEvents = ref<Event[]>([]);
 const organizerStatus = ref<{ [eventId: number]: boolean }>({});
 const isLoading = ref(true);
 const userId = Cookies.get("userId");
+const showQRCodeModal = ref(false);
+const qrCodeUrl = ref("");
+const eventId = ref<number | null>(null);
 
 if (!userId) {
   throw new Error("User ID not found in cookies.");
 }
 
 /**
- * Opens the QR code page for a specific event in a new tab.
- * @param {number} eventId - The ID of the event.
+ * Opens the QR code modal for a specific event.
+ * @param {number} id - The ID of the event.
  */
-const openQRCode = (eventId: number) => {
-  const qrCodeUrl = `${config.apiBaseUrl}/events/${eventId}/qr-code`;
-  window.open(qrCodeUrl, '_blank');
+const openQRCode = (id: number) => {
+  eventId.value = id;
+  qrCodeUrl.value = `${config.apiBaseUrl}/events/${id}/qr-code`; 
+  showQRCodeModal.value = true;
+};
+
+
+/**
+ * Closes the QR code modal.
+ */
+const closeQRCodeModal = () => {
+  showQRCodeModal.value = false;
 };
 
 /**
@@ -75,6 +107,14 @@ const openQRCode = (eventId: number) => {
  */
 const openFeedback = (eventId: number) => {
   router.push({ name: 'feedbackSummary', params: { eventId: eventId.toString() } });
+};
+
+/**
+ * Navigates to the feedback summary page for a specific event.
+ * @param {number} eventId - The ID of the event.
+ */
+ const openForum = (eventId: number) => {
+  router.push({ name: 'forum', params: { eventId: eventId.toString() } });
 };
 
 /**
@@ -171,110 +211,175 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
 h1 {
-  margin-top: 0;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-}
-
+    margin-top: 0;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  
 .event-item {
-  background-color: #009EE2;
-  border: 1px solid #ccd;
-  border-radius: 8px;
-  padding: 15px;
-  margin: 5px 0;
-  position: relative;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-  list-style-type: none;
+    background-color: #009EE2;
+    border: 1px solid #ccd;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 5px 0;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    list-style-type: none;
 }
-
+  
 .event-item:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
 }
-
-
+  
 .event-details {
-  padding: 0.5rem;
-  font-size: 16px;
-  color: #fff;
+    font-size: 16px;
+    color: #fff;
+    white-space: normal;
+    overflow-wrap: break-word;
 }
-
-
+  
 .event-details p {
-  font-size: 18px;
+    font-size: 18px;
+    max-width: 80%;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
-h2 {
-  font-size: 20px;
-  color: #ffffff;
-  margin-bottom: 0.5rem;
-}
-
+  
 p {
-  margin: 0.2rem 0;
-  color: #000000;
-  font-size: 14px;
+    color: #000;
+    font-size: 14px;
 }
-
+  
+.forum-button,
 .unregister-button,
 .showQR-button,
 .openFeedback-button {
-  background-color: black;
-  color: white;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.85rem;
-  border-radius: 6px;
-  cursor: pointer;
-  position: absolute;
-  bottom: 10px;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    position: absolute;
+    bottom: 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
-
+  
 .unregister-button {
-  right: 10px;
+    right: 10px;
 }
-
+  
 .showQR-button {
-  left: 8px;
+    right: 10px;
+    bottom: 30%
 }
-
+  
 .openFeedback-button {
-  left: 10px;
-  bottom: 60px;
+    right: 10px;
+    bottom: 55%;
 }
 
-
+.forum-button {
+    right: 10px;
+    bottom: 80%;
+}
+  
 .unregister-button:hover,
 .showQR-button:hover,
 .openFeedback-button:hover {
-  background-color: #005FA3;
+    background-color: #005FA3;
 }
-
+  
 .unregister-button:active,
 .showQR-button:active,
 .openFeedback-button:active {
-  background-color: #000000;
-  transform: scale(0.98);
+    background-color: #000000;
+    transform: scale(0.98);
 }
-
+  
 h2 {
-  font-size: 20px;
-  color: #000000;
-  margin-top: 20px;
-  margin-bottom: 5px;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 5px;
+    font-size: 20px;
+    color: #000000;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
 }
-
+  
 .empty-state {
-  text-align: center;
-  color: #888;
-  font-size: 16px;
-  margin-top: 20px;
+    text-align: center;
+    color: #888;
+    font-size: 16px;
+    margin-top: 20px;
 }
+  
+.qr-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  
+.qr-modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 300px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+  
+.qr-modal img {
+    max-width: 100%;
+    margin-top: 10px;
+}
+  
+.close-modal-button {
+    background-color: #009EE2;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+  
+.close-modal-button:hover {
+    background-color: #007db8;
+}
+  
+.download-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 6px;
+    margin-top: 15px;
+    text-decoration: none;
+}
+  
+.download-button:hover {
+    background-color: #218838;
+}
+  
+.download-button:active {
+    background-color: #1e7e34;
+    transform: scale(0.98);
+}
+  
 </style>

@@ -17,9 +17,10 @@
 import MainPage from '@/components/ViewAllExchangeDays/MainPage.vue';
 import EventPlanning from '@/components/createNewEvents/EventPlanning.vue';
 import GiveFeedback from '@/components/feedback/GiveFeedback.vue';
-import Sidebar from '@/components/navigation/sidebar.vue';
-import HeaderTop from '@/components/navigation/header.vue';
+import Sidebar from '@/components/navigation/Sidebar.vue';
+import HeaderTop from '@/components/navigation/Header.vue';
 import EventRegistrations from './ViewAllExchangeDays/EventRegistrations.vue';
+import Forum from './forum/Forum.vue';
 
 export default {
   components: {
@@ -29,6 +30,7 @@ export default {
     EventPlanning, // Component for creating new events
     GiveFeedback, // Component for giving Feedback
     EventRegistrations, // Component for viewing registered events
+    Forum, // Component for viewing forum
   },
   data() {
     return {

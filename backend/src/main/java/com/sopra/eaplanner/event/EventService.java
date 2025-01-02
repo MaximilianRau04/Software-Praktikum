@@ -9,6 +9,7 @@ import com.sopra.eaplanner.exceptions.UserNotRegisteredException;
 import com.sopra.eaplanner.exchangeday.ExchangeDay;
 import com.sopra.eaplanner.exchangeday.ExchangeDayRepository;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
+import com.sopra.eaplanner.forumthread.ForumThread;
 import com.sopra.eaplanner.qrcode.QRCodeService;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserRepository;
@@ -25,6 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -96,6 +98,12 @@ public class EventService {
                 .stream()
                 .map(UserResponseDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    public Set<ForumThread> getForumThreads(Long id) {
+        Event event = eventRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Event not found."));
+
+        return event.getForumThreads();
     }
 
     public UserResponseDTO getOrganizerByEventId(Long id) {

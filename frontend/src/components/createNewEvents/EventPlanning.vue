@@ -13,6 +13,7 @@
         <img src="@/images/plus.png" alt="Plus" class="plus-icon" width="35" height="35" /> Neuer Exchange Day
       </button>
 
+      <!-- Workshop form -->
       <transition name="roll">
         <div v-if="showWorkshopBox" class="create-box">
           <h2 class="login-header">Neuer Workshop</h2>
@@ -60,6 +61,7 @@
         </div>
       </transition>
 
+      <!-- Exchange Day form -->
       <transition name="roll">
         <div v-if="showExchangeDay" class="create-box">
           <h2 class="login-header">Neuer Exchange Day</h2>

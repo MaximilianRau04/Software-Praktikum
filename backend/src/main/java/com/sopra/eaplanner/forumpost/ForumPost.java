@@ -1,5 +1,7 @@
 package com.sopra.eaplanner.forumpost;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sopra.eaplanner.forumthread.ForumThread;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
@@ -21,21 +23,25 @@ public class ForumPost {
     @ManyToOne
     @JoinColumn(name = "forum_thread_id")
     @NotNull
+    @JsonBackReference
     private ForumThread forumThread;
 
+    @JsonManagedReference
     @ManyToOne
-    @JoinColumn(name = "author_id")
-    @NotNull
+    @JoinColumn(name = "author_id", nullable = false)
     private User author;
+
+    private Boolean isAnonymous;
 
     public ForumPost() {
     }
 
-    public ForumPost(String content, ForumThread forumThread, User author) {
+    public ForumPost(String content, ForumThread forumThread, User author, Boolean isAnonymous) {
         this.content = content;
         this.forumThread = forumThread;
         this.author = author;
         this.createdAt = LocalDateTime.now();
+        this.isAnonymous = isAnonymous;
     }
 
     public Long getId() {
@@ -76,5 +82,13 @@ public class ForumPost {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public Boolean isAnonymous() {
+        return isAnonymous;
+    }
+
+    public void setAnonymous(Boolean isAnonymous) {
+        this.isAnonymous = isAnonymous;
     }
 }

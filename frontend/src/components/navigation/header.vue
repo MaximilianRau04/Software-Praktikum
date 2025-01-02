@@ -10,7 +10,7 @@
       </div>
 
       <div class="user-info">
-        <div class="user-label">{{ currentUser.username || 'Gast' }}</div>
+        <div class="user-label" @click="navigateToProfile">{{ currentUser.username || 'Gast' }}</div>
 
       </div>
     </div>
@@ -57,7 +57,18 @@ export default {
     toggleToRegistration() {
       this.$router.push('/register');
     },
+    navigateToProfile() {
+      if (this.currentUser.id) {
+        this.$router.push(`/user/${this.currentUser.username}`);
+      } else {
+        this.$router.push('/login');
+      }
+    },
   },
+  
+  /**
+   * Check if user is already logged in
+   */
   onMounted() {
     const userId = Cookies.get('userId');
     if (userId) {
