@@ -117,6 +117,8 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+const apiUrl = 'http://193.196.54.172:8000/api/';
+
 export default {
   data() {
     return {
@@ -141,7 +143,7 @@ export default {
     async fetchThreads() {
       const eventId = this.$route.params.eventId;
       try {
-        const response = await axios.get(`http://localhost:8080/api/events/${eventId}/forum`);
+        const response = await axios.get(`${apiUrl}events/${eventId}/forum`);
         this.threads = response.data;
       } catch (error) {
         console.error('Fehler beim Abrufen der Threads:', error);
@@ -160,7 +162,7 @@ export default {
           eventId: eventId
         };
 
-        await axios.post('http://localhost:8080/api/forumthreads', newThreadData);
+        await axios.post(`${apiUrl}forumthreads`, newThreadData);
         this.fetchThreads();
         this.newThread.title = '';
         this.newThread.description = '';
@@ -184,7 +186,7 @@ export default {
      */
     async fetchThreadDetail() {
       try {
-        const response = await axios.get(`http://localhost:8080/api/forumthreads/${this.selectedThreadId}`);
+        const response = await axios.get(`${apiUrl}forumthreads/${this.selectedThreadId}`);
         this.selectedThread = response.data;
       } catch (error) {
         console.error('Fehler beim Abrufen der Thread-Details:', error);
@@ -194,27 +196,27 @@ export default {
     /**
      * Creates a new post
      */
-  async createPost() {
-  try {
-    const userId = Cookies.get('userId'); 
+    async createPost() {
+      try {
+        const userId = Cookies.get('userId'); 
 
-    const newPostData = {
-      content: this.newPost.content,
-      forumThreadId: this.selectedThreadId,
-      authorId: userId,
-      anonymous: this.newPost.isAnonymous
-    };
+        const newPostData = {
+          content: this.newPost.content,
+          forumThreadId: this.selectedThreadId,
+          authorId: userId,
+          anonymous: this.newPost.isAnonymous
+        };
 
-    await axios.post('http://localhost:8080/api/forumposts', newPostData);
+        await axios.post(`${apiUrl}forumposts`, newPostData);
 
-    this.fetchThreadDetail(); 
-    this.newPost.content = ''; 
-    this.newPost.isAnonymous = false;
-  } catch (error) {
-    console.error('Fehler beim Erstellen des Posts:', error);
-  }
-},
-    
+        this.fetchThreadDetail(); 
+        this.newPost.content = ''; 
+        this.newPost.isAnonymous = false;
+      } catch (error) {
+        console.error('Fehler beim Erstellen des Posts:', error);
+      }
+    },
+
     /**
      * Formats a date to a human-readable format
      * @param {string} date - The date to format
@@ -233,6 +235,7 @@ export default {
       return text.length > length ? text.substring(0, length) + '...' : text;
     },
   },
+
   mounted() {
     this.fetchThreads();
   },
