@@ -82,7 +82,6 @@ const registeredUsers = ref([]);
 const isOrganizerRef = ref(false);
 
 const isOrganizer = async () => {
-  console.log(userId);
   const eventId = route.params.eventId;
   try {
     const response = await fetch(
@@ -101,7 +100,7 @@ const isOrganizer = async () => {
     }
 
     const data = await response.json();
-    isOrganizerRef.value = data.id === parseInt(userId, 10); // Setze das Ergebnis hier
+    isOrganizerRef.value = data.id === parseInt(userId, 10);
   } catch (error) {
     console.error("Error checking if user is organizer:", error);
     isOrganizerRef.value = false;
@@ -120,7 +119,7 @@ const fetchEventDetails = async () => {
     event.value = eventData;
 
     const organizerResponse = await fetch(
-      `${config.apiBaseUrl}/api/events/${eventId}/organizer`,
+      `${config.apiBaseUrl}/events/${eventId}/organizer`,
     );
     const organizerData = await organizerResponse.json();
     event.value.organizerId = organizerData.id;
