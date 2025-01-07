@@ -166,11 +166,6 @@ public class FeedbackService {
                 .toList();
     }
 
-    private String analyzeSentiment(String text) {
-        // TODO: Find and integrate a library for sentiment analysis
-        return "Not implemented yet.";
-    }
-
     private <T> void addStatistic(Map<String, FeedbackStatistics> stats,
                                   String key,
                                   List<FeedbackResponseDTO> feedback,
