@@ -1,3 +1,3 @@
 export default {
-    apiBaseUrl: "/api" 
+  apiBaseUrl: "/api",
 };

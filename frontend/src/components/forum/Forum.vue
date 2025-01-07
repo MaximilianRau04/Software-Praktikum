@@ -17,7 +17,9 @@
           @click="selectThread(thread.id)"
         >
           <h3>{{ thread.title }}</h3>
-          <p class="thread-description">{{ truncate(thread.description, 100) }}</p>
+          <p class="thread-description">
+            {{ truncate(thread.description, 100) }}
+          </p>
           <div class="thread-meta">
             <span>{{ thread.forumPosts?.length || 0 }} Antworten</span>
           </div>
@@ -37,9 +39,15 @@
         <!-- display all posts -->
         <div class="posts-section">
           <div v-if="selectedThread.forumPosts?.length" class="post-list">
-            <div v-for="post in selectedThread.forumPosts" :key="post.id" class="post-item">
+            <div
+              v-for="post in selectedThread.forumPosts"
+              :key="post.id"
+              class="post-item"
+            >
               <div class="post-header">
-                <span class="author">{{ post.anonymous ? 'anonym' : post.author.username }}</span>
+                <span class="author">{{
+                  post.anonymous ? "anonym" : post.author.username
+                }}</span>
                 <span class="date">{{ formatDate(post.createdAt) }}</span>
               </div>
               <div class="post-body">
@@ -58,20 +66,22 @@
             placeholder="Schreiben Sie Ihre Antwort..."
             rows="4"
             required
-            class="input-field no-resize"></textarea>
+            class="input-field no-resize"
+          ></textarea>
 
-            <div class="checkbox-container">
-              <label for="isAnonymous">Anonym posten</label>
-              <input
-               type="checkbox"
-               id="isAnonymous"
-               v-model="newPost.isAnonymous"/>
-            </div>
+          <div class="checkbox-container">
+            <label for="isAnonymous">Anonym posten</label>
+            <input
+              type="checkbox"
+              id="isAnonymous"
+              v-model="newPost.isAnonymous"
+            />
+          </div>
 
           <button type="submit" class="btn-primary">Antwort posten</button>
-          </form>
-         </div>
-        </div>
+        </form>
+      </div>
+    </div>
 
     <!-- form for create Thread -->
     <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
@@ -85,7 +95,8 @@
               v-model="newThread.title"
               placeholder="Titel des Threads"
               required
-              class="input-field"/>
+              class="input-field"
+            />
           </div>
           <div class="form-group">
             <label for="description">Beschreibung:</label>
@@ -103,7 +114,8 @@
             <button
               type="button"
               class="btn-secondary cancel-btn"
-              @click="showModal = false" >
+              @click="showModal = false"
+            >
               Abbrechen
             </button>
           </div>
@@ -114,10 +126,10 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Cookies from 'js-cookie';
+import axios from "axios";
+import Cookies from "js-cookie";
 
-const apiUrl = 'http://193.196.54.172:8000/api/';
+const apiUrl = "http://193.196.54.172:8000/api/";
 
 export default {
   data() {
@@ -126,14 +138,14 @@ export default {
       selectedThreadId: null,
       selectedThread: null,
       newThread: {
-        title: '',
-        description: '',
+        title: "",
+        description: "",
       },
       newPost: {
-        content: '',
+        content: "",
         isAnonymous: false,
       },
-      showModal: false, 
+      showModal: false,
     };
   },
   methods: {
@@ -146,7 +158,7 @@ export default {
         const response = await axios.get(`${apiUrl}events/${eventId}/forum`);
         this.threads = response.data;
       } catch (error) {
-        console.error('Fehler beim Abrufen der Threads:', error);
+        console.error("Fehler beim Abrufen der Threads:", error);
       }
     },
     /**
@@ -155,20 +167,19 @@ export default {
     async createThread() {
       const eventId = this.$route.params.eventId;
       try {
-
         const newThreadData = {
           title: this.newThread.title,
           description: this.newThread.description,
-          eventId: eventId
+          eventId: eventId,
         };
 
         await axios.post(`${apiUrl}forumthreads`, newThreadData);
         this.fetchThreads();
-        this.newThread.title = '';
-        this.newThread.description = '';
+        this.newThread.title = "";
+        this.newThread.description = "";
         this.showModal = false;
       } catch (error) {
-        console.error('Fehler beim Erstellen des Threads:', error);
+        console.error("Fehler beim Erstellen des Threads:", error);
       }
     },
 
@@ -186,10 +197,12 @@ export default {
      */
     async fetchThreadDetail() {
       try {
-        const response = await axios.get(`${apiUrl}forumthreads/${this.selectedThreadId}`);
+        const response = await axios.get(
+          `${apiUrl}forumthreads/${this.selectedThreadId}`,
+        );
         this.selectedThread = response.data;
       } catch (error) {
-        console.error('Fehler beim Abrufen der Thread-Details:', error);
+        console.error("Fehler beim Abrufen der Thread-Details:", error);
       }
     },
 
@@ -198,22 +211,22 @@ export default {
      */
     async createPost() {
       try {
-        const userId = Cookies.get('userId'); 
+        const userId = Cookies.get("userId");
 
         const newPostData = {
           content: this.newPost.content,
           forumThreadId: this.selectedThreadId,
           authorId: userId,
-          anonymous: this.newPost.isAnonymous
+          anonymous: this.newPost.isAnonymous,
         };
 
         await axios.post(`${apiUrl}forumposts`, newPostData);
 
-        this.fetchThreadDetail(); 
-        this.newPost.content = ''; 
+        this.fetchThreadDetail();
+        this.newPost.content = "";
         this.newPost.isAnonymous = false;
       } catch (error) {
-        console.error('Fehler beim Erstellen des Posts:', error);
+        console.error("Fehler beim Erstellen des Posts:", error);
       }
     },
 
@@ -223,16 +236,16 @@ export default {
      * @returns {string} The formatted date
      */
     formatDate(date) {
-      return new Date(date).toLocaleDateString('de-DE', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
+      return new Date(date).toLocaleDateString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       });
     },
     truncate(text, length) {
-      return text.length > length ? text.substring(0, length) + '...' : text;
+      return text.length > length ? text.substring(0, length) + "..." : text;
     },
   },
 
@@ -247,7 +260,7 @@ export default {
   max-height: 90%;
   margin: 0 auto;
   padding: 0.5rem;
-  overflow-y: auto; 
+  overflow-y: auto;
 }
 
 .thread-list {
@@ -263,7 +276,7 @@ export default {
   color: #000000;
 }
 
-.thread-item .thread-description h3{
+.thread-item .thread-description h3 {
   margin: 0.5rem;
 }
 
@@ -326,7 +339,9 @@ h3 {
   padding: 12px 18px;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .cancel-btn:hover {
@@ -340,7 +355,7 @@ h3 {
   background-color: #f9f9f9;
   border: 1px solid #000000;
   border-radius: 8px;
-  max-height: 300px; 
+  max-height: 300px;
   overflow-y: auto;
 }
 
@@ -357,7 +372,7 @@ h3 {
   color: #333;
 }
 
-.btn-primary, 
+.btn-primary,
 .btn-secondary {
   background-color: #0288d1;
   color: white;
@@ -366,13 +381,15 @@ h3 {
   border-radius: 6px;
   font-size: 1em;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.3s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.3s ease;
   margin-top: 10px;
-  width: auto; 
+  width: auto;
   display: block;
 }
 
-.btn-primary:hover, 
+.btn-primary:hover,
 .btn-secondary:hover {
   background-color: #6095b1;
   transform: translateY(-2px);
@@ -441,8 +458,7 @@ p.thread-description {
 .checkbox-container {
   display: inline-flex;
   align-items: center;
-  gap: 15px; 
+  gap: 15px;
   margin-bottom: 10px;
 }
-
 </style>

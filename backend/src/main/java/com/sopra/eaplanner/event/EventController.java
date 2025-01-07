@@ -93,7 +93,10 @@ public class EventController {
         eventService.confirmAttendance(eventId, requestBody);
     }
 
-    // TODO: PutMapping here
+    @PutMapping("/{id}")
+    public EventResponseDTO updateEvent(@PathVariable Long id, @Valid @RequestBody EventRequestDTO requestBody) {
+        return eventService.updateEvent(id, requestBody);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable Long id) {

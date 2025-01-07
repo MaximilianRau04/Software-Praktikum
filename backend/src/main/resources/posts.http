@@ -1,0 +1,254 @@
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "username": "user1",
+  "firstname": "Maximilian",
+  "lastname": "Mustermann",
+  "role": "ADMIN"
+}
+
+###
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "username": "user2",
+  "firstname": "Anna",
+  "lastname": "Müller",
+  "role": "USER"
+}
+
+###
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "username": "user3",
+  "firstname": "Jan",
+  "lastname": "Schmidt",
+  "role": "USER"
+}
+
+###
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "username": "user4",
+  "firstname": "Sarah",
+  "lastname": "Fischer",
+  "role": "ADMIN"
+}
+
+###
+POST http://localhost:8080/api/exchange-days
+Content-Type: application/json
+
+{
+  "date": "2025-03-20",
+  "name": "Spring Boot Learning Day",
+  "location": "Berlin",
+  "description": "A day dedicated to learning Spring Boot with multiple sessions."
+}
+
+###
+POST http://localhost:8080/api/exchange-days
+Content-Type: application/json
+
+{
+  "date": "2025-04-15",
+  "name": "Advanced Java Workshop",
+  "location": "Munich",
+  "description": "Deep dive into advanced Java topics with expert speakers."
+}
+
+###
+POST http://localhost:8080/api/exchange-days
+Content-Type: application/json
+
+{
+  "date": "2025-06-10",
+  "name": "Docker & Kubernetes Crash Course",
+  "location": "Hamburg",
+  "description": "A full day workshop on Docker and Kubernetes for beginners."
+}
+
+###
+POST http://localhost:8080/api/exchange-days
+Content-Type: application/json
+
+{
+  "date": "2025-07-25",
+  "name": "Cloud-Native Development",
+  "location": "Frankfurt",
+  "description": "Learning cloud-native architectures and best practices."
+}
+
+###
+POST http://localhost:8080/api/events
+Content-Type: application/json
+
+{
+  "name": "Spring Boot Basics",
+  "description": "Introductory workshop on Spring Boot.",
+  "room": "101",
+  "exchangeDayId": 1,
+  "organizerId": 1,
+  "startTime": "10:00:00",
+  "endTime": "12:00:00"
+}
+
+###
+POST http://localhost:8080/api/events
+Content-Type: application/json
+
+{
+  "name": "Java 17 New Features",
+  "description": "A session about the new features in Java 17.",
+  "room": "102",
+  "exchangeDayId": 2,
+  "organizerId": 2,
+  "startTime": "14:00:00",
+  "endTime": "16:00:00"
+}
+
+###
+POST http://localhost:8080/api/events
+Content-Type: application/json
+
+{
+  "name": "Docker Introduction",
+  "description": "An introduction to Docker and containerization.",
+  "room": "201",
+  "exchangeDayId": 3,
+  "organizerId": 3,
+  "startTime": "09:00:00",
+  "endTime": "11:00:00"
+}
+
+###
+POST http://localhost:8080/api/events
+Content-Type: application/json
+
+{
+  "name": "Kubernetes for Beginners",
+  "description": "A hands-on workshop on Kubernetes basics.",
+  "room": "202",
+  "exchangeDayId": 4,
+  "organizerId": 4,
+  "startTime": "13:00:00",
+  "endTime": "15:00:00"
+}
+
+###
+POST http://localhost:8080/api/events
+Content-Type: application/json
+
+{
+  "name": "Cloud-Native Architecture",
+  "description": "Session on designing cloud-native applications.",
+  "room": "303",
+  "exchangeDayId": 1,
+  "organizerId": 2,
+  "startTime": "16:00:00",
+  "endTime": "18:00:00"
+}
+
+###
+POST http://localhost:8080/api/events
+Content-Type: application/json
+
+{
+  "name": "Microservices with Spring Cloud",
+  "description": "Understanding microservices using Spring Cloud.",
+  "room": "304",
+  "exchangeDayId": 2,
+  "organizerId": 1,
+  "startTime": "09:30:00",
+  "endTime": "11:30:00"
+}
+
+###
+POST http://localhost:8080/api/events
+Content-Type: application/json
+
+{
+  "name": "Advanced Docker Techniques",
+  "description": "Learn advanced Docker features and best practices.",
+  "room": "305",
+  "exchangeDayId": 3,
+  "organizerId": 3,
+  "startTime": "14:30:00",
+  "endTime": "16:30:00"
+}
+
+###
+POST http://localhost:8080/api/events
+Content-Type: application/json
+
+{
+  "name": "Kubernetes Networking",
+  "description": "Deep dive into networking in Kubernetes clusters.",
+  "room": "306",
+  "exchangeDayId": 4,
+  "organizerId": 4,
+  "startTime": "12:00:00",
+  "endTime": "14:00:00"
+}
+
+###
+POST http://localhost:8080/api/events
+Content-Type: application/json
+
+{
+  "name": "CI/CD with Jenkins",
+  "description": "Learn how to set up a CI/CD pipeline with Jenkins.",
+  "room": "307",
+  "exchangeDayId": 1,
+  "organizerId": 1,
+  "startTime": "15:00:00",
+  "endTime": "17:00:00"
+}
+
+###
+POST http://localhost:8080/api/events
+Content-Type: application/json
+
+{
+  "name": "Security in Microservices",
+  "description": "Focus on securing microservices architectures.",
+  "room": "308",
+  "exchangeDayId": 2,
+  "organizerId": 2,
+  "startTime": "11:00:00",
+  "endTime": "13:00:00"
+}
+
+###
+POST http://localhost:8080/api/events
+Content-Type: application/json
+
+{
+  "name": "Serverless Computing with AWS",
+  "description": "Learn about serverless computing and AWS Lambda.",
+  "room": "401",
+  "exchangeDayId": 3,
+  "organizerId": 3,
+  "startTime": "10:00:00",
+  "endTime": "12:00:00"
+}
+
+###
+POST http://localhost:8080/api/events
+Content-Type: application/json
+
+{
+  "name": "Event-Driven Architecture",
+  "description": "Session on designing event-driven architectures.",
+  "room": "402",
+  "exchangeDayId": 4,
+  "organizerId": 4,
+  "startTime": "13:30:00",
+  "endTime": "15:30:00"
+}
