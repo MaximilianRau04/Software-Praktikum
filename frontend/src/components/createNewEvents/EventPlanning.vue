@@ -7,10 +7,24 @@
   <div class="container">
     <div class="events">
       <button @click="toggleWorkshopBox" class="action-button" type="button">
-        <img src="@/images/plus.png" alt="Plus" class="plus-icon" width="35" height="35" /> Neuer Workshop
+        <img
+          src="@/images/plus.png"
+          alt="Plus"
+          class="plus-icon"
+          width="35"
+          height="35"
+        />
+        Neuer Workshop
       </button>
       <button @click="toggleExchangeDayBox" class="action-button" type="button">
-        <img src="@/images/plus.png" alt="Plus" class="plus-icon" width="35" height="35" /> Neuer Exchange Day
+        <img
+          src="@/images/plus.png"
+          alt="Plus"
+          class="plus-icon"
+          width="35"
+          height="35"
+        />
+        Neuer Exchange Day
       </button>
 
       <!-- Workshop form -->
@@ -36,13 +50,28 @@
             </div>
             <div class="input-group">
               <label for="description">Beschreibung</label>
-              <input type="text" id="description" v-model="description" required />
+              <input
+                type="text"
+                id="description"
+                v-model="description"
+                required
+              />
             </div>
             <div class="input-group">
               <label for="exchangeDaySelect">Exchange Day</label>
-              <select id="exchangeDaySelect" v-model="exchangeDaySelect" required>
-                <option value="" disabled selected>Bitte wählen Sie einen Exchange Day aus</option>
-                <option v-for="exchangeDay in exchangeDays" :key="exchangeDay.id" :value="exchangeDay.id">
+              <select
+                id="exchangeDaySelect"
+                v-model="exchangeDaySelect"
+                required
+              >
+                <option value="" disabled selected>
+                  Bitte wählen Sie einen Exchange Day aus
+                </option>
+                <option
+                  v-for="exchangeDay in exchangeDays"
+                  :key="exchangeDay.id"
+                  :value="exchangeDay.id"
+                >
                   {{ exchangeDay.name }}
                 </option>
               </select>
@@ -50,13 +79,17 @@
             <div class="input-group">
               <label for="organizerSelect">Veranstalter</label>
               <select id="organizerSelect" v-model="organizerSelect" required>
-                <option value="" disabled selected>Bitte wählen Sie einen Veranstalter aus</option>
+                <option value="" disabled selected>
+                  Bitte wählen Sie einen Veranstalter aus
+                </option>
                 <option v-for="user in users" :key="user.id" :value="user.id">
                   {{ user.username }}
                 </option>
               </select>
             </div>
-            <button type="submit" class="login-button">Workshop erstellen</button>
+            <button type="submit" class="login-button">
+              Workshop erstellen
+            </button>
           </form>
         </div>
       </transition>
@@ -72,7 +105,12 @@
             </div>
             <div class="input-group">
               <label for="exchangeName">Name</label>
-              <input type="text" id="exchangeName" v-model="exchangeName" required />
+              <input
+                type="text"
+                id="exchangeName"
+                v-model="exchangeName"
+                required
+              />
             </div>
             <div class="input-group">
               <label for="location">Ort</label>
@@ -80,9 +118,16 @@
             </div>
             <div class="input-group">
               <label for="exchangeDescription">Beschreibung</label>
-              <input type="text" id="exchangeDescription" v-model="exchangeDescription" required />
+              <input
+                type="text"
+                id="exchangeDescription"
+                v-model="exchangeDescription"
+                required
+              />
             </div>
-            <button type="submit" class="login-button">Exchange Day erstellen</button>
+            <button type="submit" class="login-button">
+              Exchange Day erstellen
+            </button>
           </form>
         </div>
       </transition>
@@ -91,31 +136,31 @@
 </template>
 
 <script setup lang="ts">
-import '../../assets/event-planning.css'; 
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import "../../assets/event-planning.css";
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import config from "../../config";
 
 const showWorkshopBox = ref(false);
 const showExchangeDay = ref(false);
 
 // Workshop form data
-const name = ref('');
-const description = ref('');
-const startTime = ref('');
-const endTime = ref('');
-const room = ref('');
-const exchangeDaySelect = ref('');
-const organizerSelect = ref('');
+const name = ref("");
+const description = ref("");
+const startTime = ref("");
+const endTime = ref("");
+const room = ref("");
+const exchangeDaySelect = ref("");
+const organizerSelect = ref("");
 
 const exchangeDays = ref([]);
 const users = ref([]);
 
 // Exchange Day form data
-const exchangeName = ref('');
-const exchangeDescription = ref('');
-const date = ref('');
-const location = ref('');
+const exchangeName = ref("");
+const exchangeDescription = ref("");
+const date = ref("");
+const location = ref("");
 
 const apiUrl = `${config.apiBaseUrl}/events`;
 const exchangeApiUrl = `${config.apiBaseUrl}/exchange-days`;
@@ -130,14 +175,14 @@ onMounted(async () => {
     const response = await fetch(`${config.apiBaseUrl}/exchange-days`);
     exchangeDays.value = await response.json();
   } catch (error) {
-    console.error('Fehler beim Laden der Exchange Days:', error);
+    console.error("Fehler beim Laden der Exchange Days:", error);
   }
 
   try {
     const response = await fetch(`${config.apiBaseUrl}/users`);
     users.value = await response.json();
   } catch (error) {
-    console.error('Fehler beim Laden der Benutzer:', error);
+    console.error("Fehler beim Laden der Benutzer:", error);
   }
 });
 
@@ -160,11 +205,11 @@ const toggleExchangeDayBox = () => {
 /**
  * Creates a new Workshop using the form data.
  */
- const createWorkshop = async () => {
+const createWorkshop = async () => {
   try {
     const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: name.value,
         startTime: startTime.value,
@@ -178,19 +223,18 @@ const toggleExchangeDayBox = () => {
 
     if (response.ok) {
       const data = await response.json();
-      console.log('Workshop erstellt:', data);
+      console.log("Workshop erstellt:", data);
       alert(`Workshop erstellt: ${data.name}`);
 
       resetWorkshopForm();
     } else {
-      alert('Fehler beim Erstellen des Workshops.');
+      alert("Fehler beim Erstellen des Workshops.");
     }
   } catch (error) {
-    console.error('Fehler beim Erstellen des Workshops:', error);
-    alert('Fehler beim Erstellen des Workshops.');
+    console.error("Fehler beim Erstellen des Workshops:", error);
+    alert("Fehler beim Erstellen des Workshops.");
   }
 };
-
 
 /**
  * Creates a new Exchange Day using the form data.
@@ -198,8 +242,8 @@ const toggleExchangeDayBox = () => {
 const createExchangeDay = async () => {
   try {
     const response = await fetch(exchangeApiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: exchangeName.value,
         date: date.value,
@@ -210,15 +254,15 @@ const createExchangeDay = async () => {
 
     if (response.ok) {
       const data = await response.json();
-      console.log('Exchange Day erstellt:', data);
+      console.log("Exchange Day erstellt:", data);
       alert(`Exchange Day erstellt: ${data.name}`);
       resetExchangeDayForm();
     } else {
-      alert('Fehler beim Erstellen des Exchange Days.');
+      alert("Fehler beim Erstellen des Exchange Days.");
     }
   } catch (error) {
-    console.error('Fehler beim Erstellen des Exchange Days:', error);
-    alert('Fehler beim Erstellen des Exchange Days.');
+    console.error("Fehler beim Erstellen des Exchange Days:", error);
+    alert("Fehler beim Erstellen des Exchange Days.");
   }
 };
 
@@ -226,13 +270,13 @@ const createExchangeDay = async () => {
  * Resets the Workshop form fields.
  */
 const resetWorkshopForm = () => {
-  name.value = '';
-  startTime.value = '';
-  endTime.value = '';
-  room.value = '';
-  description.value = '';
-  exchangeDaySelect.value = '';
-  organizerSelect.value = '';
+  name.value = "";
+  startTime.value = "";
+  endTime.value = "";
+  room.value = "";
+  description.value = "";
+  exchangeDaySelect.value = "";
+  organizerSelect.value = "";
   showWorkshopBox.value = false;
 };
 
@@ -240,10 +284,10 @@ const resetWorkshopForm = () => {
  * Resets the Exchange Day form fields.
  */
 const resetExchangeDayForm = () => {
-  exchangeName.value = '';
-  exchangeDescription.value = '';
-  date.value = '';
-  location.value = '';
+  exchangeName.value = "";
+  exchangeDescription.value = "";
+  date.value = "";
+  location.value = "";
   showExchangeDay.value = false;
 };
 </script>

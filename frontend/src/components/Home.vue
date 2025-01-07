@@ -1,7 +1,6 @@
 <script setup>
-import MainPage from './MainPage.vue';
-import { RouterView } from 'vue-router';
-
+import MainPage from "./MainPage.vue";
+import { RouterView } from "vue-router";
 </script>
 
 <template>
@@ -17,10 +16,10 @@ import { RouterView } from 'vue-router';
 }
 
 .sidebar {
-  flex: 0 0 300px; 
+  flex: 0 0 300px;
 }
 
 .main-page {
-  flex: 1; 
+  flex: 1;
 }
 </style>

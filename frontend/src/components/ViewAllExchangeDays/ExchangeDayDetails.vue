@@ -4,12 +4,13 @@
 -->
 <template>
   <div v-if="selectedExchangeDay" class="exchangeDayDetails">
-
     <!-- Displaying exchange day details -->
     <div class="exchangeDayInfos">
       <h1>{{ selectedExchangeDay.name }}</h1>
       <p><strong>Ort:</strong> {{ selectedExchangeDay.location }}</p>
-      <p><strong>Beschreibung:</strong> {{ selectedExchangeDay.description }}</p>
+      <p>
+        <strong>Beschreibung:</strong> {{ selectedExchangeDay.description }}
+      </p>
       <p><strong>Datum:</strong> {{ formatDate(selectedExchangeDay.date) }}</p>
       <p>Id: {{ selectedExchangeDay.id }}</p>
     </div>
@@ -28,13 +29,12 @@
 
 <script setup lang="ts">
 import { defineProps, onMounted, ref, watch } from "vue";
-import EventDetails from '@/components/ViewAllExchangeDays/EventDetails.vue';
+import EventDetails from "@/components/ViewAllExchangeDays/EventDetails.vue";
 import config from "../../config";
-import '../../assets/exchange-day-details.css';
-import { ExchangeDay, exchangeDays } from '../../types/ExchangeDay';
+import "../../assets/exchange-day-details.css";
+import { ExchangeDay, exchangeDays } from "../../types/ExchangeDay";
 const selectedExchangeDay = ref<ExchangeDay | null>(null);
-import { Event } from '../../types/Event';
-
+import { Event } from "../../types/Event";
 
 const props = defineProps<{
   exchangeDay: ExchangeDay | null;
@@ -44,7 +44,7 @@ const events = ref<Event[]>([]);
 
 /**
  * Formats a timestamp into a human-readable date string.
- * 
+ *
  * @param {number} timestamp - The date in milliseconds.
  * @returns {string} - The formatted date string in 'DD.MM.YYYY' format.
  */
@@ -55,7 +55,7 @@ function formatDate(timestamp: number): string {
 
 /**
  * Fetches the details of a selected exchange day from the API.
- * 
+ *
  * @param {number} id - The ID of the exchange day to fetch.
  */
 async function fetchExchangeDayDetails(id: number) {
@@ -77,7 +77,6 @@ async function fetchExchangeDayDetails(id: number) {
 
     // Fetch details of associated events, if available
     await fetchEventDetails();
-
   } catch (error) {
     console.error("Error fetching exchange day details:", error);
   }
@@ -88,9 +87,13 @@ async function fetchExchangeDayDetails(id: number) {
  */
 async function fetchEventDetails() {
   try {
-    const response = await fetch(`${config.apiBaseUrl}/exchange-days/${selectedExchangeDay.value.id}/events`);
+    const response = await fetch(
+      `${config.apiBaseUrl}/exchange-days/${selectedExchangeDay.value.id}/events`,
+    );
     if (!response.ok) {
-      throw new Error(`Failed to fetch events from exchange day ${selectedExchangeDay.value.id}`);
+      throw new Error(
+        `Failed to fetch events from exchange day ${selectedExchangeDay.value.id}`,
+      );
     }
     const responseData: Event[] = await response.json();
     events.value = responseData;
@@ -98,7 +101,6 @@ async function fetchEventDetails() {
     console.error("Error fetching event:", error);
   }
 }
-
 
 /**
  * Watch for changes to the `exchangeDay` prop and fetch new details when it changes.
@@ -109,7 +111,7 @@ watch(
     if (newId !== oldId && newId != null) {
       fetchExchangeDayDetails(newId);
     }
-  }
+  },
 );
 
 /**

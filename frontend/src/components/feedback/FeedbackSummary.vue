@@ -15,9 +15,18 @@
       <div class="general-info">
         <h2>General Information</h2>
         <table>
-          <tr><td><strong>Event ID:</strong></td><td>{{ data.eventId || 'undefined' }}</td></tr>
-          <tr><td><strong>Event Name:</strong></td><td>{{ data.eventName || 'undefined' }}</td></tr>
-          <tr><td><strong>Organizer:</strong></td><td>{{ data.organizerName || 'undefined' }}</td></tr>
+          <tr>
+            <td><strong>Event ID:</strong></td>
+            <td>{{ data.eventId || "undefined" }}</td>
+          </tr>
+          <tr>
+            <td><strong>Event Name:</strong></td>
+            <td>{{ data.eventName || "undefined" }}</td>
+          </tr>
+          <tr>
+            <td><strong>Organizer:</strong></td>
+            <td>{{ data.organizerName || "undefined" }}</td>
+          </tr>
         </table>
       </div>
 
@@ -34,7 +43,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(feedback, category) in data.numericalFeedback" :key="category">
+            <tr
+              v-for="(feedback, category) in data.numericalFeedback"
+              :key="category"
+            >
               <td>{{ formatKey(category) }}</td>
               <td>{{ feedback.average }}</td>
               <td>{{ feedback.median }}</td>
@@ -42,7 +54,9 @@
             </tr>
           </tbody>
         </table>
-        <p v-else style="text-align: center; color: #7f8c8d;">No feedback data available.</p>
+        <p v-else style="text-align: center; color: #7f8c8d">
+          No feedback data available.
+        </p>
       </div>
 
       <!-- Common Words -->
@@ -58,7 +72,9 @@
         <h2>Comments</h2>
         <ul>
           <li v-for="(comment, index) in data.comments" :key="index">
-            <p><strong>Comment {{ index + 1 }}:</strong> {{ comment.comment }}</p>
+            <p>
+              <strong>Comment {{ index + 1 }}:</strong> {{ comment.comment }}
+            </p>
             <p><strong>Sentiment:</strong> {{ comment.sentiment }}</p>
           </li>
         </ul>
@@ -68,15 +84,15 @@
 </template>
 
 <script>
-import config from '@/config';
+import config from "@/config";
 
 export default {
-  name: 'EventSummary',
+  name: "EventSummary",
   data() {
     return {
       data: null,
       isLoading: true,
-      error: null
+      error: null,
     };
   },
   computed: {
@@ -87,7 +103,7 @@ export default {
       return this.data && this.data.numericalFeedback
         ? Object.keys(this.data.numericalFeedback)
         : [];
-    }
+    },
   },
   methods: {
     /**
@@ -95,25 +111,29 @@ export default {
      */
     async fetchData() {
       try {
-        const response = await fetch(`${config.apiBaseUrl}/events/${this.eventId}/summary`);
+        const response = await fetch(
+          `${config.apiBaseUrl}/events/${this.eventId}/summary`,
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         this.data = await response.json();
       } catch (err) {
-        this.error = err.message || 'An unknown error occurred';
+        this.error = err.message || "An unknown error occurred";
       } finally {
         this.isLoading = false;
       }
     },
     formatKey(key) {
-      if (!key || typeof key !== 'string') return 'Unknown';
-      return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-    }
+      if (!key || typeof key !== "string") return "Unknown";
+      return key
+        .replace(/([A-Z])/g, " $1")
+        .replace(/^./, (str) => str.toUpperCase());
+    },
   },
   mounted() {
     this.fetchData();
-  }
+  },
 };
 </script>
 
@@ -126,11 +146,12 @@ export default {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-height: 80vh;
-  min-height: 400px; 
+  min-height: 400px;
   overflow-y: auto;
 }
 
-h1, h2 {
+h1,
+h2 {
   color: #34495e;
   text-align: center;
 }
@@ -156,7 +177,8 @@ table {
   overflow: hidden;
 }
 
-table th, table td {
+table th,
+table td {
   border: 1px solid #bdc3c7;
   padding: 10px;
   text-align: left;
