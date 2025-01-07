@@ -76,5 +76,6 @@ export default {
 
 .content-area {
   height: calc(100vh - 50px);
+  overflow: auto;
 }
 </style>

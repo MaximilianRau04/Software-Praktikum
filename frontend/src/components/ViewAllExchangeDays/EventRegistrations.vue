@@ -10,9 +10,7 @@
       <div class="qr-modal">
         <h2>QR-Code für Event Nr.{{ eventId }}</h2>
         <img :src="qrCodeUrl" alt="QR Code" />
-
         <p><a :href="qrCodeUrl">{{ qrCodeUrl }}</a></p>
-
         <a :href="qrCodeUrl" :download="'event-' + eventId + '-qr-code.png'">
           <button class="download-button">QR-Code herunterladen</button>
         </a>
@@ -23,7 +21,7 @@
     <div v-else class="scrollableEvents">
       <div v-if="registeredEvents.length > 0">
         <ul>
-          <li v-for="event in registeredEvents" :key="event.id" class="event-item">
+          <li v-for="event in registeredEvents" :key="event.id" class="event-item" @click="updateEvent(event.id)">
             <div class="event-details">
               <h3>{{ event.name }}</h3>
               <p><strong>Beschreibung: </strong> {{ event.description || 'Keine Beschreibung verfügbar.' }}</p>
@@ -31,25 +29,38 @@
               <p><strong>Startzeit: </strong> {{ event.startTime }}</p>
               <p><strong>Endzeit: </strong>{{ event.endTime }}</p>
               <p><strong>Raum: </strong> {{ event.room }}</p>
+              
               <button 
-                class="openFeedback-button" @click="openFeedback(event.id)" v-if="organizerStatus[event.id]">
+                class="openFeedback-button button" 
+                @click.stop="openFeedback(event.id)" 
+                v-if="organizerStatus[event.id]">
                 Feedback anzeigen
               </button>
 
               <button 
-                class="showQR-button" @click="openQRCode(event.id)" v-if="organizerStatus[event.id]">
+                class="showQR-button button" 
+                @click.stop="openQRCode(event.id)" 
+                v-if="organizerStatus[event.id]">
                 QR-Code anzeigen
               </button>
 
               <button 
-                class="forum-button" @click="openForum(event.id)">
+                class="forum-button button" 
+                @click.stop="openForum(event.id)">
                 Diskussionsforum anzeigen
               </button>
 
               <button 
-                class="unregister-button" 
-                @click="unregisterFromEvent(event.id)">
+                class="unregister-button button" 
+                @click.stop="unregisterFromEvent(event.id)">
                 Abmelden
+              </button>
+
+              <button 
+                class="delete-button button" 
+                @click.stop="deleteEvent(event.id)" 
+                v-if="organizerStatus[event.id]">
+                Löschen
               </button>
             </div>
           </li>
@@ -205,6 +216,42 @@ const fetchRegisteredEvents = async () => {
   }
 };
 
+/**
+ * Deletes an event after confirmation.
+ * @param {number} eventId - The ID of the event.
+ */
+const deleteEvent = async (eventId: number) => {
+  if (!confirm('Are you sure you want to delete this event?')) {
+    return;
+  }
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/events/${eventId}`, {
+      method: "DELETE",
+    });
+
+    if (response.status === 404) {
+      alert("Event not found.");
+      throw new Error(response.statusText);
+    }
+
+    registeredEvents.value = registeredEvents.value.filter(event => event.id !== eventId);
+    alert(`Event with ID ${eventId} has been successfully deleted.`);
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    alert('Deleting event failed. Please try again.');
+  }
+};
+
+/**
+ * Updates the event details page with the selected event.
+ * @param {number} eventId - The ID of the event.
+ */
+const updateEvent = (eventId: number) => {
+  if(organizerStatus.value[eventId]) {
+    router.push({ name: 'updateEvent', params: { eventId: eventId.toString() } });
+  }
+};
+
 onMounted(() => {
   fetchRegisteredEvents();
 });
@@ -257,10 +304,7 @@ p {
     font-size: 14px;
 }
   
-.forum-button,
-.unregister-button,
-.showQR-button,
-.openFeedback-button {
+.button {
     background-color: black;
     color: white;
     border: none;
@@ -271,6 +315,15 @@ p {
     position: absolute;
     bottom: 10px;
     transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.button:hover {
+    background-color: #005FA3;
+}
+  
+.button:active {
+    background-color: #000000;
+    transform: scale(0.98);
 }
   
 .unregister-button {
@@ -291,19 +344,10 @@ p {
     right: 10px;
     bottom: 80%;
 }
-  
-.unregister-button:hover,
-.showQR-button:hover,
-.openFeedback-button:hover {
-    background-color: #005FA3;
-}
-  
-.unregister-button:active,
-.showQR-button:active,
-.openFeedback-button:active {
-    background-color: #000000;
-    transform: scale(0.98);
-}
+
+.delete-button {
+    right: 100px;
+}	
   
 h2 {
     font-size: 20px;

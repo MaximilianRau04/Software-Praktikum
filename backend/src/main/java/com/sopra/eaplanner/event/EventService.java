@@ -118,6 +118,23 @@ public class EventService {
         return new ExchangeDayResponseDTO(event.getExchangeDay());
     }
 
+    public EventResponseDTO updateEvent(Long id, EventRequestDTO requestBody) {
+        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
+
+        event.setName(requestBody.getName());
+        event.setStartTime(requestBody.getStartTime());
+        event.setEndTime(requestBody.getEndTime());
+        event.setRoom(requestBody.getRoom());
+        event.setDescription(requestBody.getDescription());
+        event.setExchangeDay(exchangeDayRepository.findById(requestBody.getExchangeDayId())
+                .orElseThrow(() -> new EntityNotFoundException("ExchangeDay not found.")));
+        event.setOrganizer(userRepository.findById(requestBody.getOrganizerId())
+                .orElseThrow(() -> new EntityNotFoundException("Organizer not found.")));
+
+        eventRepository.save(event);
+        return new EventResponseDTO(event);
+    }
+
     public void deleteEvent(Long id) {
         Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
 

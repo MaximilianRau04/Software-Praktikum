@@ -6,7 +6,8 @@ import HomePage from '@/components/HomePage.vue';
 import GiveFeedback from '@/components/feedback/GiveFeedback.vue';
 import FeedbackSummary from '@/components/feedback/FeedbackSummary.vue';
 import Forum from '@/components/forum/Forum.vue';
-import UserProfile from '@/components/UserProfile.vue';
+import UserProfile from '@/components/navigation/UserProfile.vue';
+import UpdateEvent from '@/components/ViewAllExchangeDays/UpdateEvent.vue';
 
 export default [
   {
@@ -54,6 +55,12 @@ export default [
         name: 'UserProfile',
         component: UserProfile,
         props: true,
+      },
+      {
+        path: '/events/:eventId/update',
+        name: 'updateEvent',
+        component: UpdateEvent,
+        props: true
       }
     ]
   },
