@@ -10,6 +10,7 @@ import com.sopra.eaplanner.forumpost.ForumPost;
 import com.sopra.eaplanner.forumpost.ForumPostResponseDTO;
 import com.sopra.eaplanner.reward.Reward;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
+import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
 import com.sopra.eaplanner.user.dtos.UserRequestDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.persistence.EntityExistsException;
@@ -87,14 +88,22 @@ public class UserService {
                 .collect(Collectors.toSet());
     }
 
-    public TrainerProfile getTrainerProfile(Long userId) {
+    public TrainerProfileResponseDTO getTrainerProfile(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new EntityNotFoundException("User not found");
         }
-        return userRepository.findById(userId)
+        TrainerProfile trainerProfile = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"))
                 .getTrainerProfile();
+
+        if (trainerProfile == null) {
+            throw new EntityNotFoundException("Trainer profile not found for user with id: " + userId);
+        }
+
+        // Konvertiere TrainerProfile zu TrainerProfileResponseDTO
+        return new TrainerProfileResponseDTO(trainerProfile);
     }
+
 
     public Set<Reward> getUserRewards(Long userId) {
         if (!userRepository.existsById(userId)) {

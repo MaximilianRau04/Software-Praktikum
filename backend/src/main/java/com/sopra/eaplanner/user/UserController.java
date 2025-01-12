@@ -7,6 +7,7 @@ import com.sopra.eaplanner.forumpost.ForumPost;
 import com.sopra.eaplanner.forumpost.ForumPostResponseDTO;
 import com.sopra.eaplanner.reward.Reward;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
+import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
 import com.sopra.eaplanner.user.dtos.UserRequestDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.annotation.PostConstruct;
@@ -55,7 +56,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/trainerProfile")
-    public TrainerProfile getTrainerProfile(@PathVariable Long id) {
+    public TrainerProfileResponseDTO getTrainerProfile(@PathVariable Long id) {
         return userService.getTrainerProfile(id);
     }
 

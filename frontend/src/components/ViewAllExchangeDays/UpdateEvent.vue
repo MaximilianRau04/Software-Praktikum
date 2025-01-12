@@ -10,8 +10,7 @@
           v-model="event.name"
           required
           minlength="3"
-          maxlength="100"
-        />
+          maxlength="100"/>
       </div>
       <div class="form-group">
         <label for="description">Beschreibung:</label>

@@ -59,7 +59,7 @@ export default {
       ["userId", "username", "firstname", "lastname", "role"].forEach(
         (cookie) => {
           Cookies.remove(cookie);
-        },
+        }
       );
       this.$router.push("/login");
     },

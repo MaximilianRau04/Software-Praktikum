@@ -29,7 +29,14 @@ public class EventRequestDTO {
     @NotNull(message = "Organizer must be specified")
     private Long organizerId;
 
+    @NotNull(message = "TrainerProfile must be specified")
+    private Long trainerProfileId;
+
     public EventRequestDTO(){
+    }
+
+    public void setTrainerProfileId(Long trainerProfileId) {
+        this.trainerProfileId = trainerProfileId;
     }
 
     public void setOrganizerId(@NotNull(message = "Organizer must be specified") Long organizerId) {
@@ -88,11 +95,13 @@ public class EventRequestDTO {
         return organizerId;
     }
 
-    public static EventRequestDTO mockWith(String name, LocalTime startTime, LocalTime endTime, String description, String room, Long exchangeDayId, Long organizerId) {
-        return new EventRequestDTO(name, startTime, endTime, room, description, exchangeDayId, organizerId);
+    public Long getTrainerProfileId() { return trainerProfileId; }
+
+    public static EventRequestDTO mockWith(String name, LocalTime startTime, LocalTime endTime, String description, String room, Long exchangeDayId, Long organizerId, Long trainerProfileId) {
+        return new EventRequestDTO(name, startTime, endTime, room, description, exchangeDayId, organizerId, trainerProfileId);
     }
 
-    private EventRequestDTO(String name, LocalTime startTime, LocalTime endTime, String room, String description, Long exchangeDayId, Long organizerId) {
+    private EventRequestDTO(String name, LocalTime startTime, LocalTime endTime, String room, String description, Long exchangeDayId, Long organizerId, Long trainerProfileId) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -100,5 +109,6 @@ public class EventRequestDTO {
         this.description = description;
         this.exchangeDayId = exchangeDayId;
         this.organizerId = organizerId;
+        this.trainerProfileId = trainerProfileId;
     }
 }
