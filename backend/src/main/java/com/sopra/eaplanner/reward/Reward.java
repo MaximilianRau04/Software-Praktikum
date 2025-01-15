@@ -27,6 +27,8 @@ public class Reward {
     @NotNull
     private User user;
 
+    private Integer lastThreshold = 0;
+
     public Reward() {
     }
 
@@ -75,5 +77,13 @@ public class Reward {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Integer getLastThreshold() {
+        return lastThreshold;
+    }
+
+    public void setLastThreshold(Integer lastThreshold) {
+        this.lastThreshold = lastThreshold;
     }
 }

@@ -88,14 +88,30 @@ public class FeedbackService {
         addStatistic(numericalStats, "similarEventParticipationScore", feedback, FeedbackResponseDTO::getSimilarEventParticipationScore);
 
         summary.setNumericalFeedback(numericalStats);
+        summary.setCommonWords(generateWordCloud(feedback));
 
-        List<CommentAnalysis> comments = feedback.stream()
+        List<CommentAnalysis> comments = summary.getComments();
+        List<CommentAnalysis> improvementComments = feedback.stream()
                 .map(f -> new CommentAnalysis(f.getImprovementComment(), analyzeSentiment(f.getImprovementComment())))
                 .toList();
 
-        summary.setComments(comments);
-        summary.setCommonWords(generateWordCloud(feedback));
+        List<CommentAnalysis> enjoymentComments = feedback.stream()
+                .map(f -> new CommentAnalysis(f.getEnjoymentComment(), analyzeSentiment(f.getEnjoymentComment())))
+                .toList();
 
+        // This construct should be able to assign a specified type to the comments and map them properly to the string.
+        // comments.put(CommentType.ENJOYMENT, enjoymentComments);
+        List<CommentAnalysis> recommendationComments = feedback.stream()
+                .map(f -> new CommentAnalysis(f.getRecommendationComment(), analyzeSentiment(f.getRecommendationComment())))
+                .toList();
+
+        List<CommentAnalysis> requestComments = feedback.stream()
+                .map(f -> new CommentAnalysis(f.getRequestComment(), analyzeSentiment(f.getRecommendationComment())))
+                .toList();
+
+
+
+        summary.setComments(comments);
         return summary;
     }
 
@@ -120,7 +136,7 @@ public class FeedbackService {
         Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback, feedbackAuthor);
 
         feedbackToSave = feedbackRepository.save(feedbackToSave);
-        eventParticipationService.postFeedback(feedbackAuthor,eventForFeedback);
+        eventParticipationService.postFeedback(feedbackAuthor, eventForFeedback);
 
         return new FeedbackResponseDTO(feedbackToSave);
     }
@@ -155,6 +171,8 @@ public class FeedbackService {
     }
 
     private List<String> generateWordCloud(List<FeedbackResponseDTO> feedback) {
+        // Add a word filter in order to only take in adjectives, nouns and verbs in this order
+        // as of right now, we have words like "is, was" etc. popping in which is not very helpful
         Map<String, Long> wordFrequency = feedback.stream()
                 .flatMap(f -> Arrays.stream(f.getImprovementComment().split("\\s+")))
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
@@ -168,6 +186,7 @@ public class FeedbackService {
 
     private String analyzeSentiment(String text) {
         // TODO: Find and integrate a library for sentiment analysis
+        // TODO: Use X sentiment API for short comments in order to take out information and provbide a vibe map depending on the information tbhat was provided inside the comments
         return "Not implemented yet.";
     }
 
