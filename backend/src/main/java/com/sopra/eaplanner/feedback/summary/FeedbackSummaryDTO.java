@@ -14,6 +14,10 @@ public class FeedbackSummaryDTO {
     private List<String> commonWords;
     private List<CommentAnalysis> comments;
 
+    // We will use this construct in order to be able to display relevant comments respective to their type inside the frontend
+    // The serializer will then be able to sort comments depending on what type they are and it will be easier to filter out information associated with that information in order to provide better statistics
+    // private Map<CommentType, List<CommentAnalysis>> comments;
+
     public FeedbackSummaryDTO() {}
 
     public FeedbackSummaryDTO(Long eventId, String eventName, String organizerName) {

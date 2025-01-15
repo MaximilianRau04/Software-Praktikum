@@ -5,14 +5,15 @@
         <div class="menu-item" @click="navigateTo('/home')">
           <span>Home</span>
         </div>
-        <div class="menu-item" @click="navigateTo('/events/planning')" v-if="currentUser.role == 'ADMIN'">
+        <div class="menu-item" @click="navigateTo('/events/planning')" v-if="getCookie('role') === 'ADMIN'">
           <span>Event Planung</span>
         </div>
-        <div class="menu-item" @click="navigateTo('/events/registrations')">
+        <div class="menu-item" @click="navigateTo('/events/registrations')" v-if="isUserLoggedIn">
           <span>Meine Events</span>
         </div>
-        <div class="menu-item" @click="navigateTo('/')">
-          <span>Log Out</span>
+        <div class="menu-item" @click="isUserLoggedIn ? logout() : navigateTo('/login')">
+          <span v-if="isUserLoggedIn">Log Out</span>
+          <span v-else>Log In</span>
         </div>
       </div>
     </div>
@@ -20,7 +21,7 @@
 </template>
 
 <script>
-import { globalState } from '@/types/User';
+import Cookies from 'js-cookie';
 import '../../assets/sidebar.css';
 
 export default {
@@ -28,8 +29,8 @@ export default {
     dataOpenSideBar: Boolean,
   },
   computed: {
-    currentUser() {
-      return globalState.user;
+    isUserLoggedIn() {
+      return !!Cookies.get('userId');
     },
   },
   methods: {
@@ -37,7 +38,15 @@ export default {
       this.$emit('toggleSidebar');
       this.$router.push(route);
     },
+    logout() {
+      ['userId', 'username', 'firstname', 'lastname', 'role'].forEach((cookie) => {
+        Cookies.remove(cookie);
+      });
+      this.$router.push('/login');
+    },
+    getCookie(name) {
+      return Cookies.get(name);
+    },
   },
 };
 </script>
-

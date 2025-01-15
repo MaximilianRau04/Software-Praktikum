@@ -80,18 +80,18 @@ public class Feedback {
     private Integer communicationScore;
 
     // Comments
-    @Size(max = 200, message = "enjoymentComment cannot exceed 200 characters")
+    @Size(max = 500, message = "enjoymentComment cannot exceed 200 characters")
     private String enjoymentComment;
-    @Size(max = 200, message = "improvementComment cannot exceed 200 characters")
+    @Size(max = 500, message = "improvementComment cannot exceed 200 characters")
     private String improvementComment;
-    @Size(max = 200, message = "requestComment cannot exceed 200 characters")
+    @Size(max = 500, message = "requestComment cannot exceed 200 characters")
     private String requestComment;
 
     // Closing Comments
-    @Size(max = 200, message = "personalImprovementComment cannot exceed 200 characters")
+    @Size(max = 500, message = "personalImprovementComment cannot exceed 200 characters")
     private String personalImprovementComment;
     private boolean isEventRecommended;
-    @Size(max = 200, message = "recommendationComment cannot exceed 200 characters")
+    @Size(max = 500, message = "recommendationComment cannot exceed 200 characters")
     private String recommendationComment;
 
     @Min(value = 1, message = "similarEventParticipationScore must be between 1 and 5.")

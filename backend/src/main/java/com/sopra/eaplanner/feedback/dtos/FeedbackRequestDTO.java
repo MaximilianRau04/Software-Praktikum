@@ -83,22 +83,22 @@ public class FeedbackRequestDTO {
     private Integer communicationScore;
 
     // Comments
-    @Size(max = 200, message = "enjoymentComment cannot exceed 200 characters")
+    @Size(max = 500, message = "enjoymentComment cannot exceed 200 characters")
     private String enjoymentComment;
-    @Size(max = 200, message = "improvementComment cannot exceed 200 characters")
+    @Size(max = 500, message = "improvementComment cannot exceed 200 characters")
     @NotNull(message = "improvementComment may not be null.")
     @NotBlank(message = "improvementComment may not be blank.")
     private String improvementComment;
-    @Size(max = 200, message = "requestComment cannot exceed 200 characters")
+    @Size(max = 500, message = "requestComment cannot exceed 200 characters")
     private String requestComment;
 
     // Closing Comments
-    @Size(max = 200, message = "personalImprovementComment cannot exceed 200 characters")
+    @Size(max = 500, message = "personalImprovementComment cannot exceed 200 characters")
     private String personalImprovementComment;
 
     @NotNull(message = "isEventRecommended may not be null.")
     private boolean isEventRecommended;
-    @Size(max = 200, message = "recommendationComment cannot exceed 200 characters")
+    @Size(max = 500, message = "recommendationComment cannot exceed 200 characters")
     private String recommendationComment;
 
     @Min(value = 1, message = "similarEventParticipationScore must be between 1 and 5.")
@@ -255,7 +255,7 @@ public class FeedbackRequestDTO {
         return enjoymentComment;
     }
 
-    public void setEnjoymentComment(@Size(max = 200, message = "enjoymentComment cannot exceed 200 characters") String enjoymentComment) {
+    public void setEnjoymentComment(@Size(max = 500, message = "enjoymentComment cannot exceed 200 characters") String enjoymentComment) {
         this.enjoymentComment = enjoymentComment;
     }
 
@@ -263,7 +263,7 @@ public class FeedbackRequestDTO {
         return improvementComment;
     }
 
-    public void setImprovementComment(@Size(max = 200, message = "improvementComment cannot exceed 200 characters") String improvementComment) {
+    public void setImprovementComment(@Size(max = 500, message = "improvementComment cannot exceed 200 characters") String improvementComment) {
         this.improvementComment = improvementComment;
     }
 
@@ -271,7 +271,7 @@ public class FeedbackRequestDTO {
         return requestComment;
     }
 
-    public void setRequestComment(@Size(max = 200, message = "requestComment cannot exceed 200 characters") String requestComment) {
+    public void setRequestComment(@Size(max = 500, message = "requestComment cannot exceed 200 characters") String requestComment) {
         this.requestComment = requestComment;
     }
 
@@ -279,7 +279,7 @@ public class FeedbackRequestDTO {
         return personalImprovementComment;
     }
 
-    public void setPersonalImprovementComment(@Size(max = 200, message = "personalImprovementComment cannot exceed 200 characters") String personalImprovementComment) {
+    public void setPersonalImprovementComment(@Size(max = 500, message = "personalImprovementComment cannot exceed 200 characters") String personalImprovementComment) {
         this.personalImprovementComment = personalImprovementComment;
     }
 
@@ -291,11 +291,11 @@ public class FeedbackRequestDTO {
         this.isEventRecommended = isEventRecommended;
     }
 
-    public @Size(max = 200, message = "recommendationComment cannot exceed 200 characters") String getRecommendationComment() {
+    public @Size(max = 500, message = "recommendationComment cannot exceed 200 characters") String getRecommendationComment() {
         return recommendationComment;
     }
 
-    public void setRecommendationComment(@Size(max = 200, message = "recommendationComment cannot exceed 200 characters") String recommendationComment) {
+    public void setRecommendationComment(@Size(max = 500, message = "recommendationComment cannot exceed 200 characters") String recommendationComment) {
         this.recommendationComment = recommendationComment;
     }
 

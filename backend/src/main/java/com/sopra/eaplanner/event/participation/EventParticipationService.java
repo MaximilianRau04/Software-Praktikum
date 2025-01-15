@@ -1,6 +1,7 @@
 package com.sopra.eaplanner.event.participation;
 
 import com.sopra.eaplanner.event.Event;
+import com.sopra.eaplanner.reward.RewardService;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,10 +15,15 @@ public class EventParticipationService {
     @Autowired
     private EventParticipationRepository eventParticipationRepository;
 
+    @Autowired
+    private RewardService rewardService;
+
     public void createAttendance(User user, Event event) {
         if (eventParticipationRepository.existsByUserAndEvent(user, event)) {
             throw new EntityExistsException("Event is already being attended.");
         }
+
+        rewardService.createAttendanceAndFeedbackRewards(user);
         eventParticipationRepository.save(new EventParticipation(user, event));
     }
 
@@ -28,6 +34,8 @@ public class EventParticipationService {
         eventParticipation.setIsParticipationConfirmed(true);
         eventParticipation.setConfirmationTime(LocalDateTime.now());
         eventParticipationRepository.save(eventParticipation);
+
+        rewardService.grantAttendancePoints(user);
     }
 
     public void deleteAttendance(User user, Event event) {
@@ -43,5 +51,7 @@ public class EventParticipationService {
         eventParticipation.setFeedbackGiven(true);
         eventParticipation.setFeedbackTime(LocalDateTime.now());
         eventParticipationRepository.save(eventParticipation);
+
+        rewardService.grantFeedbackGiverPoints(user);
     }
 }
