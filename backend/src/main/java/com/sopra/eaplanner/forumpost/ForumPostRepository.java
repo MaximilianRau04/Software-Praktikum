@@ -1,4 +1,4 @@
-package com.sopra.eaplanner.forumthread.forumpost;
+package com.sopra.eaplanner.forumpost;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

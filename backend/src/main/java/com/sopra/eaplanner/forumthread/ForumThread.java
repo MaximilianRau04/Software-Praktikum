@@ -3,9 +3,9 @@ package com.sopra.eaplanner.forumthread;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sopra.eaplanner.event.Event;
-import com.sopra.eaplanner.forumthread.forumpost.ForumPost;
+import com.sopra.eaplanner.forumpost.ForumPost;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 @Entity

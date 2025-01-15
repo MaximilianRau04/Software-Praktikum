@@ -16,7 +16,6 @@ import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
@@ -97,7 +96,7 @@ public class FeedbackService {
         summary.setCommonWords(generateWordCloud(feedback));
 
         List<CommentAnalysis> comments = summary.getComments();
-        List<CommentAnalysis> comments = feedback.stream()
+        List<CommentAnalysis> improvementComments = feedback.stream()
                 .map(f -> new CommentAnalysis(
                         f.getImprovementComment(),
                         analyzeSentiment(f.getImprovementComment()),
@@ -106,17 +105,17 @@ public class FeedbackService {
                 .toList();
 
         List<CommentAnalysis> enjoymentComments = feedback.stream()
-                .map(f -> new CommentAnalysis(f.getEnjoymentComment(), analyzeSentiment(f.getEnjoymentComment())))
+                .map(f -> new CommentAnalysis(f.getEnjoymentComment(), analyzeSentiment(f.getEnjoymentComment()), f.getId()))
                 .toList();
 
         // This construct should be able to assign a specified type to the comments and map them properly to the string.
         // comments.put(CommentType.ENJOYMENT, enjoymentComments);
         List<CommentAnalysis> recommendationComments = feedback.stream()
-                .map(f -> new CommentAnalysis(f.getRecommendationComment(), analyzeSentiment(f.getRecommendationComment())))
+                .map(f -> new CommentAnalysis(f.getRecommendationComment(), analyzeSentiment(f.getRecommendationComment()), f.getId()))
                 .toList();
 
         List<CommentAnalysis> requestComments = feedback.stream()
-                .map(f -> new CommentAnalysis(f.getRequestComment(), analyzeSentiment(f.getRecommendationComment())))
+                .map(f -> new CommentAnalysis(f.getRequestComment(), analyzeSentiment(f.getRecommendationComment()), f.getId()))
                 .toList();
 
 

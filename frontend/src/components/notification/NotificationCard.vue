@@ -14,6 +14,7 @@
 
 <script>
 import { formatDistanceToNow, parseISO } from 'date-fns';
+import config from "../../config";
 
 export default {
   props: {

@@ -1,4 +1,4 @@
-package com.sopra.eaplanner.forumthread.forumpost;
+package com.sopra.eaplanner.forumpost;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;

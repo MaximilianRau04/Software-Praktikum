@@ -1,4 +1,4 @@
-package com.sopra.eaplanner.forumthread.forumpost;
+package com.sopra.eaplanner.forumpost;
 
 import com.sopra.eaplanner.forumthread.ForumThread;
 import com.sopra.eaplanner.forumthread.ForumThreadRepository;

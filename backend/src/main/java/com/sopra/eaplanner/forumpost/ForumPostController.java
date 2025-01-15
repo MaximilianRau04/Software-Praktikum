@@ -1,4 +1,4 @@
-package com.sopra.eaplanner.forumthread.forumpost;
+package com.sopra.eaplanner.forumpost;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

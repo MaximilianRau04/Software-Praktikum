@@ -5,7 +5,6 @@ import com.sopra.eaplanner.event.dtos.EventRequestDTO;
 import com.sopra.eaplanner.event.participation.EventParticipation;
 import com.sopra.eaplanner.exchangeday.ExchangeDay;
 import com.sopra.eaplanner.feedback.Feedback;
-import com.sopra.eaplanner.forumpost.ForumPost;
 import com.sopra.eaplanner.forumthread.ForumThread;
 import com.sopra.eaplanner.notification.reminder.ReminderType;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
@@ -83,6 +82,7 @@ public class Event {
 
     @ElementCollection
     private Map<ReminderType, Boolean> remindersSent = new HashMap<>();
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     private Set<ForumThread> forumThreads = new HashSet<>();

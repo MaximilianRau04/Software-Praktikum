@@ -1,6 +1,5 @@
 package com.sopra.eaplanner.forumthread;
 
-import com.sopra.eaplanner.forumpost.ForumPost;
 import com.sopra.eaplanner.forumpost.ForumPostResponseDTO;
 
 import java.util.List;
