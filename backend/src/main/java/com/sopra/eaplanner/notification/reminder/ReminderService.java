@@ -98,7 +98,7 @@ public class ReminderService {
         List<Long> userIds = event.getRegisteredUsers().stream().map(User::getId).toList();
 
         for (Long userId : userIds) {
-            notificationService.createAndSendEventReminder(title, description, event.getStartDateTime(), userId);
+            notificationService.createAndSendEventReminder(title, event.getStartDateTime(), userId);
         }
 
         event.getRemindersSent().put(reminderType, true);

@@ -159,7 +159,7 @@ public class EventServiceTest {
 
         // Assert
         verify(eventParticipationRepository, times(1)).save(any(EventParticipation.class));
-        assertTrue(mockEventParticipation.isParticipationConfirmed());
+        assertTrue(mockEventParticipation.getIsParticipationConfirmed());
     }
 
     @Test
@@ -184,7 +184,7 @@ public class EventServiceTest {
         EventParticipation savedParticipation = captor.getValue();
 
         assertNotNull(savedParticipation, "The saved participation should not be null");
-        assertTrue(savedParticipation.isParticipationConfirmed(), "Participation should be confirmed");
+        assertTrue(savedParticipation.getIsParticipationConfirmed(), "Participation should be confirmed");
         assertNotNull(savedParticipation.getConfirmationTime(), "Confirmation time should be set");
     }
 

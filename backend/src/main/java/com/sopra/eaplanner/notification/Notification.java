@@ -38,8 +38,6 @@ public abstract class Notification {
     @NotNull
     private String title;
 
-    private String description;
-
     @Enumerated(EnumType.STRING)
     @NotNull
     private NotificationType type;
@@ -59,9 +57,8 @@ public abstract class Notification {
     @Transient
     private NotificationHandler handler;
 
-    public Notification(String title, String description, NotificationType type, Long userId) {
+    public Notification(String title, NotificationType type, Long userId) {
         this.title = title;
-        this.description = description;
         this.type = type;
         this.userId = userId;
     }
@@ -98,14 +95,6 @@ public abstract class Notification {
 
     public void setType(NotificationType type) {
         this.type = type;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public @NotNull String getTitle() {

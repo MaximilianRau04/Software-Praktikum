@@ -14,13 +14,13 @@ public class EventReminderNotification extends Notification {
     public EventReminderNotification() {
     }
 
-    public EventReminderNotification(String title, String description, NotificationType type, LocalDateTime eventDateTime, Long userId) {
-        super(title, description, type, userId);
+    public EventReminderNotification(String title, NotificationType type, LocalDateTime eventDateTime, Long userId) {
+        super(title, type, userId);
         this.eventDateTime = eventDateTime;
     }
 
-    public static EventReminderNotification create(String title, String description, LocalDateTime eventDateTime, Long userId) {
-        return new EventReminderNotification(title, description, NotificationType.EVENT_REMINDER, eventDateTime, userId);
+    public static EventReminderNotification create(String title, LocalDateTime eventDateTime, Long userId) {
+        return new EventReminderNotification(title, NotificationType.EVENT_REMINDER, eventDateTime, userId);
     }
 
     public LocalDateTime getEventDateTime() {

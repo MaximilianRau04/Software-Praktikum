@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/api/notifications")
@@ -31,9 +32,31 @@ public class NotificationController {
 
     @PostMapping("/send-test-notification")
     public void sendTestNotification(@RequestParam Long userId) {
+        Random r = new Random();
+        int d = r.nextInt(0,4);
+        if(d == 0){
+            String title = "Testing for Deniz";
+            LocalDateTime eventDateTime = LocalDateTime.now().plusMinutes(1);
+            notificationService.createAndSendEventReminder(title, eventDateTime, userId);
+            return;
+        } else if(d == 1){
+            String title = "Test for Maxi";
+            LocalDateTime eventDateTime = LocalDateTime.now().plusMinutes(10);
+            notificationService.createAndSendEventReminder(title, eventDateTime, userId);
+            return;
+        } else if(d == 2){
+            String title = "Test for Voriel";
+            LocalDateTime eventDateTime = LocalDateTime.now().plusMinutes(3600);
+            notificationService.createAndSendEventReminder(title, eventDateTime, userId);
+            return;
+        } else if(d == 3){
+            String title = "Last Possibility";
+            LocalDateTime eventDateTime = LocalDateTime.now().plusMinutes(600);
+            notificationService.createAndSendEventReminder(title, eventDateTime, userId);
+            return;
+        }
         String title = "Test Notification";
-        String description = "This is a test notification.";
         LocalDateTime eventDateTime = LocalDateTime.now().plusMinutes(1);
-        notificationService.createAndSendEventReminder(title, description, eventDateTime, userId);
+        notificationService.createAndSendEventReminder(title, eventDateTime, userId);
     }
 }

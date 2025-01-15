@@ -21,7 +21,6 @@ import java.util.Map;
 public class NotificationResponseDTO {
     private Long id;
     private String title;
-    private String description;
     private NotificationType type;
     private Boolean isRead;
     private LocalDateTime createdAt;
@@ -31,7 +30,6 @@ public class NotificationResponseDTO {
         NotificationResponseDTO dto = new NotificationResponseDTO(
                 notification.getId(),
                 notification.getTitle(),
-                notification.getDescription(),
                 notification.getType(),
                 notification.getIsRead(),
                 notification.getCreatedAt()
@@ -45,10 +43,9 @@ public class NotificationResponseDTO {
         return dto;
     }
 
-    private NotificationResponseDTO(Long id, String title, String description, NotificationType type, Boolean isRead, LocalDateTime createdAt) {
+    private NotificationResponseDTO(Long id, String title, NotificationType type, Boolean isRead, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
-        this.description = description;
         this.type = type;
         this.isRead = isRead;
         this.createdAt = createdAt;
@@ -74,12 +71,6 @@ public class NotificationResponseDTO {
     }
     public void setTitle(String title) {
         this.title = title;
-    }
-    public String getDescription() {
-        return description;
-    }
-    public void setDescription(String description) {
-        this.description = description;
     }
     public NotificationType getType() {
         return type;

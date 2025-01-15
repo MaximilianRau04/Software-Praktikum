@@ -80,12 +80,11 @@ public class NotificationService {
      * and then sends the notification to the user.
      *
      * @param title The title of the reminder notification.
-     * @param description The description of the reminder notification.
      * @param eventDateTime The date and time of the event being reminded about.
      * @param userId The ID of the user to send the notification to.
      */
-    public void createAndSendEventReminder(String title, String description, LocalDateTime eventDateTime, Long userId) {
-        EventReminderNotification eventReminderNotification = EventReminderNotification.create(title, description, eventDateTime, userId);
+    public void createAndSendEventReminder(String title, LocalDateTime eventDateTime, Long userId) {
+        EventReminderNotification eventReminderNotification = EventReminderNotification.create(title, eventDateTime, userId);
 
         NotificationHandler handler = notificationHandlerFactory.getNotificationHandler(eventReminderNotification.getType());
         eventReminderNotification.setHandler(handler);
