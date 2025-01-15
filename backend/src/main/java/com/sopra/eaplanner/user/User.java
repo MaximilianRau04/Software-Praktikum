@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.participation.EventParticipation;
 import com.sopra.eaplanner.feedback.Feedback;
-import com.sopra.eaplanner.forumpost.ForumPost;
+import com.sopra.eaplanner.forumthread.forumpost.ForumPost;
 import com.sopra.eaplanner.reward.Reward;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.user.dtos.UserRequestDTO;

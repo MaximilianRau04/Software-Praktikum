@@ -1,4 +1,4 @@
-package com.sopra.eaplanner.forumpost;
+package com.sopra.eaplanner.forumthread.forumpost;
 
 import org.springframework.data.repository.CrudRepository;
 

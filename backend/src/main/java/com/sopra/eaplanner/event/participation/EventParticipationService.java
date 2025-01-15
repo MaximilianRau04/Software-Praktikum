@@ -31,7 +31,7 @@ public class EventParticipationService {
         EventParticipation eventParticipation = eventParticipationRepository.findByUserAndEvent(user, event)
                 .orElseThrow(() -> new EntityNotFoundException("Participation not found"));
 
-        eventParticipation.setParticipationConfirmed(true);
+        eventParticipation.setIsParticipationConfirmed(true);
         eventParticipation.setConfirmationTime(LocalDateTime.now());
         eventParticipationRepository.save(eventParticipation);
 

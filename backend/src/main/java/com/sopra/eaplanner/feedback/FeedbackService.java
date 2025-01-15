@@ -189,7 +189,7 @@ public class FeedbackService {
         // TODO: Use X sentiment API for short comments in order to take out information and provbide a vibe map depending on the information tbhat was provided inside the comments
         return "Not implemented yet.";
     }
-
+  
     private <T> void addStatistic(Map<String, FeedbackStatistics> stats,
                                   String key,
                                   List<FeedbackResponseDTO> feedback,

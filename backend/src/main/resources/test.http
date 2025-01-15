@@ -106,3 +106,6 @@ GET http://localhost:8080/api/events/5/qr-code
 GET http://localhost:8080/api/users
 ###
 GET http://localhost:8080/api/events/5
+
+###
+POST http://localhost:8080/api/notifications/send-test-notification?userId=2

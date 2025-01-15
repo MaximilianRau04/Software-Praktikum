@@ -21,7 +21,7 @@ public class EventParticipationDTO {
         this.id = eventParticipation.getId();
         this.user = new UserResponseDTO(eventParticipation.getUser());
         this.event = new EventResponseDTO(eventParticipation.getEvent());
-        this.participationConfirmed = eventParticipation.isParticipationConfirmed();
+        this.participationConfirmed = eventParticipation.getIsParticipationConfirmed();
         this.confirmationTime = eventParticipation.getConfirmationTime();
         this.feedbackGiven = eventParticipation.isFeedbackGiven();
         this.feedbackTime = eventParticipation.getFeedbackTime();

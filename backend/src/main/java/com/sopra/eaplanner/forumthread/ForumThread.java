@@ -1,7 +1,7 @@
 package com.sopra.eaplanner.forumthread;
 
 import com.sopra.eaplanner.event.Event;
-import com.sopra.eaplanner.forumpost.ForumPost;
+import com.sopra.eaplanner.forumthread.forumpost.ForumPost;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 

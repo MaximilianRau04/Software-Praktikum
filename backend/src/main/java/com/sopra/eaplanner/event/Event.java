@@ -5,12 +5,14 @@ import com.sopra.eaplanner.event.dtos.EventRequestDTO;
 import com.sopra.eaplanner.event.participation.EventParticipation;
 import com.sopra.eaplanner.exchangeday.ExchangeDay;
 import com.sopra.eaplanner.feedback.Feedback;
+import com.sopra.eaplanner.notification.reminder.ReminderType;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -77,6 +79,8 @@ public class Event {
     @JsonManagedReference
     private List<EventParticipation> participations = new ArrayList<>();
 
+    @ElementCollection
+    private Map<ReminderType, Boolean> remindersSent = new HashMap<>();
 
     public Event() {
     }
@@ -216,6 +220,26 @@ public class Event {
 
     public String getQrCodeFilePath() {
         return qrCodeFilePath;
+    }
+
+    public Map<ReminderType, Boolean> getRemindersSent() {
+        return remindersSent;
+    }
+
+    public void setRemindersSent(Map<ReminderType, Boolean> remindersSent) {
+        this.remindersSent = remindersSent;
+    }
+
+    @Transient
+    public LocalDateTime getStartDateTime(){
+        return LocalDateTime.of(exchangeDay.getDate(), startTime);
+    }
+
+    @PostLoad
+    public void initRemindersSent() {
+        for (ReminderType type : ReminderType.values()) {
+            remindersSent.putIfAbsent(type, false);
+        }
     }
 
     private String generateAttendanceToken() {
