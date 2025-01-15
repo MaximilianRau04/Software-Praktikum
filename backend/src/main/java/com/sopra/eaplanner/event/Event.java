@@ -5,6 +5,8 @@ import com.sopra.eaplanner.event.dtos.EventRequestDTO;
 import com.sopra.eaplanner.event.participation.EventParticipation;
 import com.sopra.eaplanner.exchangeday.ExchangeDay;
 import com.sopra.eaplanner.feedback.Feedback;
+import com.sopra.eaplanner.forumpost.ForumPost;
+import com.sopra.eaplanner.forumthread.ForumThread;
 import com.sopra.eaplanner.notification.reminder.ReminderType;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.user.User;
@@ -67,7 +69,7 @@ public class Event {
     @JsonManagedReference
     private Set<User> registeredUsers = new HashSet<>();
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Feedback> feedbacks = new ArrayList<>();
 
@@ -81,11 +83,16 @@ public class Event {
 
     @ElementCollection
     private Map<ReminderType, Boolean> remindersSent = new HashMap<>();
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private Set<ForumThread> forumThreads = new HashSet<>();
 
     public Event() {
     }
 
-    public Event(Long id, String name, LocalTime startTime, LocalTime endTime, String room, String description, ExchangeDay exchangeDay, User organizer, TrainerProfile trainerProfile, String qrCodeFilePath) {
+    public Event(Long id, String name, LocalTime startTime, LocalTime endTime, String room,
+                 String description, ExchangeDay exchangeDay, User organizer, TrainerProfile trainerProfile,
+                 String qrCodeFilePath, Set<ForumThread>  forumthreads) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -97,9 +104,10 @@ public class Event {
         this.trainerProfile = trainerProfile;
         this.qrCodeFilePath = qrCodeFilePath;
         this.attendanceToken = generateAttendanceToken();
+        this.forumThreads = forumthreads;
     }
 
-    public Event(EventRequestDTO eventDTO, ExchangeDay exchangeDay, User organizer) {
+    public Event(EventRequestDTO eventDTO, ExchangeDay exchangeDay, User organizer, TrainerProfile trainerProfile) {
         this.name = eventDTO.getName();
         this.startTime = eventDTO.getStartTime();
         this.endTime = eventDTO.getEndTime();
@@ -107,6 +115,7 @@ public class Event {
         this.description = eventDTO.getDescription();
         this.exchangeDay = exchangeDay;
         this.organizer = organizer;
+        this.trainerProfile = trainerProfile;
         this.attendanceToken = generateAttendanceToken();
     }
 
@@ -257,5 +266,13 @@ public class Event {
         }
 
         return url.toString();
+    }
+
+    public Set<ForumThread> getForumThreads() {
+        return forumThreads;
+    }
+
+    public void setForumThreads(Set<ForumThread> forumThreads) {
+        this.forumThreads = forumThreads;
     }
 }

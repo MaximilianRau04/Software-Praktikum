@@ -1,8 +1,12 @@
 <template>
   <div class="dashboard-container">
-     <!-- Sidebar for navigation -->
-    <sidebar :dataOpenSideBar="openSidebar" @changeComponent="changeComponent" @toggleSidebar="toggleSidebar" />
-     <!-- Main content area -->
+    <!-- Sidebar for navigation -->
+    <sidebar
+      :dataOpenSideBar="openSidebar"
+      @changeComponent="changeComponent"
+      @toggleSidebar="toggleSidebar"
+    />
+    <!-- Main content area -->
     <div class="main-content">
       <HeaderTop :dataOpenSideBar="openSidebar" :toggleSidebar="toggleSidebar" :notifications="notifications" @mark-as-read="handleMarkAsRead" />
       <!-- Dynamic content area that renders the current component -->
@@ -14,28 +18,30 @@
 </template>
 
 <script>
-import MainPage from '@/components/ViewAllExchangeDays/MainPage.vue';
-import EventPlanning from '@/components/createNewEvents/EventPlanning.vue';
-import GiveFeedback from '@/components/feedback/GiveFeedback.vue';
-import Sidebar from '@/components/navigation/sidebar.vue';
-import HeaderTop from '@/components/navigation/header.vue';
-import EventRegistrations from './ViewAllExchangeDays/EventRegistrations.vue';
-import Cookies from 'js-cookie';
+import MainPage from "@/components/ViewAllExchangeDays/MainPage.vue";
+import EventPlanning from "@/components/createNewEvents/EventPlanning.vue";
+import GiveFeedback from "@/components/feedback/GiveFeedback.vue";
+import Sidebar from "@/components/navigation/Sidebar.vue";
+import HeaderTop from "@/components/navigation/Header.vue";
+import EventRegistrations from "./ViewAllExchangeDays/EventRegistrations.vue";
+import Forum from "./forum/Forum.vue";
+import Cookies from "js-cookie";
 import config from "../config";
 
 export default {
   components: {
     Sidebar, // Sidebar component for navigation
     HeaderTop, // Header component with toggle button
-    MainPage,  // Default component for main view
+    MainPage, // Default component for main view
     EventPlanning, // Component for creating new events
     GiveFeedback, // Component for giving Feedback
     EventRegistrations, // Component for viewing registered events
+    Forum, // Component for viewing forum
   },
   data() {
     return {
       openSidebar: false,
-      currentComponent: 'MainPage',
+      currentComponent: "MainPage",
       notifications:[],
     };
   },
@@ -46,7 +52,7 @@ export default {
     toggleSidebar() {
       this.openSidebar = !this.openSidebar;
     },
-    
+
     /**
      * Updates the currently displayed component.
      * @param {string} componentName - The name of the component to display.
@@ -105,5 +111,7 @@ export default {
   height: 60px;
   background: #f5f5f5;
   border-bottom: 1px solid #ddd;
+  height: calc(100vh - 50px);
+  overflow: auto;
 }
 </style>

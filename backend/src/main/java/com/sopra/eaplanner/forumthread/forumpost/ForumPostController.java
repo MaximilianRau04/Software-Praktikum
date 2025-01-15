@@ -22,11 +22,14 @@ public class ForumPostController {
     }
 
     @PostMapping("")
-    public ForumPost createForumPost(@Valid @RequestBody ForumPost requestBody) {
+    public ForumPost createForumPost(@Valid @RequestBody ForumPostDTO requestBody) {
         return forumPostService.createForumPost(requestBody);
     }
 
-    // TODO: PutMapping here
+    @PutMapping("/{id}")
+    public ForumPost updateForumPost(@PathVariable Long id, @Valid @RequestBody ForumPostDTO requestBody) {
+        return forumPostService.updateForumPost(id, requestBody);
+    }
 
     @DeleteMapping("/{id}")
     public void deleteForumPost(@PathVariable Long id) {

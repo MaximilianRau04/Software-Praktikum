@@ -7,6 +7,9 @@ import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.feedback.FeedbackService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO;
+import com.sopra.eaplanner.forumthread.ForumThread;
+import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
+import com.sopra.eaplanner.trainerprofile.TrainerProfileService;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/events")
@@ -28,6 +32,9 @@ public class EventController {
 
     @Autowired
     FeedbackService feedbackService;
+
+    @Autowired
+    TrainerProfileService trainerProfileService;
 
     @GetMapping("")
     public Iterable<EventResponseDTO> getAllEvents() {
@@ -42,6 +49,11 @@ public class EventController {
     @GetMapping("/{id}/registeredUsers")
     public Iterable<UserResponseDTO> getRegisteredUsers(@PathVariable Long id) {
         return eventService.getRegisteredUsers(id);
+    }
+
+    @GetMapping("/{id}/forum")
+    public Set<ForumThread> getForumThreads(@PathVariable Long id) {
+        return eventService.getForumThreads(id);
     }
 
     @GetMapping("/{id}/organizer")
@@ -73,6 +85,11 @@ public class EventController {
                 .body(file);
     }
 
+    @GetMapping("/{id}/trainerProfile")
+    public TrainerProfileResponseDTO getTrainerProfileByEventId(@PathVariable Long id) {
+        return eventService.getTrainerProfileByEventId(id);
+    }
+
     @PostMapping("")
     public ResponseEntity<EventResponseDTO> createEvent(@Valid @RequestBody EventRequestDTO requestBody) throws Exception {
         EventResponseDTO savedDTO = eventService.createEvent(requestBody);
@@ -86,7 +103,10 @@ public class EventController {
         eventService.confirmAttendance(eventId, requestBody);
     }
 
-    // TODO: PutMapping here
+    @PutMapping("/{id}")
+    public EventResponseDTO updateEvent(@PathVariable Long id, @Valid @RequestBody EventRequestDTO requestBody) {
+        return eventService.updateEvent(id, requestBody);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable Long id) {

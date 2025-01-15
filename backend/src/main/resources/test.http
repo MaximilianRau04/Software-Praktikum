@@ -5,8 +5,9 @@ Content-Type: application/json
   "name": "Fresh Try ResponseEntities",
   "description": "Bla Bla",
   "room": "0.108",
-  "exchangeDayId": 6,
-  "organizerId": 3,
+  "exchangeDayId": 1,
+  "organizerId": 1,
+  "trainerProfileId": 1,
   "startTime": "13:00:00",
   "endTime": "14:00:00"
 }
@@ -16,17 +17,17 @@ POST http://localhost:8080/api/users
 Content-Type: application/json
 
 {
-  "username": "maxTwo",
+  "username": "maxEight",
   "firstname": "Maximilian",
   "lastname": "Peresunchak",
-  "role": "ADMIN"
+  "role": "USER"
 }
 ###
 POST http://localhost:8080/api/exchange-days
 Content-Type: application/json
 
 {
-  "date": "2024-12-30",
+  "date": "2025-12-30",
   "name": "Fresh",
   "location": "Frankfurt",
   "description": "A day dedicated to learning Spring Boot with multiple sessions."
@@ -34,11 +35,11 @@ Content-Type: application/json
 ###
 GET http://localhost:8080/api/exchange-days
 ###
-GET http://localhost:8080/api/events
-###
-GET http://localhost:8080/api/users/1/feedback
-###
 GET http://localhost:8080/api/feedback
+###
+GET http://localhost:8080/api/users/1/feedbacks/trainer
+###
+GET http://localhost:8080/api/events/8/trainer-profile
 ###
 GET http://localhost:8080/api/users/search?username=maxTwo
 
@@ -72,15 +73,16 @@ Content-Type: application/json
   "recommendationComment": "I would definitely recommend this workshop to anyone that wants to work in web deployment.",
   "similarEventParticipationScore": 5,
   "anonymousFeedback": true,
-  "eventId": 11,
-  "userId": 1
+  "eventId": 1,
+  "userId": 1,
+  "trainerProfileId": 1
 }
 
 ###
 DELETE http://localhost:8080/api/feedback/3
 
 ###
-GET http://localhost:8080/api/events/11/feedback
+GET http://localhost:8080/api/feedback
 
 ###
 POST http://localhost:8080/api/events/11/attendance
@@ -103,9 +105,47 @@ GET http://localhost:8080/api/events/10/qr-code
 ###
 GET http://localhost:8080/api/events/5/qr-code
 ###
-GET http://localhost:8080/api/users
+GET http://localhost:8080/api/events/8/trainer-profile
+###
+GET http://localhost:8080/api/events/1/summary
+###
+POST http://localhost:8080/api/forumposts
+Content-Type: application/json
+
+{
+  "forumThreadId": 1,
+  "content": "I am really looking forward to this event. I hope it will be as good as the last one."
+}
+###
+POST http://localhost:8080/api/forumthreads
+Content-Type: application/json
+
+{
+  "eventId": 1,
+  "title": "Event Discussion",
+  "description": "Discuss everything about the event here."
+}
 ###
 GET http://localhost:8080/api/events/5
 
 ###
 POST http://localhost:8080/api/notifications/send-test-notification?userId=2
+GET http://localhost:8080/api/events/1/feedback
+###
+GET http://localhost:8080/api/users/1/trainerProfile
+###
+GET http://localhost:8080/api/trainerProfiles/1/pinned-comments
+###
+POST http://localhost:8080/api/trainerProfiles
+Content-Type: application/json
+
+{
+  "bio": "hallo",
+  "averageRating": 3,
+  "userId": 7,
+  "expertiseTags": ["Java"]
+}
+
+###
+POST http://localhost:8080/api/trainerProfiles/1/3/pin?commentType=improvement
+

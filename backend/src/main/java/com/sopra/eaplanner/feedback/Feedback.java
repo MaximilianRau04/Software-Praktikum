@@ -4,12 +4,17 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.feedback.dtos.FeedbackRequestDTO;
+import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 public class Feedback {
@@ -112,10 +117,24 @@ public class Feedback {
     @JsonBackReference
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "trainer_profile_id")
+    private TrainerProfile trainerProfile;
+
+    private boolean enjoymentCommentPinned;
+
+    private boolean improvementCommentPinned;
+
+    private boolean requestCommentPinned;
+
+    private boolean personalImprovementCommentPinned;
+
+    private boolean recommendationCommentPinned;
+
     public Feedback() {
     }
 
-    public Feedback(Long id, Integer overallScore, Integer organisationalScore, Integer relevanceScore, Integer understandabilityScore, Integer contentDepthScore, Integer practicalityScore, Integer reasonabilityScore, Integer competencyScore, Integer presentabilityScore, Integer interactivityScore, Integer timeManagementScore, Integer participationScore, Integer atmosphereScore, Integer networkingScore, Integer equipmentScore, Integer comfortabilityScore, Integer communicationScore, String enjoymentComment, String improvementComment, String requestComment, String personalImprovementComment, boolean isEventRecommended, String recommendationComment, Integer similarEventParticipationScore, boolean anonymousFeedback, Event event, User user) {
+    public Feedback(Long id, Integer overallScore, Integer organisationalScore, Integer relevanceScore, Integer understandabilityScore, Integer contentDepthScore, Integer practicalityScore, Integer reasonabilityScore, Integer competencyScore, Integer presentabilityScore, Integer interactivityScore, Integer timeManagementScore, Integer participationScore, Integer atmosphereScore, Integer networkingScore, Integer equipmentScore, Integer comfortabilityScore, Integer communicationScore, String enjoymentComment, String improvementComment, String requestComment, String personalImprovementComment, boolean isEventRecommended, String recommendationComment, Integer similarEventParticipationScore, boolean anonymousFeedback, Event event, User user, TrainerProfile trainerProfile) {
         this.id = id;
         this.overallScore = overallScore;
         this.organisationalScore = organisationalScore;
@@ -144,10 +163,11 @@ public class Feedback {
         this.anonymousFeedback = anonymousFeedback;
         this.event = event;
         this.user = user;
+        this.trainerProfile = trainerProfile;
     }
 
 
-    public Feedback(FeedbackRequestDTO feedback, Event event, User user) {
+    public Feedback(FeedbackRequestDTO feedback, Event event, User user, TrainerProfile trainerProfile) {
         this.overallScore = feedback.getOverallScore();
         this.organisationalScore = feedback.getOrganisationalScore();
         this.relevanceScore = feedback.getRelevanceScore();
@@ -175,6 +195,7 @@ public class Feedback {
         this.anonymousFeedback = feedback.isAnonymousFeedback();
         this.event = event;
         this.user = user;
+        this.trainerProfile = trainerProfile;
     }
 
     public Long getId() {
@@ -400,4 +421,54 @@ public class Feedback {
     public void setUser(@NotNull User user) {
         this.user = user;
     }
+
+    public TrainerProfile getTrainerProfile() {
+        return trainerProfile;
+    }
+
+    public void setTrainerProfile(TrainerProfile trainerProfile) {
+        this.trainerProfile = trainerProfile;
+    }
+
+    public boolean isEnjoymentCommentPinned() {
+        return enjoymentCommentPinned;
+    }
+
+    public void setEnjoymentCommentPinned(boolean enjoymentCommentPinned) {
+        this.enjoymentCommentPinned = enjoymentCommentPinned;
+    }
+
+    public boolean isImprovementCommentPinned() {
+        return improvementCommentPinned;
+    }
+
+    public void setImprovementCommentPinned(boolean improvementCommentPinned) {
+        this.improvementCommentPinned = improvementCommentPinned;
+    }
+
+    public boolean isRequestCommentPinned() {
+        return requestCommentPinned;
+    }
+
+    public void setRequestCommentPinned(boolean requestCommentPinned) {
+        this.requestCommentPinned = requestCommentPinned;
+    }
+
+    public boolean isPersonalImprovementCommentPinned() {
+        return personalImprovementCommentPinned;
+    }
+
+    public void setPersonalImprovementCommentPinned(boolean personalImprovementCommentPinned) {
+        this.personalImprovementCommentPinned = personalImprovementCommentPinned;
+    }
+
+
+    public boolean isRecommendationCommentPinned() {
+        return recommendationCommentPinned;
+    }
+
+    public void setRecommendationCommentPinned(boolean recommendationCommentPinned) {
+        this.recommendationCommentPinned = recommendationCommentPinned;
+    }
+
 }

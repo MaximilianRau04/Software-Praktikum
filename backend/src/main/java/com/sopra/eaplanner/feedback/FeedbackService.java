@@ -8,12 +8,15 @@ import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO.CommentAnalysis;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO.FeedbackStatistics;
+import com.sopra.eaplanner.trainerprofile.TrainerProfile;
+import com.sopra.eaplanner.trainerprofile.TrainerProfileRepository;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserRepository;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
@@ -33,6 +36,9 @@ public class FeedbackService {
 
     @Autowired
     private EventParticipationService eventParticipationService;
+
+    @Autowired
+    private TrainerProfileRepository trainerProfileRepository;
 
     public Iterable<FeedbackResponseDTO> getAllFeedbacks() {
         Iterable<Feedback> feedbacks = feedbackRepository.findAll();
@@ -91,8 +97,12 @@ public class FeedbackService {
         summary.setCommonWords(generateWordCloud(feedback));
 
         List<CommentAnalysis> comments = summary.getComments();
-        List<CommentAnalysis> improvementComments = feedback.stream()
-                .map(f -> new CommentAnalysis(f.getImprovementComment(), analyzeSentiment(f.getImprovementComment())))
+        List<CommentAnalysis> comments = feedback.stream()
+                .map(f -> new CommentAnalysis(
+                        f.getImprovementComment(),
+                        analyzeSentiment(f.getImprovementComment()),
+                        f.getId()
+                ))
                 .toList();
 
         List<CommentAnalysis> enjoymentComments = feedback.stream()
@@ -110,7 +120,7 @@ public class FeedbackService {
                 .toList();
 
 
-
+// add in all comment types into the summary
         summary.setComments(comments);
         return summary;
     }
@@ -133,7 +143,10 @@ public class FeedbackService {
         User feedbackAuthor = userRepository.findById(requestBody.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback, feedbackAuthor);
+        TrainerProfile trainerProfile = trainerProfileRepository.findById(requestBody.getTrainerProfileId())
+                .orElseThrow(() -> new EntityNotFoundException("Trainer Profile not found"));
+
+        Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback, feedbackAuthor, trainerProfile);
 
         feedbackToSave = feedbackRepository.save(feedbackToSave);
         eventParticipationService.postFeedback(feedbackAuthor, eventForFeedback);
@@ -189,7 +202,7 @@ public class FeedbackService {
         // TODO: Use X sentiment API for short comments in order to take out information and provbide a vibe map depending on the information tbhat was provided inside the comments
         return "Not implemented yet.";
     }
-  
+
     private <T> void addStatistic(Map<String, FeedbackStatistics> stats,
                                   String key,
                                   List<FeedbackResponseDTO> feedback,

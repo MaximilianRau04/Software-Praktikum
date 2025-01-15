@@ -86,6 +86,7 @@ public class EventControllerTest {
     void testCreateEvent() throws Exception {
         Long exchangeDayId = 1L;
         Long organizerId = 1L;
+        Long trainerProfileId = 1L;
 
         ExchangeDayResponseDTO mockExchangeDay = ExchangeDayResponseDTO.mockWith(exchangeDayId, LocalDate.of(2045, 12, 30), "Workshop A", "Berlin", "Description A");
         when(exchangeDayService.getExchangeDayById(exchangeDayId)).thenReturn(mockExchangeDay);
@@ -93,7 +94,7 @@ public class EventControllerTest {
         UserResponseDTO mockOrganizer = UserResponseDTO.mockWith(organizerId, "admin", "Admin", "User", User.Role.ADMIN);
         when(userService.getUserById(organizerId)).thenReturn(mockOrganizer);
 
-        EventRequestDTO eventRequest = EventRequestDTO.mockWith("Workshop A", LocalTime.of(11, 0), LocalTime.of(12, 0), "Description A", "Room A", exchangeDayId, organizerId);
+        EventRequestDTO eventRequest = EventRequestDTO.mockWith("Workshop A", LocalTime.of(11, 0), LocalTime.of(12, 0), "Description A", "Room A", exchangeDayId, organizerId, trainerProfileId);
 
         EventResponseDTO eventResponse = EventResponseDTO.mockWith(1L, LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A");
         when(eventService.createEvent(any(EventRequestDTO.class))).thenReturn(eventResponse);
@@ -119,8 +120,8 @@ public class EventControllerTest {
         feedbackSummary.setNumericalFeedback(numericalFeedback);
 
         List<FeedbackSummaryDTO.CommentAnalysis> comments = new ArrayList<>();
-        comments.add(new FeedbackSummaryDTO.CommentAnalysis("Great workshop!", "positive"));
-        comments.add(new FeedbackSummaryDTO.CommentAnalysis("Needs more practical examples.", "negative"));
+        comments.add(new FeedbackSummaryDTO.CommentAnalysis("Great workshop!", "positive", 1L));
+        comments.add(new FeedbackSummaryDTO.CommentAnalysis("Needs more practical examples.", "negative", 2L));
         feedbackSummary.setComments(comments);
 
         when(feedbackService.generateFeedbackSummary(1L)).thenReturn(feedbackSummary);

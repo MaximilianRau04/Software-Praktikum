@@ -54,9 +54,11 @@ public class User {
     private Set<Feedback> feedbacks = new HashSet<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private Set<ForumPost> forumPosts = new HashSet<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private TrainerProfile trainerProfile;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

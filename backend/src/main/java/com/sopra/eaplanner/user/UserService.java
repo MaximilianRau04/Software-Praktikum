@@ -6,6 +6,11 @@ import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
+import com.sopra.eaplanner.forumpost.ForumPost;
+import com.sopra.eaplanner.forumpost.ForumPostResponseDTO;
+import com.sopra.eaplanner.reward.Reward;
+import com.sopra.eaplanner.trainerprofile.TrainerProfile;
+import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
 import com.sopra.eaplanner.user.dtos.UserRequestDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.persistence.EntityExistsException;
@@ -15,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,6 +74,44 @@ public class UserService {
                 .stream()
                 .map(FeedbackResponseDTO::new)
                 .collect(Collectors.toSet());
+    }
+
+    public Set<ForumPostResponseDTO> getUserForumPosts(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException("User not found");
+        }
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"))
+                .getForumPosts()
+                .stream()
+                .map(ForumPostResponseDTO::new)
+                .collect(Collectors.toSet());
+    }
+
+    public TrainerProfileResponseDTO getTrainerProfile(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException("User not found");
+        }
+        TrainerProfile trainerProfile = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"))
+                .getTrainerProfile();
+
+        if (trainerProfile == null) {
+            throw new EntityNotFoundException("Trainer profile not found for user with id: " + userId);
+        }
+
+        // Konvertiere TrainerProfile zu TrainerProfileResponseDTO
+        return new TrainerProfileResponseDTO(trainerProfile);
+    }
+
+
+    public Set<Reward> getUserRewards(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException("User not found");
+        }
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"))
+                .getRewards();
     }
 
     public Iterable<EventParticipationDTO> getParticipations(Long id) {

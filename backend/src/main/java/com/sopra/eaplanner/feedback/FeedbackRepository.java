@@ -4,8 +4,12 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FeedbackRepository extends CrudRepository<Feedback, Long> {
-    List<Feedback> findByEventId(Long userId);
+    List<Feedback> findByEventId(Long eventId);
+
+    Optional<Feedback> findByTrainerProfileId(Long trainerId);
+
 }

@@ -106,10 +106,12 @@ public class FeedbackSummaryDTO {
     public static class CommentAnalysis {
         private String comment;
         private String sentiment;
+        private Long feedbackId;
 
-        public CommentAnalysis(String comment, String sentiment){
+        public CommentAnalysis(String comment, String sentiment, Long feedbackId){
             this.comment = comment;
             this.sentiment = sentiment;
+            this.feedbackId = feedbackId;
         }
 
         public String getComment() {
@@ -125,7 +127,13 @@ public class FeedbackSummaryDTO {
             this.sentiment = sentiment;
         }
 
+        public Long getFeedbackId() {
+            return feedbackId;
+        }
+
+        public void setFeedbackId(Long feedbackId) {
+            this.feedbackId = feedbackId;
+        }
     }
 }
-
 

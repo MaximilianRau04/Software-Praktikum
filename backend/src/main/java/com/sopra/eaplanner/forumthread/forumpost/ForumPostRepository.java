@@ -1,6 +1,9 @@
 package com.sopra.eaplanner.forumthread.forumpost;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ForumPostRepository extends CrudRepository<ForumPost, Long> {
+import java.util.List;
+
+public interface ForumPostRepository extends JpaRepository<ForumPost, Long> {
+    List<ForumPost> findByForumThreadId(Long forumThreadId);
 }

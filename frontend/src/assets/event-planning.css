@@ -1,7 +1,7 @@
 .action-button {
-  margin: 8px; 
-  padding: 10px 20px; 
-  font-size: 16px; 
+  margin: 8px;
+  padding: 10px 20px;
+  font-size: 16px;
   cursor: pointer;
   background-color: #0288d1;
   color: white;
@@ -9,7 +9,7 @@
   border-radius: 5px;
   transition: background-color 0.3s ease;
   display: inline-flex;
-  align-items: center; 
+  align-items: center;
 }
 
 .action-button:hover {
@@ -22,7 +22,7 @@
 }
 
 .action-button i {
-  margin-right: 6px; 
+  margin-right: 6px;
 }
 
 .action-button img {
@@ -30,16 +30,16 @@
 }
 
 .create-box {
-  max-width: 350px; 
-  margin: 12px auto; 
-  padding: 12px; 
-  border-radius: 6px; 
+  max-width: 350px;
+  margin: 12px auto;
+  padding: 12px;
+  border-radius: 6px;
   background-color: #fff;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); 
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
 .create-box h2 {
-  font-size: 18px; 
+  font-size: 18px;
   margin-bottom: 12px;
   text-align: center;
   color: #333;
@@ -47,12 +47,12 @@
 
 .input-group {
   max-width: 90%;
-  margin-bottom: 10px; 
+  margin-bottom: 10px;
 }
 
 .input-group label {
   display: block;
-  font-size: 14px; 
+  font-size: 14px;
   margin-bottom: 4px;
   color: #555;
 }
@@ -60,11 +60,11 @@
 .input-group input,
 .input-group select {
   width: 100%;
-  padding: 8px; 
+  padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  font-size: 14px; 
+  font-size: 14px;
 }
 
 .input-group input:focus,
@@ -73,16 +73,21 @@
   outline: none;
 }
 
-.roll-enter-active, .roll-leave-active {
-  transition: max-height 0.4s ease, opacity 0.4s ease;
+.roll-enter-active,
+.roll-leave-active {
+  transition:
+    max-height 0.4s ease,
+    opacity 0.4s ease;
 }
 
-.roll-enter-from, .roll-leave-to {
+.roll-enter-from,
+.roll-leave-to {
   max-height: 0;
   padding: 0;
   opacity: 0;
 }
 
-.roll-enter-to, .roll-leave-from {
+.roll-enter-to,
+.roll-leave-from {
   opacity: 1;
 }
