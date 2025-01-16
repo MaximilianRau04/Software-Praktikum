@@ -11,7 +11,6 @@ import com.sopra.eaplanner.reward.Reward;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileRepository;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
-import com.sopra.eaplanner.trainerprofile.TrainerProfileService;
 import com.sopra.eaplanner.user.dtos.UserRequestDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.persistence.EntityExistsException;
@@ -23,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static com.sopra.eaplanner.user.User.Role.ADMIN;
 
 @Service
 public class UserService {
@@ -132,7 +129,7 @@ public class UserService {
     public UserResponseDTO createUser(UserRequestDTO requestBody) {
         User userToSave = userRepository.save(new User(requestBody));
 
-        if (userToSave.getRole() == ADMIN) {
+        if (userToSave.getRole() == User.Role.ADMIN) {
             TrainerProfile trainerProfile = new TrainerProfile();
             trainerProfile.setUser(userToSave);
 

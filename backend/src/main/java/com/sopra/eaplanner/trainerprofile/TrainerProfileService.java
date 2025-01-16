@@ -174,6 +174,10 @@ public class TrainerProfileService {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        if (user.getRole() != User.Role.ADMIN) {
+            throw new IllegalArgumentException("Only users with ADMIN role can create a trainer profile.");
+        }
+
         TrainerProfile trainerProfile = new TrainerProfile();
         trainerProfile.setBio(request.getBio());
         trainerProfile.setAverageRating(request.getAverageRating());
@@ -181,10 +185,9 @@ public class TrainerProfileService {
         trainerProfile.setUser(user);
 
         TrainerProfile savedProfile = trainerProfileRepository.save(trainerProfile);
+
         return new TrainerProfileResponseDTO(savedProfile);
     }
-
-
 
     public TrainerProfileResponseDTO updateTrainerProfile(Long id, TrainerProfileRequestDTO request) {
         TrainerProfile existingProfile = trainerProfileRepository.findById(id)
@@ -192,6 +195,10 @@ public class TrainerProfileService {
 
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (user.getRole() != User.Role.ADMIN) {
+            throw new IllegalArgumentException("Only users with ADMIN role can update a trainer profile.");
+        }
 
         existingProfile.setBio(request.getBio());
         existingProfile.setAverageRating(request.getAverageRating());
@@ -201,7 +208,6 @@ public class TrainerProfileService {
         TrainerProfile updatedProfile = trainerProfileRepository.save(existingProfile);
         return new TrainerProfileResponseDTO(updatedProfile);
     }
-
 
     public boolean deleteTrainerProfile(Long id) {
         if (trainerProfileRepository.existsById(id)) {

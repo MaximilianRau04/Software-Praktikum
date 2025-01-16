@@ -39,6 +39,8 @@ public class TrainerProfileController {
         return ResponseEntity.ok(profile);
     }
 
+    // get hosted events
+
     @GetMapping("/{id}/user")
     public ResponseEntity<User> getUserOfTrainerProfile(@PathVariable Long id) {
         User user = trainerProfileService.getUserOfTrainerProfile(id);
@@ -59,8 +61,6 @@ public class TrainerProfileController {
     public Feedback unpinComment(@PathVariable Long trainerId, @PathVariable Long feedbackId, @RequestParam String commentType) {
         return trainerProfileService.unpinComment(trainerId, feedbackId, commentType);
     }
-
-    // get hosted events
 
     @PostMapping("")
     public ResponseEntity<TrainerProfileResponseDTO> createTrainerProfile(@Valid @RequestBody TrainerProfileRequestDTO request) {

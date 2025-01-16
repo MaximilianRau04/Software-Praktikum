@@ -1,11 +1,11 @@
-POST http://localhost:8080/api/events
+PUT http://localhost:8080/api/events/3
 Content-Type: application/json
 
 {
   "name": "Fresh Try ResponseEntities",
   "description": "Bla Bla",
   "room": "0.108",
-  "exchangeDayId": 1,
+  "exchangeDayId": 2,
   "organizerId": 1,
   "startTime": "13:00:00",
   "endTime": "14:00:00"
@@ -129,9 +129,9 @@ GET http://localhost:8080/api/events/1/feedback
 ###
 POST http://localhost:8080/api/notifications/send-test-notification?userId=2
 ###
-GET http://localhost:8080/api/users/4/trainerProfile
+GET http://localhost:8080/api/events
 ###
-GET http://localhost:8080/api/trainerProfiles
+GET http://localhost:8080/api/users/2/trainerProfile
 ###
 GET http://localhost:8080/api/trainerProfiles/1/pinned-comments
 ###
@@ -141,7 +141,7 @@ Content-Type: application/json
 {
   "bio": "hallo",
   "averageRating": 3.5,
-  "userId": 2,
+  "userId": 1,
   "expertiseTags": ["Java, Python"]
 }
 

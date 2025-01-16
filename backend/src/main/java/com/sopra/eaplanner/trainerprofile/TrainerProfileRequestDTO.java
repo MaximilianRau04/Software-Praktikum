@@ -14,7 +14,7 @@ public class TrainerProfileRequestDTO {
 
     private List<String> expertiseTags = new ArrayList<>();
 
-    @NotNull(message = "User cannot be null.")
+    @NotNull(message = "User must be specified")
     private Long userId;
 
     public TrainerProfileRequestDTO() {
