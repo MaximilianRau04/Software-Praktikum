@@ -7,6 +7,7 @@ import GiveFeedback from '@/components/feedback/GiveFeedback.vue';
 import FeedbackSummary from '@/components/feedback/FeedbackSummary.vue';
 import Forum from '@/components/forum/Forum.vue';
 import UserProfile from '@/components/navigation/UserProfile.vue';
+import Leaderboard from '@/components/leaderboard/Leaderboard.vue';
 
 export default [
   {
@@ -54,6 +55,11 @@ export default [
         name: 'UserProfile',
         component: UserProfile,
         props: true
+      },
+      {
+        path: '/leaderboard',
+        name: 'Leaderboard',
+        component: Leaderboard
       }
     ]
   },

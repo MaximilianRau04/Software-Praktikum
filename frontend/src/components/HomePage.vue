@@ -3,8 +3,8 @@
     <!-- Sidebar for navigation -->
     <sidebar
       :dataOpenSideBar="openSidebar"
+      :toggleSidebar="toggleSidebar"
       @changeComponent="changeComponent"
-      @toggleSidebar="toggleSidebar"
     />
     <!-- Main content area -->
     <div class="main-content">
@@ -18,12 +18,14 @@
 </template>
 
 <script>
+import { ref } from "vue";
 import MainPage from "@/components/ViewAllExchangeDays/MainPage.vue";
 import EventPlanning from "@/components/createNewEvents/EventPlanning.vue";
 import GiveFeedback from "@/components/feedback/GiveFeedback.vue";
 import Sidebar from "@/components/navigation/Sidebar.vue";
 import HeaderTop from "@/components/navigation/Header.vue";
 import EventRegistrations from "./ViewAllExchangeDays/EventRegistrations.vue";
+import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
 import Forum from "./forum/Forum.vue";
 import Cookies from "js-cookie";
 import config from "../config";
@@ -37,22 +39,24 @@ export default {
     GiveFeedback, // Component for giving Feedback
     EventRegistrations, // Component for viewing registered events
     Forum, // Component for viewing forum
+    Leaderboard, // Component for displaying the points of users in a ranking
+  },
+  setup(){
+    const openSidebar = ref(false);
+
+    const toggleSidebar = () => {
+      openSidebar.value = !openSidebar.value;
+    }
+
+    return {openSidebar, toggleSidebar};
   },
   data() {
     return {
-      openSidebar: false,
       currentComponent: "MainPage",
       notifications:[],
     };
   },
   methods: {
-    /**
-     * Toggles the visibility of the sidebar.
-     */
-    toggleSidebar() {
-      this.openSidebar = !this.openSidebar;
-    },
-
     /**
      * Updates the currently displayed component.
      * @param {string} componentName - The name of the component to display.
