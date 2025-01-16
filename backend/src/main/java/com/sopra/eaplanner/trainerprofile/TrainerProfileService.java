@@ -49,16 +49,6 @@ public class TrainerProfileService {
         return profileOpt.map(TrainerProfile::getUser).orElse(null);
     }
 
-    public Iterable<FeedbackResponseDTO> getFeedback(Long id) {
-        TrainerProfile trainerProfile = trainerProfileRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
-        return trainerProfile.getFeedbacks()
-                .stream()
-                .map(FeedbackResponseDTO::new)
-                .collect(Collectors.toSet());
-    }
-
     public List<Map<String, String>> getPinnedComments(Long id) {
         Optional<TrainerProfile> trainerProfileOpt = trainerProfileRepository.findById(id);
         if (trainerProfileOpt.isEmpty()) {

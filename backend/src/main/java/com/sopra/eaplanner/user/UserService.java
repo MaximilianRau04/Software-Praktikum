@@ -9,7 +9,9 @@ import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.forumpost.ForumPostResponseDTO;
 import com.sopra.eaplanner.reward.Reward;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
+import com.sopra.eaplanner.trainerprofile.TrainerProfileRepository;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
+import com.sopra.eaplanner.trainerprofile.TrainerProfileService;
 import com.sopra.eaplanner.user.dtos.UserRequestDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.persistence.EntityExistsException;
@@ -22,6 +24,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.sopra.eaplanner.user.User.Role.ADMIN;
+
 @Service
 public class UserService {
 
@@ -31,6 +35,9 @@ public class UserService {
     private EventRepository eventRepository;
     @Autowired
     private EventParticipationService eventParticipationService;
+
+    @Autowired
+    private TrainerProfileRepository trainerProfileRepository;
 
     public UserResponseDTO getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
@@ -99,7 +106,6 @@ public class UserService {
             throw new EntityNotFoundException("Trainer profile not found for user with id: " + userId);
         }
 
-        // Konvertiere TrainerProfile zu TrainerProfileResponseDTO
         return new TrainerProfileResponseDTO(trainerProfile);
     }
 
@@ -125,8 +131,23 @@ public class UserService {
 
     public UserResponseDTO createUser(UserRequestDTO requestBody) {
         User userToSave = userRepository.save(new User(requestBody));
+
+        if (userToSave.getRole() == ADMIN) {
+            TrainerProfile trainerProfile = new TrainerProfile();
+            trainerProfile.setUser(userToSave);
+
+
+            trainerProfile.setBio("");
+            trainerProfile.setAverageRating(0.0);
+            trainerProfile.setExpertiseTags(new ArrayList<>());
+
+            trainerProfileRepository.save(trainerProfile);
+        }
+
         return new UserResponseDTO(userToSave);
     }
+
+
 
     public UserResponseDTO updateUser(Long id, UserRequestDTO user) {
         User existingUser = userRepository.findById(id)

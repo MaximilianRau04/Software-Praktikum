@@ -142,10 +142,7 @@ public class FeedbackService {
         User feedbackAuthor = userRepository.findById(requestBody.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        TrainerProfile trainerProfile = trainerProfileRepository.findById(requestBody.getTrainerProfileId())
-                .orElseThrow(() -> new EntityNotFoundException("Trainer Profile not found"));
-
-        Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback, feedbackAuthor, trainerProfile);
+        Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback, feedbackAuthor);
 
         feedbackToSave = feedbackRepository.save(feedbackToSave);
         eventParticipationService.postFeedback(feedbackAuthor, eventForFeedback);

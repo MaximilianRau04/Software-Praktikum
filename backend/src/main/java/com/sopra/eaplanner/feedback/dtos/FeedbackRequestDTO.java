@@ -112,8 +112,6 @@ public class FeedbackRequestDTO {
 
     private Long userId;
 
-    private Long trainerProfileId;
-
     public FeedbackRequestDTO() {
     }
 
@@ -333,15 +331,7 @@ public class FeedbackRequestDTO {
         this.userId = userId;
     }
 
-    public Long getTrainerProfileId() {
-        return trainerProfileId;
-    }
-
-    public void setTrainerProfileId(Long trainerProfileId) {
-        this.trainerProfileId = trainerProfileId;
-    }
-
-    public static FeedbackRequestDTO mockWith(Integer overallScore, Integer organisationalScore, Integer relevanceScore, Integer understandabilityScore, Integer contentDepthScore, Integer practicalityScore, Integer reasonabilityScore, Integer competencyScore, Integer presentabilityScore, Integer interactivityScore, Integer timeManagementScore, Integer participationScore, Integer atmosphereScore, Integer networkingScore, Integer equipmentScore, Integer comfortabilityScore, Integer communicationScore, String enjoymentComment, String improvementComment, String requestComment, String personalImprovementComment, boolean isEventRecommended, String recommendationComment, Integer similarEventParticipationScore, boolean anonymousFeedback, Long eventId, Long userId, Long trainerProfileId) {
+    public static FeedbackRequestDTO mockWith(Integer overallScore, Integer organisationalScore, Integer relevanceScore, Integer understandabilityScore, Integer contentDepthScore, Integer practicalityScore, Integer reasonabilityScore, Integer competencyScore, Integer presentabilityScore, Integer interactivityScore, Integer timeManagementScore, Integer participationScore, Integer atmosphereScore, Integer networkingScore, Integer equipmentScore, Integer comfortabilityScore, Integer communicationScore, String enjoymentComment, String improvementComment, String requestComment, String personalImprovementComment, boolean isEventRecommended, String recommendationComment, Integer similarEventParticipationScore, boolean anonymousFeedback, Long eventId, Long userId) {
         return new FeedbackRequestDTO(
                 overallScore,
                 organisationalScore,
@@ -369,12 +359,11 @@ public class FeedbackRequestDTO {
                 similarEventParticipationScore,
                 anonymousFeedback,
                 eventId,
-                userId,
-                trainerProfileId
+                userId
         );
     }
 
-    private FeedbackRequestDTO(Integer overallScore, Integer organisationalScore, Integer relevanceScore, Integer understandabilityScore, Integer contentDepthScore, Integer practicalityScore, Integer reasonabilityScore, Integer competencyScore, Integer presentabilityScore, Integer interactivityScore, Integer timeManagementScore, Integer participationScore, Integer atmosphereScore, Integer networkingScore, Integer equipmentScore, Integer comfortabilityScore, Integer communicationScore, String enjoymentComment, String improvementComment, String requestComment, String personalImprovementComment, boolean isEventRecommended, String recommendationComment, Integer similarEventParticipationScore, boolean anonymousFeedback, Long eventId, Long userId, Long trainerProfileId) {
+    private FeedbackRequestDTO(Integer overallScore, Integer organisationalScore, Integer relevanceScore, Integer understandabilityScore, Integer contentDepthScore, Integer practicalityScore, Integer reasonabilityScore, Integer competencyScore, Integer presentabilityScore, Integer interactivityScore, Integer timeManagementScore, Integer participationScore, Integer atmosphereScore, Integer networkingScore, Integer equipmentScore, Integer comfortabilityScore, Integer communicationScore, String enjoymentComment, String improvementComment, String requestComment, String personalImprovementComment, boolean isEventRecommended, String recommendationComment, Integer similarEventParticipationScore, boolean anonymousFeedback, Long eventId, Long userId) {
         this.overallScore = overallScore;
         this.organisationalScore = organisationalScore;
         this.relevanceScore = relevanceScore;
@@ -402,6 +391,5 @@ public class FeedbackRequestDTO {
         this.anonymousFeedback = anonymousFeedback;
         this.eventId = eventId;
         this.userId = userId;
-        this.trainerProfileId = trainerProfileId;
     }
 }

@@ -107,7 +107,7 @@ public class Event {
         this.forumThreads = forumthreads;
     }
 
-    public Event(EventRequestDTO eventDTO, ExchangeDay exchangeDay, User organizer, TrainerProfile trainerProfile) {
+    public Event(EventRequestDTO eventDTO, ExchangeDay exchangeDay, User organizer) {
         this.name = eventDTO.getName();
         this.startTime = eventDTO.getStartTime();
         this.endTime = eventDTO.getEndTime();
@@ -115,7 +115,6 @@ public class Event {
         this.description = eventDTO.getDescription();
         this.exchangeDay = exchangeDay;
         this.organizer = organizer;
-        this.trainerProfile = trainerProfile;
         this.attendanceToken = generateAttendanceToken();
     }
 

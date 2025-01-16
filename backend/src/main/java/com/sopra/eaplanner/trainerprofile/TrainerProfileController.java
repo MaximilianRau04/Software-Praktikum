@@ -45,11 +45,6 @@ public class TrainerProfileController {
         return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/{id}/feedback")
-    public Iterable<FeedbackResponseDTO> getGivenFeedback(@PathVariable Long id) {
-        return trainerProfileService.getFeedback(id);
-    }
-
     @GetMapping("/{id}/pinned-comments")
     public List<Map<String, String>> getPinnedComments(@PathVariable Long id) {
         return trainerProfileService.getPinnedComments(id);

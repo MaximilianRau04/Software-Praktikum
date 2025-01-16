@@ -119,6 +119,7 @@ public class Feedback {
 
     @ManyToOne
     @JoinColumn(name = "trainer_profile_id")
+    @JsonBackReference
     private TrainerProfile trainerProfile;
 
     private boolean enjoymentCommentPinned;
@@ -134,7 +135,7 @@ public class Feedback {
     public Feedback() {
     }
 
-    public Feedback(Long id, Integer overallScore, Integer organisationalScore, Integer relevanceScore, Integer understandabilityScore, Integer contentDepthScore, Integer practicalityScore, Integer reasonabilityScore, Integer competencyScore, Integer presentabilityScore, Integer interactivityScore, Integer timeManagementScore, Integer participationScore, Integer atmosphereScore, Integer networkingScore, Integer equipmentScore, Integer comfortabilityScore, Integer communicationScore, String enjoymentComment, String improvementComment, String requestComment, String personalImprovementComment, boolean isEventRecommended, String recommendationComment, Integer similarEventParticipationScore, boolean anonymousFeedback, Event event, User user, TrainerProfile trainerProfile) {
+    public Feedback(Long id, Integer overallScore, Integer organisationalScore, Integer relevanceScore, Integer understandabilityScore, Integer contentDepthScore, Integer practicalityScore, Integer reasonabilityScore, Integer competencyScore, Integer presentabilityScore, Integer interactivityScore, Integer timeManagementScore, Integer participationScore, Integer atmosphereScore, Integer networkingScore, Integer equipmentScore, Integer comfortabilityScore, Integer communicationScore, String enjoymentComment, String improvementComment, String requestComment, String personalImprovementComment, boolean isEventRecommended, String recommendationComment, Integer similarEventParticipationScore, boolean anonymousFeedback, Event event, User user) {
         this.id = id;
         this.overallScore = overallScore;
         this.organisationalScore = organisationalScore;
@@ -163,11 +164,10 @@ public class Feedback {
         this.anonymousFeedback = anonymousFeedback;
         this.event = event;
         this.user = user;
-        this.trainerProfile = trainerProfile;
     }
 
 
-    public Feedback(FeedbackRequestDTO feedback, Event event, User user, TrainerProfile trainerProfile) {
+    public Feedback(FeedbackRequestDTO feedback, Event event, User user) {
         this.overallScore = feedback.getOverallScore();
         this.organisationalScore = feedback.getOrganisationalScore();
         this.relevanceScore = feedback.getRelevanceScore();
@@ -195,7 +195,6 @@ public class Feedback {
         this.anonymousFeedback = feedback.isAnonymousFeedback();
         this.event = event;
         this.user = user;
-        this.trainerProfile = trainerProfile;
     }
 
     public Long getId() {
@@ -461,7 +460,6 @@ public class Feedback {
     public void setPersonalImprovementCommentPinned(boolean personalImprovementCommentPinned) {
         this.personalImprovementCommentPinned = personalImprovementCommentPinned;
     }
-
 
     public boolean isRecommendationCommentPinned() {
         return recommendationCommentPinned;

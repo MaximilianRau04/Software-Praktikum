@@ -39,10 +39,6 @@ public class TrainerProfile {
     @Column(name = "comment")
     private Map<String, String> pinnedComments = new HashMap<>();
 
-    @OneToMany(mappedBy = "trainerProfile", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private Set<Feedback> feedbacks = new HashSet<>();
-
     public TrainerProfile() {
     }
 
@@ -115,11 +111,4 @@ public class TrainerProfile {
         this.pinnedComments = pinnedComments;
     }
 
-    public Set<Feedback> getFeedbacks() {
-        return feedbacks;
-    }
-
-    public void setFeedbacks(Set<Feedback> feedbacks) {
-        this.feedbacks = feedbacks;
-    }
 }

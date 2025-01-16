@@ -60,10 +60,7 @@ public class EventService {
         User eventOrganizer = userRepository.findById(requestBody.getOrganizerId())
                 .orElseThrow(() -> new EntityNotFoundException("Organizer not found."));
 
-        TrainerProfile trainerProfile = trainerProfileRepository.findById(requestBody.getTrainerProfileId())
-                .orElseThrow(() -> new EntityNotFoundException("TrainerProfile not found."));
-
-        Event savedEvent = eventRepository.save(new Event(requestBody, exchangeDay, eventOrganizer, trainerProfile));
+        Event savedEvent = eventRepository.save(new Event(requestBody, exchangeDay, eventOrganizer));
         userService.registerUserToEvent(eventOrganizer.getId(), savedEvent.getId()); // TODO: Implement proper organizer handling
         generateAndSaveQRCode(savedEvent);
         eventRepository.save(savedEvent);

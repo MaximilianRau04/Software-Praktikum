@@ -22,7 +22,6 @@
       <p class="role">{{ userData.role }}</p>
     </div>
 
-    
     <div class="profile-section" v-if="trainerProfile">
       <h2>Trainer Profil</h2>
       <p>
@@ -30,7 +29,10 @@
       </p>
       <p>
         <strong>Durchschnittliche Bewertung:</strong>
-        <span class="rating" v-html="renderStars(trainerProfile.averageRating || 0)"></span>
+        <span
+          class="rating"
+          v-html="renderStars(trainerProfile.averageRating || 0)"
+        ></span>
       </p>
       <div v-if="trainerProfile.expertiseTags.length">
         <strong>Expertise:</strong>
@@ -107,7 +109,6 @@ import router from "@/router";
 
 const apiUrl = "http://localhost:8080/api/";
 
-
 export default {
   props: {
     username: String,
@@ -138,10 +139,18 @@ export default {
     const renderStars = (rating) => {
       const maxStars = 5;
       const fullStar = "★";
+      const halfStar = "½";
       const emptyStar = "☆";
+
       const fullStars = Math.floor(rating);
-      const emptyStars = maxStars - fullStars;
-      return fullStar.repeat(fullStars) + emptyStar.repeat(emptyStars);
+      const halfStars = Math.round(rating - fullStars) >= 0.5 ? 1 : 0;
+      const emptyStars = maxStars - fullStars - halfStars;
+
+      return (
+        fullStar.repeat(fullStars) +
+        halfStar.repeat(halfStars) +
+        emptyStar.repeat(emptyStars)
+      );
     };
 
     const fetchUserData = async () => {
@@ -442,27 +451,27 @@ export default {
 }
 
 .trainer-profile {
-    font-family: Arial, sans-serif;
-    line-height: 1.5;
-    background-color: #f9f9f9;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    max-width: 400px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  max-width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .trainer-profile p {
-    margin: 10px 0;
+  margin: 10px 0;
 }
 
 .rating {
-    color: #FFD700; 
-    font-size: 18px;
+  color: #ffd700;
+  font-size: 18px;
 }
 
 .expertise {
-    font-style: italic;
-    color: #555;
+  font-style: italic;
+  color: #555;
 }
 </style>

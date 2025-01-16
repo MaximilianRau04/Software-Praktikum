@@ -38,7 +38,7 @@ public class FeedbackControllerTest {
         // Arrange
         FeedbackRequestDTO feedbackRequestDTO = FeedbackRequestDTO.mockWith(5, 4, 3, 4, 4, 5, 4, 3, 4, 5, 3, 4, 3, 4, 3, 4, 3,
                 "Enjoyed the event", "Could be better", "Looking forward to the next one", "I learned a lot",
-                true, "Very good", 4, false, 1L, 1L, 1L);
+                true, "Very good", 4, false, 1L, 1L);
 
         FeedbackResponseDTO feedbackResponseDTO = FeedbackResponseDTO.mockWith(5, 4, 3, 4, 4, 5, 4, 3, 4, 5, 3, 4, 3, 4, 3, 4,
                 3, "Enjoyed the event", "Could be better", "Looking forward to the next one",

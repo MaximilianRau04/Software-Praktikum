@@ -94,7 +94,7 @@ public class EventControllerTest {
         UserResponseDTO mockOrganizer = UserResponseDTO.mockWith(organizerId, "admin", "Admin", "User", User.Role.ADMIN);
         when(userService.getUserById(organizerId)).thenReturn(mockOrganizer);
 
-        EventRequestDTO eventRequest = EventRequestDTO.mockWith("Workshop A", LocalTime.of(11, 0), LocalTime.of(12, 0), "Description A", "Room A", exchangeDayId, organizerId, trainerProfileId);
+        EventRequestDTO eventRequest = EventRequestDTO.mockWith("Workshop A", LocalTime.of(11, 0), LocalTime.of(12, 0), "Description A", "Room A", exchangeDayId, organizerId);
 
         EventResponseDTO eventResponse = EventResponseDTO.mockWith(1L, LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A");
         when(eventService.createEvent(any(EventRequestDTO.class))).thenReturn(eventResponse);

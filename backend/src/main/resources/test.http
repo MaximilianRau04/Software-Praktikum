@@ -7,7 +7,6 @@ Content-Type: application/json
   "room": "0.108",
   "exchangeDayId": 1,
   "organizerId": 1,
-  "trainerProfileId": 1,
   "startTime": "13:00:00",
   "endTime": "14:00:00"
 }
@@ -17,10 +16,10 @@ POST http://localhost:8080/api/users
 Content-Type: application/json
 
 {
-  "username": "maxEight",
+  "username": "maxFour",
   "firstname": "Maximilian",
   "lastname": "Peresunchak",
-  "role": "USER"
+  "role": "ADMIN"
 }
 ###
 POST http://localhost:8080/api/exchange-days
@@ -74,8 +73,7 @@ Content-Type: application/json
   "similarEventParticipationScore": 5,
   "anonymousFeedback": true,
   "eventId": 1,
-  "userId": 1,
-  "trainerProfileId": 1
+  "userId": 1
 }
 
 ###
@@ -126,24 +124,25 @@ Content-Type: application/json
   "description": "Discuss everything about the event here."
 }
 ###
-GET http://localhost:8080/api/events/5
+GET http://localhost:8080/api/events/1/feedback
 
 ###
 POST http://localhost:8080/api/notifications/send-test-notification?userId=2
-GET http://localhost:8080/api/events/1/feedback
 ###
-GET http://localhost:8080/api/users/1/trainerProfile
+GET http://localhost:8080/api/users/4/trainerProfile
+###
+GET http://localhost:8080/api/trainerProfiles
 ###
 GET http://localhost:8080/api/trainerProfiles/1/pinned-comments
 ###
-POST http://localhost:8080/api/trainerProfiles
+PUT http://localhost:8080/api/trainerProfiles/2
 Content-Type: application/json
 
 {
   "bio": "hallo",
-  "averageRating": 3,
-  "userId": 7,
-  "expertiseTags": ["Java"]
+  "averageRating": 3.5,
+  "userId": 2,
+  "expertiseTags": ["Java, Python"]
 }
 
 ###
