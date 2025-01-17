@@ -1,7 +1,10 @@
 <template>
   <div class="notification-card">
     <div class="notification-details">
-      <p>Your workshop "{{ notification.title }}" will take place {{ timeUntilEvent }}.</p>
+      <p>
+        Your workshop "{{ notification.title }}" will take place
+        {{ timeUntilEvent }}.
+      </p>
       <div class="notification-meta">
         <span>Time sent: {{ formattedCreatedAt }}</span>
       </div>
@@ -13,8 +16,8 @@
 </template>
 
 <script>
-import { formatDistanceToNow, parseISO } from 'date-fns';
-import config from "../../config";
+import { formatDistanceToNow, parseISO } from "date-fns";
+import config from "@/config";
 
 export default {
   props: {
@@ -25,26 +28,34 @@ export default {
   },
   computed: {
     formattedCreatedAt() {
-      return formatDistanceToNow(parseISO(this.notification.createdAt), { addSuffix: true });
+      return formatDistanceToNow(parseISO(this.notification.createdAt), {
+        addSuffix: true,
+      });
     },
     timeUntilEvent() {
-      return formatDistanceToNow(parseISO(this.notification.context.eventDateTime), { addSuffix: true });
+      return formatDistanceToNow(
+        parseISO(this.notification.context.eventDateTime),
+        { addSuffix: true },
+      );
     },
   },
   methods: {
     async markAsRead() {
       try {
-        const response = await fetch(`${config.apiBaseUrl}/notifications/${this.notification.id}/read`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
+        const response = await fetch(
+          `${config.apiBaseUrl}/notifications/${this.notification.id}/read`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
           },
-        });
+        );
 
         if (!response.ok) {
-          throw new Error('Failed to mark notification as read');
+          throw new Error("Failed to mark notification as read");
         }
-        this.$emit('mark-as-read', this.notification.id);
+        this.$emit("mark-as-read", this.notification.id);
       } catch (error) {
         console.error("Error marking notification as read:", error);
       }

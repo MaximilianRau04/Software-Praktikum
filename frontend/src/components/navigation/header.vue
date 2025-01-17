@@ -21,15 +21,23 @@
       <div class="notification-container" @click="toggleNotificationMenu">
         <div class="notification-icon">
           <img src="@/images/bell.png" alt="Notifications" class="bell-icon" />
-          <div v-if="unreadCount > 0" class="notification-badge">{{ unreadCount }}</div>
+          <div v-if="unreadCount > 0" class="notification-badge">
+            {{ unreadCount }}
+          </div>
         </div>
 
         <div v-if="showNotifications" class="notification-menu" @click.stop>
           <!-- EVENT_REMINDERS Section -->
           <div v-if="groupedNotifications.EVENT_REMINDER?.length">
             <h3>Event Reminders</h3>
-            <NotificationCard v-for="(notification, index) in groupedNotifications.EVENT_REMINDER" :key="index"
-              :notification="notification" @mark-as-read="markAsRead" />
+            <NotificationCard
+              v-for="(
+                notification, index
+              ) in groupedNotifications.EVENT_REMINDER"
+              :key="index"
+              :notification="notification"
+              @mark-as-read="markAsRead"
+            />
           </div>
           <!-- Add sections for other notification types as needed -->
           <div v-if="!hasNotifications" class="no-notifications">
@@ -43,7 +51,6 @@
           {{ currentUser.username || "Gast" }}
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -52,9 +59,9 @@
 import { ref, onMounted } from "vue";
 import { globalState } from "@/types/User";
 import Cookies from "js-cookie";
-import "../../assets/header.css";
-import NotificationCard from '../notification/NotificationCard.vue';
-import config from "../../config";
+import "@/assets/header.css";
+import NotificationCard from "@/components/notification/NotificationCard.vue";
+import config from "@/config";
 
 export default {
   components: {
@@ -70,11 +77,14 @@ export default {
   },
   data() {
     return {
-      value: '',
+      value: "",
       showNotifications: false,
     };
   },
   computed: {
+    /**
+     * Groups notifications by type.
+     */
     groupedNotifications() {
       return this.notifications.reduce((groups, notification) => {
         const type = notification.type || "UNKNOWN";
@@ -84,14 +94,16 @@ export default {
       }, {});
     },
     hasNotifications() {
-      return Object.keys(this.groupedNotifications).some((type) => this.groupedNotifications[type]?.length > 0
+      return Object.keys(this.groupedNotifications).some(
+        (type) => this.groupedNotifications[type]?.length > 0,
       );
     },
     currentUser() {
       return globalState.user;
     },
     unreadCount() {
-      return this.notifications.filter((notification) => !notification.isRead).length;
+      return this.notifications.filter((notification) => !notification.isRead)
+        .length;
     },
   },
   methods: {
@@ -124,7 +136,7 @@ export default {
       this.showNotifications = !this.showNotifications;
     },
     markAsRead(notificationId) {
-      this.$emit('mark-as-read', notificationId);
+      this.$emit("mark-as-read", notificationId);
     },
   },
 

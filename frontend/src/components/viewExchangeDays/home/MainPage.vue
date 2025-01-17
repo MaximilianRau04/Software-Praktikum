@@ -23,17 +23,16 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from "vue-router";
-import { ref, onMounted } from "vue";
-import ScrollableDivs from "@/components/ViewAllExchangeDays/Scrollable.vue";
-import ExchangeDayDetails from "@/components/ViewAllExchangeDays/ExchangeDayDetails.vue";
-import config from "../../config";
-import "../../assets/main.css";
+import { onMounted } from "vue";
+import ScrollableDivs from "@/components/viewExchangeDays/home/Scrollable.vue";
+import ExchangeDayDetails from "@/components/viewExchangeDays/home/ExchangeDayDetails.vue";
+import config from "@/config";
+import "@/assets/main.css";
 import {
   ExchangeDay,
   exchangeDays,
   selectedExchangeDay,
-} from "../../types/ExchangeDay";
+} from "@/types/ExchangeDay";
 import { useRoute } from "vue-router";
 
 const route = useRoute();

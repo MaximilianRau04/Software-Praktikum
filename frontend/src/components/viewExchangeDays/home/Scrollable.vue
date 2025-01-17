@@ -41,8 +41,8 @@ Users can select a date to filter the list of Exchange Days based on the selecte
 
 <script>
 import { defineProps, defineEmits, onMounted, ref } from "vue";
-import config from "../../config";
-import "../../assets/scrollable.css";
+import config from "@/config";
+import "@/assets/scrollable.css";
 
 export default {
   name: "ScrollableDivs",

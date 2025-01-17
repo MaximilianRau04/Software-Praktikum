@@ -29,12 +29,12 @@
 
 <script setup lang="ts">
 import { defineProps, onMounted, ref, watch } from "vue";
-import EventDetails from "@/components/ViewAllExchangeDays/EventDetails.vue";
-import config from "../../config";
-import "../../assets/exchange-day-details.css";
-import { ExchangeDay, exchangeDays } from "../../types/ExchangeDay";
+import EventDetails from "@/components/viewExchangeDays/home/EventDetails.vue";
+import config from "@/config";
+import "@/assets/exchange-day-details.css";
+import { ExchangeDay, exchangeDays } from "@/types/ExchangeDay";
 const selectedExchangeDay = ref<ExchangeDay | null>(null);
-import { Event } from "../../types/Event";
+import { Event } from "@/types/Event";
 
 const props = defineProps<{
   exchangeDay: ExchangeDay | null;

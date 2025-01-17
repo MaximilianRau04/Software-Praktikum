@@ -38,7 +38,9 @@
   color: #009ee2;
   font-weight: bold;
   font-size: larger;
-  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  transition:
+    color 0.2s ease-in-out,
+    background-color 0.2s ease-in-out;
 }
 
 .menu-item:hover {
@@ -62,40 +64,42 @@
 }
 
 .home-icon {
-  mask-image: url('@/assets/icons/home.png');
-  -webkit-mask-image: url('@/assets/icons/home.png');
+  mask-image: url("@/assets/icons/home.png");
+  -webkit-mask-image: url("@/assets/icons/home.png");
 }
 
 .planning-icon {
-  mask-image: url('@/assets/icons/planning.png');
-  -webkit-mask-image: url('@/assets/icons/planning.png');
+  mask-image: url("@/assets/icons/planning.png");
+  -webkit-mask-image: url("@/assets/icons/planning.png");
 }
 
 .events-icon {
-  mask-image: url('@/assets/icons/events.png');
-  -webkit-mask-image: url('@/assets/icons/events.png');
+  mask-image: url("@/assets/icons/events.png");
+  -webkit-mask-image: url("@/assets/icons/events.png");
 }
 
 .leaderboard-icon {
-  mask-image: url('@/assets/icons/leaderboard.png');
-  -webkit-mask-image: url('@/assets/icons/leaderboard.png');
+  mask-image: url("@/assets/icons/leaderboard.png");
+  -webkit-mask-image: url("@/assets/icons/leaderboard.png");
 }
 
 .logout-icon {
-  mask-image: url('@/assets/icons/logout.png');
-  -webkit-mask-image: url('@/assets/icons/logout.png');
+  mask-image: url("@/assets/icons/logout.png");
+  -webkit-mask-image: url("@/assets/icons/logout.png");
 }
 
 .login-icon {
-  mask-image: url('@/assets/icons/login.png');
-  -webkit-mask-image: url('@/assets/icons/login.png');
+  mask-image: url("@/assets/icons/login.png");
+  -webkit-mask-image: url("@/assets/icons/login.png");
 }
 
 .menu-text {
   opacity: 0;
   visibility: hidden;
   white-space: nowrap;
-  transition: opacity 300ms ease-in-out, visibility 300ms ease-in-out;
+  transition:
+    opacity 300ms ease-in-out,
+    visibility 300ms ease-in-out;
 }
 
 .sidebar-visible .menu-text {

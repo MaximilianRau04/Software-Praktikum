@@ -46,7 +46,7 @@
             </div>
             <div class="input-group">
               <label for="room">Raum</label>
-              <input type="text" id="room" v-model="room" required />
+              <input type="text" id="room" v-model="room"/>
             </div>
             <div class="input-group">
               <label for="description">Beschreibung</label>
@@ -54,7 +54,6 @@
                 type="text"
                 id="description"
                 v-model="description"
-                required
               />
             </div>
             <div class="input-group">
@@ -114,7 +113,7 @@
             </div>
             <div class="input-group">
               <label for="location">Ort</label>
-              <input type="text" id="location" v-model="location" required />
+              <input type="text" id="location" v-model="location"/>
             </div>
             <div class="input-group">
               <label for="exchangeDescription">Beschreibung</label>
@@ -122,7 +121,6 @@
                 type="text"
                 id="exchangeDescription"
                 v-model="exchangeDescription"
-                required
               />
             </div>
             <button type="submit" class="login-button">
@@ -136,10 +134,10 @@
 </template>
 
 <script setup lang="ts">
-import "../../assets/event-planning.css";
+import "@/assets/event-planning.css";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import config from "../../config";
+import config from "@/config";
 
 const showWorkshopBox = ref(false);
 const showExchangeDay = ref(false);
@@ -147,7 +145,7 @@ const showExchangeDay = ref(false);
 // Workshop form data
 const name = ref("");
 const description = ref("");
-const startTime = ref("");
+const startTime = ref(new Date().toISOString().slice(11, 16));
 const endTime = ref("");
 const room = ref("");
 const exchangeDaySelect = ref("");
@@ -159,7 +157,7 @@ const users = ref([]);
 // Exchange Day form data
 const exchangeName = ref("");
 const exchangeDescription = ref("");
-const date = ref("");
+const date = ref(new Date().toISOString().slice(0, 10));
 const location = ref("");
 
 const apiUrl = `${config.apiBaseUrl}/events`;

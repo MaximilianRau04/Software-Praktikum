@@ -93,8 +93,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { Event } from "../../types/Event";
-import config from "../../config";
+import { Event } from "@/types/Event";
+import config from "@/config";
 import { useRouter } from "vue-router";
 import Cookies from "js-cookie";
 
@@ -160,7 +160,7 @@ const unregisterFromEvent = async (eventId: number) => {
       `${config.apiBaseUrl}/users/${userId}/eventRegistration?eventId=${eventId}`,
       {
         method: "DELETE",
-      },
+      }
     );
 
     if (response.status === 404) {
@@ -170,7 +170,7 @@ const unregisterFromEvent = async (eventId: number) => {
 
     const event = registeredEvents.value.find((event) => event.id === eventId);
     registeredEvents.value = registeredEvents.value.filter(
-      (event) => event.id !== eventId,
+      (event) => event.id !== eventId
     );
     alert(`You have successfully unregistered from ${event?.name}.`);
   } catch (error) {
@@ -193,7 +193,7 @@ const isOrganizer = async (eventId: number): Promise<boolean> => {
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (!response.ok) {
@@ -216,8 +216,8 @@ const isOrganizer = async (eventId: number): Promise<boolean> => {
 const fetchOrganizerStatuses = async (events: Event[]) => {
   const statuses = await Promise.all(
     events.map((event) =>
-      isOrganizer(event.id).then((isOrg) => ({ eventId: event.id, isOrg })),
-    ),
+      isOrganizer(event.id).then((isOrg) => ({ eventId: event.id, isOrg }))
+    )
   );
 
   statuses.forEach(({ eventId, isOrg }) => {
@@ -231,7 +231,7 @@ const fetchOrganizerStatuses = async (events: Event[]) => {
 const fetchRegisteredEvents = async () => {
   try {
     const response = await fetch(
-      `${config.apiBaseUrl}/users/${userId}/registeredEvents`,
+      `${config.apiBaseUrl}/users/${userId}/registeredEvents`
     );
     if (!response.ok) throw new Error("Failed to fetch participations.");
     const responseData: Event[] = await response.json();
@@ -266,7 +266,7 @@ const deleteEvent = async (eventId: number) => {
     }
 
     registeredEvents.value = registeredEvents.value.filter(
-      (event) => event.id !== eventId,
+      (event) => event.id !== eventId
     );
     alert(`Event with ID ${eventId} has been successfully deleted.`);
   } catch (error) {

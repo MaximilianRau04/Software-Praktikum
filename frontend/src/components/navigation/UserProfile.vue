@@ -126,16 +126,21 @@ export default {
 
     const sortedEvents = computed(() =>
       registeredEvents.value.sort(
-        (a, b) => new Date(b.startTime) - new Date(a.startTime)
-      )
+        (a, b) => new Date(b.startTime) - new Date(a.startTime),
+      ),
     );
 
     const sortedPosts = computed(() =>
       forumPosts.value.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      )
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+      ),
     );
 
+    /**
+     * Renders a star rating based on a numerical rating.
+     * @param {number} rating The numerical rating to render stars for.
+     * @returns {string} The rendered star rating.
+     */
     const renderStars = (rating) => {
       const maxStars = 5;
       const fullStar = "★";
@@ -153,10 +158,13 @@ export default {
       );
     };
 
+    /**
+     * Fetches the user data from the API.
+     */
     const fetchUserData = async () => {
       try {
         const userResponse = await axios.get(
-          `${apiUrl}users/search?username=${props.username}`
+          `${apiUrl}users/search?username=${props.username}`,
         );
         userData.value = userResponse.data;
 
@@ -181,10 +189,14 @@ export default {
       }
     };
 
+    /**
+     * Fetches the titles of the threads for the given posts.
+     * @param {Array} posts The forum posts to fetch thread titles for.
+     */
     const fetchThreadTitles = async (posts) => {
       try {
         const threadRequests = posts.map((post) =>
-          axios.get(`${apiUrl}forumthreads/${post.threadId}`)
+          axios.get(`${apiUrl}forumthreads/${post.threadId}`),
         );
         const threadResponses = await Promise.all(threadRequests);
 
@@ -197,12 +209,16 @@ export default {
       }
     };
 
+    /**
+     * Fetches the pinned comments for the given trainer profile.
+     * @param {number} trainerProfileId The ID of the trainer profile to fetch pinned comments for.
+     */
     const fetchPinnedComments = async (trainerProfileId) => {
       if (!trainerProfileId) return;
 
       try {
         const response = await axios.get(
-          `${apiUrl}trainerProfiles/${trainerProfileId}/pinned-comments`
+          `${apiUrl}trainerProfiles/${trainerProfileId}/pinned-comments`,
         );
 
         console.log("Antwort von der API:", response.data);
@@ -216,7 +232,7 @@ export default {
         } else {
           console.warn(
             "Die API hat keine gültigen `pinnedComments` zurückgegeben:",
-            response.data
+            response.data,
           );
         }
       } catch (error) {
@@ -224,6 +240,11 @@ export default {
       }
     };
 
+    /**
+     * Unpins a comment for the given category and feedback ID.
+     * @param {string} category The category of the comment to unpin.
+     * @param {number} feedbackId The ID of the feedback to unpin.
+     */
     const unpinComment = async (category, feedbackId) => {
       try {
         if (!trainerProfile.value || !trainerProfile.value.id) {
@@ -234,17 +255,22 @@ export default {
         const trainerProfileId = trainerProfile.value.id;
 
         await axios.post(
-          `${apiUrl}trainerProfiles/${trainerProfileId}/${feedbackId}/unpin?commentType=${category}`
+          `${apiUrl}trainerProfiles/${trainerProfileId}/${feedbackId}/unpin?commentType=${category}`,
         );
 
         pinnedComments.value = pinnedComments.value.filter(
-          (comment) => comment.feedbackId !== feedbackId
+          (comment) => comment.feedbackId !== feedbackId,
         );
       } catch (error) {
         console.error("Fehler beim Entpinnen des Kommentars:", error);
       }
     };
 
+    /**
+     * Formats a date string to a human-readable date and time.
+     * @param {string} dateString The date string to format.
+     * @returns {string} The formatted date and time.
+     */
     const formatDateTime = (dateString) => {
       const options = {
         year: "numeric",
@@ -261,6 +287,9 @@ export default {
       newUsername.value = userData.value.username;
     };
 
+    /**
+     * Updates the username of the user.
+     */
     const updateUsername = async () => {
       if (newUsername.value !== userData.value.username) {
         try {

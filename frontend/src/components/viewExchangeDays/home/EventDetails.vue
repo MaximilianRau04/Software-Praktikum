@@ -21,10 +21,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import "../../assets/event-details.css";
-import { Event } from "../../types/Event";
+import "@/assets/event-details.css";
+import { Event } from "@/types/Event";
 import { defineProps } from "vue";
-import config from "../../config";
+import config from "@/config";
 import Cookies from "js-cookie";
 
 const props = defineProps<{ event: Event }>();
@@ -40,14 +40,14 @@ const checkRegistrationStatus = async () => {
   }
   try {
     const response = await fetch(
-      `${config.apiBaseUrl}/users/${userId}/registeredEvents`,
+      `${config.apiBaseUrl}/users/${userId}/registeredEvents`
     );
     if (!response.ok) throw new Error("Failed to fetch user data.");
 
     const registeredEvents = await response.json();
 
     isAlreadyRegistered.value = registeredEvents.some(
-      (event: { id: number }) => event.id === props.event.id,
+      (event: { id: number }) => event.id === props.event.id
     );
   } catch (error) {
     console.error("Error checking registration status:", error);
@@ -73,7 +73,7 @@ const register = async (eventId: number) => {
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (response.status === 404) {

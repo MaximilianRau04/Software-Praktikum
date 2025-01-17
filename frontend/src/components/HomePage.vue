@@ -8,7 +8,12 @@
     />
     <!-- Main content area -->
     <div class="main-content">
-      <HeaderTop :dataOpenSideBar="openSidebar" :toggleSidebar="toggleSidebar" :notifications="notifications" @mark-as-read="handleMarkAsRead" />
+      <HeaderTop
+        :dataOpenSideBar="openSidebar"
+        :toggleSidebar="toggleSidebar"
+        :notifications="notifications"
+        @mark-as-read="handleMarkAsRead"
+      />
       <!-- Dynamic content area that renders the current component -->
       <div class="content-area">
         <router-view />
@@ -19,12 +24,12 @@
 
 <script>
 import { ref } from "vue";
-import MainPage from "@/components/ViewAllExchangeDays/MainPage.vue";
+import MainPage from "@/components/viewExchangeDays/home/MainPage.vue";
 import EventPlanning from "@/components/createNewEvents/EventPlanning.vue";
 import GiveFeedback from "@/components/feedback/GiveFeedback.vue";
 import Sidebar from "@/components/navigation/Sidebar.vue";
 import HeaderTop from "@/components/navigation/Header.vue";
-import EventRegistrations from "./ViewAllExchangeDays/EventRegistrations.vue";
+import EventRegistrations from "@/components/viewExchangeDays/EventRegistrations.vue";
 import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
 import Forum from "./forum/Forum.vue";
 import Cookies from "js-cookie";
@@ -41,19 +46,19 @@ export default {
     Forum, // Component for viewing forum
     Leaderboard, // Component for displaying the points of users in a ranking
   },
-  setup(){
+  setup() {
     const openSidebar = ref(false);
 
     const toggleSidebar = () => {
       openSidebar.value = !openSidebar.value;
-    }
+    };
 
-    return {openSidebar, toggleSidebar};
+    return { openSidebar, toggleSidebar };
   },
   data() {
     return {
       currentComponent: "MainPage",
-      notifications:[],
+      notifications: [],
     };
   },
   methods: {
@@ -66,28 +71,30 @@ export default {
       this.toggleSidebar();
     },
     fetchNotifications() {
-      const userId = Cookies.get('userId');
+      const userId = Cookies.get("userId");
       if (!userId) return;
 
-      const eventSource = new EventSource(`${config.sseBaseUrl}/notifications/${userId}`);
+      const eventSource = new EventSource(
+        `${config.sseBaseUrl}/notifications/${userId}`,
+      );
 
-      eventSource.addEventListener('notification', (event) => {
+      eventSource.addEventListener("notification", (event) => {
         const notification = JSON.parse(event.data);
         this.notifications.push(notification);
-      })
+      });
 
       eventSource.onerror = (event) => {
-        console.error('Error with SSE connection', event);
-      }
+        console.error("Error with SSE connection", event);
+      };
     },
     handleMarkAsRead(notificationId) {
-      console.log("pressing mark as read")
+      console.log("pressing mark as read");
       this.notifications = this.notifications.filter(
-        (notification) => notification.id !== notificationId
+        (notification) => notification.id !== notificationId,
       );
     },
   },
-  mounted(){
+  mounted() {
     this.fetchNotifications();
   },
 };

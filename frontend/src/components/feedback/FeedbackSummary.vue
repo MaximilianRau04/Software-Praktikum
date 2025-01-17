@@ -103,7 +103,7 @@ export default {
       data: null,
       isLoading: true,
       error: null,
-      trainerProfileId: null
+      trainerProfileId: null,
     };
   },
   computed: {
@@ -117,12 +117,15 @@ export default {
     },
   },
   methods: {
+    /**
+     * Fetches event summary data and trainer profile ID.
+     */
     async fetchData() {
       try {
         this.isLoading = true;
         await Promise.all([
           this.fetchEventSummary(),
-          this.fetchTrainerProfileId()
+          this.fetchTrainerProfileId(),
         ]);
       } catch (err) {
         this.error = err.message || "An unknown error occurred";
@@ -132,9 +135,12 @@ export default {
       }
     },
 
+    /**
+     * Fetches the event summary data from the API.
+     */
     async fetchEventSummary() {
       const response = await fetch(
-        `${config.apiBaseUrl}/events/${this.eventId}/summary`
+        `${config.apiBaseUrl}/events/${this.eventId}/summary`,
       );
 
       if (!response.ok) {
@@ -144,6 +150,9 @@ export default {
       this.data = await response.json();
     },
 
+    /**
+     * Fetches the trainer profile ID from the API.
+     */
     async fetchTrainerProfileId() {
       const userId = Cookies.get("userId");
 
@@ -153,15 +162,17 @@ export default {
 
       try {
         const response = await fetch(
-          `${config.apiBaseUrl}/users/${userId}/trainerProfile`
+          `${config.apiBaseUrl}/users/${userId}/trainerProfile`,
         );
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch trainer profile: ${response.status}`);
+          throw new Error(
+            `Failed to fetch trainer profile: ${response.status}`,
+          );
         }
 
         const trainerProfile = await response.json();
-        
+
         if (!trainerProfile || !trainerProfile.id) {
           throw new Error("Trainer profile ID not found in response");
         }
@@ -173,9 +184,14 @@ export default {
       }
     },
 
+    /**
+     * Pins a comment for improvement.
+     * @param {Object} comment The comment object to pin.
+     */
     async pinComment(comment) {
       if (!this.trainerProfileId) {
-        this.error = "Trainer profile ID is not available. Please try again later.";
+        this.error =
+          "Trainer profile ID is not available. Please try again later.";
         return;
       }
 
@@ -192,7 +208,7 @@ export default {
             headers: {
               "Content-Type": "application/json",
             },
-          }
+          },
         );
 
         if (!response.ok) {
@@ -206,6 +222,11 @@ export default {
       }
     },
 
+    /**
+     * Formats a key string to be more human-readable.
+     * @param {string} key The key to format.
+     * @returns {string} The formatted key.
+     */
     formatKey(key) {
       if (!key || typeof key !== "string") return "Unknown";
       return key

@@ -1,4 +1,4 @@
 export default {
-    apiBaseUrl: "/api" ,
-    sseBaseUrl: "/sse",
+  apiBaseUrl: "/api",
+  sseBaseUrl: "/sse",
 };
