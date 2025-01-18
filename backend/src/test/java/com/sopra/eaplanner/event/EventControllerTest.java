@@ -6,6 +6,7 @@ import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.exchangeday.ExchangeDayService;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.feedback.FeedbackService;
+import com.sopra.eaplanner.feedback.summary.CommentType;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserService;
@@ -119,9 +120,12 @@ public class EventControllerTest {
         numericalFeedback.put("overallScore", new FeedbackSummaryDTO.FeedbackStatistics(4.5, 4.0, 100));
         feedbackSummary.setNumericalFeedback(numericalFeedback);
 
-        List<FeedbackSummaryDTO.CommentAnalysis> comments = new ArrayList<>();
-        comments.add(new FeedbackSummaryDTO.CommentAnalysis("Great workshop!", "positive", 1L));
-        comments.add(new FeedbackSummaryDTO.CommentAnalysis("Needs more practical examples.", "negative", 2L));
+        List<FeedbackSummaryDTO.CommentAnalysis> commentAnalysis = new ArrayList<>();
+        commentAnalysis.add(new FeedbackSummaryDTO.CommentAnalysis("Great workshop!", "positive", 1L));
+        commentAnalysis.add(new FeedbackSummaryDTO.CommentAnalysis("Needs more practical examples.", "neutral", 2L));
+
+        Map<CommentType,List<FeedbackSummaryDTO.CommentAnalysis>> comments = new HashMap<>();
+        comments.put(CommentType.ENJOYMENT, commentAnalysis);
         feedbackSummary.setComments(comments);
 
         when(feedbackService.generateFeedbackSummary(1L)).thenReturn(feedbackSummary);
@@ -132,8 +136,8 @@ public class EventControllerTest {
                 .andExpect(jsonPath("$.eventName").value("Workshop A"))
                 .andExpect(jsonPath("$.organizerName").value("Admin User"))
                 .andExpect(jsonPath("$.numericalFeedback.overallScore.average").value(4.5))
-                .andExpect(jsonPath("$.comments[0].comment").value("Great workshop!"))
-                .andExpect(jsonPath("$.comments[1].sentiment").value("negative"));
+                .andExpect(jsonPath("$.comments.ENJOYMENT[0].comment").value("Great workshop!"))
+                .andExpect(jsonPath("$.comments.ENJOYMENT[1].sentiment").value("neutral"));
 
         verify(feedbackService, times(1)).generateFeedbackSummary(1L);
     }
