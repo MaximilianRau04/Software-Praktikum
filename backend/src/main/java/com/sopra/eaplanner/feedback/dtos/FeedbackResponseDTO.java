@@ -2,6 +2,8 @@ package com.sopra.eaplanner.feedback.dtos;
 
 import com.sopra.eaplanner.feedback.Feedback;
 
+import java.util.List;
+
 public class FeedbackResponseDTO {
     private Long id;
 
@@ -270,6 +272,10 @@ public class FeedbackResponseDTO {
 
     public void setSimilarEventParticipationScore(Integer similarEventParticipationScore) {
         this.similarEventParticipationScore = similarEventParticipationScore;
+    }
+
+    public List<String> getAllComments(){
+        return List.of(enjoymentComment,improvementComment,requestComment,personalImprovementComment, recommendationComment);
     }
 
 
