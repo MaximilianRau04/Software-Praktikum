@@ -249,7 +249,7 @@ const toggleExchangeDayBox = () => {
 const updateSelectedExchangeDay = () => {
   const selectedDay = exchangeDays.value.find(day => day.id === exchangeDaySelect.value);
   if (selectedDay) {
-    date.value = ""; // Reset date when exchange day changes
+    date.value = ""; 
   }
 };
 
@@ -271,7 +271,6 @@ const updateSelectedExchangeDay = () => {
     return;
   }
 
-  // Rest der Funktion bleibt unverändert
   try {
     const response = await fetch(apiUrl, {
       method: "POST",

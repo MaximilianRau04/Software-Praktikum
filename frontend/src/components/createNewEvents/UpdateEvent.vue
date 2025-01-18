@@ -221,7 +221,7 @@ const fetchExchangeDays = async () => {
  const updateSelectedExchangeDay = () => {
   const selectedDay = exchangeDays.value.find(day => day.id === exchangeDaySelect.value);
   if (selectedDay) {
-    date.value = ""; // Reset date when exchange day changes
+    date.value = ""; 
   }
 };
 

@@ -73,8 +73,11 @@
         <li v-for="event in sortedEvents" :key="event.id" class="event-card">
           <h3>{{ event.name }}</h3>
           <p>
-            <strong>Datum:</strong> {{ formatDateTime(event.startTime) }} -
-            {{ formatDateTime(event.endTime) }}
+            <strong>Datum:</strong> {{ formatDate(event.date) }}
+          </p>
+          <p>
+            <strong>Zeit:</strong> {{ event.startTime }} Uhr -
+            {{ event.endTime }} Uhr
           </p>
           <p><strong>Raum:</strong> {{ event.room }}</p>
           <p><strong>Beschreibung:</strong> {{ event.description }}</p>
@@ -102,10 +105,11 @@
   </div>
 </template>
 
-<script>
+<script >
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 import router from "@/router";
+import config from "@/config";
 
 const apiUrl = "http://localhost:8080/api/";
 
@@ -159,12 +163,12 @@ export default {
     };
 
     /**
-     * Fetches the user data from the API.
+     * Fetches the user data from the API.s
      */
     const fetchUserData = async () => {
       try {
         const userResponse = await axios.get(
-          `${apiUrl}users/search?username=${props.username}`,
+          `${config.apiBaseUrl}/users/search?username=${props.username}`,
         );
         userData.value = userResponse.data;
 
@@ -266,22 +270,6 @@ export default {
       }
     };
 
-    /**
-     * Formats a date string to a human-readable date and time.
-     * @param {string} dateString The date string to format.
-     * @returns {string} The formatted date and time.
-     */
-    const formatDateTime = (dateString) => {
-      const options = {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      };
-      return new Date(dateString).toLocaleDateString("de-DE", options);
-    };
-
     const enableEdit = () => {
       isEditing.value = true;
       newUsername.value = userData.value.username;
@@ -315,6 +303,11 @@ export default {
       }
     };
 
+    const formatDate = (timestamp) => {
+      const date = new Date(timestamp);
+      return date.toLocaleDateString('de-DE');
+    };
+
     onMounted(fetchUserData);
 
     return {
@@ -324,7 +317,6 @@ export default {
       forumPosts,
       threadTitles,
       pinnedComments,
-      formatDateTime,
       sortedEvents,
       sortedPosts,
       isEditing,
@@ -333,6 +325,7 @@ export default {
       updateUsername,
       unpinComment,
       renderStars,
+      formatDate,
     };
   },
 };
