@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -61,6 +62,9 @@ public class EventService {
                 .orElseThrow(() -> new EntityNotFoundException("Organizer not found."));
 
         Event savedEvent = eventRepository.save(new Event(requestBody, exchangeDay, eventOrganizer));
+
+        validateDate(exchangeDay, requestBody.getDate());
+
         userService.registerUserToEvent(eventOrganizer.getId(), savedEvent.getId()); // TODO: Implement proper organizer handling
         generateAndSaveQRCode(savedEvent);
         eventRepository.save(savedEvent);
@@ -124,16 +128,20 @@ public class EventService {
 
     public EventResponseDTO updateEvent(Long id, EventRequestDTO requestBody) {
         Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
+        ExchangeDay exchangeDay = exchangeDayRepository.findById(requestBody.getExchangeDayId())
+                .orElseThrow(() -> new EntityNotFoundException("ExchangeDay not found."));
 
         event.setName(requestBody.getName());
+        event.setDate(requestBody.getDate());
         event.setStartTime(requestBody.getStartTime());
         event.setEndTime(requestBody.getEndTime());
         event.setRoom(requestBody.getRoom());
         event.setDescription(requestBody.getDescription());
-        event.setExchangeDay(exchangeDayRepository.findById(requestBody.getExchangeDayId())
-                .orElseThrow(() -> new EntityNotFoundException("ExchangeDay not found.")));
+        event.setExchangeDay(exchangeDay);
         event.setOrganizer(userRepository.findById(requestBody.getOrganizerId())
                 .orElseThrow(() -> new EntityNotFoundException("Organizer not found.")));
+
+        validateDate(exchangeDay, requestBody.getDate());
 
         eventRepository.save(event);
         return new EventResponseDTO(event);
@@ -190,5 +198,12 @@ public class EventService {
 
     private String generateEventUrl(Long eventId, String token) {
         return EVENT_ENDPOINT + eventId + TOKEN_SUFFIX + token;
+    }
+
+    private void validateDate(ExchangeDay exchangeDay, LocalDate date){
+        boolean isNotValid = exchangeDay.getStartDate().isAfter(date) || exchangeDay.getEndDate().isBefore(date);
+        if (isNotValid) {
+            throw new IllegalArgumentException("Event date must be within the exchange day.");
+        }
     }
 }

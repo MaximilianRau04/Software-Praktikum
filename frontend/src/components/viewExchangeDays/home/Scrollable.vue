@@ -25,7 +25,9 @@ Users can select a date to filter the list of Exchange Days based on the selecte
         <div class="header">
           <div class="date-box">
             <div>
-              <p>{{ formatDate(exchangeDay.date) }}</p>
+              <p>{{ formatDate(exchangeDay.startDate) }}</p>
+              <p>bis</p>
+              <p>{{ formatDate(exchangeDay.endDate) }}</p>
             </div>
           </div>
           <!-- Exchange Day details -->
@@ -61,8 +63,8 @@ export default {
           exchangeDays.value = data.map((item) => ({
             name: item.name,
             location: item.location,
-
-            date: item.date,
+            startDate: item.startDate,
+            endDate: item.endDate,
             description: item.description,
             id: item.id,
           }));
@@ -95,17 +97,19 @@ export default {
     /**
      * Filters the exchange days based on the selected date.
      */
-    function filterExchangeDays() {
-      if (!selectedDate.value) {
-        filteredExchangeDays.value = exchangeDays.value;
-        return;
-      }
-      const filterDate = new Date(selectedDate.value).setHours(0, 0, 0, 0);
-      filteredExchangeDays.value = exchangeDays.value.filter((day) => {
-        const dayDate = new Date(day.date).setHours(0, 0, 0, 0);
-        return dayDate === filterDate;
-      });
-    }
+function filterExchangeDays() {
+  if (!selectedDate.value) {
+    filteredExchangeDays.value = exchangeDays.value;
+    return;
+  }
+
+  const filterDate = new Date(selectedDate.value).setHours(0, 0, 0, 0);
+  filteredExchangeDays.value = exchangeDays.value.filter((day) => {
+    const startDate = new Date(day.startDate).setHours(0, 0, 0, 0);
+    const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
+    return filterDate >= startDate && filterDate <= endDate;
+  });
+}
 
     onMounted(() => fetchExchangeDays());
 

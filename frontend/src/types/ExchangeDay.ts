@@ -3,7 +3,8 @@ import { ref } from "vue";
 export interface ExchangeDay {
   id: number;
   name: string;
-  date: number;
+  startDate: number;
+  endDate: number;
   description: string;
   location: string;
 }

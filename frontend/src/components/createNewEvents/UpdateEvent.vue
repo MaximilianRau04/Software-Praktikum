@@ -21,6 +21,38 @@
           maxlength="255"
         ></textarea>
       </div>
+      <div class="input-group">
+              <label for="exchangeDaySelect">Exchange Day</label>
+              <select
+                id="exchangeDaySelect"
+                v-model="exchangeDaySelect"
+                @change="updateSelectedExchangeDay"
+                required
+              >
+                <option value="" disabled selected>
+                  Bitte wählen Sie einen Exchange Day aus
+                </option>
+                <option
+                  v-for="exchangeDay in exchangeDays"
+                  :key="exchangeDay.id"
+                  :value="exchangeDay.id"
+                >
+                  {{ exchangeDay.name }}
+                </option>
+              </select>
+            </div>
+      <div class="input-group">
+              <label for="date">Datum</label>
+              <input
+                type="date"
+                id="date"
+                v-model="date"
+                :min="selectedExchangeDay?.startDate || ''"
+                :max="selectedExchangeDay?.endDate || ''"
+                :disabled="!exchangeDaySelect"
+                required
+              />
+            </div>
       <div class="form-group">
         <label for="room">Raum:</label>
         <input type="text" id="room" v-model="event.room" maxlength="50" />
@@ -59,25 +91,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import Cookies from "js-cookie";
+import config from "../../config";
+const date = ref("");
 
 const router = useRouter();
 const route = useRoute();
 const userId = Cookies.get("userId");
-import config from "../../config";
+const exchangeDayId = ref("");
+const exchangeDaySelect = ref("");
+
+const selectedExchangeDay = computed(() => {
+  return exchangeDays.value.find(day => day.id === exchangeDaySelect.value) || null;
+});
 
 const event = ref({
-  exchangeDayId: null,
+  exchangeDayId: "",
   organizerId: Number(userId),
   name: "",
   startTime: "",
   endTime: "",
   room: "",
   description: "",
+  date: "",
 });
 
+const exchangeDays = ref([]);
 const registeredUsers = ref([]);
 const isOrganizerRef = ref(false);
 
@@ -101,7 +142,7 @@ const isOrganizer = async () => {
     }
 
     const data = await response.json();
-    isOrganizerRef.value = data.id === parseInt(userId, 10); // Setze das Ergebnis hier
+    isOrganizerRef.value = data.id === parseInt(userId, 10); 
   } catch (error) {
     console.error("Error checking if user is organizer:", error);
     isOrganizerRef.value = false;
@@ -120,7 +161,7 @@ const fetchEventDetails = async () => {
     event.value = eventData;
 
     const organizerResponse = await fetch(
-      `${config.apiBaseUrl}/api/events/${eventId}/organizer`,
+      `${config.apiBaseUrl}/events/${eventId}/organizer`,
     );
     const organizerData = await organizerResponse.json();
     event.value.organizerId = organizerData.id;
@@ -159,6 +200,32 @@ const fetchRegisteredUsers = async () => {
 };
 
 /**
+ * Fetches the list of exchange days from the server.
+ */
+const fetchExchangeDays = async () => {
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/exchange-days`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch exchange days");
+    }
+    exchangeDays.value = await response.json();
+  } catch (error) {
+    console.error("Error fetching exchange days:", error);
+    alert("Die Exchange Days konnten nicht geladen werden.");
+  }
+};
+
+/**
+ * Updates the selected exchange day.
+ */
+ const updateSelectedExchangeDay = () => {
+  const selectedDay = exchangeDays.value.find(day => day.id === exchangeDaySelect.value);
+  if (selectedDay) {
+    date.value = ""; // Reset date when exchange day changes
+  }
+};
+
+/**
  * Updates the event data on the server.
  * Sends a PUT request with the modified event details.
  */
@@ -170,6 +237,7 @@ const updateEvent = async () => {
       organizerId: event.value.organizerId,
       name: event.value.name,
       description: event.value.description,
+      date: event.value.date,
       room: event.value.room,
       startTime: event.value.startTime,
       endTime: event.value.endTime,
@@ -201,6 +269,7 @@ const goBack = () => {
 };
 
 onMounted(() => {
+  fetchExchangeDays();
   fetchEventDetails();
   fetchRegisteredUsers();
   isOrganizer();

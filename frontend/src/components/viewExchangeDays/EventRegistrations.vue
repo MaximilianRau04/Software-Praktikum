@@ -38,6 +38,7 @@
                 {{ event.description || "Keine Beschreibung verfügbar." }}
               </p>
               <p><strong>Event ID:</strong> {{ event.id }}</p>
+              <p><strong>Datum:</strong> {{ formatDate(event.date) }}</p>
               <p><strong>Startzeit: </strong> {{ event.startTime }}</p>
               <p><strong>Endzeit: </strong>{{ event.endTime }}</p>
               <p><strong>Raum: </strong> {{ event.room }}</p>
@@ -109,6 +110,17 @@ const eventId = ref<number | null>(null);
 
 if (!userId) {
   throw new Error("User ID not found in cookies.");
+}
+
+/**
+ * Formats a timestamp into a human-readable date string.
+ *
+ * @param {string} timestamp - The date in milliseconds.
+ * @returns {string} - The formatted date string in 'DD.MM.YYYY' format.
+ */
+ function formatDate(timestamp: string): string {
+  const date = new Date(timestamp);
+  return date.toLocaleDateString("de-DE");
 }
 
 /**

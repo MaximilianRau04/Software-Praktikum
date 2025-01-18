@@ -22,10 +22,16 @@ public class ExchangeDay {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
     @DateTimeFormat(pattern = "dd.MM.yyyy")
     @Future(message = "Date must be in the future")
     @NotNull(message = "Date cannot be null")
-    private LocalDate date;
+    private LocalDate startDate;
+
+    @DateTimeFormat(pattern = "dd.MM.yyyy")
+    @Future(message = "Date must be in the future")
+    @NotNull(message = "Date cannot be null")
+    private LocalDate endDate;
 
     @NotNull(message = "Name cannot be null")
     @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters")
@@ -43,16 +49,18 @@ public class ExchangeDay {
     public ExchangeDay() {
     }
 
-    public ExchangeDay(Long id, LocalDate date, String name, String location, String description) {
+    public ExchangeDay(Long id, LocalDate startDate, LocalDate endDate, String name, String location, String description) {
         this.id = id;
-        this.date = date;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.name = name;
         this.location = location;
         this.description = description;
     }
 
     public ExchangeDay(ExchangeDayRequestDTO dto) {
-        this.date = dto.getDate();
+        this.startDate = dto.getStartDate();
+        this.endDate = dto.getEndDate();
         this.name = dto.getName();
         this.location = dto.getLocation();
         this.description = dto.getDescription();
@@ -66,12 +74,20 @@ public class ExchangeDay {
         this.id = id;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
     public String getName() {

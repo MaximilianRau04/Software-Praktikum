@@ -1,8 +1,11 @@
 package com.sopra.eaplanner.event.dtos;
 
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class EventRequestDTO {
@@ -16,6 +19,11 @@ public class EventRequestDTO {
 
     @NotNull(message = "End time must be set")
     private LocalTime endTime;
+
+    @DateTimeFormat(pattern = "dd.MM.yyyy")
+    @Future(message = "Date must be in the future")
+    @NotNull(message = "Date cannot be null")
+    private LocalDate date;
 
     @Size(max = 50, message = "Room name cannot exceed 50 characters")
     private String room;
@@ -76,6 +84,14 @@ public class EventRequestDTO {
         this.startTime = startTime;
     }
 
+    public @Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(@Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate date) {
+        this.date = date;
+    }
+
     public @NotNull(message = "Name cannot be null") @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters") String getName() {
         return name;
     }
@@ -88,12 +104,13 @@ public class EventRequestDTO {
         return organizerId;
     }
 
-    public static EventRequestDTO mockWith(String name, LocalTime startTime, LocalTime endTime, String description, String room, Long exchangeDayId, Long organizerId) {
-        return new EventRequestDTO(name, startTime, endTime, room, description, exchangeDayId, organizerId);
+    public static EventRequestDTO mockWith(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String description, String room, Long exchangeDayId, Long organizerId) {
+        return new EventRequestDTO(name, date, startTime, endTime, room, description, exchangeDayId, organizerId);
     }
 
-    private EventRequestDTO(String name, LocalTime startTime, LocalTime endTime, String room, String description, Long exchangeDayId, Long organizerId) {
+    private EventRequestDTO(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room, String description, Long exchangeDayId, Long organizerId) {
         this.name = name;
+        this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.room = room;

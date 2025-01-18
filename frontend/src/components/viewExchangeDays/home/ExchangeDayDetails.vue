@@ -11,7 +11,7 @@
       <p>
         <strong>Beschreibung:</strong> {{ selectedExchangeDay.description }}
       </p>
-      <p><strong>Datum:</strong> {{ formatDate(selectedExchangeDay.date) }}</p>
+      <p><strong>Datum:</strong> {{ formatDate(selectedExchangeDay.startDate) }} bis {{ formatDate(selectedExchangeDay.endDate) }}</p>
       <p>Id: {{ selectedExchangeDay.id }}</p>
     </div>
 
@@ -70,7 +70,8 @@ async function fetchExchangeDayDetails(id: number) {
     selectedExchangeDay.value = {
       id: data.id,
       name: data.name,
-      date: new Date(data.date).getTime(),
+      startDate: new Date(data.startDate).getTime(),
+      endDate: new Date(data.endDate).getTime(),
       description: data.description,
       location: data.location,
     };
