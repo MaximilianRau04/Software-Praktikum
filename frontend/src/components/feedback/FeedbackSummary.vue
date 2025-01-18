@@ -76,15 +76,6 @@
               <strong>Comment {{ index + 1 }}:</strong> {{ comment.comment }}
             </p>
             <p><strong>Sentiment:</strong> {{ comment.sentiment }}</p>
-
-            <button
-              @click="pinComment(comment)"
-              :disabled="!trainerProfileId"
-              class="pin-btn"
-              :class="{ 'pin-btn-disabled': !trainerProfileId }"
-            >
-              Pin Comment
-            </button>
           </li>
         </ul>
       </div>
@@ -94,7 +85,6 @@
 
 <script>
 import config from "@/config";
-import Cookies from "js-cookie";
 
 export default {
   name: "EventSummary",
@@ -125,7 +115,6 @@ export default {
         this.isLoading = true;
         await Promise.all([
           this.fetchEventSummary(),
-          this.fetchTrainerProfileId(),
         ]);
       } catch (err) {
         this.error = err.message || "An unknown error occurred";
@@ -148,78 +137,6 @@ export default {
       }
 
       this.data = await response.json();
-    },
-
-    /**
-     * Fetches the trainer profile ID from the API.
-     */
-    async fetchTrainerProfileId() {
-      const userId = Cookies.get("userId");
-
-      if (!userId) {
-        throw new Error("User ID not found in cookies. Please log in again.");
-      }
-
-      try {
-        const response = await fetch(
-          `${config.apiBaseUrl}/users/${userId}/trainerProfile`,
-        );
-
-        if (!response.ok) {
-          throw new Error(
-            `Failed to fetch trainer profile: ${response.status}`,
-          );
-        }
-
-        const trainerProfile = await response.json();
-
-        if (!trainerProfile || !trainerProfile.id) {
-          throw new Error("Trainer profile ID not found in response");
-        }
-
-        this.trainerProfileId = trainerProfile.id;
-      } catch (err) {
-        console.error("Error fetching trainer profile ID:", err);
-        throw new Error("Failed to fetch trainer profile: " + err.message);
-      }
-    },
-
-    /**
-     * Pins a comment for improvement.
-     * @param {Object} comment The comment object to pin.
-     */
-    async pinComment(comment) {
-      if (!this.trainerProfileId) {
-        this.error =
-          "Trainer profile ID is not available. Please try again later.";
-        return;
-      }
-
-      if (!comment || !comment.feedbackId) {
-        this.error = "Invalid comment or feedback ID";
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          `${config.apiBaseUrl}/trainerProfiles/${this.trainerProfileId}/${comment.feedbackId}/pin?commentType=improvement`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          },
-        );
-
-        if (!response.ok) {
-          throw new Error(`Failed to pin comment: ${response.status}`);
-        }
-
-        alert(`Comment successfully pinned: "${comment.comment}"`);
-      } catch (err) {
-        console.error("Error pinning comment:", err);
-        this.error = err.message;
-      }
     },
 
     /**
