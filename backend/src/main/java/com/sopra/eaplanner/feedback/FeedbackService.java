@@ -275,6 +275,9 @@ public class FeedbackService {
     }
 
     private double calculateAveragesOfAverages(List<List<Integer>> scores){
+        if(scores == null || scores.isEmpty()){
+            return 0.0;
+        }
         double average = 0;
 
         for(List<Integer> categoryScores: scores){
@@ -284,6 +287,13 @@ public class FeedbackService {
     }
 
     private double calculateMedian(List<Integer> scores){
+        if (scores == null ||scores.isEmpty()) {
+            return 0.0;
+        }
+        if(scores.size() == 1){
+            return scores.getFirst().doubleValue();
+        }
+
         List<Integer> mediansScoreList = new ArrayList<>(scores);
         Collections.sort(mediansScoreList);
 
@@ -300,6 +310,10 @@ public class FeedbackService {
         for(List<Integer> categoryScores: scores){
             if (categoryScores == null ||categoryScores.isEmpty()) {
                 categoryMedians.add(0.0);
+                continue;
+            }
+            if(categoryScores.size() == 1){
+                categoryMedians.add(categoryScores.getFirst().doubleValue());
                 continue;
             }
 
