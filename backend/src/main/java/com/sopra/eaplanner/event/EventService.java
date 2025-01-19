@@ -11,6 +11,9 @@ import com.sopra.eaplanner.exchangeday.ExchangeDayRepository;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.forumthread.ForumThread;
 import com.sopra.eaplanner.qrcode.QRCodeService;
+import com.sopra.eaplanner.resource.ResourceItem;
+import com.sopra.eaplanner.resource.dtos.ResourceResponse;
+import com.sopra.eaplanner.resource.ResourceType;
 import com.sopra.eaplanner.trainerprofile.*;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserRepository;
@@ -124,6 +127,26 @@ public class EventService {
         Event event = eventRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Event not found."));
 
         return new ExchangeDayResponseDTO(event.getExchangeDay());
+    }
+
+    public List<ResourceResponse> getResourcesByEventId(Long id) {
+        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
+
+        List<ResourceResponse> resourceDTOs = new ArrayList<>();
+
+        for (ResourceItem resource : event.getResources()) {
+            resourceDTOs.add(new ResourceResponse(
+                    resource.getId(),
+                    resource.getName(),
+                    resource.getType().toString(),
+                    resource.getDescription(),
+                    resource.getLocation(),
+                    resource.getAvailability(),
+                    resource.getType() == ResourceType.ROOM ? resource.getCapacity() : null
+            ));
+        }
+
+        return resourceDTOs;
     }
 
     public EventResponseDTO updateEvent(Long id, EventRequestDTO requestBody) {

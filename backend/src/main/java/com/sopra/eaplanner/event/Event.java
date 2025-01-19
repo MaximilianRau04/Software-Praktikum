@@ -7,6 +7,7 @@ import com.sopra.eaplanner.exchangeday.ExchangeDay;
 import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.forumthread.ForumThread;
 import com.sopra.eaplanner.notification.reminder.ReminderType;
+import com.sopra.eaplanner.resource.ResourceItem;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
@@ -94,6 +95,10 @@ public class Event {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     private Set<ForumThread> forumThreads = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private List<ResourceItem> resources = new ArrayList<>();
 
     public Event() {
     }
@@ -260,6 +265,10 @@ public class Event {
     public LocalDateTime getStartDateTime(){
         return LocalDateTime.of(exchangeDay.getStartDate(), startTime);
     }
+
+    public List<ResourceItem> getResources() { return resources; }
+
+    public void addResource(ResourceItem resource) { resources.add(resource); }
 
     @PostLoad
     public void initRemindersSent() {

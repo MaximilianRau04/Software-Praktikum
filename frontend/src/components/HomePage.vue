@@ -28,7 +28,7 @@ import MainPage from "@/components/viewExchangeDays/home/MainPage.vue";
 import EventPlanning from "@/components/createNewEvents/EventPlanning.vue";
 import GiveFeedback from "@/components/feedback/GiveFeedback.vue";
 import Sidebar from "@/components/navigation/Sidebar.vue";
-import HeaderTop from "@/components/navigation/header.vue";
+import HeaderTop from "@/components/navigation/Header.vue";
 import EventRegistrations from "@/components/viewEvents/EventRegistrations.vue";
 import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
 import Forum from "./forum/Forum.vue";

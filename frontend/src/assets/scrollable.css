@@ -48,10 +48,11 @@
   transform: scale(0.95);
 }
 
-.header {
+.heading {
   display: flex;
   align-items: center;
-  width: 100%;
+  width: 120%;
+  max-height: 10%;
 }
 
 .date-box {
@@ -72,13 +73,9 @@
   flex: 1;
 }
 
-.infos h2 {
-  max-height: 20px;
-  margin: 2%;
-  font-size: 20px;
-}
+
 
 .infos p {
-  margin: 5px 0;
+  margin: 3px 0;
   font-size: 14px;
 }

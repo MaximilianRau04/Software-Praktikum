@@ -84,17 +84,6 @@
               <label for="description">Beschreibung</label>
               <input type="text" id="description" v-model="description" />
             </div>
-            <div class="input-group">
-              <label for="organizerSelect">Veranstalter</label>
-              <select id="organizerSelect" v-model="organizerSelect" required>
-                <option value="" disabled selected>
-                  Bitte wählen Sie einen Veranstalter aus
-                </option>
-                <option v-for="user in users" :key="user.id" :value="user.id">
-                  {{ user.username }}
-                </option>
-              </select>
-            </div>
             <button type="submit" class="login-button">
               Workshop erstellen
             </button>
@@ -151,6 +140,7 @@ import "@/assets/event-planning.css";
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import config from "@/config";
+import Cookies from "js-cookie";
 
 const showWorkshopBox = ref(false);
 const showExchangeDay = ref(false);
@@ -163,7 +153,7 @@ const startTime = ref(new Date().toISOString().slice(11, 16));
 const endTime = ref("");
 const room = ref("");
 const exchangeDaySelect = ref("");
-const organizerSelect = ref("");
+const userId = Cookies.get("userId");
 
 const exchangeDays = ref([]);
 const users = ref([]);
@@ -207,20 +197,31 @@ const initializeStartTime = () => {
  */
 onMounted(async () => {
   initializeStartTime();
-  try {
-    const response = await fetch(`${config.apiBaseUrl}/exchange-days`);
-    exchangeDays.value = await response.json();
-  } catch (error) {
-    console.error("Fehler beim Laden der Exchange Days:", error);
-  }
-
-  try {
-    const response = await fetch(`${config.apiBaseUrl}/users`);
-    users.value = await response.json();
-  } catch (error) {
-    console.error("Fehler beim Laden der Benutzer:", error);
-  }
+  fetchData();
 });
+
+const fetchData = async () => {
+  try {
+    const [exchangeDaysResponse, usersResponse] = await Promise.all([
+      fetch(`${config.apiBaseUrl}/exchange-days`),
+      fetch(`${config.apiBaseUrl}/users`)
+    ]);
+    if (!exchangeDaysResponse.ok) {
+      throw new Error('Fehler beim Laden der Exchange Days');
+    }
+    if (!usersResponse.ok) {
+      throw new Error('Fehler beim Laden der Benutzer');
+    }
+
+    exchangeDays.value = await exchangeDaysResponse.json();
+    users.value = await usersResponse.json();
+
+  } catch (error) {
+    console.error(error.message, error);
+  }
+};
+
+fetchData();
 
 /**
  * Toggles the visibility of the Workshop form.
@@ -282,7 +283,7 @@ const createWorkshop = async () => {
         room: room.value,
         description: description.value,
         exchangeDayId: exchangeDaySelect.value,
-        organizerId: organizerSelect.value,
+        organizerId: userId,
       }),
     });
 
@@ -290,8 +291,8 @@ const createWorkshop = async () => {
       const data = await response.json();
       console.log("Workshop erstellt:", data);
       alert(`Workshop erstellt: ${data.name}`);
-
       resetWorkshopForm();
+      fetchData();
     } else {
       alert("Fehler beim Erstellen des Workshops.");
     }
@@ -323,6 +324,7 @@ const createExchangeDay = async () => {
       console.log("Exchange Day erstellt:", data);
       alert(`Exchange Day erstellt: ${data.name}`);
       resetExchangeDayForm();
+      fetchData();
     } else {
       alert("Fehler beim Erstellen des Exchange Days.");
     }
@@ -343,7 +345,6 @@ const resetWorkshopForm = () => {
   room.value = "";
   description.value = "";
   exchangeDaySelect.value = "";
-  organizerSelect.value = "";
   showWorkshopBox.value = false;
 };
 

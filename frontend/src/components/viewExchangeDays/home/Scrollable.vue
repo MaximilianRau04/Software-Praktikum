@@ -22,7 +22,7 @@ Users can select a date to filter the list of Exchange Days based on the selecte
         @click="selectExchangeDay(exchangeDay)"
         class="list-item"
       >
-        <div class="header">
+        <div class="heading">
           <div class="date-box">
             <div>
               <p>{{ formatDate(exchangeDay.startDate) }}</p>

@@ -8,6 +8,7 @@ import com.sopra.eaplanner.feedback.FeedbackService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO;
 import com.sopra.eaplanner.forumthread.ForumThread;
+import com.sopra.eaplanner.resource.dtos.ResourceResponse;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileService;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
@@ -97,6 +98,13 @@ public class EventController {
     @GetMapping("/{id}/trainerProfile")
     public TrainerProfileResponseDTO getTrainerProfileByEventId(@PathVariable Long id) {
         return eventService.getTrainerProfileByEventId(id);
+    }
+
+    @GetMapping("/{id}/resources")
+    public ResponseEntity<List<ResourceResponse>> getResourcesByEventId(@PathVariable Long id) {
+        List<ResourceResponse> resources = eventService.getResourcesByEventId(id);
+
+        return ResponseEntity.ok(resources);
     }
 
     @PostMapping("")

@@ -514,7 +514,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 /* Container for the entire feedback summary */
 .feedback-summary-container {
   width: 100%;
