@@ -26,7 +26,12 @@ import opennlp.tools.tokenize.SimpleTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -111,6 +116,10 @@ public class FeedbackService {
                 event.getName(),
                 event.getOrganizer().getFirstname() + " " + event.getOrganizer().getLastname()
         );
+
+        if(feedback.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no feedback for this event yet, come back at a later time.");
+        }
 
         Map<FeedbackType, FeedbackStatistics> numericalStats = new HashMap<>();
 

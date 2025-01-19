@@ -201,7 +201,8 @@ export default {
      * Fetches the event summary data from the API.
      */
     async fetchEventSummary() {
-      const response = await fetch(
+      try{
+        const response = await fetch(
         `${config.apiBaseUrl}/events/${this.eventId}/summary`,
       );
 
@@ -219,6 +220,10 @@ export default {
         { name: "TRAINER", data: this.data.numericalFeedback.TRAINER },
         { name: "SIMILARITY", data: this.data.numericalFeedback.SIMILARITY },
       ]
+      }catch(err){
+        this.error = err.message || "An error occurred";
+        console.error("Error fetching Summary:", err);
+      }
     },
 
     async fetchWordCloud() {
