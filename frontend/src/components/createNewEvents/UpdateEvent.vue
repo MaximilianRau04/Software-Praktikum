@@ -317,11 +317,14 @@ label {
 input,
 textarea,
 select {
-  width: 100%;
+  margin-right: 10px;
+  width: calc(100% - 15px);
+
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 16px;
+  resize: none;
 }
 
 .button-group {

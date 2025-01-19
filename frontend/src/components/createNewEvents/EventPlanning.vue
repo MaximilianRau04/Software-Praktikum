@@ -204,18 +204,17 @@ const fetchData = async () => {
   try {
     const [exchangeDaysResponse, usersResponse] = await Promise.all([
       fetch(`${config.apiBaseUrl}/exchange-days`),
-      fetch(`${config.apiBaseUrl}/users`)
+      fetch(`${config.apiBaseUrl}/users`),
     ]);
     if (!exchangeDaysResponse.ok) {
-      throw new Error('Fehler beim Laden der Exchange Days');
+      throw new Error("Fehler beim Laden der Exchange Days");
     }
     if (!usersResponse.ok) {
-      throw new Error('Fehler beim Laden der Benutzer');
+      throw new Error("Fehler beim Laden der Benutzer");
     }
 
     exchangeDays.value = await exchangeDaysResponse.json();
     users.value = await usersResponse.json();
-
   } catch (error) {
     console.error(error.message, error);
   }

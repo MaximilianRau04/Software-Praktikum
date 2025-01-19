@@ -174,7 +174,7 @@ export default {
           eventId: eventId,
         };
 
-        await axios.post(`$${config.apiBaseUrl}/forumthreads`, newThreadData);
+        await axios.post(`${config.apiBaseUrl}/forumthreads`, newThreadData);
         this.fetchThreads();
         this.newThread.title = "";
         this.newThread.description = "";

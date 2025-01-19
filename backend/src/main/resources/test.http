@@ -73,8 +73,8 @@ Content-Type: application/json
   "recommendationComment": "I would definitely recommend this workshop to anyone that wants to work in web deployment.",
   "similarEventParticipationScore": 5,
   "anonymousFeedback": true,
-  "eventId": 1,
-  "userId": 1
+  "eventId": 40,
+  "userId": 19
 }
 
 ###
@@ -174,4 +174,4 @@ Content-Type: application/json
 }
 ###
 
-GET http://localhost:8080/api/events/1/resources
+GET http://localhost:8080/api/users

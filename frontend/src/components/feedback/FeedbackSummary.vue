@@ -1,6 +1,11 @@
 <template>
   <div class="feedback-summary-container">
-    <div class="event-header" :style="{ backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : '' }">
+    <div
+      class="event-header"
+      :style="{
+        backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : '',
+      }"
+    >
       <h1 class="event-title">Zusammenfassung</h1>
     </div>
 
@@ -8,13 +13,9 @@
       <p>Loading...</p>
     </div>
 
-    <div v-else-if="error" class="error">
-      <p>Error: {{ error }}</p>
-    </div>
-
     <div v-else>
       <!-- General Information -->
-      <div class="general-info-container">
+      <div class="general-info-container" v-if="event">
         <div class="general-info-left">
           <h2>Event Details</h2>
           <table>
@@ -55,42 +56,86 @@
         <h2>Statistische Analyse</h2>
         <div class="feedback-blocks">
           <!-- Loop through ordered categories -->
-          <div v-for="(category, index) in categoryOrder" :key="index" class="feedback-block">
-            <h3>{{ category.name.charAt(0).toUpperCase() + category.name.slice(1) }}</h3>
+          <div
+            v-for="(category, index) in categoryOrder"
+            :key="index"
+            class="feedback-block"
+          >
+            <h3>
+              {{
+                category.name.charAt(0).toUpperCase() + category.name.slice(1)
+              }}
+            </h3>
 
             <!-- Large scale for the category -->
             <div class="large-scale">
               <div class="scale">
                 <div class="scale-track">
-                  <div class="pin" :style="{ left: `${(category.data.average - 1) * 25}%` }"
-                    @mouseover="showPopup('category', index, category.data.average)" @mouseleave="hidePopup">
-                    <div v-if="popupVisible['category'] && hoveredPinIndex['category'] === index" class="popup">
+                  <div
+                    class="pin"
+                    :style="{ left: `${(category.data.average - 1) * 25}%` }"
+                    @mouseover="
+                      showPopup('category', index, category.data.average)
+                    "
+                    @mouseleave="hidePopup"
+                  >
+                    <div
+                      v-if="
+                        popupVisible['category'] &&
+                        hoveredPinIndex['category'] === index
+                      "
+                      class="popup"
+                    >
                       Average: {{ category.data.average.toFixed(2) }}
                     </div>
                   </div>
                 </div>
                 <div class="scale-labels">
-                  <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                  <span>1</span><span>2</span><span>3</span><span>4</span
+                  ><span>5</span>
                 </div>
               </div>
             </div>
 
             <!-- Small scales for each sub-score -->
             <div class="small-scales">
-              <div v-for="(subScore, subIndex) in getOrderedSubScores(category.data.subAverages)" :key="subIndex"
-                class="small-scale">
-                <h4>{{ subScore.name.charAt(0).toUpperCase() + subScore.name.slice(1) }}</h4>
+              <div
+                v-for="(subScore, subIndex) in getOrderedSubScores(
+                  category.data.subAverages,
+                )"
+                :key="subIndex"
+                class="small-scale"
+              >
+                <h4>
+                  {{
+                    subScore.name.charAt(0).toUpperCase() +
+                    subScore.name.slice(1)
+                  }}
+                </h4>
                 <div class="scale">
                   <div class="scale-track">
-                    <div class="pin" :style="{ left: `${((subScore.value - 1) / 4) * 100}%` }"
-                      @mouseover="showPopup('subScore', subIndex, subScore.value)" @mouseleave="hidePopup">
-                      <div v-if="popupVisible['subScore'] && hoveredPinIndex['subScore'] === subIndex" class="popup">
+                    <div
+                      class="pin"
+                      :style="{ left: `${((subScore.value - 1) / 4) * 100}%` }"
+                      @mouseover="
+                        showPopup('subScore', subIndex, subScore.value)
+                      "
+                      @mouseleave="hidePopup"
+                    >
+                      <div
+                        v-if="
+                          popupVisible['subScore'] &&
+                          hoveredPinIndex['subScore'] === subIndex
+                        "
+                        class="popup"
+                      >
                         Sub-score: {{ subScore.value.toFixed(2) }}
                       </div>
                     </div>
                   </div>
                   <div class="scale-labels">
-                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                    <span>1</span><span>2</span><span>3</span><span>4</span
+                    ><span>5</span>
                   </div>
                 </div>
               </div>
@@ -102,15 +147,25 @@
       <div class="comments">
         <h2>Kommentare</h2>
 
-        <div v-for="(categoryComments, category) in data.comments" :key="category" class="comment-category">
+        <div
+          v-for="(categoryComments, category) in data.comments"
+          :key="category"
+          class="comment-category"
+        >
           <!-- Category Title -->
           <h3>{{ formatKey(category) }}</h3>
 
           <!-- Card for Comments -->
           <div v-if="categoryComments.length" class="comment-cards">
-            <div v-for="(commentObj, index) in categoryComments" :key="index" class="comment-card"
-              :style="getCardGradient(commentObj.sentiment)">
-              <p class="comment-author"><strong>{{ commentObj.author || "Anonymous" }}:</strong></p>
+            <div
+              v-for="(commentObj, index) in categoryComments"
+              :key="index"
+              class="comment-card"
+              :style="getCardGradient(commentObj.sentiment)"
+            >
+              <p class="comment-author">
+                <strong>{{ commentObj.author || "Anonymous" }}:</strong>
+              </p>
               <div class="comment-content">
                 <div class="comment-column">{{ commentObj.comment }}</div>
               </div>
@@ -125,7 +180,16 @@
 
 <script>
 import config from "@/config";
-import { Chart, RadarController, RadialLinearScale, LineElement, PointElement, Filler, Legend, Tooltip } from 'chart.js';
+import {
+  Chart,
+  RadarController,
+  RadialLinearScale,
+  LineElement,
+  PointElement,
+  Filler,
+  Legend,
+  Tooltip,
+} from "chart.js";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 pdfMake.addVirtualFileSystem(pdfFonts);
@@ -137,13 +201,14 @@ Chart.register(
   PointElement,
   Filler,
   Legend,
-  Tooltip
+  Tooltip,
 );
 
 export default {
   name: "EventSummary",
   data() {
     return {
+      event: null,
       data: null,
       isLoading: true,
       error: null,
@@ -155,13 +220,13 @@ export default {
       categoryOrder: [],
       popupVisible: {
         category: false,
-        subScore: false
+        subScore: false,
       },
       hoveredPinIndex: {
         category: null,
-        subScore: null
+        subScore: null,
       },
-      hoveredPinValue: null
+      hoveredPinValue: null,
     };
   },
   computed: {
@@ -184,14 +249,12 @@ export default {
         await this.fetchEventSummary();
         this.calculateAverages();
         this.setRadarChartLabels();
-
       } catch (err) {
         this.error = err.message || "An unknown error occurred";
         console.error("Error fetching data:", err);
       } finally {
         this.isLoading = false;
         this.$nextTick(() => {
-          // Create the radar chart after DOM is updated
           this.createRadarChart();
         });
       }
@@ -201,31 +264,60 @@ export default {
      * Fetches the event summary data from the API.
      */
     async fetchEventSummary() {
-      try{
+      try {
         const response = await fetch(
-        `${config.apiBaseUrl}/events/${this.eventId}/summary`,
-      );
+          `${config.apiBaseUrl}/events/${this.eventId}/summary`,
+        );
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch event summary: ${response.status}`);
-      }
+        if (!response.ok) {
+          throw new Error(`Failed to fetch event summary: ${response.status}`);
+        }
 
-      this.data = await response.json();
+        this.data = await response.json();
 
-      this.categoryOrder = [
-        { name: "OVERALL", data: this.data.numericalFeedback.OVERALL },
-        { name: "CONTENT_AND_STRUCTURE", data: this.data.numericalFeedback.CONTENT_AND_STRUCTURE },
-        { name: "PARTICIPATION", data: this.data.numericalFeedback.PARTICIPATION },
-        { name: "IT_AND_ORGANISATION", data: this.data.numericalFeedback.IT_AND_ORGANISATION },
-        { name: "TRAINER", data: this.data.numericalFeedback.TRAINER },
-        { name: "SIMILARITY", data: this.data.numericalFeedback.SIMILARITY },
-      ]
-      }catch(err){
+        this.categoryOrder = [
+          { name: "OVERALL", data: this.data.numericalFeedback.OVERALL },
+          {
+            name: "CONTENT_AND_STRUCTURE",
+            data: this.data.numericalFeedback.CONTENT_AND_STRUCTURE,
+          },
+          {
+            name: "PARTICIPATION",
+            data: this.data.numericalFeedback.PARTICIPATION,
+          },
+          {
+            name: "IT_AND_ORGANISATION",
+            data: this.data.numericalFeedback.IT_AND_ORGANISATION,
+          },
+          { name: "TRAINER", data: this.data.numericalFeedback.TRAINER },
+          { name: "SIMILARITY", data: this.data.numericalFeedback.SIMILARITY },
+        ];
+      } catch (err) {
         this.error = err.message || "An error occurred";
         console.error("Error fetching Summary:", err);
       }
     },
 
+    async fetchEvent() {
+      try {
+        const response = await fetch(
+          `${config.apiBaseUrl}/events/${this.eventId}`,
+        );
+        if (!response.ok) {
+          throw new Error(`Failed to fetch event: ${response.status}`);
+        }
+        this.event = await response.json();
+        console.log("Event fetched successfully:", this.event);
+      } catch (err) {
+        this.error =
+          err.message || "An error occurred while fetching the event.";
+        console.error("Error fetching event:", err);
+      }
+    },
+
+    /**
+     * Fetches the word cloud image from the API.
+     */
     async fetchWordCloud() {
       if (!this.eventId) {
         console.error("Event ID is missing.");
@@ -233,7 +325,9 @@ export default {
         return;
       }
       try {
-        const response = await fetch(`${config.apiBaseUrl}/events/${this.eventId}/word-cloud`);
+        const response = await fetch(
+          `${config.apiBaseUrl}/events/${this.eventId}/word-cloud`,
+        );
         if (!response.ok) {
           throw new Error(`Failed to fetch word cloud: ${response.status}`);
         }
@@ -245,13 +339,15 @@ export default {
       }
     },
 
+    /**
+     * Calculates the average scores for each category.
+     */
     calculateAverages() {
       if (!this.data) return;
 
-      this.averageScores = this.categoryOrder.map(category => {
+      this.averageScores = this.categoryOrder.map((category) => {
         return category.data.average;
-      })
-
+      });
     },
 
     /**
@@ -260,7 +356,6 @@ export default {
     setRadarChartLabels() {
       if (!this.categoryOrder) return;
 
-      // Set the labels dynamically for the radar chart
       this.labels = this.categoryOrder.map((category) => {
         return category.name.replace(/_/g, " ").toUpperCase();
       });
@@ -275,16 +370,16 @@ export default {
 
       this.ctx = canvas.getContext("2d");
       new Chart(this.ctx, {
-        type: 'radar',
+        type: "radar",
         data: {
           labels: this.labels,
           datasets: [
             {
-              label: 'Durchschnittliche Bewertungen',
+              label: "Durchschnittliche Bewertungen",
               data: this.averageScores,
-              backgroundColor: 'rgba(64, 85, 241, 0.2)',
-              borderColor: 'rgba(64, 85, 241, 1)',
-              pointBackgroundColor: 'rgba(64, 85, 241, 1)',
+              backgroundColor: "rgba(64, 85, 241, 0.2)",
+              borderColor: "rgba(64, 85, 241, 1)",
+              pointBackgroundColor: "rgba(64, 85, 241, 1)",
             },
           ],
         },
@@ -296,18 +391,16 @@ export default {
               stepSize: 1,
               max: 5,
               ticks: {
-                // Setting fixed step size and ensuring no decimal values
                 stepSize: 1,
                 callback: function (value) {
-                  // Ensure the tick marks show only whole numbers
-                  return Number.isInteger(value) ? value : '';
+                  return Number.isInteger(value) ? value : "";
                 },
               },
             },
           },
           plugins: {
             legend: {
-              position: 'top',
+              position: "top",
             },
           },
         },
@@ -315,20 +408,15 @@ export default {
     },
 
     getOrderedSubScores(subAverages) {
-      return Object.keys(subAverages).map(key => ({
+      return Object.keys(subAverages).map((key) => ({
         name: key,
-        value: subAverages[key]
+        value: subAverages[key],
       }));
     },
 
     /**
      * Formats a key string to be more human-readable.
-     * 
-     * formatKey(category) {
-      // Format the category name (e.g., "Overall" -> "Overall Feedback")
-      return `${category.charAt(0).toUpperCase() + category.slice(1)} Feedback`;
-    },
-     * 
+     *
      * @param {string} key The key to format.
      * @returns {string} The formatted key.
      */
@@ -340,17 +428,24 @@ export default {
     },
 
     /**
-   * Generates a gradient style based on sentiment.
-   * @param {string} sentiment - The sentiment of the comment ("positive", "neutral", or "negative").
-   * @returns {string} The gradient style.
-   */
+     * Generates a gradient style based on sentiment.
+     * @param {string} sentiment - The sentiment of the comment ("positive", "neutral", or "negative").
+     * @returns {string} The gradient style.
+     */
     getCardGradient(sentiment) {
       const colors = {
-        positive: "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #2ecc71 99%)",
-        neutral: "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #3498db 99%)",
-        negative: "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #e74c3c 99%)",
+        positive:
+          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #2ecc71 99%)",
+        neutral:
+          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #3498db 99%)",
+        negative:
+          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #e74c3c 99%)",
       };
-      return { background: colors[sentiment] || "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #7f8c8d 99%)" };
+      return {
+        background:
+          colors[sentiment] ||
+          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #7f8c8d 99%)",
+      };
     },
     showPopup(type, index, value) {
       this.popupVisible[type] = true;
@@ -361,11 +456,11 @@ export default {
     hidePopup() {
       this.popupVisible = {
         category: false,
-        subScore: false
+        subScore: false,
       };
       this.hoveredPinIndex = {
         category: null,
-        subScore: null
+        subScore: null,
       };
       this.hoveredPinValue = null;
     },
@@ -377,86 +472,95 @@ export default {
 
       const wordCloudImage = await this.blobToDataUrl(this.backgroundImageUrl);
 
-      const chartCanvas = document.getElementById('radarChart');
+      const chartCanvas = document.getElementById("radarChart");
       const chartImage = chartCanvas.toDataURL("image/png");
 
       try {
         const docDefinition = {
           content: [
             {
-              image: wordCloudImage, // Word cloud image
-              width: 900, // Set width of the image
-              height: 150, // Set height of the image (adjust based on your image's aspect ratio)
-              alignment: 'center',
-              margin: [0, 10], // Margin below the image
-              fit: [500, 200],// Margin below the header
+              image: wordCloudImage,
+              width: 900,
+              height: 150,
+              alignment: "center",
+              margin: [0, 10],
+              fit: [500, 200],
             },
             {
-              text: 'Event Bericht', // The text to display centered
-              style: 'header',
-              alignment: 'center', // Center the text in the header
-              margin: [0, -60], // Position the text in the center of the word cloud (adjust x, y if necessary)
-              decoration: 'underline',
+              text: "Event Bericht",
+              style: "header",
+              alignment: "center",
+              margin: [0, -60],
+              decoration: "underline",
             },
             {
-              text: '',
-              margin: [0,60]
+              text: "",
+              margin: [0, 60],
             },
             {
-              text: 'Event Details',
-              alignment: 'center',
-              style: 'subheader',
+              text: "Event Details",
+              alignment: "center",
+              style: "subheader",
               margin: [0, 10],
             },
             {
               columns: [
                 {
-                  width: '50%',
+                  width: "50%",
                   table: {
                     body: [
-                      ['Event Name', this.data.eventName || 'undefined'],
-                      ['Organizer', this.data.organizerName || 'undefined'],
-                      ['Date and Time', this.data.eventDate || 'undefined'],
-                      ['Description', this.data.description || 'No description available'],
-                      ['Tags', this.data.tags?.join(', ') || 'No tags available'],
+                      ["Event Name", this.data.eventName || "undefined"],
+                      ["Organizer", this.data.organizerName || "undefined"],
+                      ["Date and Time", this.data.eventDate || "undefined"],
+                      [
+                        "Description",
+                        this.data.description || "No description available",
+                      ],
+                      [
+                        "Tags",
+                        this.data.tags?.join(", ") || "No tags available",
+                      ],
                     ],
                   },
-                  layout: 'lightHorizontalLines',
+                  layout: "lightHorizontalLines",
                   margin: [0, 0, 0, 20],
                 },
                 {
-                  image: chartImage, // Add radar chart image here if needed.
-                  width: '50%', // Adjust width as needed
-                  height: 700, // Adjust height as needed
-                  alignment: 'center',
-                  margin: [0, 0, 0, 5], // Margin below the image
-                  fit: [300, 300],// Margin below the header
+                  image: chartImage,
+                  width: "50%",
+                  height: 700,
+                  alignment: "center",
+                  margin: [0, 0, 0, 5],
+                  fit: [300, 300],
                 },
-              ]
+              ],
             },
             {
-              text: 'Statistische Analyse',
-              style: 'subheader',
-              alignment: 'center',
+              text: "Statistische Analyse",
+              style: "subheader",
+              alignment: "center",
             },
-            ...this.categoryOrder.map(category => {
+            ...this.categoryOrder.map((category) => {
               return {
                 text: `${category.name.replace(/_/g, " ")}: Durchschnitt - ${category.data.average.toFixed(2)}`,
-                style: 'feedbackCategory',
+                style: "feedbackCategory",
               };
             }),
             {
-              text: 'Kommentare',
-              style: 'subheader',
+              text: "Kommentare",
+              style: "subheader",
             },
-            ...Object.keys(this.data.comments).map(category => {
+            ...Object.keys(this.data.comments).map((category) => {
               const categoryComments = this.data.comments[category];
               return [
-                { text: this.formatKey(category), style: 'commentCategoryHeader' },
-                ...categoryComments.map(commentObj => {
+                {
+                  text: this.formatKey(category),
+                  style: "commentCategoryHeader",
+                },
+                ...categoryComments.map((commentObj) => {
                   return {
-                    text: `${commentObj.author || 'Anonymous'}: ${commentObj.comment}`,
-                    style: 'commentText',
+                    text: `${commentObj.author || "Anonymous"}: ${commentObj.comment}`,
+                    style: "commentText",
                   };
                 }),
               ];
@@ -466,7 +570,7 @@ export default {
             header: {
               fontSize: 24,
               bold: true,
-              alignment: 'center',
+              alignment: "center",
             },
             subheader: {
               fontSize: 18,
@@ -489,7 +593,9 @@ export default {
           },
         };
 
-        pdfMake.createPdf(docDefinition).download(`event-summary-${this.eventId}`);
+        pdfMake
+          .createPdf(docDefinition)
+          .download(`event-summary-${this.eventId}`);
       } catch (err) {
         console.error("Error generating PDF:", err);
       }
@@ -502,7 +608,7 @@ export default {
         xhr.onload = () => {
           const reader = new FileReader();
           reader.onloadend = () => {
-            resolve(reader.result); // This is the Data URL
+            resolve(reader.result);
           };
           reader.onerror = reject;
           reader.readAsDataURL(xhr.response);
@@ -510,30 +616,24 @@ export default {
         xhr.onerror = reject;
         xhr.send();
       });
-    }
+    },
   },
   mounted() {
     this.fetchData();
     this.fetchWordCloud();
+    this.fetchEvent();
   },
 };
 </script>
 
 <style scoped>
-/* Container for the entire feedback summary */
 .feedback-summary-container {
   width: 100%;
-  /* Default: full width */
   max-width: 1000px;
-  /* Maximum width of the container */
   min-width: 700px;
-  /* Minimum width of the container */
   margin: 0 auto;
-  /* Center the container horizontally */
   padding: 10px;
-  /* Optional padding for inner spacing */
   box-sizing: border-box;
-  /* Include padding in width calculation */
 }
 
 .event-header {
@@ -551,33 +651,25 @@ export default {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Overlay to darken or blur the background */
 .event-header::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background: rgba(100, 126, 126, 0.096);
-  /* Semi-transparent black overlay */
   backdrop-filter: blur(1px);
-  /* Optional: Adds a blur effect */
   z-index: 1;
-  /* Ensures the overlay sits on top of the background */
 }
 
-/* Title styling */
 .event-title {
   position: relative;
-  /* Ensures it appears above the overlay */
   font-size: 2.5rem;
   color: #f7fbff;
   font-weight: bold;
   text-shadow: 0px 3px 6px rgba(0, 0, 0, 0.8);
-  /* Creates depth and contrast */
   z-index: 2;
-  /* Ensures the text is above the overlay */
 }
 
 h1,
@@ -669,7 +761,7 @@ p {
   position: relative;
   height: 20px;
   width: 100%;
-  background: linear-gradient(to right, #01172F, #EAEAEA, #009EE2);
+  background: linear-gradient(to right, #01172f, #eaeaea, #009ee2);
   border-radius: 50px;
   margin-bottom: 20px;
 }
@@ -690,14 +782,14 @@ p {
   transform: translate(-50%, 0);
   border: 2px solid #000;
   cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .pin:hover {
   transform: translate(-50%, -5px);
-  /* Slightly raise the pin on hover */
   background-color: #3498db;
-  /* Change pin color on hover */
 }
 
 .popup {
@@ -734,7 +826,7 @@ p {
 .small-scale .scale {
   width: 100%;
   height: 10px;
-  background: linear-gradient(to right, #01172F, #EAEAEA, #009EE2);
+  background: linear-gradient(to right, #01172f, #eaeaea, #009ee2);
   border-radius: 50px;
   margin-bottom: 10px;
 }
@@ -807,7 +899,6 @@ li {
 .comment-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(45%, 1fr));
-  /* Two columns */
   gap: 15px;
 }
 
@@ -818,9 +909,7 @@ li {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
   background: white;
-  /* Default background */
   background-size: 200%;
-  /* Makes the gradient more subtle */
 }
 
 .comment-card:hover {
