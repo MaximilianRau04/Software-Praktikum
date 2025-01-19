@@ -4,7 +4,11 @@
       <h1>{{ userData.firstname }} {{ userData.lastname }}</h1>
       <div class="username-container">
         <p class="username">@{{ userData.username }}</p>
-        <button v-if="!isEditing" @click="enableEdit" class="edit-btn">
+        <button
+          v-if="isCurrentUser && !isEditing"
+          @click="enableEdit"
+          class="edit-btn"
+        >
           <i class="fas fa-edit"></i> Bearbeiten
         </button>
         <div v-if="isEditing" class="edit-container">
@@ -72,9 +76,10 @@
       <ul class="scrollable-section">
         <li v-for="event in sortedEvents" :key="event.id" class="event-card">
           <h3>{{ event.name }}</h3>
+          <p><strong>Datum:</strong> {{ formatDate(event.date) }}</p>
           <p>
-            <strong>Datum:</strong> {{ formatDateTime(event.startTime) }} -
-            {{ formatDateTime(event.endTime) }}
+            <strong>Zeit:</strong> {{ event.startTime }} Uhr -
+            {{ event.endTime }} Uhr
           </p>
           <p><strong>Raum:</strong> {{ event.room }}</p>
           <p><strong>Beschreibung:</strong> {{ event.description }}</p>
@@ -103,11 +108,12 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import axios from "axios";
 import router from "@/router";
-
-const apiUrl = "http://localhost:8080/api/";
+import config from "@/config";
+import Cookies from "js-cookie";
+import "@/assets/user-profile.css";
 
 export default {
   props: {
@@ -124,12 +130,24 @@ export default {
     const isEditing = ref(false);
     const newUsername = ref("");
 
+    /**
+     * Sorts the registered events by their start time.
+     */
     const sortedEvents = computed(() =>
       registeredEvents.value.sort(
         (a, b) => new Date(b.startTime) - new Date(a.startTime),
       ),
     );
 
+    const loggedInUserId = parseInt(Cookies.get("userId"), 10);
+
+    const isCurrentUser = computed(() => {
+      return userData.value && userData.value.id === loggedInUserId;
+    });
+
+    /**
+     * Sorts the forum posts by their creation date.
+     */
     const sortedPosts = computed(() =>
       forumPosts.value.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
@@ -137,66 +155,64 @@ export default {
     );
 
     /**
-     * Renders a star rating based on a numerical rating.
-     * @param {number} rating The numerical rating to render stars for.
-     * @returns {string} The rendered star rating.
+     * Renders a star rating based on the given rating.
+     * @param {number} rating - The rating to render stars for.
+     * @returns {string} The rendered stars.
      */
     const renderStars = (rating) => {
       const maxStars = 5;
       const fullStar = "★";
-      const halfStar = "½";
       const emptyStar = "☆";
 
       const fullStars = Math.floor(rating);
-      const halfStars = Math.round(rating - fullStars) >= 0.5 ? 1 : 0;
-      const emptyStars = maxStars - fullStars - halfStars;
+      const emptyStars = maxStars - fullStars;
 
-      return (
-        fullStar.repeat(fullStars) +
-        halfStar.repeat(halfStars) +
-        emptyStar.repeat(emptyStars)
-      );
+      return fullStar.repeat(fullStars) + emptyStar.repeat(emptyStars);
     };
 
     /**
-     * Fetches the user data from the API.
+     * Fetches the user data, registered events, forum posts, and trainer profile.
      */
     const fetchUserData = async () => {
       try {
         const userResponse = await axios.get(
-          `${apiUrl}users/search?username=${props.username}`,
+          `${config.apiBaseUrl}/users/search?username=${props.username}`,
         );
         userData.value = userResponse.data;
 
         const userId = userResponse.data.id;
-        const [eventsRes, profileRes, postsRes] = await Promise.all([
-          axios.get(`${apiUrl}users/${userId}/registeredEvents`),
-          axios.get(`${apiUrl}users/${userId}/trainerProfile`),
-          axios.get(`${apiUrl}users/${userId}/forumPosts`),
+        const [eventsRes, postsRes] = await Promise.all([
+          axios.get(`${config.apiBaseUrl}/users/${userId}/registeredEvents`),
+          axios.get(`${config.apiBaseUrl}/users/${userId}/forumPosts`),
         ]);
 
+        if (userResponse.data.role === "ADMIN") {
+          const profileRes = await axios.get(
+            `${config.apiBaseUrl}/users/${userId}/trainerProfile`,
+          );
+          trainerProfile.value = profileRes.data;
+          if (profileRes.data && profileRes.data.id) {
+            await fetchPinnedComments(profileRes.data.id);
+          }
+        }
+
         registeredEvents.value = eventsRes.data;
-        trainerProfile.value = profileRes.data;
         forumPosts.value = postsRes.data;
 
         fetchThreadTitles(postsRes.data);
-
-        if (profileRes.data && profileRes.data.id) {
-          await fetchPinnedComments(profileRes.data.id);
-        }
       } catch (error) {
         console.error("Fehler beim Abrufen der Benutzerdaten:", error);
       }
     };
 
     /**
-     * Fetches the titles of the threads for the given posts.
-     * @param {Array} posts The forum posts to fetch thread titles for.
+     * Fetches the titles of the threads the given posts belong to.
+     * @param {Array} posts - The posts to fetch the thread titles for.
      */
     const fetchThreadTitles = async (posts) => {
       try {
         const threadRequests = posts.map((post) =>
-          axios.get(`${apiUrl}forumthreads/${post.threadId}`),
+          axios.get(`${config.apiBaseUrl}/forumthreads/${post.threadId}`),
         );
         const threadResponses = await Promise.all(threadRequests);
 
@@ -205,57 +221,41 @@ export default {
           threadTitles.value[threadId] = response.data.title;
         });
       } catch (error) {
-        console.error("Failed to fetch thread titles:", error);
+        console.error("Fehler beim Abrufen der Thread-Titel:", error);
       }
     };
 
     /**
-     * Fetches the pinned comments for the given trainer profile.
-     * @param {number} trainerProfileId The ID of the trainer profile to fetch pinned comments for.
+     * Fetches the pinned comments of the given trainer profile.
+     * @param {number} trainerProfileId - The ID of the trainer profile to fetch the pinned comments for.
      */
     const fetchPinnedComments = async (trainerProfileId) => {
       if (!trainerProfileId) return;
 
       try {
         const response = await axios.get(
-          `${apiUrl}trainerProfiles/${trainerProfileId}/pinned-comments`,
+          `${config.apiBaseUrl}/trainerProfiles/${trainerProfileId}/pinned-comments`,
         );
-
-        console.log("Antwort von der API:", response.data);
-
-        if (response.data && Array.isArray(response.data)) {
-          pinnedComments.value = response.data.map((comment) => ({
-            category: comment.category,
-            content: comment.content,
-            feedbackId: comment.feedbackId,
-          }));
-        } else {
-          console.warn(
-            "Die API hat keine gültigen `pinnedComments` zurückgegeben:",
-            response.data,
-          );
-        }
+        pinnedComments.value = response.data.map((comment) => ({
+          category: comment.category,
+          content: comment.content,
+          feedbackId: comment.feedbackId,
+        }));
       } catch (error) {
-        console.error("Fehler beim Abrufen der `pinnedComments`:", error);
+        console.error("Fehler beim Abrufen der gepinnten Kommentare:", error);
       }
     };
 
     /**
-     * Unpins a comment for the given category and feedback ID.
-     * @param {string} category The category of the comment to unpin.
-     * @param {number} feedbackId The ID of the feedback to unpin.
+     * Unpins the comment with the given feedback ID from the given category.
+     * @param {string} category - The category of the comment to unpin.
+     * @param {number} feedbackId - The ID of the feedback to unpin.
      */
     const unpinComment = async (category, feedbackId) => {
       try {
-        if (!trainerProfile.value || !trainerProfile.value.id) {
-          console.error("Trainerprofil ist nicht verfügbar oder hat keine ID.");
-          return;
-        }
-
         const trainerProfileId = trainerProfile.value.id;
-
         await axios.post(
-          `${apiUrl}trainerProfiles/${trainerProfileId}/${feedbackId}/unpin?commentType=${category}`,
+          `${config.apiBaseUrl}/trainerProfiles/${trainerProfileId}/${feedbackId}/unpin?commentType=${category}`,
         );
 
         pinnedComments.value = pinnedComments.value.filter(
@@ -267,21 +267,8 @@ export default {
     };
 
     /**
-     * Formats a date string to a human-readable date and time.
-     * @param {string} dateString The date string to format.
-     * @returns {string} The formatted date and time.
+     * Enables the editing mode for the username.
      */
-    const formatDateTime = (dateString) => {
-      const options = {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      };
-      return new Date(dateString).toLocaleDateString("de-DE", options);
-    };
-
     const enableEdit = () => {
       isEditing.value = true;
       newUsername.value = userData.value.username;
@@ -301,7 +288,7 @@ export default {
           };
 
           const userId = userData.value.id;
-          await axios.put(`${apiUrl}users/${userId}`, updatedData);
+          await axios.put(`${config.apiBaseUrl}/users/${userId}`, updatedData);
 
           userData.value.username = newUsername.value;
           isEditing.value = false;
@@ -315,7 +302,25 @@ export default {
       }
     };
 
+    /**
+     * Formats the given timestamp to a date string.
+     * @param {number} timestamp - The timestamp to format.
+     * @returns {string} The formatted date string.
+     */
+    const formatDate = (timestamp) => {
+      const date = new Date(timestamp);
+      return date.toLocaleDateString("de-DE");
+    };
+
     onMounted(fetchUserData);
+
+    watch(
+      () => props.username,
+      (newUsername) => {
+        userData.value = null;
+        fetchUserData();
+      },
+    );
 
     return {
       userData,
@@ -324,7 +329,6 @@ export default {
       forumPosts,
       threadTitles,
       pinnedComments,
-      formatDateTime,
       sortedEvents,
       sortedPosts,
       isEditing,
@@ -333,174 +337,10 @@ export default {
       updateUsername,
       unpinComment,
       renderStars,
+      formatDate,
+      isCurrentUser,
+      fetchUserData,
     };
   },
 };
 </script>
-
-<style scoped>
-.profile-container {
-  padding: 30px;
-  max-width: 1000%;
-  margin: 0 auto;
-  background-color: #f8f9fa;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  height: 90%;
-  overflow-y: auto;
-}
-
-.profile-header {
-  text-align: center;
-  margin-bottom: 40px;
-  border-bottom: 2px solid #dee2e6;
-  padding-bottom: 20px;
-}
-
-.profile-header h1 {
-  font-size: 2.4rem;
-  color: #2c3e50;
-  margin: 1%;
-}
-
-.profile-header .username {
-  font-size: 1.2rem;
-  color: #6c757d;
-  display: inline-block;
-}
-
-.profile-header .role {
-  color: #01172f;
-  font-weight: bold;
-  font-size: 1.1rem;
-  margin-top: 1%;
-}
-
-.username-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.edit-btn {
-  background-color: #009ee2;
-  color: white;
-  padding: 1% 1%;
-  font-size: 0.8rem;
-  margin-left: 10px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.edit-btn i {
-  font-size: 1.2rem;
-}
-
-.profile-section {
-  margin-top: 1%;
-}
-
-.profile-section h2 {
-  font-size: 1.8rem;
-  color: #495057;
-  margin: 1%;
-  border-bottom: 2px solid #dee2e6;
-  padding-bottom: 5px;
-}
-
-.scrollable-section {
-  max-height: 400px;
-  overflow-y: auto;
-  padding-right: 10px;
-}
-
-.event-card,
-.forum-post,
-.pinned-comment {
-  background-color: #ffffff;
-  margin: 15px 0;
-  padding: 20px;
-  border-left: 5px solid #009ee2;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.event-card:hover,
-.forum-post:hover,
-.pinned-comment:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.event-card h3 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: #343a40;
-}
-
-.event-card p,
-.forum-post p,
-.pinned-comment p {
-  font-size: 1rem;
-  color: #6c757d;
-  margin: 5px 0;
-}
-
-.expertise-tag {
-  display: inline-block;
-  background-color: #ffffff;
-  color: #007bff;
-  border-radius: 5px;
-  padding: 5px 10px;
-  margin: 5px;
-  font-size: 0.9rem;
-  font-weight: bold;
-}
-
-.unpin-btn {
-  background-color: #e74c3c;
-  color: white;
-  padding: 0.5% 1%;
-  font-size: 0.8rem;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  margin-left: 10px;
-}
-
-.unpin-btn:hover {
-  background-color: #c0392b;
-}
-
-.trainer-profile {
-  font-family: Arial, sans-serif;
-  line-height: 1.5;
-  background-color: #f9f9f9;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  max-width: 400px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.trainer-profile p {
-  margin: 10px 0;
-}
-
-.rating {
-  color: #ffd700;
-  font-size: 18px;
-}
-
-.expertise {
-  font-style: italic;
-  color: #555;
-}
-</style>

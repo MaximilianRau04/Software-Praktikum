@@ -2,10 +2,12 @@ package com.sopra.eaplanner.event.dtos;
 
 import com.sopra.eaplanner.event.Event;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class EventResponseDTO {
     private Long id;
+    private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
     private String name;
@@ -17,6 +19,7 @@ public class EventResponseDTO {
 
     public EventResponseDTO(Long id, Event event) {
         this.id = id;
+        this.date = event.getDate();
         this.startTime = event.getStartTime();
         this.endTime = event.getEndTime();
         this.name = event.getName();
@@ -26,6 +29,7 @@ public class EventResponseDTO {
 
     public EventResponseDTO(Event event){
         this.id = event.getId();
+        this.date = event.getDate();
         this.startTime = event.getStartTime();
         this.endTime = event.getEndTime();
         this.name = event.getName();
@@ -35,6 +39,14 @@ public class EventResponseDTO {
 
     public Long getId() {
         return id;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public LocalTime getStartTime() {
@@ -82,12 +94,13 @@ public class EventResponseDTO {
     }
 
 
-    public static EventResponseDTO mockWith(Long id, LocalTime startTime, LocalTime endTime, String name, String room, String description) {
-        return new EventResponseDTO(id, startTime, endTime, name, room, description);
+    public static EventResponseDTO mockWith(Long id, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description) {
+        return new EventResponseDTO(id, date, startTime, endTime, name, room, description);
     }
 
-    private EventResponseDTO(Long id, LocalTime startTime, LocalTime endTime, String name, String room, String description) {
+    private EventResponseDTO(Long id, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description) {
         this.id = id;
+        this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.name = name;

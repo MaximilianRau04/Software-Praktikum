@@ -5,6 +5,7 @@
       <strong>Beschreibung:</strong> {{ event.description || "No Description" }}
     </p>
     <p><strong>Event ID:</strong> {{ event.id }}</p>
+    <p><strong>Datum:</strong> {{ formatDate(event.date) }}</p>
     <p><strong>Startzeit:</strong> {{ event.startTime || "No Starttime" }}</p>
     <p><strong>Endzeit:</strong> {{ event.endTime || "No Endtime" }}</p>
     <p><strong>Raum:</strong> {{ event.room || "No Room" }}</p>
@@ -32,6 +33,17 @@ const isAlreadyRegistered = ref(false);
 const userId = Cookies.get("userId");
 
 /**
+ * Formats a timestamp into a human-readable date string.
+ *
+ * @param {string} timestamp - The date in milliseconds.
+ * @returns {string} - The formatted date string in 'DD.MM.YYYY' format.
+ */
+function formatDate(timestamp: string): string {
+  const date = new Date(timestamp);
+  return date.toLocaleDateString("de-DE");
+}
+
+/**
  * Checks if the user is already registered for the event.
  */
 const checkRegistrationStatus = async () => {
@@ -40,14 +52,14 @@ const checkRegistrationStatus = async () => {
   }
   try {
     const response = await fetch(
-      `${config.apiBaseUrl}/users/${userId}/registeredEvents`
+      `${config.apiBaseUrl}/users/${userId}/registeredEvents`,
     );
     if (!response.ok) throw new Error("Failed to fetch user data.");
 
     const registeredEvents = await response.json();
 
     isAlreadyRegistered.value = registeredEvents.some(
-      (event: { id: number }) => event.id === props.event.id
+      (event: { id: number }) => event.id === props.event.id,
     );
   } catch (error) {
     console.error("Error checking registration status:", error);
@@ -73,7 +85,7 @@ const register = async (eventId: number) => {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     if (response.status === 404) {

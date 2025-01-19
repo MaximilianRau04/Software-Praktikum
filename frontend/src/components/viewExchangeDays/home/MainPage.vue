@@ -46,7 +46,6 @@ function fetchAllExchangeDays() {
     .then((response) => response.json())
     .then((data) => data as ExchangeDay[])
     .then((data) => {
-      // Populate exchangeDays with data from the API
       exchangeDays.value = data;
     })
     .catch((error) => console.error(error));

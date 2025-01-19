@@ -10,14 +10,17 @@ import com.sopra.eaplanner.notification.reminder.ReminderType;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "events")
@@ -30,6 +33,11 @@ public class Event {
     @NotNull(message = "Name cannot be null")
     @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters")
     private String name;
+
+    @DateTimeFormat(pattern = "dd.MM.yyyy")
+    @Future(message = "Date must be in the future")
+    @NotNull(message = "Date cannot be null")
+    private LocalDate date;
 
     @NotNull(message = "Start time must be set")
     private LocalTime startTime;
@@ -90,7 +98,7 @@ public class Event {
     public Event() {
     }
 
-    public Event(Long id, String name, LocalTime startTime, LocalTime endTime, String room,
+    public Event(Long id, String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room,
                  String description, ExchangeDay exchangeDay, User organizer, TrainerProfile trainerProfile,
                  String qrCodeFilePath, Set<ForumThread>  forumthreads) {
         this.id = id;
@@ -105,12 +113,14 @@ public class Event {
         this.qrCodeFilePath = qrCodeFilePath;
         this.attendanceToken = generateAttendanceToken();
         this.forumThreads = forumthreads;
+        this.date = date;
     }
 
     public Event(EventRequestDTO eventDTO, ExchangeDay exchangeDay, User organizer) {
         this.name = eventDTO.getName();
         this.startTime = eventDTO.getStartTime();
         this.endTime = eventDTO.getEndTime();
+        this.date = eventDTO.getDate();
         this.room = eventDTO.getRoom();
         this.description = eventDTO.getDescription();
         this.exchangeDay = exchangeDay;
@@ -132,6 +142,14 @@ public class Event {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public @Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(@Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate date) {
+        this.date = date;
     }
 
     public LocalTime getStartTime() {
@@ -240,7 +258,7 @@ public class Event {
 
     @Transient
     public LocalDateTime getStartDateTime(){
-        return LocalDateTime.of(exchangeDay.getDate(), startTime);
+        return LocalDateTime.of(exchangeDay.getStartDate(), startTime);
     }
 
     @PostLoad

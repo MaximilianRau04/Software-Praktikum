@@ -1,3 +1,4 @@
+###
 POST http://localhost:8080/api/users
 Content-Type: application/json
 
@@ -46,7 +47,8 @@ POST http://localhost:8080/api/exchange-days
 Content-Type: application/json
 
 {
-  "date": "2025-03-20",
+  "startDate": "2025-03-20",
+  "endDate": "2025-03-25",
   "name": "Spring Boot Learning Day",
   "location": "Berlin",
   "description": "A day dedicated to learning Spring Boot with multiple sessions."
@@ -57,7 +59,8 @@ POST http://localhost:8080/api/exchange-days
 Content-Type: application/json
 
 {
-  "date": "2025-04-15",
+  "startDate": "2025-04-15",
+  "endDate": "2025-04-25",
   "name": "Advanced Java Workshop",
   "location": "Munich",
   "description": "Deep dive into advanced Java topics with expert speakers."
@@ -68,7 +71,8 @@ POST http://localhost:8080/api/exchange-days
 Content-Type: application/json
 
 {
-  "date": "2025-06-10",
+  "startDate": "2025-06-10",
+  "endDate": "2025-06-30",
   "name": "Docker & Kubernetes Crash Course",
   "location": "Hamburg",
   "description": "A full day workshop on Docker and Kubernetes for beginners."
@@ -79,7 +83,8 @@ POST http://localhost:8080/api/exchange-days
 Content-Type: application/json
 
 {
-  "date": "2025-07-25",
+  "startDate": "2025-07-25",
+  "endDate": "2025-07-25",
   "name": "Cloud-Native Development",
   "location": "Frankfurt",
   "description": "Learning cloud-native architectures and best practices."
@@ -95,6 +100,7 @@ Content-Type: application/json
   "room": "101",
   "exchangeDayId": 1,
   "organizerId": 1,
+  "date": "2025-03-20",
   "startTime": "10:00:00",
   "endTime": "12:00:00"
 }
@@ -109,6 +115,7 @@ Content-Type: application/json
   "room": "102",
   "exchangeDayId": 2,
   "organizerId": 2,
+  "date": "2025-04-15",
   "startTime": "14:00:00",
   "endTime": "16:00:00"
 }
@@ -123,6 +130,7 @@ Content-Type: application/json
   "room": "201",
   "exchangeDayId": 3,
   "organizerId": 3,
+  "date": "2025-06-10",
   "startTime": "09:00:00",
   "endTime": "11:00:00"
 }
@@ -137,6 +145,7 @@ Content-Type: application/json
   "room": "202",
   "exchangeDayId": 4,
   "organizerId": 4,
+  "date": "2025-07-25",
   "startTime": "13:00:00",
   "endTime": "15:00:00"
 }
@@ -151,6 +160,7 @@ Content-Type: application/json
   "room": "303",
   "exchangeDayId": 1,
   "organizerId": 2,
+  "date": "2025-03-20",
   "startTime": "16:00:00",
   "endTime": "18:00:00"
 }
@@ -165,6 +175,7 @@ Content-Type: application/json
   "room": "304",
   "exchangeDayId": 2,
   "organizerId": 1,
+  "date": "2025-04-15",
   "startTime": "09:30:00",
   "endTime": "11:30:00"
 }
@@ -179,6 +190,7 @@ Content-Type: application/json
   "room": "305",
   "exchangeDayId": 3,
   "organizerId": 3,
+  "date": "2025-06-10",
   "startTime": "14:30:00",
   "endTime": "16:30:00"
 }
@@ -193,6 +205,7 @@ Content-Type: application/json
   "room": "306",
   "exchangeDayId": 4,
   "organizerId": 4,
+  "date": "2025-07-25",
   "startTime": "12:00:00",
   "endTime": "14:00:00"
 }
@@ -207,6 +220,7 @@ Content-Type: application/json
   "room": "307",
   "exchangeDayId": 1,
   "organizerId": 1,
+  "date": "2025-03-20",
   "startTime": "15:00:00",
   "endTime": "17:00:00"
 }
@@ -221,6 +235,7 @@ Content-Type: application/json
   "room": "308",
   "exchangeDayId": 2,
   "organizerId": 2,
+  "date": "2025-04-15",
   "startTime": "11:00:00",
   "endTime": "13:00:00"
 }
@@ -235,20 +250,7 @@ Content-Type: application/json
   "room": "401",
   "exchangeDayId": 3,
   "organizerId": 3,
+  "date": "2025-06-10",
   "startTime": "10:00:00",
   "endTime": "12:00:00"
-}
-
-###
-POST http://localhost:8080/api/events
-Content-Type: application/json
-
-{
-  "name": "Event-Driven Architecture",
-  "description": "Session on designing event-driven architectures.",
-  "room": "402",
-  "exchangeDayId": 4,
-  "organizerId": 4,
-  "startTime": "13:30:00",
-  "endTime": "15:30:00"
 }

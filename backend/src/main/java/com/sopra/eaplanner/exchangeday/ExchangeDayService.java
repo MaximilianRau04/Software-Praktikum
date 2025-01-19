@@ -50,7 +50,8 @@ public class ExchangeDayService {
 
         exchangeDay.setName(requestBody.getName());
         exchangeDay.setDescription(requestBody.getDescription());
-        exchangeDay.setDate(requestBody.getDate());
+        exchangeDay.setStartDate(requestBody.getStartDate());
+        exchangeDay.setEndDate(requestBody.getEndDate());
         exchangeDay.setLocation(requestBody.getLocation());
         exchangeDayRepository.save(exchangeDay);
 

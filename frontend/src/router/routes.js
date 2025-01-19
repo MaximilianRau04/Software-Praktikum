@@ -1,4 +1,4 @@
-import EventRegistrations from "@/components/viewExchangeDays/EventRegistrations.vue";
+import EventRegistrations from "@/components/viewEvents/EventRegistrations.vue";
 import Login from "../components/Login.vue";
 import MainPage from "../components/viewExchangeDays/home/MainPage.vue";
 import EventPlanning from "../components/createNewEvents/EventPlanning.vue";
@@ -8,6 +8,8 @@ import FeedbackSummary from "@/components/feedback/FeedbackSummary.vue";
 import Forum from "@/components/forum/Forum.vue";
 import UserProfile from "@/components/navigation/UserProfile.vue";
 import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
+import UpdateEvent from "@/components/createNewEvents/UpdateEvent.vue";
+import EventPage from "@/components/viewEvents/EventPage.vue";
 
 export default [
   {
@@ -38,6 +40,18 @@ export default [
         path: "/events/registrations",
         name: "eventRegistrations",
         component: EventRegistrations,
+      },
+      {
+        path: "/events/:eventId/update",
+        name: "updateEvent",
+        component: UpdateEvent,
+        props: true,
+      },
+      {
+        path: "/events/:eventId",
+        name: "EventPage",
+        component: EventPage,
+        props: true,
       },
       {
         path: "/feedback/:eventId",
