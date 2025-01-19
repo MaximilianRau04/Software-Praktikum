@@ -1,13 +1,25 @@
-
+###
 POST http://193.196.54.172:8000/api/users
 Content-Type: application/json
 
 {
-  "username": "max",
+  "username": "Max",
   "firstname": "Maximilian",
   "lastname": "Peresunchak",
   "role": "ADMIN"
 }
+
+###
+POST http://193.196.54.172:8000/api/users
+Content-Type: application/json
+
+{
+  "username": "Deniz",
+  "firstname": "Deniz",
+  "lastname": "Altunkapan",
+  "role": "ADMIN"
+}
+
 ###
 POST http://193.196.54.172:8000/api/users
 Content-Type: application/json
@@ -18,58 +30,52 @@ Content-Type: application/json
   "lastname": "Rau",
   "role": "ADMIN"
 }
+
 ###
 POST http://193.196.54.172:8000/api/users
 Content-Type: application/json
 
 {
-  "username": "deniz",
-  "firstname": "Deniz",
-  "lastname": "Altunkapan",
+  "username": "Sarah",
+  "firstname": "Sarah",
+  "lastname": "Fischer",
   "role": "ADMIN"
 }
-###
-POST http://193.196.54.172:8000/api/exchange-days
-Content-Type: application/json
-
-{
-  "date": "2024-12-20",
-  "name": "Tech Conference 2024",
-  "location": "Berlin",
-  "description": "A day focused on the latest trends in tech, including AI and ML."
-}
 
 ###
 POST http://193.196.54.172:8000/api/exchange-days
 Content-Type: application/json
 
 {
-  "date": "2024-11-25",
-  "name": "Spring Boot Exchange Day",
+  "startDate": "2025-01-21",
+  "endDate": "2025-01-25",
+  "name": "Spring Boot Learning Day",
   "location": "Berlin",
   "description": "A day dedicated to learning Spring Boot with multiple sessions."
 }
+
 ###
 POST http://193.196.54.172:8000/api/exchange-days
 Content-Type: application/json
 
 {
-  "date": "2024-12-15",
-  "name": "Frontend Development Exchange Day",
+  "startDate": "2025-01-25",
+  "endDate": "2025-01-30",
+  "name": "Advanced Java Workshop",
   "location": "Munich",
-  "description": "A day focused on modern frontend development technologies such as React, Vue, and Angular."
+  "description": "Deep dive into advanced Java topics with expert speakers."
 }
 
-###
 ###
 POST http://193.196.54.172:8000/api/exchange-days
 Content-Type: application/json
 
 {
-  "date": "2024-12-30",
-  "name": "DevOps & Cloud Technologies Exchange Day",
+  "startDate": "2025-03-10",
+  "endDate": "2025-03-20",
+  "name": "Docker & Kubernetes Crash Course",
   "location": "Hamburg",
-  "description": "Explore DevOps practices and cloud technologies like Docker, Kubernetes, and AWS."
+  "description": "A full day workshop on Docker and Kubernetes for beginners."
 }
 
 ###
@@ -77,23 +83,11 @@ POST http://193.196.54.172:8000/api/exchange-days
 Content-Type: application/json
 
 {
-  "date": "2024-12-18",
-  "name": "Cybersecurity & Data Privacy Exchange Day",
-  "location": "Berlin",
-  "description": "A day dedicated to learning about cybersecurity best practices and data privacy regulations."
-}
-###
-POST http://193.196.54.172:8000/api/events
-Content-Type: application/json
-
-{
-  "name": "Spring Boot Deep Dive",
-  "description": "In-depth session on building apps with Spring Boot.",
-  "room": "Room B1",
-  "exchangeDayId": 2,
-  "organizerId": 3,
-  "startTime": "09:00:00",
-  "endTime": "11:00:00"
+  "startDate": "2025-04-20",
+  "endDate": "2025-04-25",
+  "name": "Cloud-Native Development",
+  "location": "Frankfurt",
+  "description": "Learning cloud-native architectures and best practices."
 }
 
 ###
@@ -101,89 +95,425 @@ POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
-  "name": "Spring Boot Testing Techniques",
-  "description": "Learn how to effectively test Spring Boot applications.",
-  "room": "Room B2",
+  "name": "Spring Boot Basics",
+  "description": "Introductory workshop on Spring Boot.",
+  "room": "101",
   "exchangeDayId": 1,
   "organizerId": 1,
-  "startTime": "11:30:00",
-  "endTime": "13:00:00"
-}
-###
-POST http://193.196.54.172:8000/api/events
-Content-Type: application/json
-
-{
-  "name": "Building with React",
-  "description": "A hands-on workshop on building scalable web applications using React.",
-  "room": "Room C1",
-  "exchangeDayId": 3,
-  "organizerId": 3,
+  "date": "2025-01-22",
   "startTime": "10:00:00",
   "endTime": "12:00:00"
 }
+
 ###
 POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
-  "name": "Vue.js for Beginners",
-  "description": "Introduction to building dynamic web apps using Vue.js.",
-  "room": "Room C2",
-  "exchangeDayId": 4,
+  "name": "Java 17 New Features",
+  "description": "A session about the new features in Java 17.",
+  "room": "102",
+  "exchangeDayId": 2,
   "organizerId": 2,
-  "startTime": "13:00:00",
-  "endTime": "15:00:00"
+  "date": "2025-04-26",
+  "startTime": "14:00:00",
+  "endTime": "16:00:00"
 }
+
 ###
 POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
-  "name": "Docker Essentials",
-  "description": "Learn the basics of Docker and containerization in modern development workflows.",
-  "room": "Room D1",
-  "exchangeDayId": 5,
-  "organizerId": 2,
+  "name": "Docker Introduction",
+  "description": "An introduction to Docker and containerization.",
+  "room": "201",
+  "exchangeDayId": 3,
+  "organizerId": 3,
+  "date": "2025-03-15",
   "startTime": "09:00:00",
   "endTime": "11:00:00"
 }
+
 ###
 POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
   "name": "Kubernetes for Beginners",
-  "description": "An introductory session on deploying and managing containerized applications with Kubernetes.",
-  "room": "Room D2",
+  "description": "A hands-on workshop on Kubernetes basics.",
+  "room": "202",
   "exchangeDayId": 4,
-  "organizerId": 1,
-  "startTime": "11:30:00",
-  "endTime": "13:30:00"
+  "organizerId": 4,
+  "date": "2025-04-22",
+  "startTime": "13:00:00",
+  "endTime": "15:00:00"
 }
+
 ###
 POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
-  "name": "Introduction to Penetration Testing",
-  "description": "Learn the basics of penetration testing and ethical hacking practices.",
-  "room": "Room E1",
-  "exchangeDayId": 5,
+  "name": "Cloud-Native Architecture",
+  "description": "Session on designing cloud-native applications.",
+  "room": "303",
+  "exchangeDayId": 1,
   "organizerId": 2,
+  "date": "2025-01-22",
+  "startTime": "16:00:00",
+  "endTime": "18:00:00"
+}
+
+###
+POST http://193.196.54.172:8000/api/events
+Content-Type: application/json
+
+{
+  "name": "Microservices with Spring Cloud",
+  "description": "Understanding microservices using Spring Cloud.",
+  "room": "304",
+  "exchangeDayId": 2,
+  "organizerId": 1,
+  "date": "2025-04-15",
+  "startTime": "09:30:00",
+  "endTime": "11:30:00"
+}
+
+###
+POST http://193.196.54.172:8000/api/events
+Content-Type: application/json
+
+{
+  "name": "Advanced Docker Techniques",
+  "description": "Learn advanced Docker features and best practices.",
+  "room": "305",
+  "exchangeDayId": 3,
+  "organizerId": 3,
+  "date": "2025-03-15",
+  "startTime": "14:30:00",
+  "endTime": "16:30:00"
+}
+
+###
+POST http://193.196.54.172:8000/api/events
+Content-Type: application/json
+
+{
+  "name": "Kubernetes Networking",
+  "description": "Deep dive into networking in Kubernetes clusters.",
+  "room": "306",
+  "exchangeDayId": 4,
+  "organizerId": 4,
+  "date": "2025-04-15",
+  "startTime": "12:00:00",
+  "endTime": "14:00:00"
+}
+
+###
+POST http://193.196.54.172:8000/api/events
+Content-Type: application/json
+
+{
+  "name": "CI/CD with Jenkins",
+  "description": "Learn how to set up a CI/CD pipeline with Jenkins.",
+  "room": "307",
+  "exchangeDayId": 1,
+  "organizerId": 1,
+  "date": "2025-01-23",
+  "startTime": "15:00:00",
+  "endTime": "17:00:00"
+}
+
+###
+POST http://193.196.54.172:8000/api/events
+Content-Type: application/json
+
+{
+  "name": "Security in Microservices",
+  "description": "Focus on securing microservices architectures.",
+  "room": "308",
+  "exchangeDayId": 2,
+  "organizerId": 2,
+  "date": "2025-01-28",
+  "startTime": "11:00:00",
+  "endTime": "13:00:00"
+}
+
+###
+POST http://193.196.54.172:8000/api/events
+Content-Type: application/json
+
+{
+  "name": "Serverless Computing with AWS",
+  "description": "Learn about serverless computing and AWS Lambda.",
+  "room": "401",
+  "exchangeDayId": 3,
+  "organizerId": 3,
+  "date": "2025-03-17",
   "startTime": "10:00:00",
   "endTime": "12:00:00"
 }
+
 ###
-POST http://193.196.54.172:8000/api/events
+POST http://193.196.54.172:8000/api/trainerProfiles
 Content-Type: application/json
 
 {
-  "name": "Data Privacy Regulations (GDPR)",
-  "description": "An overview of GDPR and best practices for data privacy compliance.",
-  "room": "Room E2",
-  "exchangeDayId": 1,
-  "organizerId": 1,
-  "startTime": "13:00:00",
-  "endTime": "15:00:00"
+"bio": "hallo",
+"averageRating": 3,
+"userId": 1,
+"expertiseTags": ["Java, Python"]
+}
+###
+POST http://193.196.54.172:8000/api/trainerProfiles
+Content-Type: application/json
+
+{
+  "bio": "hallo",
+  "averageRating": 3,
+  "userId": 2,
+  "expertiseTags": ["Java, Python"]
+}
+###
+POST http://193.196.54.172:8000/api/trainerProfiles
+Content-Type: application/json
+
+{
+  "bio": "hallo",
+  "averageRating": 3,
+  "userId": 3,
+  "expertiseTags": ["Java, Python"]
+}
+###
+
+POST http://193.196.54.172:8000/api/feedback
+Content-Type: application/json
+
+{
+"overallScore": 5,
+"organisationalScore": 2,
+"relevanceScore": 3,
+"understandabilityScore": 3,
+"contentDepthScore": 4,
+"practicalityScore": 2,
+"reasonabilityScore": 1,
+"competencyScore": 3,
+"presentabilityScore": 2,
+"interactivityScore": 5,
+"timeManagementScore": 2,
+"participationScore": 1,
+"atmosphereScore": 5,
+"communicationScore": 3,
+"networkingScore": 2,
+"comfortabilityScore": 3,
+"equipmentScore": 1,
+"enjoymentComment": "I liked this workshop, because you mentioned some new things that I didnt know beforehand.",
+"improvementComment": "You should try to involve the people inside the workshop and maybe set up questions before, so that you have anchors throughout.",
+"requestComment": "I want to learn more about Java reflection and maybe some more things on Java 23 features.",
+"personalImprovementComment": "I learned that this workshop really prepares you to work with docker and cubernetes.",
+"isEventRecommended": true,
+"recommendationComment": "I would definitely recommend this workshop to anyone that wants to work in web deployment.",
+"similarEventParticipationScore": 5,
+"anonymousFeedback": true,
+"eventId": 1,
+"userId": 1
+}
+###
+POST http://193.196.54.172:8000/api/feedback
+Content-Type: application/json
+
+{
+"overallScore": 5,
+"organisationalScore": 2,
+"relevanceScore": 3,
+"understandabilityScore": 3,
+"contentDepthScore": 4,
+"practicalityScore": 2,
+"reasonabilityScore": 1,
+"competencyScore": 3,
+"presentabilityScore": 2,
+"interactivityScore": 5,
+"timeManagementScore": 2,
+"participationScore": 1,
+"atmosphereScore": 5,
+"communicationScore": 3,
+"networkingScore": 2,
+"comfortabilityScore": 3,
+"equipmentScore": 1,
+"enjoymentComment": "I liked this workshop, because you mentioned some new things that I didnt know beforehand.",
+"improvementComment": "You should try to involve the people inside the workshop and maybe set up questions before, so that you have anchors throughout.",
+"requestComment": "I want to learn more about Java reflection and maybe some more things on Java 23 features.",
+"personalImprovementComment": "I learned that this workshop really prepares you to work with docker and cubernetes.",
+"isEventRecommended": true,
+"recommendationComment": "I would definitely recommend this workshop to anyone that wants to work in web deployment.",
+"similarEventParticipationScore": 5,
+"anonymousFeedback": true,
+"eventId": 2,
+"userId": 2
+}
+###
+POST http://193.196.54.172:8000/api/feedback
+Content-Type: application/json
+
+{
+"overallScore": 5,
+"organisationalScore": 2,
+"relevanceScore": 3,
+"understandabilityScore": 3,
+"contentDepthScore": 4,
+"practicalityScore": 2,
+"reasonabilityScore": 1,
+"competencyScore": 3,
+"presentabilityScore": 2,
+"interactivityScore": 5,
+"timeManagementScore": 2,
+"participationScore": 1,
+"atmosphereScore": 5,
+"communicationScore": 3,
+"networkingScore": 2,
+"comfortabilityScore": 3,
+"equipmentScore": 1,
+"enjoymentComment": "I liked this workshop, because you mentioned some new things that I didnt know beforehand.",
+"improvementComment": "You should try to involve the people inside the workshop and maybe set up questions before, so that you have anchors throughout.",
+"requestComment": "I want to learn more about Java reflection and maybe some more things on Java 23 features.",
+"personalImprovementComment": "I learned that this workshop really prepares you to work with docker and cubernetes.",
+"isEventRecommended": true,
+"recommendationComment": "I would definitely recommend this workshop to anyone that wants to work in web deployment.",
+"similarEventParticipationScore": 5,
+"anonymousFeedback": true,
+"eventId": 3,
+"userId": 3
+}
+###
+POST http://193.196.54.172:8000/api/feedback
+Content-Type: application/json
+
+{
+  "overallScore": 4,
+  "organisationalScore": 3,
+  "relevanceScore": 4,
+  "understandabilityScore": 5,
+  "contentDepthScore": 3,
+  "practicalityScore": 4,
+  "reasonabilityScore": 3,
+  "competencyScore": 4,
+  "presentabilityScore": 5,
+  "interactivityScore": 4,
+  "timeManagementScore": 3,
+  "participationScore": 4,
+  "atmosphereScore": 5,
+  "communicationScore": 4,
+  "networkingScore": 3,
+  "comfortabilityScore": 4,
+  "equipmentScore": 2,
+  "enjoymentComment": "The workshop was informative, and I gained new insights into the topic. The practical examples were especially useful.",
+  "improvementComment": "More time for questions and interactive activities could help to improve the experience. Some topics were rushed.",
+  "requestComment": "I would appreciate more detailed content on modern Java features, especially related to performance optimization.",
+  "personalImprovementComment": "I feel more confident in using Docker and Kubernetes after this workshop, and I can see how these tools fit into modern development workflows.",
+  "isEventRecommended": true,
+  "recommendationComment": "I would recommend this workshop to anyone interested in containerization and cloud technologies.",
+  "similarEventParticipationScore": 4,
+  "anonymousFeedback": false,
+  "eventId": 2,
+  "userId": 2
+}
+###
+POST http://193.196.54.172:8000/api/feedback
+Content-Type: application/json
+
+{
+  "overallScore": 4,
+  "organisationalScore": 3,
+  "relevanceScore": 4,
+  "understandabilityScore": 5,
+  "contentDepthScore": 3,
+  "practicalityScore": 4,
+  "reasonabilityScore": 3,
+  "competencyScore": 4,
+  "presentabilityScore": 5,
+  "interactivityScore": 4,
+  "timeManagementScore": 3,
+  "participationScore": 4,
+  "atmosphereScore": 5,
+  "communicationScore": 4,
+  "networkingScore": 3,
+  "comfortabilityScore": 4,
+  "equipmentScore": 2,
+  "enjoymentComment": "The workshop was informative, and I gained new insights into the topic. The practical examples were especially useful.",
+  "improvementComment": "More time for questions and interactive activities could help to improve the experience. Some topics were rushed.",
+  "requestComment": "I would appreciate more detailed content on modern Java features, especially related to performance optimization.",
+  "personalImprovementComment": "I feel more confident in using Docker and Kubernetes after this workshop, and I can see how these tools fit into modern development workflows.",
+  "isEventRecommended": true,
+  "recommendationComment": "I would recommend this workshop to anyone interested in containerization and cloud technologies.",
+  "similarEventParticipationScore": 4,
+  "anonymousFeedback": false,
+  "eventId": 4,
+  "userId": 2
+}
+###
+POST http://193.196.54.172:8000/api/feedback
+Content-Type: application/json
+
+{
+  "overallScore": 4,
+  "organisationalScore": 3,
+  "relevanceScore": 4,
+  "understandabilityScore": 5,
+  "contentDepthScore": 3,
+  "practicalityScore": 4,
+  "reasonabilityScore": 3,
+  "competencyScore": 4,
+  "presentabilityScore": 5,
+  "interactivityScore": 4,
+  "timeManagementScore": 3,
+  "participationScore": 4,
+  "atmosphereScore": 5,
+  "communicationScore": 4,
+  "networkingScore": 3,
+  "comfortabilityScore": 4,
+  "equipmentScore": 2,
+  "enjoymentComment": "The workshop was informative, and I gained new insights into the topic. The practical examples were especially useful.",
+  "improvementComment": "More time for questions and interactive activities could help to improve the experience. Some topics were rushed.",
+  "requestComment": "I would appreciate more detailed content on modern Java features, especially related to performance optimization.",
+  "personalImprovementComment": "I feel more confident in using Docker and Kubernetes after this workshop, and I can see how these tools fit into modern development workflows.",
+  "isEventRecommended": true,
+  "recommendationComment": "I would recommend this workshop to anyone interested in containerization and cloud technologies.",
+  "similarEventParticipationScore": 4,
+  "anonymousFeedback": false,
+  "eventId": 5,
+  "userId": 2
+}
+###
+POST http://193.196.54.172:8000/api/feedback
+Content-Type: application/json
+
+{
+  "overallScore": 4,
+  "organisationalScore": 3,
+  "relevanceScore": 4,
+  "understandabilityScore": 5,
+  "contentDepthScore": 3,
+  "practicalityScore": 4,
+  "reasonabilityScore": 3,
+  "competencyScore": 4,
+  "presentabilityScore": 5,
+  "interactivityScore": 4,
+  "timeManagementScore": 3,
+  "participationScore": 4,
+  "atmosphereScore": 5,
+  "communicationScore": 4,
+  "networkingScore": 3,
+  "comfortabilityScore": 4,
+  "equipmentScore": 2,
+  "enjoymentComment": "The workshop was informative, and I gained new insights into the topic. The practical examples were especially useful.",
+  "improvementComment": "More time for questions and interactive activities could help to improve the experience. Some topics were rushed.",
+  "requestComment": "I would appreciate more detailed content on modern Java features, especially related to performance optimization.",
+  "personalImprovementComment": "I feel more confident in using Docker and Kubernetes after this workshop, and I can see how these tools fit into modern development workflows.",
+  "isEventRecommended": true,
+  "recommendationComment": "I would recommend this workshop to anyone interested in containerization and cloud technologies.",
+  "similarEventParticipationScore": 4,
+  "anonymousFeedback": false,
+  "eventId": 6,
+  "userId": 3
 }
