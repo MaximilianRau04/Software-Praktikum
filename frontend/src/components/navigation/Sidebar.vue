@@ -9,28 +9,44 @@
     <div class="content">
       <div class="menu">
         <div class="menu-item" @click="navigateTo('/home')">
-          <span>Home</span>
+          <div class="menu-icon home-icon"></div>
+          <span class="menu-text">Home</span>
         </div>
         <div
           class="menu-item"
           @click="navigateTo('/events/planning')"
           v-if="getCookie('role') === 'ADMIN'"
         >
-          <span>Event Planung</span>
+          <div class="menu-icon planning-icon"></div>
+          <span class="menu-text">Event Planung</span>
         </div>
         <div
           class="menu-item"
           @click="navigateTo('/events/registrations')"
           v-if="isUserLoggedIn"
         >
-          <span>Meine Events</span>
+          <div class="menu-icon events-icon"></div>
+          <span class="menu-text">Meine Events</span>
         </div>
+        <div
+          class="menu-item"
+          @click="navigateTo('/leaderboard')"
+          v-if="isUserLoggedIn"
+        >
+          <div class="menu-icon leaderboard-icon"></div>
+          <span class="menu-text">Rangliste</span>
+        </div>
+
+        <div class="separator"></div>
+
         <div
           class="menu-item"
           @click="isUserLoggedIn ? logout() : navigateTo('/login')"
         >
-          <span v-if="isUserLoggedIn">Log Out</span>
-          <span v-else>Log In</span>
+          <div v-if="isUserLoggedIn" class="menu-icon logout-icon"></div>
+          <div v-else class="menu-icon login-icon"></div>
+          <span class="menu-text" v-if="isUserLoggedIn">Log Out</span>
+          <span class="menu-text" v-else>Log In</span>
         </div>
       </div>
     </div>
@@ -39,11 +55,12 @@
 
 <script>
 import Cookies from "js-cookie";
-import "../../assets/sidebar.css";
+import "@/assets/sidebar.css";
 
 export default {
   props: {
     dataOpenSideBar: Boolean,
+    toggleSidebar: Function,
   },
   computed: {
     isUserLoggedIn() {

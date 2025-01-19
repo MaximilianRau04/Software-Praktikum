@@ -3,13 +3,11 @@ package com.sopra.eaplanner.user;
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationDTO;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
-import com.sopra.eaplanner.forumpost.ForumPost;
 import com.sopra.eaplanner.forumpost.ForumPostResponseDTO;
 import com.sopra.eaplanner.reward.Reward;
-import com.sopra.eaplanner.trainerprofile.TrainerProfile;
+import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
 import com.sopra.eaplanner.user.dtos.UserRequestDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +53,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/trainerProfile")
-    public TrainerProfile getTrainerProfile(@PathVariable Long id) {
+    public TrainerProfileResponseDTO getTrainerProfile(@PathVariable Long id) {
         return userService.getTrainerProfile(id);
     }
 

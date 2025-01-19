@@ -53,7 +53,7 @@ import { useRouter } from "vue-router";
 import { globalState } from "@/types/User";
 import type { User } from "@/types/User";
 import config from "@/config.js";
-import "../assets/login.css";
+import "@/assets/login.css";
 import Cookies from "js-cookie";
 
 const router = useRouter();

@@ -23,7 +23,7 @@ public class EventParticipation {
     @JsonBackReference
     private Event event;
 
-    private boolean participationConfirmed;
+    private boolean isParticipationConfirmed;
     private LocalDateTime confirmationTime;
 
     private boolean feedbackGiven;
@@ -32,10 +32,10 @@ public class EventParticipation {
     public EventParticipation() {
     }
 
-    public EventParticipation(User user, Event event, boolean participationConfirmed, LocalDateTime confirmationTime, boolean feedbackGiven, LocalDateTime feedbackTime) {
+    public EventParticipation(User user, Event event, boolean isParticipationConfirmed, LocalDateTime confirmationTime, boolean feedbackGiven, LocalDateTime feedbackTime) {
         this.user = user;
         this.event = event;
-        this.participationConfirmed = participationConfirmed;
+        this.isParticipationConfirmed = isParticipationConfirmed;
         this.confirmationTime = confirmationTime;
         this.feedbackGiven = feedbackGiven;
         this.feedbackTime = feedbackTime;
@@ -44,6 +44,10 @@ public class EventParticipation {
     public EventParticipation(User user, Event event) {
         this.user = user;
         this.event = event;
+        this.isParticipationConfirmed = false;
+        this.confirmationTime = null;
+        this.feedbackGiven = false;
+        this.feedbackTime = null;
     }
 
     public Long getId() {
@@ -70,12 +74,12 @@ public class EventParticipation {
         this.event = event;
     }
 
-    public boolean isParticipationConfirmed() {
-        return participationConfirmed;
+    public boolean getIsParticipationConfirmed() {
+        return isParticipationConfirmed;
     }
 
-    public void setParticipationConfirmed(boolean confirmed) {
-        this.participationConfirmed = confirmed;
+    public void setIsParticipationConfirmed(boolean isParticipationConfirmed) {
+        this.isParticipationConfirmed = isParticipationConfirmed;
     }
 
     public LocalDateTime getConfirmationTime() {

@@ -6,10 +6,11 @@ import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
-import com.sopra.eaplanner.forumpost.ForumPost;
 import com.sopra.eaplanner.forumpost.ForumPostResponseDTO;
 import com.sopra.eaplanner.reward.Reward;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
+import com.sopra.eaplanner.trainerprofile.TrainerProfileRepository;
+import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
 import com.sopra.eaplanner.user.dtos.UserRequestDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.persistence.EntityExistsException;
@@ -31,6 +32,9 @@ public class UserService {
     private EventRepository eventRepository;
     @Autowired
     private EventParticipationService eventParticipationService;
+
+    @Autowired
+    private TrainerProfileRepository trainerProfileRepository;
 
     public UserResponseDTO getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
@@ -87,14 +91,21 @@ public class UserService {
                 .collect(Collectors.toSet());
     }
 
-    public TrainerProfile getTrainerProfile(Long userId) {
+    public TrainerProfileResponseDTO getTrainerProfile(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new EntityNotFoundException("User not found");
         }
-        return userRepository.findById(userId)
+        TrainerProfile trainerProfile = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"))
                 .getTrainerProfile();
+
+        if (trainerProfile == null) {
+            throw new EntityNotFoundException("Trainer profile not found for user with id: " + userId);
+        }
+
+        return new TrainerProfileResponseDTO(trainerProfile);
     }
+
 
     public Set<Reward> getUserRewards(Long userId) {
         if (!userRepository.existsById(userId)) {
@@ -117,8 +128,23 @@ public class UserService {
 
     public UserResponseDTO createUser(UserRequestDTO requestBody) {
         User userToSave = userRepository.save(new User(requestBody));
+
+        if (userToSave.getRole() == User.Role.ADMIN) {
+            TrainerProfile trainerProfile = new TrainerProfile();
+            trainerProfile.setUser(userToSave);
+
+
+            trainerProfile.setBio("");
+            trainerProfile.setAverageRating(0.0);
+            trainerProfile.setExpertiseTags(new ArrayList<>());
+
+            trainerProfileRepository.save(trainerProfile);
+        }
+
         return new UserResponseDTO(userToSave);
     }
+
+
 
     public UserResponseDTO updateUser(Long id, UserRequestDTO user) {
         User existingUser = userRepository.findById(id)

@@ -1,0 +1,164 @@
+.profile-container {
+  padding: 30px;
+  max-width: 1000%;
+  margin: 0 auto;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  height: 90%;
+  overflow-y: auto;
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 40px;
+  border-bottom: 2px solid #dee2e6;
+  padding-bottom: 20px;
+}
+
+.profile-header h1 {
+  font-size: 2.4rem;
+  color: #2c3e50;
+  margin: 1%;
+}
+
+.profile-header .username {
+  font-size: 1.2rem;
+  color: #6c757d;
+  display: inline-block;
+}
+
+.profile-header .role {
+  color: #01172f;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-top: 1%;
+}
+
+.username-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-btn {
+  background-color: #009ee2;
+  color: white;
+  padding: 1% 1%;
+  font-size: 0.8rem;
+  margin-left: 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.edit-btn i {
+  font-size: 1.2rem;
+}
+
+.profile-section {
+  margin-top: 1%;
+}
+
+.profile-section h2 {
+  font-size: 1.8rem;
+  color: #495057;
+  margin: 1%;
+  border-bottom: 2px solid #dee2e6;
+  padding-bottom: 5px;
+}
+
+.scrollable-section {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.event-card,
+.forum-post,
+.pinned-comment {
+  background-color: #ffffff;
+  margin: 15px 0;
+  padding: 20px;
+  border-left: 5px solid #009ee2;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.event-card:hover,
+.forum-post:hover,
+.pinned-comment:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.event-card h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #343a40;
+}
+
+.event-card p,
+.forum-post p,
+.pinned-comment p {
+  font-size: 1rem;
+  color: #6c757d;
+  margin: 5px 0;
+}
+
+.expertise-tag {
+  display: inline-block;
+  background-color: #ffffff;
+  color: #007bff;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin: 5px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.unpin-btn {
+  background-color: #e74c3c;
+  color: white;
+  padding: 0.5% 1%;
+  font-size: 0.8rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.unpin-btn:hover {
+  background-color: #c0392b;
+}
+
+.trainer-profile {
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  max-width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.trainer-profile p {
+  margin: 10px 0;
+}
+
+.rating {
+  color: #ffd700;
+  font-size: 18px;
+}
+
+.expertise {
+  font-style: italic;
+  color: #555;
+}

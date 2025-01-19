@@ -11,7 +11,11 @@
       <p>
         <strong>Beschreibung:</strong> {{ selectedExchangeDay.description }}
       </p>
-      <p><strong>Datum:</strong> {{ formatDate(selectedExchangeDay.date) }}</p>
+      <p>
+        <strong>Datum:</strong>
+        {{ formatDate(selectedExchangeDay.startDate) }} bis
+        {{ formatDate(selectedExchangeDay.endDate) }}
+      </p>
       <p>Id: {{ selectedExchangeDay.id }}</p>
     </div>
 
@@ -29,12 +33,12 @@
 
 <script setup lang="ts">
 import { defineProps, onMounted, ref, watch } from "vue";
-import EventDetails from "@/components/ViewAllExchangeDays/EventDetails.vue";
-import config from "../../config";
-import "../../assets/exchange-day-details.css";
-import { ExchangeDay, exchangeDays } from "../../types/ExchangeDay";
+import EventDetails from "@/components/viewExchangeDays/home/EventDetails.vue";
+import config from "@/config";
+import "@/assets/exchange-day-details.css";
+import { ExchangeDay, exchangeDays } from "@/types/ExchangeDay";
 const selectedExchangeDay = ref<ExchangeDay | null>(null);
-import { Event } from "../../types/Event";
+import { Event } from "@/types/Event";
 
 const props = defineProps<{
   exchangeDay: ExchangeDay | null;
@@ -70,7 +74,8 @@ async function fetchExchangeDayDetails(id: number) {
     selectedExchangeDay.value = {
       id: data.id,
       name: data.name,
-      date: new Date(data.date).getTime(),
+      startDate: new Date(data.startDate).getTime(),
+      endDate: new Date(data.endDate).getTime(),
       description: data.description,
       location: data.location,
     };

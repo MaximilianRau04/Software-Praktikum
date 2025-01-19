@@ -41,8 +41,8 @@ public class ExchangeDayControllerTest {
     @Test
     void testGetAllExchangeDays() throws Exception {
         // Arrange
-        ExchangeDayResponseDTO responseDTO1 = ExchangeDayResponseDTO.mockWith(1L, LocalDate.of(2024, 12, 15), "Event 1", "Room 101", "Event Description 1");
-        ExchangeDayResponseDTO responseDTO2 = ExchangeDayResponseDTO.mockWith(2L, LocalDate.of(2024, 12, 16), "Event 2", "Room 102", "Event Description 2");
+        ExchangeDayResponseDTO responseDTO1 = ExchangeDayResponseDTO.mockWith(1L, LocalDate.of(2025, 01, 19), LocalDate.of(2025, 01, 20), "Event 1", "Room 101", "Event Description 1");
+        ExchangeDayResponseDTO responseDTO2 = ExchangeDayResponseDTO.mockWith(2L, LocalDate.of(2025, 01, 19), LocalDate.of(2025, 01, 20),"Event 2", "Room 102", "Event Description 2");
         when(exchangeDayService.getAllExchangeDays()).thenReturn(Arrays.asList(responseDTO1, responseDTO2));
 
         // Act & Assert
@@ -59,7 +59,7 @@ public class ExchangeDayControllerTest {
     void testGetExchangeDayById() throws Exception {
         // Arrange
         Long exchangeDayId = 1L;
-        ExchangeDayResponseDTO responseDTO = ExchangeDayResponseDTO.mockWith(exchangeDayId, LocalDate.of(2024, 12, 15), "Event 1", "Room 101", "Event Description 1");
+        ExchangeDayResponseDTO responseDTO = ExchangeDayResponseDTO.mockWith(exchangeDayId, LocalDate.of(2024, 12, 15), LocalDate.of(2024, 01, 15),"Event 1", "Room 101", "Event Description 1");
         when(exchangeDayService.getExchangeDayById(exchangeDayId)).thenReturn(responseDTO);
 
         // Act & Assert
@@ -74,8 +74,8 @@ public class ExchangeDayControllerTest {
     void testCreateExchangeDay() throws Exception {
         // Arrange
         Long exchangeDayId = 1L;
-        ExchangeDayRequestDTO requestDTO = ExchangeDayRequestDTO.mockWith(LocalDate.of(2045, 12, 30), "Event 1", "Room 101", "Event Description 1");
-        ExchangeDayResponseDTO responseDTO = ExchangeDayResponseDTO.mockWith(exchangeDayId, LocalDate.of(2045, 12, 30), "Event 1", "Room 101", "Event Description 1");
+        ExchangeDayRequestDTO requestDTO = ExchangeDayRequestDTO.mockWith(LocalDate.of(2045, 12, 30), LocalDate.of(2046, 12, 31), "Event 1", "Room 101", "Event Description 1");
+        ExchangeDayResponseDTO responseDTO = ExchangeDayResponseDTO.mockWith(exchangeDayId, LocalDate.of(2045, 12, 30), LocalDate.of(2045, 12, 31), "Event 1", "Room 101", "Event Description 1");
         when(exchangeDayService.createExchangeDay(any(ExchangeDayRequestDTO.class))).thenReturn(responseDTO);
 
         // Act & Assert
@@ -92,8 +92,8 @@ public class ExchangeDayControllerTest {
     void testUpdateExchangeDay() throws Exception {
         // Arrange
         Long exchangeDayId = 1L;
-        ExchangeDayRequestDTO requestDTO = ExchangeDayRequestDTO.mockWith(LocalDate.of(2024, 12, 15), "Updated Event", "Room 102", "Updated Description");
-        ExchangeDayResponseDTO responseDTO = ExchangeDayResponseDTO.mockWith(exchangeDayId, LocalDate.of(2024, 12, 15), "Updated Event", "Room 102", "Updated Description");
+        ExchangeDayRequestDTO requestDTO = ExchangeDayRequestDTO.mockWith(LocalDate.of(2024, 12, 15),LocalDate.of(2025, 01, 15), "Updated Event", "Room 102", "Updated Description");
+        ExchangeDayResponseDTO responseDTO = ExchangeDayResponseDTO.mockWith(exchangeDayId, LocalDate.of(2024, 12, 15),LocalDate.of(2025, 01, 15), "Updated Event", "Room 102", "Updated Description");
         when(exchangeDayService.updateExchangeDay(any(Long.class), any(ExchangeDayRequestDTO.class))).thenReturn(responseDTO);
 
         // Act & Assert
@@ -120,8 +120,8 @@ public class ExchangeDayControllerTest {
     void testGetExchangeDayEvents() throws Exception {
         // Arrange
         Long exchangeDayId = 1L;
-        EventResponseDTO eventDTO1 = EventResponseDTO.mockWith(1L, LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A");
-        EventResponseDTO eventDTO2 = EventResponseDTO.mockWith(2L, LocalTime.of(12, 0), LocalTime.of(13, 0), "Workshop B", "Room B", "Description B");
+        EventResponseDTO eventDTO1 = EventResponseDTO.mockWith(1L, LocalDate.of(2045, 12, 30), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A");
+        EventResponseDTO eventDTO2 = EventResponseDTO.mockWith(2L, LocalDate.of(2045, 12, 30), LocalTime.of(12, 0), LocalTime.of(13, 0), "Workshop B", "Room B", "Description B");
         when(exchangeDayService.getExchangeDayEvents(exchangeDayId)).thenReturn(Arrays.asList(eventDTO1, eventDTO2));
 
         // Act & Assert

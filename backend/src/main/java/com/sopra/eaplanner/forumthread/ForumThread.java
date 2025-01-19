@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.forumpost.ForumPost;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 @Entity

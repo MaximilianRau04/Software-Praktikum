@@ -128,8 +128,7 @@
 <script>
 import axios from "axios";
 import Cookies from "js-cookie";
-
-const apiUrl = "http://193.196.54.172:8000/api/";
+import config from "@/config";
 
 export default {
   data() {
@@ -155,7 +154,9 @@ export default {
     async fetchThreads() {
       const eventId = this.$route.params.eventId;
       try {
-        const response = await axios.get(`${apiUrl}events/${eventId}/forum`);
+        const response = await axios.get(
+          `${config.apiBaseUrl}/events/${eventId}/forum`,
+        );
         this.threads = response.data;
       } catch (error) {
         console.error("Fehler beim Abrufen der Threads:", error);
@@ -173,7 +174,7 @@ export default {
           eventId: eventId,
         };
 
-        await axios.post(`${apiUrl}forumthreads`, newThreadData);
+        await axios.post(`${config.apiBaseUrl}/forumthreads`, newThreadData);
         this.fetchThreads();
         this.newThread.title = "";
         this.newThread.description = "";
@@ -198,7 +199,7 @@ export default {
     async fetchThreadDetail() {
       try {
         const response = await axios.get(
-          `${apiUrl}forumthreads/${this.selectedThreadId}`,
+          `${config.apiBaseUrl}/forumthreads/${this.selectedThreadId}`,
         );
         this.selectedThread = response.data;
       } catch (error) {
@@ -220,7 +221,7 @@ export default {
           anonymous: this.newPost.isAnonymous,
         };
 
-        await axios.post(`${apiUrl}forumposts`, newPostData);
+        await axios.post(`${config.apiBaseUrl}/forumposts`, newPostData);
 
         this.fetchThreadDetail();
         this.newPost.content = "";
@@ -260,6 +261,7 @@ export default {
   max-height: 90%;
   margin: 0 auto;
   padding: 0.5rem;
+  padding-left: 2rem;
   overflow-y: auto;
 }
 

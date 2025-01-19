@@ -4,12 +4,17 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.feedback.dtos.FeedbackRequestDTO;
+import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 public class Feedback {
@@ -80,18 +85,18 @@ public class Feedback {
     private Integer communicationScore;
 
     // Comments
-    @Size(max = 200, message = "enjoymentComment cannot exceed 200 characters")
+    @Size(max = 500, message = "enjoymentComment cannot exceed 200 characters")
     private String enjoymentComment;
-    @Size(max = 200, message = "improvementComment cannot exceed 200 characters")
+    @Size(max = 500, message = "improvementComment cannot exceed 200 characters")
     private String improvementComment;
-    @Size(max = 200, message = "requestComment cannot exceed 200 characters")
+    @Size(max = 500, message = "requestComment cannot exceed 200 characters")
     private String requestComment;
 
     // Closing Comments
-    @Size(max = 200, message = "personalImprovementComment cannot exceed 200 characters")
+    @Size(max = 500, message = "personalImprovementComment cannot exceed 200 characters")
     private String personalImprovementComment;
     private boolean isEventRecommended;
-    @Size(max = 200, message = "recommendationComment cannot exceed 200 characters")
+    @Size(max = 500, message = "recommendationComment cannot exceed 200 characters")
     private String recommendationComment;
 
     @Min(value = 1, message = "similarEventParticipationScore must be between 1 and 5.")
@@ -111,6 +116,21 @@ public class Feedback {
     @NotNull
     @JsonBackReference
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "trainer_profile_id")
+    @JsonBackReference
+    private TrainerProfile trainerProfile;
+
+    private boolean enjoymentCommentPinned;
+
+    private boolean improvementCommentPinned;
+
+    private boolean requestCommentPinned;
+
+    private boolean personalImprovementCommentPinned;
+
+    private boolean recommendationCommentPinned;
 
     public Feedback() {
     }
@@ -400,4 +420,53 @@ public class Feedback {
     public void setUser(@NotNull User user) {
         this.user = user;
     }
+
+    public TrainerProfile getTrainerProfile() {
+        return trainerProfile;
+    }
+
+    public void setTrainerProfile(TrainerProfile trainerProfile) {
+        this.trainerProfile = trainerProfile;
+    }
+
+    public boolean isEnjoymentCommentPinned() {
+        return enjoymentCommentPinned;
+    }
+
+    public void setEnjoymentCommentPinned(boolean enjoymentCommentPinned) {
+        this.enjoymentCommentPinned = enjoymentCommentPinned;
+    }
+
+    public boolean isImprovementCommentPinned() {
+        return improvementCommentPinned;
+    }
+
+    public void setImprovementCommentPinned(boolean improvementCommentPinned) {
+        this.improvementCommentPinned = improvementCommentPinned;
+    }
+
+    public boolean isRequestCommentPinned() {
+        return requestCommentPinned;
+    }
+
+    public void setRequestCommentPinned(boolean requestCommentPinned) {
+        this.requestCommentPinned = requestCommentPinned;
+    }
+
+    public boolean isPersonalImprovementCommentPinned() {
+        return personalImprovementCommentPinned;
+    }
+
+    public void setPersonalImprovementCommentPinned(boolean personalImprovementCommentPinned) {
+        this.personalImprovementCommentPinned = personalImprovementCommentPinned;
+    }
+
+    public boolean isRecommendationCommentPinned() {
+        return recommendationCommentPinned;
+    }
+
+    public void setRecommendationCommentPinned(boolean recommendationCommentPinned) {
+        this.recommendationCommentPinned = recommendationCommentPinned;
+    }
+
 }

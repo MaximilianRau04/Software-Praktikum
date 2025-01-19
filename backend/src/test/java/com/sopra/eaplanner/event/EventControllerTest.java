@@ -6,6 +6,8 @@ import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.exchangeday.ExchangeDayService;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.feedback.FeedbackService;
+import com.sopra.eaplanner.feedback.FeedbackType;
+import com.sopra.eaplanner.feedback.summary.CommentType;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserService;
@@ -55,8 +57,8 @@ public class EventControllerTest {
     @Test
     void testGetAllEvents() throws Exception {
         List<EventResponseDTO> mockEvents = List.of(
-                EventResponseDTO.mockWith(1L, LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A"),
-                EventResponseDTO.mockWith(2L, LocalTime.of(12, 0), LocalTime.of(13, 0), "Workshop B", "Room B", "Description B")
+                EventResponseDTO.mockWith(1L, LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A"),
+                EventResponseDTO.mockWith(2L, LocalDate.of(2025, 01, 20), LocalTime.of(12, 0), LocalTime.of(13, 0), "Workshop B", "Room B", "Description B")
         );
 
         when(eventService.getAllEvents()).thenReturn(mockEvents);
@@ -71,7 +73,7 @@ public class EventControllerTest {
 
     @Test
     void testGetEventById() throws Exception {
-        EventResponseDTO mockEvent = EventResponseDTO.mockWith(1L, LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A");
+        EventResponseDTO mockEvent = EventResponseDTO.mockWith(1L, LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A");
         when(eventService.getEventById(mockEvent.getId())).thenReturn(mockEvent);
 
         mockMvc.perform(get("/api/events/{id}", mockEvent.getId()))
@@ -86,16 +88,17 @@ public class EventControllerTest {
     void testCreateEvent() throws Exception {
         Long exchangeDayId = 1L;
         Long organizerId = 1L;
+        Long trainerProfileId = 1L;
 
-        ExchangeDayResponseDTO mockExchangeDay = ExchangeDayResponseDTO.mockWith(exchangeDayId, LocalDate.of(2045, 12, 30), "Workshop A", "Berlin", "Description A");
+        ExchangeDayResponseDTO mockExchangeDay = ExchangeDayResponseDTO.mockWith(exchangeDayId, LocalDate.of(2045, 12, 30), LocalDate.of(2045, 12, 30), "Workshop A", "Berlin", "Description A");
         when(exchangeDayService.getExchangeDayById(exchangeDayId)).thenReturn(mockExchangeDay);
 
         UserResponseDTO mockOrganizer = UserResponseDTO.mockWith(organizerId, "admin", "Admin", "User", User.Role.ADMIN);
         when(userService.getUserById(organizerId)).thenReturn(mockOrganizer);
 
-        EventRequestDTO eventRequest = EventRequestDTO.mockWith("Workshop A", LocalTime.of(11, 0), LocalTime.of(12, 0), "Description A", "Room A", exchangeDayId, organizerId);
+        EventRequestDTO eventRequest = EventRequestDTO.mockWith("Workshop A", LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Description A", "Room A", exchangeDayId, organizerId);
 
-        EventResponseDTO eventResponse = EventResponseDTO.mockWith(1L, LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A");
+        EventResponseDTO eventResponse = EventResponseDTO.mockWith(1L, LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A");
         when(eventService.createEvent(any(EventRequestDTO.class))).thenReturn(eventResponse);
 
         mockMvc.perform(post("/api/events")
@@ -114,13 +117,16 @@ public class EventControllerTest {
     void testGetFeedbackSummary() throws Exception {
         FeedbackSummaryDTO feedbackSummary = FeedbackSummaryDTO.mockWith(1L, "Workshop A", "Admin User");
 
-        Map<String, FeedbackSummaryDTO.FeedbackStatistics> numericalFeedback = new HashMap<>();
-        numericalFeedback.put("overallScore", new FeedbackSummaryDTO.FeedbackStatistics(4.5, 4.0, 100));
+        Map<FeedbackType, FeedbackSummaryDTO.FeedbackStatistics> numericalFeedback = new HashMap<>();
+        numericalFeedback.put(FeedbackType.OVERALL, new FeedbackSummaryDTO.FeedbackStatistics(4.5, 4.0, 100, new HashMap<>()));
         feedbackSummary.setNumericalFeedback(numericalFeedback);
 
-        List<FeedbackSummaryDTO.CommentAnalysis> comments = new ArrayList<>();
-        comments.add(new FeedbackSummaryDTO.CommentAnalysis("Great workshop!", "positive"));
-        comments.add(new FeedbackSummaryDTO.CommentAnalysis("Needs more practical examples.", "negative"));
+        List<FeedbackSummaryDTO.CommentAnalysis> commentAnalysis = new ArrayList<>();
+        commentAnalysis.add(new FeedbackSummaryDTO.CommentAnalysis("Great workshop!", "positive", 1L, "Name"));
+        commentAnalysis.add(new FeedbackSummaryDTO.CommentAnalysis("Needs more practical examples.", "neutral", 2L, "Name"));
+
+        Map<CommentType,List<FeedbackSummaryDTO.CommentAnalysis>> comments = new HashMap<>();
+        comments.put(CommentType.ENJOYMENT, commentAnalysis);
         feedbackSummary.setComments(comments);
 
         when(feedbackService.generateFeedbackSummary(1L)).thenReturn(feedbackSummary);
@@ -131,8 +137,8 @@ public class EventControllerTest {
                 .andExpect(jsonPath("$.eventName").value("Workshop A"))
                 .andExpect(jsonPath("$.organizerName").value("Admin User"))
                 .andExpect(jsonPath("$.numericalFeedback.overallScore.average").value(4.5))
-                .andExpect(jsonPath("$.comments[0].comment").value("Great workshop!"))
-                .andExpect(jsonPath("$.comments[1].sentiment").value("negative"));
+                .andExpect(jsonPath("$.comments.ENJOYMENT[0].comment").value("Great workshop!"))
+                .andExpect(jsonPath("$.comments.ENJOYMENT[1].sentiment").value("neutral"));
 
         verify(feedbackService, times(1)).generateFeedbackSummary(1L);
     }

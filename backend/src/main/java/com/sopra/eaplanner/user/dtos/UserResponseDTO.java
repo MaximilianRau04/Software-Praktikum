@@ -2,7 +2,8 @@ package com.sopra.eaplanner.user.dtos;
 
 import com.sopra.eaplanner.user.User;
 
-public class UserResponseDTO {
+public class
+UserResponseDTO {
 
     private Long id;
     private String username;

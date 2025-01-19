@@ -3,14 +3,16 @@
     <!-- Sidebar for navigation -->
     <sidebar
       :dataOpenSideBar="openSidebar"
+      :toggleSidebar="toggleSidebar"
       @changeComponent="changeComponent"
-      @toggleSidebar="toggleSidebar"
     />
     <!-- Main content area -->
     <div class="main-content">
-      <headerTop
+      <HeaderTop
         :dataOpenSideBar="openSidebar"
         :toggleSidebar="toggleSidebar"
+        :notifications="notifications"
+        @mark-as-read="handleMarkAsRead"
       />
       <!-- Dynamic content area that renders the current component -->
       <div class="content-area">
@@ -21,13 +23,17 @@
 </template>
 
 <script>
-import MainPage from "@/components/ViewAllExchangeDays/MainPage.vue";
+import { ref } from "vue";
+import MainPage from "@/components/viewExchangeDays/home/MainPage.vue";
 import EventPlanning from "@/components/createNewEvents/EventPlanning.vue";
 import GiveFeedback from "@/components/feedback/GiveFeedback.vue";
 import Sidebar from "@/components/navigation/Sidebar.vue";
 import HeaderTop from "@/components/navigation/Header.vue";
-import EventRegistrations from "./ViewAllExchangeDays/EventRegistrations.vue";
+import EventRegistrations from "@/components/viewEvents/EventRegistrations.vue";
+import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
 import Forum from "./forum/Forum.vue";
+import Cookies from "js-cookie";
+import config from "../config";
 
 export default {
   components: {
@@ -38,21 +44,24 @@ export default {
     GiveFeedback, // Component for giving Feedback
     EventRegistrations, // Component for viewing registered events
     Forum, // Component for viewing forum
+    Leaderboard, // Component for displaying the points of users in a ranking
+  },
+  setup() {
+    const openSidebar = ref(false);
+
+    const toggleSidebar = () => {
+      openSidebar.value = !openSidebar.value;
+    };
+
+    return { openSidebar, toggleSidebar };
   },
   data() {
     return {
-      openSidebar: false,
       currentComponent: "MainPage",
+      notifications: [],
     };
   },
   methods: {
-    /**
-     * Toggles the visibility of the sidebar.
-     */
-    toggleSidebar() {
-      this.openSidebar = !this.openSidebar;
-    },
-
     /**
      * Updates the currently displayed component.
      * @param {string} componentName - The name of the component to display.
@@ -61,27 +70,58 @@ export default {
       this.currentComponent = componentName;
       this.toggleSidebar();
     },
+    fetchNotifications() {
+      const userId = Cookies.get("userId");
+      if (!userId) return;
+
+      const eventSource = new EventSource(
+        `${config.sseBaseUrl}/notifications/${userId}`,
+      );
+
+      eventSource.addEventListener("notification", (event) => {
+        const notification = JSON.parse(event.data);
+        this.notifications.push(notification);
+      });
+
+      eventSource.onerror = (event) => {
+        console.error("Error with SSE connection", event);
+      };
+    },
+    handleMarkAsRead(notificationId) {
+      console.log("pressing mark as read");
+      this.notifications = this.notifications.filter(
+        (notification) => notification.id !== notificationId,
+      );
+    },
+  },
+  mounted() {
+    this.fetchNotifications();
   },
 };
 </script>
 
 <style scoped>
-/* Container for the entire dashboard layout */
 .dashboard-container {
   display: flex;
   height: 100vh;
 }
 
-/* Main content area grows to fill space next to the sidebar */
 .main-content {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  padding: 0;
   max-height: 100vh;
 }
 
 .content-area {
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+.header-top {
+  height: 60px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
   height: calc(100vh - 50px);
   overflow: auto;
 }

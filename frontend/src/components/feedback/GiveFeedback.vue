@@ -461,6 +461,9 @@ const submitFeedback = async () => {
   }
 };
 
+/*
+ * Confirms the attendance of the user for the event.
+ **/
 const confirmAttendance = async () => {
   try {
     const attendanceResponse = await fetch(
