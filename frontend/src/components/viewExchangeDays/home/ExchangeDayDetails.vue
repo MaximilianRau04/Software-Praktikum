@@ -11,7 +11,11 @@
       <p>
         <strong>Beschreibung:</strong> {{ selectedExchangeDay.description }}
       </p>
-      <p><strong>Datum:</strong> {{ formatDate(selectedExchangeDay.startDate) }} bis {{ formatDate(selectedExchangeDay.endDate) }}</p>
+      <p>
+        <strong>Datum:</strong>
+        {{ formatDate(selectedExchangeDay.startDate) }} bis
+        {{ formatDate(selectedExchangeDay.endDate) }}
+      </p>
       <p>Id: {{ selectedExchangeDay.id }}</p>
     </div>
 

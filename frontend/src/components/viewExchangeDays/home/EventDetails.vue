@@ -38,7 +38,7 @@ const userId = Cookies.get("userId");
  * @param {string} timestamp - The date in milliseconds.
  * @returns {string} - The formatted date string in 'DD.MM.YYYY' format.
  */
- function formatDate(timestamp: string): string {
+function formatDate(timestamp: string): string {
   const date = new Date(timestamp);
   return date.toLocaleDateString("de-DE");
 }
@@ -52,14 +52,14 @@ const checkRegistrationStatus = async () => {
   }
   try {
     const response = await fetch(
-      `${config.apiBaseUrl}/users/${userId}/registeredEvents`
+      `${config.apiBaseUrl}/users/${userId}/registeredEvents`,
     );
     if (!response.ok) throw new Error("Failed to fetch user data.");
 
     const registeredEvents = await response.json();
 
     isAlreadyRegistered.value = registeredEvents.some(
-      (event: { id: number }) => event.id === props.event.id
+      (event: { id: number }) => event.id === props.event.id,
     );
   } catch (error) {
     console.error("Error checking registration status:", error);
@@ -85,7 +85,7 @@ const register = async (eventId: number) => {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     if (response.status === 404) {

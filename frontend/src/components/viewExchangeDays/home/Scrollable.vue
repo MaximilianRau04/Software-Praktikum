@@ -97,19 +97,19 @@ export default {
     /**
      * Filters the exchange days based on the selected date.
      */
-function filterExchangeDays() {
-  if (!selectedDate.value) {
-    filteredExchangeDays.value = exchangeDays.value;
-    return;
-  }
+    function filterExchangeDays() {
+      if (!selectedDate.value) {
+        filteredExchangeDays.value = exchangeDays.value;
+        return;
+      }
 
-  const filterDate = new Date(selectedDate.value).setHours(0, 0, 0, 0);
-  filteredExchangeDays.value = exchangeDays.value.filter((day) => {
-    const startDate = new Date(day.startDate).setHours(0, 0, 0, 0);
-    const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
-    return filterDate >= startDate && filterDate <= endDate;
-  });
-}
+      const filterDate = new Date(selectedDate.value).setHours(0, 0, 0, 0);
+      filteredExchangeDays.value = exchangeDays.value.filter((day) => {
+        const startDate = new Date(day.startDate).setHours(0, 0, 0, 0);
+        const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
+        return filterDate >= startDate && filterDate <= endDate;
+      });
+    }
 
     onMounted(() => fetchExchangeDays());
 

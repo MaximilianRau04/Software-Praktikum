@@ -1,5 +1,5 @@
 <template>
-  <div class="updateEvent" v-if="isOrganizerRef">
+  <div class="updateEvent">
     <h1>Event bearbeiten</h1>
     <form @submit.prevent="updateEvent">
       <div class="form-group">
@@ -22,37 +22,37 @@
         ></textarea>
       </div>
       <div class="input-group">
-              <label for="exchangeDaySelect">Exchange Day</label>
-              <select
-                id="exchangeDaySelect"
-                v-model="exchangeDaySelect"
-                @change="updateSelectedExchangeDay"
-                required
-              >
-                <option value="" disabled selected>
-                  Bitte wählen Sie einen Exchange Day aus
-                </option>
-                <option
-                  v-for="exchangeDay in exchangeDays"
-                  :key="exchangeDay.id"
-                  :value="exchangeDay.id"
-                >
-                  {{ exchangeDay.name }}
-                </option>
-              </select>
-            </div>
+        <label for="exchangeDaySelect">Exchange Day</label>
+        <select
+          id="exchangeDaySelect"
+          v-model="exchangeDaySelect"
+          @change="updateSelectedExchangeDay"
+          required
+        >
+          <option value="" disabled selected>
+            Bitte wählen Sie einen Exchange Day aus
+          </option>
+          <option
+            v-for="exchangeDay in exchangeDays"
+            :key="exchangeDay.id"
+            :value="exchangeDay.id"
+          >
+            {{ exchangeDay.name }}
+          </option>
+        </select>
+      </div>
       <div class="input-group">
-              <label for="date">Datum</label>
-              <input
-                type="date"
-                id="date"
-                v-model="date"
-                :min="selectedExchangeDay?.startDate || ''"
-                :max="selectedExchangeDay?.endDate || ''"
-                :disabled="!exchangeDaySelect"
-                required
-              />
-            </div>
+        <label for="date">Datum</label>
+        <input
+          type="date"
+          id="date"
+          v-model="date"
+          :min="selectedExchangeDay?.startDate || ''"
+          :max="selectedExchangeDay?.endDate || ''"
+          :disabled="!exchangeDaySelect"
+          required
+        />
+      </div>
       <div class="form-group">
         <label for="room">Raum:</label>
         <input type="text" id="room" v-model="event.room" maxlength="50" />
@@ -81,12 +81,12 @@
         <button type="button" class="back-button" @click="goBack">
           Zurück
         </button>
+        <button type="button" class="delete-button" @click="deleteEvent">
+          Event löschen
+        </button>
         <button type="submit" class="submit-button">Speichern</button>
       </div>
     </form>
-  </div>
-  <div v-else>
-    <h1>Du bist nicht berechtigt, dieses Event zu bearbeiten.</h1>
   </div>
 </template>
 
@@ -95,18 +95,22 @@ import { ref, onMounted, watch, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import Cookies from "js-cookie";
 import config from "../../config";
-const date = ref("");
 
+const date = ref("");
 const router = useRouter();
 const route = useRoute();
 const userId = Cookies.get("userId");
 const exchangeDayId = ref("");
 const exchangeDaySelect = ref("");
 
+// Computed property to find selected exchange day
 const selectedExchangeDay = computed(() => {
-  return exchangeDays.value.find(day => day.id === exchangeDaySelect.value) || null;
+  return (
+    exchangeDays.value.find((day) => day.id === exchangeDaySelect.value) || null
+  );
 });
 
+// Event data
 const event = ref({
   exchangeDayId: "",
   organizerId: Number(userId),
@@ -120,38 +124,37 @@ const event = ref({
 
 const exchangeDays = ref([]);
 const registeredUsers = ref([]);
-const isOrganizerRef = ref(false);
 
-const isOrganizer = async () => {
-  console.log(userId);
+/**
+ * Deletes an event after confirmation.
+ * @param {number} eventId - The ID of the event.
+ */
+const deleteEvent = async () => {
   const eventId = route.params.eventId;
+  if (!confirm("Are you sure you want to delete this event?")) {
+    return;
+  }
   try {
-    const response = await fetch(
-      `${config.apiBaseUrl}/events/${eventId}/organizer`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
+    const response = await fetch(`${config.apiBaseUrl}/events/${eventId}`, {
+      method: "DELETE",
+    });
 
-    if (!response.ok) {
-      console.error("Failed to fetch event organizer.");
-      return false;
+    if (response.status === 404) {
+      alert("Event not found.");
+      throw new Error(response.statusText);
     }
 
-    const data = await response.json();
-    isOrganizerRef.value = data.id === parseInt(userId, 10); 
+    router.push({ name: "home" });
+    alert(`Event with ID ${eventId} has been successfully deleted.`);
   } catch (error) {
-    console.error("Error checking if user is organizer:", error);
-    isOrganizerRef.value = false;
+    console.error("Error deleting event:", error);
+    alert("Deleting event failed. Please try again.");
   }
 };
 
 /**
- * Fetches the details of the event based on the eventId from the URL parameters
- * Sets the event data and associated exchange day and organizer information
+ * Fetches the details of the event based on the eventId from the URL parameters.
+ * Sets the event data and associated exchange day and organizer information.
  */
 const fetchEventDetails = async () => {
   const eventId = route.params.eventId;
@@ -218,10 +221,12 @@ const fetchExchangeDays = async () => {
 /**
  * Updates the selected exchange day.
  */
- const updateSelectedExchangeDay = () => {
-  const selectedDay = exchangeDays.value.find(day => day.id === exchangeDaySelect.value);
+const updateSelectedExchangeDay = () => {
+  const selectedDay = exchangeDays.value.find(
+    (day) => day.id === exchangeDaySelect.value,
+  );
   if (selectedDay) {
-    date.value = ""; 
+    date.value = "";
   }
 };
 
@@ -272,7 +277,6 @@ onMounted(() => {
   fetchExchangeDays();
   fetchEventDetails();
   fetchRegisteredUsers();
-  isOrganizer();
 });
 
 watch(registeredUsers, (users) => {
@@ -352,5 +356,19 @@ select {
 
 .submit-button:hover {
   background-color: #218838;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
 }
 </style>

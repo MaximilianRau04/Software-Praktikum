@@ -70,12 +70,7 @@
             </div>
             <div class="input-group">
               <label for="startTime">Startzeit</label>
-              <input
-                type="time"
-                id="startTime"
-                v-model="startTime"
-                required
-              />
+              <input type="time" id="startTime" v-model="startTime" required />
             </div>
             <div class="input-group">
               <label for="endTime">Endzeit</label>
@@ -83,15 +78,11 @@
             </div>
             <div class="input-group">
               <label for="room">Raum</label>
-              <input type="text" id="room" v-model="room"/>
+              <input type="text" id="room" v-model="room" />
             </div>
             <div class="input-group">
               <label for="description">Beschreibung</label>
-              <input
-                type="text"
-                id="description"
-                v-model="description"
-              />
+              <input type="text" id="description" v-model="description" />
             </div>
             <div class="input-group">
               <label for="organizerSelect">Veranstalter</label>
@@ -135,7 +126,7 @@
             </div>
             <div class="input-group">
               <label for="location">Ort</label>
-              <input type="text" id="location" v-model="location"/>
+              <input type="text" id="location" v-model="location" />
             </div>
             <div class="input-group">
               <label for="exchangeDescription">Beschreibung</label>
@@ -177,7 +168,9 @@ const organizerSelect = ref("");
 const exchangeDays = ref([]);
 const users = ref([]);
 const selectedExchangeDay = computed(() => {
-  return exchangeDays.value.find(day => day.id === exchangeDaySelect.value) || null;
+  return (
+    exchangeDays.value.find((day) => day.id === exchangeDaySelect.value) || null
+  );
 });
 
 // Exchange Day form data
@@ -192,20 +185,22 @@ const exchangeApiUrl = `${config.apiBaseUrl}/exchange-days`;
 
 const router = useRouter();
 
+/**
+ * Initializes the start time of the Workshop form.
+ */
 const initializeStartTime = () => {
   const now = new Date();
 
   const formatter = new Intl.DateTimeFormat("de-DE", {
-    timeZone: "Europe/Berlin", 
+    timeZone: "Europe/Berlin",
     hour: "2-digit",
     minute: "2-digit",
-    hourCycle: "h23", 
+    hourCycle: "h23",
   });
 
   const formattedTime = formatter.format(now);
-  startTime.value = formattedTime; 
+  startTime.value = formattedTime;
 };
-
 
 /**
  * Fetches all Exchange Days and users from the API when the component is mounted.
@@ -247,16 +242,18 @@ const toggleExchangeDayBox = () => {
  * Updates the selected exchange day.
  */
 const updateSelectedExchangeDay = () => {
-  const selectedDay = exchangeDays.value.find(day => day.id === exchangeDaySelect.value);
+  const selectedDay = exchangeDays.value.find(
+    (day) => day.id === exchangeDaySelect.value,
+  );
   if (selectedDay) {
-    date.value = ""; 
+    date.value = "";
   }
 };
 
 /**
  * Creates a new Workshop using the form data.
  */
- const createWorkshop = async () => {
+const createWorkshop = async () => {
   if (!selectedExchangeDay.value) {
     alert("Bitte wählen Sie einen gültigen Exchange Day aus.");
     return;
@@ -267,7 +264,9 @@ const updateSelectedExchangeDay = () => {
   const end = new Date(selectedExchangeDay.value.endDate);
 
   if (selectedDate < start || selectedDate > end) {
-    alert("Das Datum muss zwischen dem Start- und Enddatum des ausgewählten Exchange Days liegen.");
+    alert(
+      "Das Datum muss zwischen dem Start- und Enddatum des ausgewählten Exchange Days liegen.",
+    );
     return;
   }
 
