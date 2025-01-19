@@ -76,6 +76,15 @@ public class EventController {
         return feedbackService.generateFeedbackSummary(id);
     }
 
+    @GetMapping("/{eventId}/word-cloud")
+    public ResponseEntity<Resource> getWordCloud(@PathVariable Long eventId) throws IOException {
+        Resource file = feedbackService.getWordCloud(eventId);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_PNG)
+                .body(file);
+    }
+
     @GetMapping("/{eventId}/qr-code")
     public ResponseEntity<Resource> getQrCode(@PathVariable Long eventId) throws IOException {
         Resource file = eventService.getQRCode(eventId);

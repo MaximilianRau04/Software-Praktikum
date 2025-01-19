@@ -46,6 +46,8 @@ public class FeedbackResponseDTO {
 
     private Integer similarEventParticipationScore;
 
+    private String author;
+
     public FeedbackResponseDTO(Feedback feedback) {
         this.id = feedback.getId();
         this.overallScore = feedback.getOverallScore();
@@ -72,6 +74,12 @@ public class FeedbackResponseDTO {
         this.isEventRecommended = feedback.getIsEventRecommended();
         this.recommendationComment = feedback.getRecommendationComment();
         this.similarEventParticipationScore = feedback.getSimilarEventParticipationScore();
+
+        if(feedback.isAnonymousFeedback()){
+            this.author = "Anonym";
+        } else{
+            this.author = feedback.getUser().getFirstname() + " " + feedback.getUser().getLastname();
+        }
     }
 
     public Long getId() {
@@ -278,6 +286,13 @@ public class FeedbackResponseDTO {
         return List.of(enjoymentComment,improvementComment,requestComment,personalImprovementComment, recommendationComment);
     }
 
+    public String getAuthor(){
+        return author;
+    }
+
+    public void setAuthor(String author){
+        this.author = author;
+    }
 
     public static FeedbackResponseDTO mockWith(
             Integer overallScore,

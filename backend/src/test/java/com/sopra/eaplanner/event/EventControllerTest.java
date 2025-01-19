@@ -6,6 +6,7 @@ import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.exchangeday.ExchangeDayService;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.feedback.FeedbackService;
+import com.sopra.eaplanner.feedback.FeedbackType;
 import com.sopra.eaplanner.feedback.summary.CommentType;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO;
 import com.sopra.eaplanner.user.User;
@@ -116,13 +117,13 @@ public class EventControllerTest {
     void testGetFeedbackSummary() throws Exception {
         FeedbackSummaryDTO feedbackSummary = FeedbackSummaryDTO.mockWith(1L, "Workshop A", "Admin User");
 
-        Map<String, FeedbackSummaryDTO.FeedbackStatistics> numericalFeedback = new HashMap<>();
-        numericalFeedback.put("overallScore", new FeedbackSummaryDTO.FeedbackStatistics(4.5, 4.0, 100));
+        Map<FeedbackType, FeedbackSummaryDTO.FeedbackStatistics> numericalFeedback = new HashMap<>();
+        numericalFeedback.put(FeedbackType.OVERALL, new FeedbackSummaryDTO.FeedbackStatistics(4.5, 4.0, 100, new HashMap<>()));
         feedbackSummary.setNumericalFeedback(numericalFeedback);
 
         List<FeedbackSummaryDTO.CommentAnalysis> commentAnalysis = new ArrayList<>();
-        commentAnalysis.add(new FeedbackSummaryDTO.CommentAnalysis("Great workshop!", "positive", 1L));
-        commentAnalysis.add(new FeedbackSummaryDTO.CommentAnalysis("Needs more practical examples.", "neutral", 2L));
+        commentAnalysis.add(new FeedbackSummaryDTO.CommentAnalysis("Great workshop!", "positive", 1L, "Name"));
+        commentAnalysis.add(new FeedbackSummaryDTO.CommentAnalysis("Needs more practical examples.", "neutral", 2L, "Name"));
 
         Map<CommentType,List<FeedbackSummaryDTO.CommentAnalysis>> comments = new HashMap<>();
         comments.put(CommentType.ENJOYMENT, commentAnalysis);

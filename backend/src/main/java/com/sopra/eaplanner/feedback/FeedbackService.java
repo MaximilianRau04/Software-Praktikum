@@ -3,8 +3,8 @@ package com.sopra.eaplanner.feedback;
 import com.kennycason.kumo.CollisionMode;
 import com.kennycason.kumo.WordCloud;
 import com.kennycason.kumo.WordFrequency;
-import com.kennycason.kumo.bg.CircleBackground;
-import com.kennycason.kumo.font.scale.SqrtFontScalar;
+import com.kennycason.kumo.bg.PixelBoundaryBackground;
+import com.kennycason.kumo.font.scale.LinearFontScalar;
 import com.kennycason.kumo.nlp.FrequencyAnalyzer;
 import com.kennycason.kumo.palette.ColorPalette;
 import com.sopra.eaplanner.event.Event;
@@ -24,10 +24,14 @@ import com.vader.sentiment.analyzer.SentimentPolarities;
 import jakarta.persistence.EntityNotFoundException;
 import opennlp.tools.tokenize.SimpleTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
-import java.io.File;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.*;
 import java.util.List;
 import java.util.function.Function;
@@ -48,11 +52,12 @@ public class FeedbackService {
     @Autowired
     private EventParticipationService eventParticipationService;
 
-    private final Function<FeedbackResponseDTO,CommentAnalysis> ENJOYMENT_MAPPER = (FeedbackResponseDTO f) -> new CommentAnalysis(f.getEnjoymentComment(), analyzeSentiment(f.getEnjoymentComment()), f.getId());
-    private final Function<FeedbackResponseDTO,CommentAnalysis> IMPROVEMENT_MAPPER = (FeedbackResponseDTO f) -> new CommentAnalysis(f.getImprovementComment(), analyzeSentiment(f.getImprovementComment()), f.getId());
-    private final Function<FeedbackResponseDTO,CommentAnalysis> REQUEST_MAPPER = (FeedbackResponseDTO f) -> new CommentAnalysis(f.getRequestComment(), analyzeSentiment(f.getRequestComment()), f.getId());
-    private final Function<FeedbackResponseDTO,CommentAnalysis> PERSONAL_MAPPER = (FeedbackResponseDTO f) -> new CommentAnalysis(f.getPersonalImprovementComment(), analyzeSentiment(f.getPersonalImprovementComment()), f.getId());
-    private final Function<FeedbackResponseDTO,CommentAnalysis> RECOMMENDATION_MAPPER = (FeedbackResponseDTO f) -> new CommentAnalysis(f.getRecommendationComment(), analyzeSentiment(f.getRecommendationComment()), f.getId());
+    // Comment Mappers
+    private final Function<FeedbackResponseDTO, CommentAnalysis> ENJOYMENT_MAPPER = (FeedbackResponseDTO f) -> new CommentAnalysis(f.getEnjoymentComment(), analyzeSentiment(f.getEnjoymentComment()), f.getId(), f.getAuthor());
+    private final Function<FeedbackResponseDTO, CommentAnalysis> IMPROVEMENT_MAPPER = (FeedbackResponseDTO f) -> new CommentAnalysis(f.getImprovementComment(), analyzeSentiment(f.getImprovementComment()), f.getId(), f.getAuthor());
+    private final Function<FeedbackResponseDTO, CommentAnalysis> REQUEST_MAPPER = (FeedbackResponseDTO f) -> new CommentAnalysis(f.getRequestComment(), analyzeSentiment(f.getRequestComment()), f.getId(), f.getAuthor());
+    private final Function<FeedbackResponseDTO, CommentAnalysis> PERSONAL_MAPPER = (FeedbackResponseDTO f) -> new CommentAnalysis(f.getPersonalImprovementComment(), analyzeSentiment(f.getPersonalImprovementComment()), f.getId(), f.getAuthor());
+    private final Function<FeedbackResponseDTO, CommentAnalysis> RECOMMENDATION_MAPPER = (FeedbackResponseDTO f) -> new CommentAnalysis(f.getRecommendationComment(), analyzeSentiment(f.getRecommendationComment()), f.getId(), f.getAuthor());
 
     /**
      * Set of stopWords for use in the word cloud generation as a preprocessing step after tokenization
@@ -107,34 +112,63 @@ public class FeedbackService {
                 event.getOrganizer().getFirstname() + " " + event.getOrganizer().getLastname()
         );
 
-        Map<String, FeedbackStatistics> numericalStats = new HashMap<>();
+        Map<FeedbackType, FeedbackStatistics> numericalStats = new HashMap<>();
 
-        addStatistic(numericalStats, "overallScore", feedback, FeedbackResponseDTO::getOverallScore);
-        addStatistic(numericalStats, "organisationalScore", feedback, FeedbackResponseDTO::getOrganisationalScore);
-        addStatistic(numericalStats, "relevanceScore", feedback, FeedbackResponseDTO::getRelevanceScore);
-        addStatistic(numericalStats, "understandabilityScore", feedback, FeedbackResponseDTO::getUnderstandabilityScore);
-        addStatistic(numericalStats, "contentDepthScore", feedback, FeedbackResponseDTO::getContentDepthScore);
-        addStatistic(numericalStats, "practicalityScore", feedback, FeedbackResponseDTO::getPracticalityScore);
-        addStatistic(numericalStats, "reasonabilityScore", feedback, FeedbackResponseDTO::getReasonabilityScore);
-        addStatistic(numericalStats, "competencyScore", feedback, FeedbackResponseDTO::getCompetencyScore);
-        addStatistic(numericalStats, "presentabilityScore", feedback, FeedbackResponseDTO::getPresentabilityScore);
-        addStatistic(numericalStats, "interactivityScore", feedback, FeedbackResponseDTO::getInteractivityScore);
-        addStatistic(numericalStats, "timeManagementScore", feedback, FeedbackResponseDTO::getTimeManagementScore);
-        addStatistic(numericalStats, "participationScore", feedback, FeedbackResponseDTO::getParticipationScore);
-        addStatistic(numericalStats, "atmosphereScore", feedback, FeedbackResponseDTO::getAtmosphereScore);
-        addStatistic(numericalStats, "networkingScore", feedback, FeedbackResponseDTO::getNetworkingScore);
-        addStatistic(numericalStats, "equipmentScore", feedback, FeedbackResponseDTO::getEquipmentScore);
-        addStatistic(numericalStats, "comfortabilityScore", feedback, FeedbackResponseDTO::getComfortabilityScore);
-        addStatistic(numericalStats, "communicationScore", feedback, FeedbackResponseDTO::getCommunicationScore);
-        addStatistic(numericalStats, "similarEventParticipationScore", feedback, FeedbackResponseDTO::getSimilarEventParticipationScore);
+        List<Integer> allOverallScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getOverallScore);
+        List<Integer> allOrganisationalScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getOrganisationalScore);
+        List<Integer> allRelevanceScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getRelevanceScore);
+        List<Integer> allUnderstandabilityScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getUnderstandabilityScore);
+        List<Integer> allContentDepthScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getContentDepthScore);
+        List<Integer> allPracticalityScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getPracticalityScore);
+        List<Integer> allReasonabilityScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getReasonabilityScore);
+        List<Integer> allCompetencyScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getCompetencyScore);
+        List<Integer> allPresentabilityScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getPresentabilityScore);
+        List<Integer> allInteractivityScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getInteractivityScore);
+        List<Integer> allTimeManagementScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getTimeManagementScore);
+        List<Integer> allParticipationScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getParticipationScore);
+        List<Integer> allAtmosphereScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getAtmosphereScore);
+        List<Integer> allNetworkingScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getNetworkingScore);
+        List<Integer> allEquipmentScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getEquipmentScore);
+        List<Integer> allComfortabilityScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getComfortabilityScore);
+        List<Integer> allCommunicationScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getCommunicationScore);
+        List<Integer> allSimilarEventParticipationScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getSimilarEventParticipationScore);
+
+        List<List<Integer>> overallCategoryScores = List.of(allOverallScores, allOrganisationalScores, allRelevanceScores);
+        List<List<Integer>> contentAndStructureScores = List.of(allUnderstandabilityScores, allContentDepthScores, allPracticalityScores, allReasonabilityScores);
+        List<List<Integer>> trainerScores = List.of(allCompetencyScores, allPresentabilityScores, allInteractivityScores, allTimeManagementScores);
+        List<List<Integer>> participationScores = List.of(allParticipationScores, allAtmosphereScores, allNetworkingScores);
+        List<List<Integer>> itAndOrganisationScores = List.of(allEquipmentScores, allComfortabilityScores, allCommunicationScores);
+        List<List<Integer>> similarityScores = List.of(allSimilarEventParticipationScores);
+
+        FeedbackStatistics overall = createFeedbackStatistics(FeedbackType.OVERALL, overallCategoryScores);
+        FeedbackStatistics contentAndStructure = createFeedbackStatistics(FeedbackType.CONTENT_AND_STRUCTURE, contentAndStructureScores);
+        FeedbackStatistics trainer = createFeedbackStatistics(FeedbackType.TRAINER, trainerScores);
+        FeedbackStatistics participation = createFeedbackStatistics(FeedbackType.PARTICIPATION, participationScores);
+        FeedbackStatistics itAndOrganisation = createFeedbackStatistics(FeedbackType.IT_AND_ORGANISATION, itAndOrganisationScores);
+        FeedbackStatistics similarity = createFeedbackStatistics(FeedbackType.SIMILARITY, similarityScores);
+
+        numericalStats.put(FeedbackType.OVERALL, overall);
+        numericalStats.put(FeedbackType.CONTENT_AND_STRUCTURE, contentAndStructure);
+        numericalStats.put(FeedbackType.TRAINER, trainer);
+        numericalStats.put(FeedbackType.PARTICIPATION, participation);
+        numericalStats.put(FeedbackType.IT_AND_ORGANISATION, itAndOrganisation);
+        numericalStats.put(FeedbackType.SIMILARITY, similarity);
 
         summary.setNumericalFeedback(numericalStats);
-        summary.setCommonWords(generateWordCloud(feedback));
 
         Map<CommentType, List<CommentAnalysis>> comments = groupFeedbackCommentsByType(feedback);
-
         summary.setComments(comments);
+
         return summary;
+    }
+
+    public Resource getWordCloud(Long eventId) throws IOException {
+        List<FeedbackResponseDTO> feedback = getFeedbacksFromEventId(eventId);
+        BufferedImage wordCloudImage = generateWordCloud(feedback);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(wordCloudImage, "png", baos);
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
+        return new InputStreamResource(inputStream);
     }
 
     public UserResponseDTO getFeedbackAuthor(Long id) {
@@ -170,29 +204,118 @@ public class FeedbackService {
         feedbackRepository.deleteById(id);
     }
 
-    private FeedbackStatistics calculateStatistics(List<Integer> scores) {
-        double average = scores.stream().mapToInt(Integer::intValue).average().orElse(0);
-        double median = calculateMedian(scores);
-        return new FeedbackStatistics(average, median, scores.size());
+    private Map<String, Double> getSubAveragesByType(FeedbackType type, List<List<Integer>> scores) {
+        switch (type) {
+            case OVERALL -> {
+                Map<String, Double> overall = new HashMap<>();
+                overall.put("overall", calculateAverage(scores.get(0)));
+                overall.put("organisational", calculateAverage(scores.get(1)));
+                overall.put("relevance", calculateAverage(scores.get(2)));
+                return overall;
+            }
+            case CONTENT_AND_STRUCTURE -> {
+                Map<String, Double> contentAndStructure = new HashMap<>();
+                contentAndStructure.put("understandability", calculateAverage(scores.get(0)));
+                contentAndStructure.put("contentDepth", calculateAverage(scores.get(1)));
+                contentAndStructure.put("practicality", calculateAverage(scores.get(2)));
+                contentAndStructure.put("reasonability", calculateAverage(scores.get(3)));
+                return contentAndStructure;
+            }
+            case TRAINER -> {
+                Map<String, Double> trainer = new HashMap<>();
+                trainer.put("competency", calculateAverage(scores.get(0)));
+                trainer.put("presentability", calculateAverage(scores.get(1)));
+                trainer.put("interactivity", calculateAverage(scores.get(2)));
+                trainer.put("timeManagement", calculateAverage(scores.get(3)));
+                return trainer;
+            }
+            case PARTICIPATION -> {
+                Map<String, Double> participation = new HashMap<>();
+                participation.put("participation", calculateAverage(scores.get(0)));
+                participation.put("atmosphere", calculateAverage(scores.get(1)));
+                participation.put("networking", calculateAverage(scores.get(2)));
+                return participation;
+            }
+            case IT_AND_ORGANISATION -> {
+                Map<String, Double> itAndOrganisation = new HashMap<>();
+                itAndOrganisation.put("equipment", calculateAverage(scores.get(0)));
+                itAndOrganisation.put("comfortability", calculateAverage(scores.get(1)));
+                itAndOrganisation.put("communication", calculateAverage(scores.get(2)));
+                return itAndOrganisation;
+            }
+            case SIMILARITY -> {
+                Map<String, Double> similarity = new HashMap<>();
+                similarity.put("similarEventParticipation", calculateMedian(scores.get(0)));
+                return similarity;
+            }
+            default -> throw new IllegalArgumentException("Unsupported feedback type: " + type);
+        }
     }
 
-    private double calculateMedian(List<Integer> scores) {
-        if (scores == null || scores.isEmpty()) {
-            return 0.0;
+    private FeedbackStatistics createFeedbackStatistics(FeedbackType type, List<List<Integer>> scores){
+        double average = calculateAveragesOfAverages(scores);
+        double median = calculateMedianOfMedians(scores);
+        int responseCount = scores.getFirst() != null ? scores.getFirst().size() : 0;
+        Map<String, Double> subMedians = getSubAveragesByType(type, scores);
+
+        return new FeedbackStatistics(average, median, responseCount, subMedians);
+    }
+
+    private double calculateAverage(List<Integer> scores){
+        return scores.stream().mapToInt(Integer::intValue).average().orElse(0);
+    }
+
+    private double calculateAveragesOfAverages(List<List<Integer>> scores){
+        double average = 0;
+
+        for(List<Integer> categoryScores: scores){
+            average += categoryScores.stream().mapToInt(Integer::intValue).average().orElse(0);
         }
+        return average / scores.size();
+    }
 
-        List<Integer> scoreList = new ArrayList<>(scores);
-        Collections.sort(scoreList);
+    private double calculateMedian(List<Integer> scores){
+        List<Integer> mediansScoreList = new ArrayList<>(scores);
+        Collections.sort(mediansScoreList);
 
-        int size = scoreList.size();
+        int size = mediansScoreList.size();
         if (size % 2 == 0) {
-            return (scoreList.get(size / 2 - 1) + scoreList.get(size / 2)) / 2.0;
+            return(mediansScoreList.get(size / 2 - 1) + mediansScoreList.get(size / 2)) / 2.0;
         } else {
-            return scoreList.get(size / 2);
+            return mediansScoreList.get(size / 2);
         }
     }
 
-    private List<String> generateWordCloud(List<FeedbackResponseDTO> feedback) {
+    private double calculateMedianOfMedians(List<List<Integer>> scores) {
+        List<Double> categoryMedians = new ArrayList<>();
+        for(List<Integer> categoryScores: scores){
+            if (categoryScores == null ||categoryScores.isEmpty()) {
+                categoryMedians.add(0.0);
+                continue;
+            }
+
+            List<Integer> scoreList = new ArrayList<>(categoryScores);
+            Collections.sort(scoreList);
+
+            int size = scoreList.size();
+            if (size % 2 == 0) {
+                categoryMedians.add((scoreList.get(size / 2 - 1) + scoreList.get(size / 2)) / 2.0);
+            } else {
+                categoryMedians.add((double) scoreList.get(size / 2));
+            }
+        }
+        List<Double> mediansScoreList = new ArrayList<>(categoryMedians);
+        Collections.sort(mediansScoreList);
+
+        int size = mediansScoreList.size();
+        if (size % 2 == 0) {
+            return(mediansScoreList.get(size / 2 - 1) + mediansScoreList.get(size / 2)) / 2.0;
+        } else {
+            return mediansScoreList.get(size / 2);
+        }
+    }
+
+    private BufferedImage generateWordCloud(List<FeedbackResponseDTO> feedback) throws IOException {
         List<String> comments = new ArrayList<>();
 
         feedback.forEach((f) -> comments.addAll(f.getAllComments()));
@@ -209,31 +332,26 @@ public class FeedbackService {
 
         final FrequencyAnalyzer frequencyAnalyzer = new FrequencyAnalyzer();
         final List<WordFrequency> wordFrequencies = frequencyAnalyzer.load(filteredTokens);
-        final Dimension dimension = new Dimension(600,600);
-        final WordCloud wordCloud = new WordCloud(dimension, CollisionMode.PIXEL_PERFECT);
-        wordCloud.setPadding(2);
-        wordCloud.setBackground(new CircleBackground(300));
-        wordCloud.setColorPalette(new ColorPalette(new Color(0x4055F1), new Color(0x408DF1), new Color(0x40AAF1), new Color(0x40C5F1), new Color(0x40D3F1), new Color(0xFFFFFF)));
-        wordCloud.setFontScalar(new SqrtFontScalar(10, 40));
+        final WordCloud wordCloud = setupWordCloudBase();
         wordCloud.build(wordFrequencies);
 
-        File outputDir = new File("kumo-core/output");
-        if (!outputDir.exists()) {
-            outputDir.mkdirs(); // This will create the necessary directories
+        return wordCloud.getBufferedImage();
+    }
+
+    private WordCloud setupWordCloudBase() throws IOException {
+        final Dimension dimension = new Dimension(900, 150);
+        final WordCloud wordCloud = new WordCloud(dimension, CollisionMode.RECTANGLE);
+        wordCloud.setPadding(0);
+
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("wordCloudMask.png");
+        if (inputStream == null) {
+            throw new FileNotFoundException("wordCloudMask.png not found in resources");
         }
-        wordCloud.writeToFile("kumo-core/output/datarank_wordcloud_circle_sqrt_font.png");
-
-        // Add a word filter in order to only take in adjectives, nouns and verbs in this order
-        // as of right now, we have words like "is, was" etc. popping in which is not very helpful
-        Map<String, Long> wordFrequency = feedback.stream()
-                .flatMap(f -> Arrays.stream(f.getImprovementComment().split("\\s+")))
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-
-        return wordFrequency.entrySet().stream()
-                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                .map(Map.Entry::getKey)
-                .limit(10)
-                .toList();
+        wordCloud.setBackground(new PixelBoundaryBackground(inputStream));
+        wordCloud.setBackgroundColor(Color.WHITE);
+        wordCloud.setColorPalette(new ColorPalette(new Color(0x4055F1), new Color(0x408DF1), new Color(0x40AAF1), new Color(0x40C5F1), new Color(0x40D3F1), new Color(0xFFFFFF)));
+        wordCloud.setFontScalar(new LinearFontScalar(12, 25));
+        return wordCloud;
     }
 
     private Map<CommentType, List<CommentAnalysis>> groupFeedbackCommentsByType(List<FeedbackResponseDTO> feedback) {
@@ -247,7 +365,7 @@ public class FeedbackService {
         return comments;
     }
 
-    private List<CommentAnalysis> extractCommentsByType(List<FeedbackResponseDTO> feedback, Function<FeedbackResponseDTO,CommentAnalysis> mapper) {
+    private List<CommentAnalysis> extractCommentsByType(List<FeedbackResponseDTO> feedback, Function<FeedbackResponseDTO, CommentAnalysis> mapper) {
         return feedback.stream()
                 .map(mapper)
                 .toList();
@@ -280,17 +398,12 @@ public class FeedbackService {
         }
     }
 
-    private <T> void addStatistic(Map<String, FeedbackStatistics> stats,
-                                  String key,
-                                  List<FeedbackResponseDTO> feedback,
-                                  Function<FeedbackResponseDTO, T> extractor) {
-        List<Integer> values = feedback.stream()
+    private <T> List<Integer> extractFeedbackScoresFromFeedback(List<FeedbackResponseDTO> feedback,
+                                                          Function<FeedbackResponseDTO, T> extractor) {
+        return feedback.stream()
                 .map(extractor)
                 .filter(Objects::nonNull)
                 .map(val -> (Integer) val)
                 .collect(Collectors.toList());
-
-        stats.put(key, calculateStatistics(values));
     }
-
 }
