@@ -12,9 +12,9 @@
       <div class="thread-list">
         <div
           v-for="thread in threads"
-          :key="thread.id"
+          :key="thread.threadId"
           class="thread-item"
-          @click="selectThread(thread.id)"
+          @click="selectThread(thread.threadId)"
         >
           <h3>{{ thread.title }}</h3>
           <p class="thread-description">
@@ -158,6 +158,7 @@ export default {
           `${config.apiBaseUrl}/events/${eventId}/forum`,
         );
         this.threads = response.data;
+        console.log(this.threads.threadId)
       } catch (error) {
         console.error("Fehler beim Abrufen der Threads:", error);
       }
@@ -167,6 +168,7 @@ export default {
      */
     async createThread() {
       const eventId = this.$route.params.eventId;
+      console.log(eventId)
       try {
         const newThreadData = {
           title: this.newThread.title,
@@ -189,6 +191,7 @@ export default {
      * @param {number} threadId - The id of the thread
      */
     async selectThread(threadId) {
+      console.log(threadId)
       this.selectedThreadId = threadId;
       this.fetchThreadDetail();
     },

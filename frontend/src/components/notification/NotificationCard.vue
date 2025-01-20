@@ -2,8 +2,14 @@
   <div class="notification-card">
     <div class="notification-details">
       <p>
-        Your workshop "{{ notification.title }}" will take place
-        {{ timeUntilEvent }}.
+        Your workshop
+        <span 
+          class="notification-title" 
+          @click="navigateToEvent"
+        >
+          "{{ notification.title }}"
+        </span>
+        will take place {{ timeUntilEvent }}.
       </p>
       <div class="notification-meta">
         <span>Time sent: {{ formattedCreatedAt }}</span>
@@ -17,6 +23,8 @@
 
 <script>
 import { formatDistanceToNow, parseISO } from "date-fns";
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
 import config from "@/config";
 
 export default {
@@ -26,24 +34,26 @@ export default {
       required: true,
     },
   },
-  computed: {
-    formattedCreatedAt() {
-      return formatDistanceToNow(parseISO(this.notification.createdAt), {
+  setup(props, { emit }) {
+    const router = useRouter(); // Get the router instance
+
+    const formattedCreatedAt = computed(() => {
+      return formatDistanceToNow(parseISO(props.notification.createdAt), {
         addSuffix: true,
       });
-    },
-    timeUntilEvent() {
+    });
+
+    const timeUntilEvent = computed(() => {
       return formatDistanceToNow(
-        parseISO(this.notification.context.eventDateTime),
+        parseISO(props.notification.context.eventDateTime),
         { addSuffix: true },
       );
-    },
-  },
-  methods: {
-    async markAsRead() {
+    });
+
+    const markAsRead = async () => {
       try {
         const response = await fetch(
-          `${config.apiBaseUrl}/notifications/${this.notification.id}/read`,
+          `${config.apiBaseUrl}/notifications/${props.notification.id}/read`,
           {
             method: "PUT",
             headers: {
@@ -55,14 +65,30 @@ export default {
         if (!response.ok) {
           throw new Error("Failed to mark notification as read");
         }
-        this.$emit("mark-as-read", this.notification.id);
+        emit("mark-as-read", props.notification.id);
       } catch (error) {
         console.error("Error marking notification as read:", error);
       }
-    },
+    };
+
+    const navigateToEvent = () => {
+      router.push({
+        name: "EventPage",
+        params: { eventId: props.notification.context.eventId },
+      });
+      markAsRead();
+    };
+
+    return {
+      formattedCreatedAt,
+      timeUntilEvent,
+      markAsRead,
+      navigateToEvent,
+    };
   },
 };
 </script>
+
 
 <style scoped>
 .notification-card {
@@ -82,6 +108,15 @@ export default {
 
 .notification-card p {
   margin: 5px 0;
+}
+
+.notification-title {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.notification-title:hover {
+  color: #0056b3;
 }
 
 .created-at {

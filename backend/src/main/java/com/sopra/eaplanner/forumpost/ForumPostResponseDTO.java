@@ -1,17 +1,13 @@
 package com.sopra.eaplanner.forumpost;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.sopra.eaplanner.forumthread.ForumThread;
-import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
 public class ForumPostResponseDTO {
+
+    private Long id;
+
     private String content;
 
     private LocalDateTime createdAt;
@@ -22,7 +18,8 @@ public class ForumPostResponseDTO {
 
     private Boolean isAnonymous;
 
-    public ForumPostResponseDTO(String content, LocalDateTime createdAt, Long threadId, UserResponseDTO author, Boolean isAnonymous) {
+    public ForumPostResponseDTO(Long id, String content, LocalDateTime createdAt, Long threadId, UserResponseDTO author, Boolean isAnonymous) {
+        this.id = id;
         this.content = content;
         this.createdAt = createdAt;
         this.threadId = threadId;
@@ -31,11 +28,18 @@ public class ForumPostResponseDTO {
     }
 
     public ForumPostResponseDTO(ForumPost forumPost) {
+        this.id = forumPost.getId();
         this.content = forumPost.getContent();
         this.createdAt = forumPost.getCreatedAt();
         this.threadId = forumPost.getForumThread().getId();
         this.isAnonymous = forumPost.isAnonymous();
         this.author = new UserResponseDTO(forumPost.getAuthor());
+    }
+
+    public Long getId(){ return id; }
+
+    public void setId(Long id){
+        this.id = id;
     }
 
     public String getContent() {

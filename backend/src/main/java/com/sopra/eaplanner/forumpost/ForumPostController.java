@@ -12,22 +12,22 @@ public class ForumPostController {
     private ForumPostService forumPostService;
 
     @GetMapping("")
-    public Iterable<ForumPost> getAllForumPosts() {
+    public Iterable<ForumPostResponseDTO> getAllForumPosts() {
         return forumPostService.getForumPosts();
     }
 
     @GetMapping("/{id}")
-    public ForumPost getForumPostById(@PathVariable Long id) {
+    public ForumPostResponseDTO getForumPostById(@PathVariable Long id) {
         return forumPostService.getForumPost(id);
     }
 
     @PostMapping("")
-    public ForumPost createForumPost(@Valid @RequestBody ForumPostDTO requestBody) {
+    public ForumPostResponseDTO createForumPost(@Valid @RequestBody ForumPostDTO requestBody) {
         return forumPostService.createForumPost(requestBody);
     }
 
     @PutMapping("/{id}")
-    public ForumPost updateForumPost(@PathVariable Long id, @Valid @RequestBody ForumPostDTO requestBody) {
+    public ForumPostResponseDTO updateForumPost(@PathVariable Long id, @Valid @RequestBody ForumPostDTO requestBody) {
         return forumPostService.updateForumPost(id, requestBody);
     }
 
