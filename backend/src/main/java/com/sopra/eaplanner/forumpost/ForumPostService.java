@@ -2,6 +2,7 @@ package com.sopra.eaplanner.forumpost;
 
 import com.sopra.eaplanner.forumthread.ForumThread;
 import com.sopra.eaplanner.forumthread.ForumThreadRepository;
+import com.sopra.eaplanner.forumthread.notification.ForumResponseService;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ForumPostService {
@@ -23,19 +25,22 @@ public class ForumPostService {
     @Autowired
     private UserRepository userRepository;
 
-    public Iterable<ForumPost> getForumPosts() {
-        return forumPostRepository.findAll();
+    @Autowired
+    private ForumResponseService forumResponseService;
+
+    public Iterable<ForumPostResponseDTO> getForumPosts() {
+        return forumPostRepository.findAll().stream().map(ForumPostResponseDTO::new).collect(Collectors.toSet());
     }
 
-    public ForumPost getForumPost(Long id) {
+    public ForumPostResponseDTO getForumPost(Long id) {
         Optional<ForumPost> forumPost = forumPostRepository.findById(id);
         if (forumPost.isEmpty()) {
             throw new EntityNotFoundException("Forum Post with the id " + id + " not found");
         }
-        return forumPost.get();
+        return new ForumPostResponseDTO(forumPost.get());
     }
 
-    public ForumPost createForumPost(ForumPostDTO forumPostDTO) {
+    public ForumPostResponseDTO createForumPost(ForumPostDTO forumPostDTO) {
         ForumThread forumThread = forumThreadRepository.findById(forumPostDTO.getForumThreadId())
                 .orElseThrow(() -> new EntityNotFoundException("ForumThread with id " + forumPostDTO.getForumThreadId() + " not found"));
 
@@ -48,10 +53,12 @@ public class ForumPostService {
             forumPost.setCreatedAt(LocalDateTime.now());
         }
 
-        return forumPostRepository.save(forumPost);
+        forumResponseService.sendResponseNotification(forumThread.getEvent().getId(),forumThread.getId(),author);
+
+        return new ForumPostResponseDTO(forumPostRepository.save(forumPost));
     }
 
-    public ForumPost updateForumPost(Long id, ForumPostDTO forumPostDTO) {
+    public ForumPostResponseDTO updateForumPost(Long id, ForumPostDTO forumPostDTO) {
         Optional<ForumPost> forumPostOptional = forumPostRepository.findById(id);
         if (forumPostOptional.isEmpty()) {
             throw new EntityNotFoundException("Forum Post with id " + id + " not found");
@@ -72,7 +79,9 @@ public class ForumPostService {
             forumPost.setCreatedAt(forumPostOptional.get().getCreatedAt());
         }
 
-        return forumPostRepository.save(forumPost);
+        forumResponseService.sendResponseNotification(forumThread.getEvent().getId(),forumThread.getId(),author);
+
+        return new ForumPostResponseDTO(forumPostRepository.save(forumPost));
     }
 
     public void deleteForumPost(Long id) {

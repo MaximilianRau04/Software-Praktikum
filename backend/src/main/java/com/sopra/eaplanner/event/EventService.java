@@ -10,6 +10,7 @@ import com.sopra.eaplanner.exchangeday.ExchangeDay;
 import com.sopra.eaplanner.exchangeday.ExchangeDayRepository;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.forumthread.ForumThread;
+import com.sopra.eaplanner.forumthread.ForumThreadResponseDTO;
 import com.sopra.eaplanner.qrcode.QRCodeService;
 import com.sopra.eaplanner.resource.ResourceItem;
 import com.sopra.eaplanner.resource.dtos.ResourceResponse;
@@ -111,10 +112,10 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    public Set<ForumThread> getForumThreads(Long id) {
+    public Set<ForumThreadResponseDTO> getForumThreads(Long id) {
         Event event = eventRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Event not found."));
 
-        return event.getForumThreads();
+        return event.getForumThreads().stream().map(ForumThreadResponseDTO::new).collect(Collectors.toSet());
     }
 
     public UserResponseDTO getOrganizerByEventId(Long id) {

@@ -1,6 +1,7 @@
 package com.sopra.eaplanner.notification;
 
 import com.sopra.eaplanner.event.notification.EventReminderHandler;
+import com.sopra.eaplanner.forumthread.notification.ForumNotificationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,8 +38,9 @@ public class NotificationHandlerFactory {
      * @param eventReminderHandler The handler responsible for processing {@code EventReminderNotification} types.
      */
     @Autowired
-    public NotificationHandlerFactory(EventReminderHandler eventReminderHandler) {
+    public NotificationHandlerFactory(EventReminderHandler eventReminderHandler, ForumNotificationHandler forumNotificationHandler) {
         handlers.put(NotificationType.EVENT_REMINDER, eventReminderHandler);
+        handlers.put(NotificationType.FORUM_POST,forumNotificationHandler);
     }
 
     /**

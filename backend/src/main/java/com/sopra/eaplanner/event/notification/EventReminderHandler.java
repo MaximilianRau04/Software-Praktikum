@@ -33,6 +33,7 @@ public class EventReminderHandler implements NotificationHandler {
         EventReminderNotification eventReminder = (EventReminderNotification) notification;
 
         context.put("eventDateTime", eventReminder.getEventDateTime());
+        context.put("eventId", eventReminder.getEventId());
         return context;
     }
 }

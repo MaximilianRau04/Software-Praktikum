@@ -1,6 +1,7 @@
 package com.sopra.eaplanner.notification;
 
 import com.sopra.eaplanner.event.notification.EventReminderNotification;
+import com.sopra.eaplanner.forumthread.notification.ForumNotification;
 import com.sopra.eaplanner.sse.NotificationSseController;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,8 +84,8 @@ public class NotificationService {
      * @param eventDateTime The date and time of the event being reminded about.
      * @param userId The ID of the user to send the notification to.
      */
-    public void createAndSendEventReminder(String title, LocalDateTime eventDateTime, Long userId) {
-        EventReminderNotification eventReminderNotification = EventReminderNotification.create(title, eventDateTime, userId);
+    public void createAndSendEventReminder(String title, LocalDateTime eventDateTime, Long userId, Long eventId) {
+        EventReminderNotification eventReminderNotification = EventReminderNotification.create(title, eventDateTime, userId, eventId);
 
         NotificationHandler handler = notificationHandlerFactory.getNotificationHandler(eventReminderNotification.getType());
         eventReminderNotification.setHandler(handler);
@@ -92,5 +93,16 @@ public class NotificationService {
         eventReminderNotification.saveNotification();
 
         notificationSseController.sendNotification(userId, eventReminderNotification);
+    }
+
+    public void createAndSendForumResponseNotification(String title, Long userId, Long eventId, Long threadId, String responderName){
+        ForumNotification forumNotification = ForumNotification.create(title, userId, eventId, threadId, responderName);
+
+        NotificationHandler handler = notificationHandlerFactory.getNotificationHandler(forumNotification.getType());
+        forumNotification.setHandler(handler);
+        forumNotification.processNotification();
+        forumNotification.saveNotification();
+
+        notificationSseController.sendNotification(userId, forumNotification);
     }
 }

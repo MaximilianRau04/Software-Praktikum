@@ -88,17 +88,12 @@ public class ReminderService {
      * @param reminderType The type of reminder (1 week, 1 day, 1 hour).
      */
     private void sendReminder(Event event, ReminderType reminderType) {
-        String title = "Reminder: " + event.getName();
-        String description = switch (reminderType) {
-            case ONE_WEEK_BEFORE -> "Your event is happening in 1 week!";
-            case ONE_DAY_BEFORE -> "Your event is happening tomorrow!";
-            case ONE_HOUR_BEFORE -> "Your event is happening in 1 hour!";
-        };
+        String title = event.getName();
 
         List<Long> userIds = event.getRegisteredUsers().stream().map(User::getId).toList();
 
         for (Long userId : userIds) {
-            notificationService.createAndSendEventReminder(title, event.getStartDateTime(), userId);
+            notificationService.createAndSendEventReminder(title, event.getStartDateTime(), userId, event.getId());
         }
 
         event.getRemindersSent().put(reminderType, true);
