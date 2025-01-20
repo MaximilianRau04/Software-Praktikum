@@ -1,8 +1,5 @@
 package com.sopra.eaplanner.resource.resourceAssignment.dtos;
 
-import com.sopra.eaplanner.event.Event;
-import com.sopra.eaplanner.resource.ResourceItem;
-
 import java.time.LocalTime;
 
 public class ResourceAssignmentRequest {

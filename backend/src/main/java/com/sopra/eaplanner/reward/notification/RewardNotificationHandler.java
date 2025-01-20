@@ -1,4 +1,4 @@
-package com.sopra.eaplanner.event.notification;
+package com.sopra.eaplanner.reward.notification;
 
 import com.sopra.eaplanner.notification.Notification;
 import com.sopra.eaplanner.notification.NotificationHandler;
@@ -10,14 +10,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class EventReminderHandler implements NotificationHandler {
+public class RewardNotificationHandler implements NotificationHandler {
 
     @Autowired
     private NotificationRepository notificationRepository;
 
     @Override
     public void process(Notification notification) {
-        // potentially no uses for this specific notification
+        // may not have uses yet for this NotificationType
     }
 
     @Override
@@ -29,10 +29,11 @@ public class EventReminderHandler implements NotificationHandler {
     public Map<String, Object> getContext(Notification notification) {
         Map<String, Object> context = new HashMap<>();
 
-        EventReminderNotification eventReminder = (EventReminderNotification) notification;
+        RewardNotification rewardNotification = (RewardNotification) notification;
 
-        context.put("eventDateTime", eventReminder.getEventDateTime());
-        context.put("eventId", eventReminder.getEventId());
+        context.put("rewardType", rewardNotification.getRewardType());
+        context.put("points", rewardNotification.getPoints());
+        context.put("threshold", rewardNotification.getThreshold());
         return context;
     }
 }

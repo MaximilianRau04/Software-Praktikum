@@ -40,7 +40,6 @@ public class QRCodeService {
     public static void saveQRCode(byte[] qrCode, String fileName) throws Exception {
         Path directory = Paths.get(QR_CODE_DIR);
         if (!Files.exists(directory)) {
-            System.out.println("Im making new directory");
             Files.createDirectories(directory);
         }
 

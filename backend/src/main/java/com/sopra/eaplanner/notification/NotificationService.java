@@ -2,6 +2,8 @@ package com.sopra.eaplanner.notification;
 
 import com.sopra.eaplanner.event.notification.EventReminderNotification;
 import com.sopra.eaplanner.forumthread.notification.ForumNotification;
+import com.sopra.eaplanner.reward.Reward;
+import com.sopra.eaplanner.reward.notification.RewardNotification;
 import com.sopra.eaplanner.sse.NotificationSseController;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,5 +106,17 @@ public class NotificationService {
         forumNotification.saveNotification();
 
         notificationSseController.sendNotification(userId, forumNotification);
+    }
+
+    public void createAndSendRewardNotification(String title, Long userId, Reward.Type rewardType, Integer points, Integer threshold){
+        RewardNotification rewardNotification = RewardNotification.create(title, userId, rewardType, points, threshold);
+
+        NotificationHandler handler = notificationHandlerFactory.getNotificationHandler(rewardNotification.getType());
+        rewardNotification.setHandler(handler);
+        rewardNotification.processNotification();
+        rewardNotification.saveNotification();
+
+        notificationSseController.sendNotification(userId, rewardNotification);
+
     }
 }

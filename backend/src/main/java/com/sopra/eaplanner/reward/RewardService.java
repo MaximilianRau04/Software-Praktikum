@@ -1,7 +1,10 @@
 package com.sopra.eaplanner.reward;
 
+import com.sopra.eaplanner.reward.notification.RewardNotificationService;
 import com.sopra.eaplanner.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +14,9 @@ public class RewardService {
 
     @Autowired
     private RewardRepository rewardRepository;
+
+    @Autowired
+    private RewardNotificationService rewardNotificationService;
 
     private static final List<Integer> ATTENDANCE_REWARD_THRESHOLDS = List.of(25, 50, 100, 250, 500);
     private static final List<Integer> FEEDBACK_GIVER_REWARD_THRESHOLDS = List.of(50, 100, 200, 500, 1000);
@@ -57,8 +63,21 @@ public class RewardService {
         for (Integer threshold : thresholds) {
             if (currentPoints >= threshold && threshold > lastThreshold) {
                 reward.setLastThreshold(threshold);
-                // TODO: TRIGGER NOTIFICATION
+                rewardNotificationService.sendRewardNotification(rewardRepository.save(reward));
             }
         }
+    }
+
+    public Resource getBadgePNG(Reward.Type type, Integer threshold) {
+        String fileName = type.name().toLowerCase() + "_" + threshold + ".png";
+        String filePath = "rewardBadges/" + fileName;
+
+        ClassPathResource resource = new ClassPathResource(filePath);
+
+        if (!resource.exists()) {
+            throw new IllegalArgumentException("Badge file not found for type: " + type + " and threshold: " + threshold);
+        }
+
+        return resource;
     }
 }

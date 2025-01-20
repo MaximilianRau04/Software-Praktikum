@@ -5,4 +5,5 @@ public enum NotificationType {
     EVENT_REMINDER,
     FORUM_POST,
     USER_MENTION,
+    REWARD,
 }

@@ -2,11 +2,9 @@ package com.sopra.eaplanner.resource;
 
 import com.sopra.eaplanner.resource.dtos.ResourceRequest;
 import com.sopra.eaplanner.resource.dtos.ResourceResponse;
-import com.sopra.eaplanner.resource.resourceAssignment.ResourceAssignmentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +14,6 @@ import java.util.List;
 public class ResourceService {
     @Autowired
     private ResourceRepository resourceRepository;
-
-    @Autowired
-    private ResourceAssignmentRepository assignmentRepository;
 
     public Iterable<ResourceResponse> getAllResources() {
         Iterable<ResourceItem> resources = resourceRepository.findAll();

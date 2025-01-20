@@ -7,11 +7,9 @@ import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.feedback.FeedbackService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO;
-import com.sopra.eaplanner.forumthread.ForumThread;
 import com.sopra.eaplanner.forumthread.ForumThreadResponseDTO;
 import com.sopra.eaplanner.resource.dtos.ResourceResponse;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
-import com.sopra.eaplanner.trainerprofile.TrainerProfileService;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +32,6 @@ public class EventController {
 
     @Autowired
     FeedbackService feedbackService;
-
-    @Autowired
-    TrainerProfileService trainerProfileService;
 
     @GetMapping("")
     public Iterable<EventResponseDTO> getAllEvents() {

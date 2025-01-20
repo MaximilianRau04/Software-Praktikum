@@ -40,11 +40,10 @@ public class ReminderService {
      * and send reminders to users.
      * It fetches events happening in the future and sends the appropriate reminders (1 week, 1 day, 1 hour before the event).
      */
-    @Scheduled(fixedRate = 6000)
+    @Scheduled(fixedRate = 60000)
     public void sendReminders() {
         LocalDateTime dateTime = LocalDateTime.now();
         List<Event> eventsInFuture = eventRepository.findUpcomingEvents(dateTime.toLocalDate());
-        System.out.println(eventsInFuture.size());
         for (Event event : eventsInFuture) {
             LocalDateTime eventTime = event.getStartDateTime();
             for (ReminderType type : ReminderType.values()) {

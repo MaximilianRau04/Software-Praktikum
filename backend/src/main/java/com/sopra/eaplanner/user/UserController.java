@@ -5,6 +5,7 @@ import com.sopra.eaplanner.event.participation.EventParticipationDTO;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.forumpost.ForumPostResponseDTO;
 import com.sopra.eaplanner.reward.Reward;
+import com.sopra.eaplanner.reward.dtos.RewardResponseDTO;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
 import com.sopra.eaplanner.user.dtos.UserRequestDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
@@ -58,7 +59,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/rewards")
-    public Iterable<Reward> getUserRewards(@PathVariable Long id) {
+    public Iterable<RewardResponseDTO> getUserRewards(@PathVariable Long id) {
         return userService.getUserRewards(id);
     }
 

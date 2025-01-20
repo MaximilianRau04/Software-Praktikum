@@ -8,6 +8,7 @@ import com.sopra.eaplanner.event.participation.EventParticipationService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.forumpost.ForumPostResponseDTO;
 import com.sopra.eaplanner.reward.Reward;
+import com.sopra.eaplanner.reward.dtos.RewardResponseDTO;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileRepository;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
@@ -107,13 +108,12 @@ public class UserService {
     }
 
 
-    public Set<Reward> getUserRewards(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new EntityNotFoundException("User not found");
-        }
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"))
-                .getRewards();
+    public Set<RewardResponseDTO> getUserRewards(Long userId) {
+        User userWithRewards = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        return userWithRewards.getRewards()
+                .stream().map(RewardResponseDTO::new)
+                .collect(Collectors.toSet());
     }
 
     public Iterable<EventParticipationDTO> getParticipations(Long id) {

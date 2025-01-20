@@ -1,6 +1,5 @@
 package com.sopra.eaplanner.resource.resourceAssignment.dtos;
 
-import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.resource.ResourceItem;
 import com.sopra.eaplanner.resource.resourceAssignment.ResourceAssignment;
