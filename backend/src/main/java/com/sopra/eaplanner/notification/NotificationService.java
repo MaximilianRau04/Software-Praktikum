@@ -73,10 +73,6 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    public Notification saveNotification(Notification notification) {
-        return notificationRepository.save(notification);
-    }
-
     /**
      * Creates and sends an event reminder notification to a user. This method generates a
      * notification based on the event details, processes it using the appropriate handler,

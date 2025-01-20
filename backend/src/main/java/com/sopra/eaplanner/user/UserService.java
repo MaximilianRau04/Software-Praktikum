@@ -7,7 +7,6 @@ import com.sopra.eaplanner.event.participation.EventParticipationDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.forumpost.ForumPostResponseDTO;
-import com.sopra.eaplanner.reward.Reward;
 import com.sopra.eaplanner.reward.dtos.RewardResponseDTO;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileRepository;
@@ -185,7 +184,7 @@ public class UserService {
         return userToRegister;
     }
 
-    public User removeUserFromEvent(Long userId, Long eventId) {
+    public void removeUserFromEvent(Long userId, Long eventId) {
         User userToRemove = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         Event eventForRemoval = eventRepository.findById(eventId)
@@ -198,8 +197,6 @@ public class UserService {
 
         userRepository.save(userToRemove);
         eventRepository.save(eventForRemoval);
-
-        return userToRemove;
     }
 
     public void deleteUser(Long id) {
