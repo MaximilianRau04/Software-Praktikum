@@ -26,18 +26,18 @@ public class ForumResponseService {
         this.notificationService = notificationService;
     }
 
-    public void sendResponseNotification(Long eventId, Long threadId, User responder){
+    public void sendResponseNotification(Long eventId, Long threadId, User responder, boolean isAnonymous){
         Event eventWithForumThreads = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event not found."));
         ForumThread forumForNotifications = forumThreadRepository.findById(threadId).orElseThrow(() -> new EntityNotFoundException("Thread not found."));
 
         forumForNotifications.getForumPosts().stream()
                 .map(ForumPost::getAuthor)
                 .filter(author -> !Objects.equals(author.getId(), responder.getId()))
-                .forEach(user -> sendReminder(eventWithForumThreads, forumForNotifications, user, responder.getFirstname() + " " + responder.getLastname()));
+                .forEach(user -> sendReminder(eventWithForumThreads, forumForNotifications, user, isAnonymous ? "Anonym" : responder.getFirstname() + " " + responder.getLastname()));
     }
 
     private void sendReminder(Event event, ForumThread thread, User user, String responderName){
-        String title = event.getName();
+        String title = thread.getTitle();
 
         notificationService.createAndSendForumResponseNotification(title, user.getId(), event.getId(), thread.getId(), responderName);
     }

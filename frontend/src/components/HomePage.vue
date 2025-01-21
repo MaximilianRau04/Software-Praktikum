@@ -1,19 +1,11 @@
 <template>
   <div class="dashboard-container">
     <!-- Sidebar for navigation -->
-    <sidebar
-      :dataOpenSideBar="openSidebar"
-      :toggleSidebar="toggleSidebar"
-      @changeComponent="changeComponent"
-    />
+    <sidebar :dataOpenSideBar="openSidebar" :toggleSidebar="toggleSidebar" @changeComponent="changeComponent" />
     <!-- Main content area -->
     <div class="main-content">
-      <HeaderTop
-        :dataOpenSideBar="openSidebar"
-        :toggleSidebar="toggleSidebar"
-        :notifications="notifications"
-        @mark-as-read="handleMarkAsRead"
-      />
+      <HeaderTop :dataOpenSideBar="openSidebar" :toggleSidebar="toggleSidebar" :notifications="notificationsForHeader"
+        @mark-as-read="handleMarkAsRead" />
       <!-- Dynamic content area that renders the current component -->
       <div class="content-area">
         <router-view />
@@ -28,7 +20,7 @@ import MainPage from "@/components/viewExchangeDays/home/MainPage.vue";
 import EventPlanning from "@/components/createNewEvents/EventPlanning.vue";
 import GiveFeedback from "@/components/feedback/GiveFeedback.vue";
 import Sidebar from "@/components/navigation/Sidebar.vue";
-import HeaderTop from "@/components/navigation/Header.vue";
+import HeaderTop from "@/components/navigation/HeaderTop.vue";
 import EventRegistrations from "@/components/viewEvents/EventRegistrations.vue";
 import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
 import Forum from "./forum/Forum.vue";
@@ -61,6 +53,11 @@ export default {
       notifications: [],
     };
   },
+  computed: {
+    notificationsForHeader() {
+      return this.notifications || [];
+    },
+  },
   methods: {
     /**
      * Updates the currently displayed component.
@@ -70,7 +67,26 @@ export default {
       this.currentComponent = componentName;
       this.toggleSidebar();
     },
-    fetchNotifications() {
+
+    async fetchUnreadNotifications() {
+      const userId = Cookies.get("userId");
+      if (!userId) return;
+      try {
+        const response = await fetch(`${config.apiBaseUrl}/notifications/unread/${userId}`);
+        const unreadNotifications = await response.json();
+
+        if(response.ok){
+          this.notifications = unreadNotifications;
+        }
+
+        console.log("Initial unread notifications:", this.notifications);
+        this.fetchNotifications();
+      } catch (err) {
+        console.error("Notifications could not be fetched:", err);
+        this.notifications = [];
+      }
+    },
+    async fetchNotifications() {
       const userId = Cookies.get("userId");
       if (!userId) return;
 
@@ -95,7 +111,7 @@ export default {
     },
   },
   mounted() {
-    this.fetchNotifications();
+    this.fetchUnreadNotifications();
   },
 };
 </script>

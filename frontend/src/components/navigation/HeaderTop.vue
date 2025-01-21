@@ -27,19 +27,30 @@
         </div>
 
         <div v-if="showNotifications" class="notification-menu" @click.stop>
+
           <!-- EVENT_REMINDERS Section -->
           <div v-if="groupedNotifications.EVENT_REMINDER?.length">
             <h3>Event Reminders</h3>
-            <NotificationCard
-              v-for="(
-                notification, index
-              ) in groupedNotifications.EVENT_REMINDER"
+            <component 
+            v-for="(notification, index) in groupedNotifications.EVENT_REMINDER"
+            :key="index"
+            is="EventNotificationCard"
+            :notification="notification"
+              @mark-as-read="markAsRead"
+            />
+          </div>
+
+          <!-- FORUM_POST Section -->
+          <div v-if="groupedNotifications.FORUM_POST?.length">
+            <h3>Forum Responses</h3>
+            <component
+              v-for="(notification, index) in groupedNotifications.FORUM_POST"
               :key="index"
+              is="ForumNotificationCard"
               :notification="notification"
               @mark-as-read="markAsRead"
             />
           </div>
-          <!-- Add sections for other notification types as needed -->
           <div v-if="!hasNotifications" class="no-notifications">
             Keine Benachrichtigungen
           </div>
@@ -60,19 +71,24 @@ import { ref, onMounted } from "vue";
 import { globalState } from "@/types/User";
 import Cookies from "js-cookie";
 import "@/assets/header.css";
-import NotificationCard from "@/components/notification/NotificationCard.vue";
+import NotificationCard from "@/components/notification/NotificationCardBase.vue";
+import EventNotificationCard from "../notification/EventNotificationCard.vue";
+import ForumNotificationCard from "../notification/ForumNotificationCard.vue";
 import config from "@/config";
 
 export default {
   components: {
     NotificationCard,
+    EventNotificationCard,
+    ForumNotificationCard,
   },
   props: {
     dataOpenSideBar: Boolean,
     toggleSidebar: Function,
     notifications: {
       type: Array,
-      required: true,
+      default: () => [],
+      required: false,
     },
   },
   data() {
@@ -102,8 +118,9 @@ export default {
       return globalState.user;
     },
     unreadCount() {
-      return this.notifications.filter((notification) => !notification.isRead)
-        .length;
+      return Array.isArray(this.notifications)
+      ? this.notifications.filter((notification) => !notification.isRead).length
+      : 0;
     },
   },
   methods: {

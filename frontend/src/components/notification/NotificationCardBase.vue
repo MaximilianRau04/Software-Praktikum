@@ -1,16 +1,7 @@
 <template>
   <div class="notification-card">
     <div class="notification-details">
-      <p>
-        Your workshop
-        <span 
-          class="notification-title" 
-          @click="navigateToEvent"
-        >
-          "{{ notification.title }}"
-        </span>
-        will take place {{ timeUntilEvent }}.
-      </p>
+      <slot name="message"></slot>
       <div class="notification-meta">
         <span>Time sent: {{ formattedCreatedAt }}</span>
       </div>
@@ -32,22 +23,16 @@ export default {
     notification: {
       type: Object,
       required: true,
+      default: () => ({}),
     },
   },
   setup(props, { emit }) {
-    const router = useRouter(); // Get the router instance
+    const router = useRouter();
 
     const formattedCreatedAt = computed(() => {
       return formatDistanceToNow(parseISO(props.notification.createdAt), {
         addSuffix: true,
       });
-    });
-
-    const timeUntilEvent = computed(() => {
-      return formatDistanceToNow(
-        parseISO(props.notification.context.eventDateTime),
-        { addSuffix: true },
-      );
     });
 
     const markAsRead = async () => {
@@ -71,19 +56,9 @@ export default {
       }
     };
 
-    const navigateToEvent = () => {
-      router.push({
-        name: "EventPage",
-        params: { eventId: props.notification.context.eventId },
-      });
-      markAsRead();
-    };
-
     return {
       formattedCreatedAt,
-      timeUntilEvent,
       markAsRead,
-      navigateToEvent,
     };
   },
 };

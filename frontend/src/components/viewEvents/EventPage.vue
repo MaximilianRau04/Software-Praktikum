@@ -120,7 +120,10 @@
 
     <!-- Forum anzeigen -->
     <div v-if="view === 'forum'">
-      <Forum />
+      <Forum 
+      :threads="event.forumThreads"
+      :focused-thread-id.sync="focusedThreadId"
+      />
     </div>
 
     <!-- Liste der angemeldeten Benutzer -->
@@ -202,6 +205,8 @@ const eventId = Number(route.params?.eventId);
 const showQRCodeModal = ref(false);
 const qrCodeUrl = ref("");
 
+const focusedThreadId = ref<number | null>(null);
+
 const goToUser = (username: string) => {
   router.push({ name: "UserProfile", params: { username } });
 };
@@ -212,6 +217,7 @@ const goToUpdate = () => {
 
 const showForum = () => {
   view.value = "forum";
+  focusedThreadId.value = null;
 };
 
 const isOrganizer = computed(() => {
@@ -337,7 +343,20 @@ const showUsers = () => {
   view.value = "users";
 };
 
+const handleThreadNavigation= () =>{
+  const threadId = Number(route.query.threadId);
+  if(threadId){
+    view.value = "forum";
+    setFocusedThread(threadId);
+  }
+};
+
+const setFocusedThread = (threadId) =>{
+  focusedThreadId.value = threadId;
+}
+
 onMounted(() => {
   fetchEventDetails();
+  handleThreadNavigation();
 });
 </script>

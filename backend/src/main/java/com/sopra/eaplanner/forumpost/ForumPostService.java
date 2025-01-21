@@ -53,7 +53,7 @@ public class ForumPostService {
             forumPost.setCreatedAt(LocalDateTime.now());
         }
 
-        forumResponseService.sendResponseNotification(forumThread.getEvent().getId(),forumThread.getId(),author);
+        forumResponseService.sendResponseNotification(forumThread.getEvent().getId(),forumThread.getId(),author, forumPost.isAnonymous());
 
         return new ForumPostResponseDTO(forumPostRepository.save(forumPost));
     }
@@ -79,7 +79,7 @@ public class ForumPostService {
             forumPost.setCreatedAt(forumPostOptional.get().getCreatedAt());
         }
 
-        forumResponseService.sendResponseNotification(forumThread.getEvent().getId(),forumThread.getId(),author);
+        forumResponseService.sendResponseNotification(forumThread.getEvent().getId(),forumThread.getId(),author, forumPost.isAnonymous());
 
         return new ForumPostResponseDTO(forumPostRepository.save(forumPost));
     }

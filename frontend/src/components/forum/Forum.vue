@@ -131,6 +131,20 @@ import Cookies from "js-cookie";
 import config from "@/config";
 
 export default {
+  props:{
+    threads: Array,
+    focusedThreadId:{
+      type: Number,
+      default: null,
+    },
+  },
+  watch:{
+    focusedThreadId(newThreadId){
+      if(newThreadId){
+        this.selectThread(newThreadId);
+      }
+    },
+  },
   data() {
     return {
       threads: [],
@@ -191,7 +205,6 @@ export default {
      * @param {number} threadId - The id of the thread
      */
     async selectThread(threadId) {
-      console.log(threadId)
       this.selectedThreadId = threadId;
       this.fetchThreadDetail();
     },
