@@ -114,6 +114,11 @@ public class EventController {
         return ResponseEntity.ok(tags);
     }
 
+    @GetMapping("/experience-levels")
+    public ResponseEntity<List<String>> getAllExperienceLevels(){
+        return ResponseEntity.ok(eventService.getAllExperienceLevels());
+    }
+
     @PostMapping("")
     public ResponseEntity<EventResponseDTO> createEvent(@Valid @RequestBody EventRequestDTO requestBody) throws Exception {
         EventResponseDTO savedDTO = eventService.createEvent(requestBody);

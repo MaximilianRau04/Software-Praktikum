@@ -1,7 +1,6 @@
 package com.sopra.eaplanner.event.dtos;
 
 import com.sopra.eaplanner.event.ExperienceLevel;
-import com.sopra.eaplanner.event.tags.Tag;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -44,7 +43,7 @@ public class EventRequestDTO {
     @NotNull(message = "Recommended ExperienceLevel must be specified")
     private ExperienceLevel recommendedExperience;
 
-    private Set<Tag> tags = new HashSet<>();
+    private Set<String> tags = new HashSet<>();
 
     public EventRequestDTO() {
     }
@@ -121,19 +120,19 @@ public class EventRequestDTO {
         this.recommendedExperience = recommendedExperience;
     }
 
-    public Set<Tag> getTags() {
+    public Set<String> getTags() {
         return tags;
     }
 
-    public void setTags(Set<Tag> tags) {
+    public void setTags(Set<String> tags) {
         this.tags = tags;
     }
 
-    public static EventRequestDTO mockWith(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String description, String room, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<Tag> tags) {
+    public static EventRequestDTO mockWith(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String description, String room, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags) {
         return new EventRequestDTO(name, date, startTime, endTime, room, description, exchangeDayId, organizerId, recommendedExperience, tags);
     }
 
-    private EventRequestDTO(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room, String description, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<Tag> tags) {
+    private EventRequestDTO(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room, String description, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags) {
         this.name = name;
         this.date = date;
         this.startTime = startTime;

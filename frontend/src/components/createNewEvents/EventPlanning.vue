@@ -7,23 +7,11 @@
   <div class="container">
     <div class="events">
       <button @click="toggleWorkshopBox" class="action-button" type="button">
-        <img
-          src="@/images/plus.png"
-          alt="Plus"
-          class="plus-icon"
-          width="35"
-          height="35"
-        />
+        <img src="@/images/plus.png" alt="Plus" class="plus-icon" width="35" height="35" />
         Neuer Workshop
       </button>
       <button @click="toggleExchangeDayBox" class="action-button" type="button">
-        <img
-          src="@/images/plus.png"
-          alt="Plus"
-          class="plus-icon"
-          width="35"
-          height="35"
-        />
+        <img src="@/images/plus.png" alt="Plus" class="plus-icon" width="35" height="35" />
         Neuer Exchange Day
       </button>
 
@@ -32,42 +20,34 @@
         <div v-if="showWorkshopBox" class="create-box">
           <h2 class="login-header">Neuer Workshop</h2>
           <form @submit.prevent="createWorkshop">
+
+            <!-- Name for the Workshop -->
             <div class="input-group">
               <label for="name">Name</label>
               <input type="text" id="name" v-model="name" required />
             </div>
+
+            <!-- Associated Exchangeday selection picker -->
             <div class="input-group">
               <label for="exchangeDaySelect">Exchange Day</label>
-              <select
-                id="exchangeDaySelect"
-                v-model="exchangeDaySelect"
-                @change="updateSelectedExchangeDay"
-                required
-              >
+              <select id="exchangeDaySelect" v-model="exchangeDaySelect" @change="updateSelectedExchangeDay" required>
                 <option value="" disabled selected>
                   Bitte wählen Sie einen Exchange Day aus
                 </option>
-                <option
-                  v-for="exchangeDay in exchangeDays"
-                  :key="exchangeDay.id"
-                  :value="exchangeDay.id"
-                >
+                <option v-for="exchangeDay in exchangeDays" :key="exchangeDay.id" :value="exchangeDay.id">
                   {{ exchangeDay.name }}
                 </option>
               </select>
             </div>
+
+            <!-- Datepicker -->
             <div class="input-group">
               <label for="date">Datum</label>
-              <input
-                type="date"
-                id="date"
-                v-model="date"
-                :min="selectedExchangeDay?.startDate || ''"
-                :max="selectedExchangeDay?.endDate || ''"
-                :disabled="!exchangeDaySelect"
-                required
-              />
+              <input type="date" id="date" v-model="date" :min="selectedExchangeDay?.startDate || ''"
+                :max="selectedExchangeDay?.endDate || ''" :disabled="!exchangeDaySelect" required />
             </div>
+
+            <!-- Start and end time Input -->
             <div class="input-group">
               <label for="startTime">Startzeit</label>
               <input type="time" id="startTime" v-model="startTime" required />
@@ -76,14 +56,57 @@
               <label for="endTime">Endzeit</label>
               <input type="time" id="endTime" v-model="endTime" required />
             </div>
+
+            <!-- Room Input -->
             <div class="input-group">
               <label for="room">Raum</label>
               <input type="text" id="room" v-model="room" />
             </div>
+
+            <!-- Description input -->
             <div class="input-group">
               <label for="description">Beschreibung</label>
               <input type="text" id="description" v-model="description" />
             </div>
+
+            <!-- Dropdown for experience Level -->
+            <div class="input-group">
+              <label for="experienceLevel">Erfahrungslevel</label>
+              <select id="experienceLevel" v-model="selectedExperienceLevel" required>
+                <option value="" disabled selected>Bitte wählen Sie ein Erfahrungslevel</option>
+                <option v-for="level in experienceLevels" :key="level" :value="level">
+                  {{ germanExperienceLevels[level] }}
+                </option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label for="tags">Event Tags</label>
+              <p>Bitte wählen Sie bis zu 5 Event Tags für Ihr Event aus:</p>
+
+              <!-- Tag input field with autocomplete -->
+              <input type="text" id="tags" v-model="tagInput" placeholder="Tag eingeben und Komma drücken"
+                @input="filterTags" @keyup="handleKeyup" :disabled="selectedTags.length >= 5" />
+
+              <!-- Display selected tags as chips -->
+              <div class="tag-chips">
+                <span v-for="(tag, index) in selectedTags" :key="index" class="chip">
+                  {{ tag }}
+                  <button type="button" class="remove-tag" @click="removeTag(index)">
+                    &times;
+                  </button>
+                </span>
+              </div>
+
+              <!-- Display filtered tag list -->
+              <div class="tag-list">
+                <button v-for="tag in filteredTags" :key="tag" type="button" @click="addTag(tag)"
+                  :disabled="selectedTags.includes(tag)">
+                  {{ tag }}
+                </button>
+              </div>
+            </div>
+
             <button type="submit" class="login-button">
               Workshop erstellen
             </button>
@@ -98,12 +121,7 @@
           <form @submit.prevent="createExchangeDay">
             <div class="input-group">
               <label for="exchangeName">Name</label>
-              <input
-                type="text"
-                id="exchangeName"
-                v-model="exchangeName"
-                required
-              />
+              <input type="text" id="exchangeName" v-model="exchangeName" required />
             </div>
             <div class="input-group">
               <label for="startDate">Startdatum</label>
@@ -119,11 +137,7 @@
             </div>
             <div class="input-group">
               <label for="exchangeDescription">Beschreibung</label>
-              <input
-                type="text"
-                id="exchangeDescription"
-                v-model="exchangeDescription"
-              />
+              <input type="text" id="exchangeDescription" v-model="exchangeDescription" />
             </div>
             <button type="submit" class="login-button">
               Exchange Day erstellen
@@ -137,26 +151,49 @@
 
 <script setup lang="ts">
 import "@/assets/event-planning.css";
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { useRouter } from "vue-router";
 import config from "@/config";
 import Cookies from "js-cookie";
 
+const userId = Cookies.get("userId");
+
+const apiUrl = `${config.apiBaseUrl}/events`;
+const exchangeApiUrl = `${config.apiBaseUrl}/exchange-days`;
+
+const router = useRouter();
+
 const showWorkshopBox = ref(false);
 const showExchangeDay = ref(false);
 
-// Workshop form data
-const name = ref("");
-const description = ref("");
-const date = ref("");
-const startTime = ref(new Date().toISOString().slice(11, 16));
-const endTime = ref("");
-const room = ref("");
-const exchangeDaySelect = ref("");
-const userId = Cookies.get("userId");
-
 const exchangeDays = ref([]);
 const users = ref([]);
+
+// experience level component values
+const experienceLevels = ref([]);
+const germanExperienceLevels = {
+  ALL_LEVELS: "Alle Ebenen",
+  JUNIOR: "Junior",
+  SENIOR: "Senior",
+  EXPERT: "Experte",
+}
+
+// Tag component values
+const tagInput = ref("");
+const allTags = ref([]);
+const filteredTags = ref([]);
+
+// Workshop form data
+const name = ref("");
+const exchangeDaySelect = ref("");
+const date = ref("");
+const startTime = ref("");
+const endTime = ref("");
+const room = ref("");
+const description = ref("");
+const selectedExperienceLevel = ref("");
+const selectedTags = ref([]);
+
 const selectedExchangeDay = computed(() => {
   return (
     exchangeDays.value.find((day) => day.id === exchangeDaySelect.value) || null
@@ -170,41 +207,44 @@ const startDate = ref(new Date().toISOString().slice(0, 10));
 const endDate = ref(new Date().toISOString().slice(0, 10));
 const location = ref("");
 
-const apiUrl = `${config.apiBaseUrl}/events`;
-const exchangeApiUrl = `${config.apiBaseUrl}/exchange-days`;
 
-const router = useRouter();
+// Watcher to update endTime when startTime changes
+watch(startTime, (newStartTime) => {
+  updateEndTime(newStartTime);
+});
 
-/**
- * Initializes the start time of the Workshop form.
- */
-const initializeStartTime = () => {
-  const now = new Date();
+const setStartTimeToCurrentHour = () => {
+  const currentHour = new Date().getHours();
+  const formattedHour = currentHour < 10 ? `0${currentHour}` : currentHour;
+  startTime.value = `${formattedHour}:00`;
+}
 
-  const formatter = new Intl.DateTimeFormat("de-DE", {
-    timeZone: "Europe/Berlin",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  });
+const updateEndTime = (startTime)  => {
+      // Extract hours and minutes from startTime
+      const [startHour, startMinute] = startTime.split(":").map(Number);
 
-  const formattedTime = formatter.format(now);
-  startTime.value = formattedTime;
-};
+      // Calculate new end time, 1 hour after start time
+      const newEndHour = (startHour + 1) % 24; // Make sure hour wraps around after 23
+      const formattedEndHour = newEndHour < 10 ? `0${newEndHour}` : newEndHour;
+      const formattedEndTime = `${formattedEndHour}:${startMinute < 10 ? "0" + startMinute : startMinute}`;
+
+      endTime.value = formattedEndTime;
+    }
 
 /**
  * Fetches all Exchange Days and users from the API when the component is mounted.
  */
 onMounted(async () => {
-  initializeStartTime();
-  fetchData();
+  setStartTimeToCurrentHour();
+  await fetchData();
 });
 
 const fetchData = async () => {
   try {
-    const [exchangeDaysResponse, usersResponse] = await Promise.all([
+    const [exchangeDaysResponse, usersResponse, levelsResponse] = await Promise.all([
       fetch(`${config.apiBaseUrl}/exchange-days`),
       fetch(`${config.apiBaseUrl}/users`),
+      fetch(`${config.apiBaseUrl}/events/experience-levels`)
     ]);
     if (!exchangeDaysResponse.ok) {
       throw new Error("Fehler beim Laden der Exchange Days");
@@ -212,13 +252,68 @@ const fetchData = async () => {
     if (!usersResponse.ok) {
       throw new Error("Fehler beim Laden der Benutzer");
     }
+    if (!levelsResponse.ok) {
+      throw new Error("Fehler beim Laden der Erfahrungslevel.");
+    }
+    fetchTags();
 
     exchangeDays.value = await exchangeDaysResponse.json();
     users.value = await usersResponse.json();
+    experienceLevels.value = await levelsResponse.json();
   } catch (error) {
     console.error(error.message, error);
   }
 };
+
+const fetchTags = async () => {
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/tags`);
+    if (response.ok) {
+      const tags = await response.json();
+      allTags.value = tags.map((tag) => tag.name);
+      filteredTags.value = [...allTags.value];
+    } else {
+      console.error("Fehler beim Abrufen der Tags.");
+    }
+  } catch (error) {
+    console.error("Fehler beim Abrufen der Tags:", error);
+  }
+}
+
+const filterTags = () => {
+  const query = tagInput.value.toLowerCase().trim();
+  filteredTags.value = allTags.value.filter((tag) =>
+    tag.toLowerCase().includes(query)
+  );
+}
+
+const handleKeyup = (event) => {
+  if (event.key === ',') {
+    addTagFromInput();
+  }
+}
+
+const addTagFromInput = () => {
+  const trimmedInput = tagInput.value.trim().slice(0, -1);
+
+  if (!trimmedInput) return;
+
+  if (trimmedInput && !selectedTags.value.includes(trimmedInput) && selectedTags.value.length < 5) {
+    selectedTags.value.push(trimmedInput);
+  }
+  tagInput.value = "";
+  filteredTags.value = [...allTags.value];
+}
+
+const addTag = (tag) => {
+  if (!selectedTags.value.includes(tag) && selectedTags.value.length < 5) {
+    selectedTags.value.push(tag);
+  }
+}
+
+const removeTag = (index) => {
+  selectedTags.value.splice(index, 1);
+}
 
 fetchData();
 
@@ -283,6 +378,8 @@ const createWorkshop = async () => {
         description: description.value,
         exchangeDayId: exchangeDaySelect.value,
         organizerId: userId,
+        recommendedExperience: selectedExperienceLevel.value,
+        tags: selectedTags.value,
       }),
     });
 
@@ -344,6 +441,10 @@ const resetWorkshopForm = () => {
   room.value = "";
   description.value = "";
   exchangeDaySelect.value = "";
+  selectedExperienceLevel.value = "";
+  tagInput.value = "";
+  selectedTags.value = [];
+  filteredTags.value = [...allTags];
   showWorkshopBox.value = false;
 };
 

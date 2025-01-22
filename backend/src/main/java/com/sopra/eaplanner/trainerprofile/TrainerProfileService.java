@@ -4,6 +4,7 @@ import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.event.tags.TagRepository;
 import com.sopra.eaplanner.event.tags.TagResponseDTO;
+import com.sopra.eaplanner.event.tags.TagService;
 import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.feedback.FeedbackRepository;
 import com.sopra.eaplanner.user.User;
@@ -28,6 +29,8 @@ public class TrainerProfileService {
     private FeedbackRepository feedbackRepository;
     @Autowired
     private TagRepository tagRepository;
+    @Autowired
+    private TagService tagService;
 
     public List<TrainerProfileResponseDTO> getAllTrainerProfiles() {
         Iterable<TrainerProfile> profiles = trainerProfileRepository.findAll();
@@ -194,21 +197,9 @@ public class TrainerProfileService {
             throw new IllegalArgumentException("Only users with ADMIN role can create a trainer profile.");
         }
 
-        List<String> existingTagNames = tagRepository.findExistingTagNames(request.getExpertiseTagNames());
-
-        Set<String> missingTagNames = request.getExpertiseTagNames().stream()
-                .filter(name -> !existingTagNames.contains(name))
-                .collect(Collectors.toSet());
-
-        Set<Tag> newTags = missingTagNames.stream()
-                .map(Tag::new)
-                .collect(Collectors.toSet());
-        tagRepository.saveAll(newTags);
-
-
         TrainerProfile trainerProfile = new TrainerProfile();
         trainerProfile.setBio(request.getBio());
-        trainerProfile.setExpertiseTags(tagRepository.findExistingTags(request.getExpertiseTagNames()));
+        trainerProfile.setExpertiseTags(tagService.mergeAndGetTagsFromRequest(request.getExpertiseTagNames()));
         trainerProfile.setUser(user);
 
         TrainerProfile savedProfile = trainerProfileRepository.save(trainerProfile);
@@ -228,7 +219,7 @@ public class TrainerProfileService {
         }
 
         existingProfile.setBio(request.getBio());
-//TODO
+        existingProfile.setExpertiseTags(tagService.mergeAndGetTagsFromRequest(request.getExpertiseTagNames()));
         existingProfile.setUser(user);
 
         TrainerProfile updatedProfile = trainerProfileRepository.save(existingProfile);

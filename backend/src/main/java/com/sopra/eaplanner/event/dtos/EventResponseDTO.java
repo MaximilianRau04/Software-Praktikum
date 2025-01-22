@@ -8,6 +8,7 @@ import java.time.LocalTime;
 
 public class EventResponseDTO {
     private Long id;
+    private Long exchangeDayId;
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
@@ -21,6 +22,7 @@ public class EventResponseDTO {
 
     public EventResponseDTO(Long id, Event event) {
         this.id = id;
+        this.exchangeDayId = event.getExchangeDay().getId();
         this.date = event.getDate();
         this.startTime = event.getStartTime();
         this.endTime = event.getEndTime();
@@ -32,6 +34,7 @@ public class EventResponseDTO {
 
     public EventResponseDTO(Event event) {
         this.id = event.getId();
+        this.exchangeDayId = event.getExchangeDay().getId();
         this.date = event.getDate();
         this.startTime = event.getStartTime();
         this.endTime = event.getEndTime();
@@ -44,6 +47,8 @@ public class EventResponseDTO {
     public Long getId() {
         return id;
     }
+
+    public Long getExchangeDayId(){return exchangeDayId;}
 
     public LocalDate getDate() {
         return date;
@@ -81,6 +86,8 @@ public class EventResponseDTO {
         this.id = id;
     }
 
+    public void setExchangeDayId(Long exchangeDayId){this.exchangeDayId = exchangeDayId;}
+
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
@@ -105,12 +112,13 @@ public class EventResponseDTO {
         this.recommendedExperience = recommendedExperience;
     }
 
-    public static EventResponseDTO mockWith(Long id, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience) {
-        return new EventResponseDTO(id, date, startTime, endTime, name, room, description, recommendedExperience);
+    public static EventResponseDTO mockWith(Long id, Long exchangeDayId, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience) {
+        return new EventResponseDTO(id, exchangeDayId, date, startTime, endTime, name, room, description, recommendedExperience);
     }
 
-    private EventResponseDTO(Long id, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience) {
+    private EventResponseDTO(Long id, Long exchangeDayId, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience) {
         this.id = id;
+        this.exchangeDayId = exchangeDayId;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;

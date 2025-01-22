@@ -4,6 +4,8 @@ import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,6 +18,8 @@ public class Tag {
     private Long id;
 
     @NotNull(message = "Tag must contain a name")
+    @Size(min = 3, max = 25, message = "Tag name must be between 3 and 25 characters")
+    @Pattern(regexp = "^[a-z A-Z]*$", message = "Tag name must be alphabetic")
     private String name;
 
     @ManyToMany(mappedBy = "tags")
@@ -28,6 +32,7 @@ public class Tag {
     }
 
     public Tag(String name) {
+        this.name = name;
     }
 
     public Long getId() {

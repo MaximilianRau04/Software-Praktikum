@@ -133,7 +133,7 @@ public class Event {
         this.recommendedExperience = recommendedExperience;
     }
 
-    public Event(EventRequestDTO eventDTO, ExchangeDay exchangeDay, User organizer) {
+    public Event(EventRequestDTO eventDTO, ExchangeDay exchangeDay, User organizer, Set<Tag> tags) {
         this.name = eventDTO.getName();
         this.startTime = eventDTO.getStartTime();
         this.endTime = eventDTO.getEndTime();
@@ -144,6 +144,7 @@ public class Event {
         this.organizer = organizer;
         this.attendanceToken = generateAttendanceToken();
         this.recommendedExperience = eventDTO.getRecommendedExperience();
+        this.tags = tags;
     }
 
     public Long getId() {

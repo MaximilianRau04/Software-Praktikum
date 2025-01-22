@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TagService {
@@ -41,5 +43,25 @@ public class TagService {
         tagToDelete.getEvents().forEach(event -> event.getTags().remove(tagToDelete));
 
         tagRepository.delete(tagToDelete);
+    }
+
+    public Set<Tag> mergeAndGetTagsFromRequest(Set<String> tagNames){
+        List<String> existingTagNames = tagRepository.findExistingTagNames(tagNames);
+
+        Set<String> missingTagNames = tagNames.stream()
+                .filter(name -> !existingTagNames.contains(name.trim()))
+                .collect(Collectors.toSet());
+
+        missingTagNames.forEach(System.out::println);
+
+        Set<Tag> newTags = missingTagNames.stream()
+                .map(Tag::new)
+                .collect(Collectors.toSet());
+
+        newTags.stream().map(Tag::getName).forEach(System.out::println);
+
+        tagRepository.saveAll(newTags);
+
+        return tagRepository.findExistingTags(tagNames);
     }
 }
