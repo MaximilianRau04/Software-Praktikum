@@ -131,16 +131,16 @@ import Cookies from "js-cookie";
 import config from "@/config";
 
 export default {
-  props:{
+  props: {
     threads: Array,
-    focusedThreadId:{
+    focusedThreadId: {
       type: Number,
       default: null,
     },
   },
-  watch:{
-    focusedThreadId(newThreadId){
-      if(newThreadId){
+  watch: {
+    focusedThreadId(newThreadId) {
+      if (newThreadId) {
         this.selectThread(newThreadId);
       }
     },
@@ -172,7 +172,7 @@ export default {
           `${config.apiBaseUrl}/events/${eventId}/forum`,
         );
         this.threads = response.data;
-        console.log(this.threads.threadId)
+        console.log(this.threads.threadId);
       } catch (error) {
         console.error("Fehler beim Abrufen der Threads:", error);
       }
@@ -182,7 +182,7 @@ export default {
      */
     async createThread() {
       const eventId = this.$route.params.eventId;
-      console.log(eventId)
+      console.log(eventId);
       try {
         const newThreadData = {
           title: this.newThread.title,

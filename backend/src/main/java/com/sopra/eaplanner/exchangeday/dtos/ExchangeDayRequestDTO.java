@@ -1,9 +1,6 @@
 package com.sopra.eaplanner.exchangeday.dtos;
 
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -11,12 +8,12 @@ import java.time.LocalDate;
 public class ExchangeDayRequestDTO {
 
     @DateTimeFormat(pattern = "dd.MM.yyyy")
-    @Future(message = "Date must be in the future")
+    @FutureOrPresent(message = "Date must be in the future")
     @NotNull(message = "Date cannot be null")
     private LocalDate startDate;
 
     @DateTimeFormat(pattern = "dd.MM.yyyy")
-    @Future(message = "Date must be in the future")
+    @FutureOrPresent(message = "Date must be in the future")
     @NotNull(message = "Date cannot be null")
     private LocalDate endDate;
 

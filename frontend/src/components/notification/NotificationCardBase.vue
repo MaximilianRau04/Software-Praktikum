@@ -64,7 +64,6 @@ export default {
 };
 </script>
 
-
 <style scoped>
 .notification-card {
   display: flex;

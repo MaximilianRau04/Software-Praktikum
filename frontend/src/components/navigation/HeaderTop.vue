@@ -27,15 +27,16 @@
         </div>
 
         <div v-if="showNotifications" class="notification-menu" @click.stop>
-
           <!-- EVENT_REMINDERS Section -->
           <div v-if="groupedNotifications.EVENT_REMINDER?.length">
             <h3>Event Reminders</h3>
-            <component 
-            v-for="(notification, index) in groupedNotifications.EVENT_REMINDER"
-            :key="index"
-            is="EventNotificationCard"
-            :notification="notification"
+            <component
+              v-for="(
+                notification, index
+              ) in groupedNotifications.EVENT_REMINDER"
+              :key="index"
+              is="EventNotificationCard"
+              :notification="notification"
               @mark-as-read="markAsRead"
             />
           </div>
@@ -119,8 +120,9 @@ export default {
     },
     unreadCount() {
       return Array.isArray(this.notifications)
-      ? this.notifications.filter((notification) => !notification.isRead).length
-      : 0;
+        ? this.notifications.filter((notification) => !notification.isRead)
+            .length
+        : 0;
     },
   },
   methods: {

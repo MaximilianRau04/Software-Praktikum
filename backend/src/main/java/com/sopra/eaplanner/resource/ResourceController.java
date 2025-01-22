@@ -20,6 +20,11 @@ public class ResourceController {
         return resourceService.getAllResources();
     }
 
+    @GetMapping("/type/{type}")
+    public Iterable<ResourceResponse> getResourcesByType(@PathVariable String type) {
+        return resourceService.getResourcesByType(type);
+    }
+
     @GetMapping("/{id}")
     public ResourceResponse getResource(@PathVariable Long id) {
         return resourceService.getResourceById(id);

@@ -120,9 +120,9 @@
 
     <!-- Forum anzeigen -->
     <div v-if="view === 'forum'">
-      <Forum 
-      :threads="event.forumThreads"
-      :focused-thread-id.sync="focusedThreadId"
+      <Forum
+        :threads="event.forumThreads"
+        :focused-thread-id.sync="focusedThreadId"
       />
     </div>
 
@@ -343,17 +343,17 @@ const showUsers = () => {
   view.value = "users";
 };
 
-const handleThreadNavigation= () =>{
+const handleThreadNavigation = () => {
   const threadId = Number(route.query.threadId);
-  if(threadId){
+  if (threadId) {
     view.value = "forum";
     setFocusedThread(threadId);
   }
 };
 
-const setFocusedThread = (threadId) =>{
+const setFocusedThread = (threadId) => {
   focusedThreadId.value = threadId;
-}
+};
 
 onMounted(() => {
   fetchEventDetails();

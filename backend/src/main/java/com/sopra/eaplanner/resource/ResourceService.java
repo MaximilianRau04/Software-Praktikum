@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 
 @Service
@@ -53,4 +55,12 @@ public class ResourceService {
         resourceRepository.deleteById(id);
         return new ResourceResponse(resource);
     }
+
+    public Iterable<ResourceResponse> getResourcesByType(String type) {
+        return StreamSupport.stream(resourceRepository.findAll().spliterator(), false)
+                .filter(resource -> resource.getType().toString().equalsIgnoreCase(type))
+                        .map(ResourceResponse::new)
+                .collect(Collectors.toList());
+    }
+
 }

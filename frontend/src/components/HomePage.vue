@@ -1,11 +1,19 @@
 <template>
   <div class="dashboard-container">
     <!-- Sidebar for navigation -->
-    <sidebar :dataOpenSideBar="openSidebar" :toggleSidebar="toggleSidebar" @changeComponent="changeComponent" />
+    <sidebar
+      :dataOpenSideBar="openSidebar"
+      :toggleSidebar="toggleSidebar"
+      @changeComponent="changeComponent"
+    />
     <!-- Main content area -->
     <div class="main-content">
-      <HeaderTop :dataOpenSideBar="openSidebar" :toggleSidebar="toggleSidebar" :notifications="notificationsForHeader"
-        @mark-as-read="handleMarkAsRead" />
+      <HeaderTop
+        :dataOpenSideBar="openSidebar"
+        :toggleSidebar="toggleSidebar"
+        :notifications="notificationsForHeader"
+        @mark-as-read="handleMarkAsRead"
+      />
       <!-- Dynamic content area that renders the current component -->
       <div class="content-area">
         <router-view />
@@ -17,7 +25,7 @@
 <script>
 import { ref } from "vue";
 import MainPage from "@/components/viewExchangeDays/home/MainPage.vue";
-import EventPlanning from "@/components/createNewEvents/EventPlanning.vue";
+import EventPlanning from "@/components/adminPanel/AdminPanel.vue";
 import GiveFeedback from "@/components/feedback/GiveFeedback.vue";
 import Sidebar from "@/components/navigation/Sidebar.vue";
 import HeaderTop from "@/components/navigation/HeaderTop.vue";
@@ -72,10 +80,12 @@ export default {
       const userId = Cookies.get("userId");
       if (!userId) return;
       try {
-        const response = await fetch(`${config.apiBaseUrl}/notifications/unread/${userId}`);
+        const response = await fetch(
+          `${config.apiBaseUrl}/notifications/unread/${userId}`,
+        );
         const unreadNotifications = await response.json();
 
-        if(response.ok){
+        if (response.ok) {
           this.notifications = unreadNotifications;
         }
 
@@ -132,6 +142,7 @@ export default {
 .content-area {
   height: calc(100vh - 60px);
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .header-top {
