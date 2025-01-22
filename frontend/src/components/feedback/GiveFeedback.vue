@@ -364,20 +364,20 @@ const commentFields = [
   {
     key: "enjoymentComment",
     label: "Was hat Ihnen am meisten gefallen?",
-    maxlength: 200,
+    maxlength: 500,
     explanation:
       "Platz für Kommentare darüber, was Ihnen am meisten Spaß gemacht hat.",
   },
   {
     key: "improvementComment",
     label: "Was könnte verbessert werden?",
-    maxlength: 200,
+    maxlength: 500,
     explanation: "Platz für Kommentare zu möglichen Verbesserungen.",
   },
   {
     key: "requestComment",
     label: "Haben Sie Anregungen für zukünftige Events?",
-    maxlength: 200,
+    maxlength: 500,
     explanation:
       "Platz für Vorschläge oder Wünsche für zukünftige Veranstaltungen.",
   },
@@ -387,7 +387,7 @@ const recommendationFields = [
   {
     key: "personalImprovementComment",
     label: "Was haben Sie persönlich gelernt?",
-    maxlength: 200,
+    maxlength: 500,
     explanation:
       "Platz für Kommentare darüber, was Sie aus dem Workshop gelernt haben.",
   },
@@ -399,7 +399,7 @@ const recommendationFields = [
   {
     key: "recommendationComment",
     label: "Warum oder warum nicht?",
-    maxlength: 200,
+    maxlength: 500,
     explanation:
       "Platz für eine Erklärung, warum oder warum nicht empfohlen wird.",
   },

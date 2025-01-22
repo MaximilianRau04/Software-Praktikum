@@ -1,8 +1,11 @@
 package com.sopra.eaplanner.event.participation;
 
 import com.sopra.eaplanner.event.Event;
+import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.reward.RewardService;
 import com.sopra.eaplanner.user.User;
+import com.sopra.eaplanner.user.UserTagWeight;
+import com.sopra.eaplanner.user.UserTagWeightRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,9 @@ import java.time.LocalDateTime;
 public class EventParticipationService {
     @Autowired
     private EventParticipationRepository eventParticipationRepository;
+
+    @Autowired
+    private UserTagWeightRepository userTagWeightRepository;
 
     @Autowired
     private RewardService rewardService;
@@ -35,6 +41,8 @@ public class EventParticipationService {
         eventParticipation.setConfirmationTime(LocalDateTime.now());
         eventParticipationRepository.save(eventParticipation);
 
+        addTagWeightForAttendance(user, event);
+
         rewardService.grantAttendancePoints(user);
     }
 
@@ -44,7 +52,7 @@ public class EventParticipationService {
         eventParticipationRepository.delete(eventParticipation);
     }
 
-    public void postFeedback(User user, Event event) {
+    public void confirmFeedback(User user, Event event) {
         EventParticipation eventParticipation = eventParticipationRepository.findByUserAndEvent(user, event)
                 .orElseThrow(() -> new EntityNotFoundException("Participation not found"));
 
@@ -53,5 +61,14 @@ public class EventParticipationService {
         eventParticipationRepository.save(eventParticipation);
 
         rewardService.grantFeedbackGiverPoints(user);
+    }
+
+    private void addTagWeightForAttendance(User user, Event event) {
+        for (Tag tag: event.getTags()){
+            UserTagWeight tagWeight = userTagWeightRepository.findByUserAndTag(user, tag)
+                    .orElseGet(()-> new UserTagWeight(user, tag));
+            tagWeight.setVisitedEventsWithTag(tagWeight.getVisitedEventsWithTag() + 1);
+            userTagWeightRepository.save(tagWeight);
+        }
     }
 }

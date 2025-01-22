@@ -1,18 +1,19 @@
 package com.sopra.eaplanner.trainerprofile;
 
+import com.sopra.eaplanner.event.dtos.EventResponseDTO;
+import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.feedback.Feedback;
-import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.user.User;
-import com.sopra.eaplanner.user.UserRepository;
-import com.sopra.eaplanner.event.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/trainerProfiles")
@@ -20,12 +21,6 @@ public class TrainerProfileController {
 
     @Autowired
     private TrainerProfileService trainerProfileService;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private EventRepository eventRepository;
 
     @GetMapping("")
     public ResponseEntity<List<TrainerProfileResponseDTO>> getAllTrainerProfiles() {
@@ -39,8 +34,6 @@ public class TrainerProfileController {
         return ResponseEntity.ok(profile);
     }
 
-    // get hosted events
-
     @GetMapping("/{id}/user")
     public ResponseEntity<User> getUserOfTrainerProfile(@PathVariable Long id) {
         User user = trainerProfileService.getUserOfTrainerProfile(id);
@@ -50,6 +43,16 @@ public class TrainerProfileController {
     @GetMapping("/{id}/pinned-comments")
     public List<Map<String, String>> getPinnedComments(@PathVariable Long id) {
         return trainerProfileService.getPinnedComments(id);
+    }
+
+    @GetMapping("/{id}/expertiseTags")
+    public ResponseEntity<Set<TagResponseDTO>> getExpertiseTags(@PathVariable Long id) {
+        return ResponseEntity.ok().body(trainerProfileService.getExpertiseTags(id));
+    }
+
+    @GetMapping("/{id}/hostedEvents")
+    public ResponseEntity<List<EventResponseDTO>> getHostedEvents(@PathVariable Long id) {
+        return ResponseEntity.ok().body(trainerProfileService.getHostedEvents(id));
     }
 
     @PostMapping("/{trainerId}/{feedbackId}/pin")

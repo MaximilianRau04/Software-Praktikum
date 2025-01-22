@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -21,6 +22,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserTagWeightService userTagWeightService;
 
     @GetMapping("/search")
     public UserResponseDTO getUserByUsername(@RequestParam("username") String username) {
@@ -40,6 +44,12 @@ public class UserController {
     @GetMapping("/{id}/registeredEvents")
     public Iterable<EventResponseDTO> getRegisteredEvents(@PathVariable Long id) {
         return userService.getRegisteredEvents(id);
+    }
+
+    @GetMapping("/{id}/recommendedEvents")
+    public ResponseEntity<List<EventResponseDTO>> getRecommendedEvents(@PathVariable Long id, @RequestParam("limit") Integer limit) {
+        List<EventResponseDTO> recommendedEvents = userTagWeightService.recommendEvents(id, limit);
+        return ResponseEntity.ok().body(recommendedEvents);
     }
 
     @GetMapping("/{id}/feedback")

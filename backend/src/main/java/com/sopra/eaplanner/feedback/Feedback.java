@@ -12,10 +12,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @Entity
 public class Feedback {
 
@@ -121,6 +117,8 @@ public class Feedback {
     @JoinColumn(name = "trainer_profile_id")
     @JsonBackReference
     private TrainerProfile trainerProfile;
+
+    private Double sentiment;
 
     private boolean enjoymentCommentPinned;
 
@@ -467,6 +465,14 @@ public class Feedback {
 
     public void setRecommendationCommentPinned(boolean recommendationCommentPinned) {
         this.recommendationCommentPinned = recommendationCommentPinned;
+    }
+
+    public Double getSentiment(){
+        return sentiment;
+    }
+
+    public void setSentiment(Double sentiment){
+        this.sentiment = sentiment;
     }
 
 }

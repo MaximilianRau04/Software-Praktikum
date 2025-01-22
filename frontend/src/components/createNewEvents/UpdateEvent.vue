@@ -4,54 +4,24 @@
     <form @submit.prevent="updateEvent">
       <div class="form-group">
         <label for="name">Event Name:</label>
-        <input
-          type="text"
-          id="name"
-          v-model="event.name"
-          required
-          minlength="3"
-          maxlength="100"
-        />
+        <input type="text" id="name" v-model="event.name" required minlength="3" maxlength="100" />
       </div>
       <div class="form-group">
         <label for="description">Beschreibung:</label>
-        <textarea
-          id="description"
-          v-model="event.description"
-          maxlength="255"
-        ></textarea>
+        <textarea id="description" v-model="event.description" maxlength="255"></textarea>
       </div>
-      <div class="input-group">
+      <div class="form-group">
         <label for="exchangeDaySelect">Exchange Day</label>
-        <select
-          id="exchangeDaySelect"
-          v-model="exchangeDaySelect"
-          @change="updateSelectedExchangeDay"
-          required
-        >
-          <option value="" disabled selected>
-            Bitte wählen Sie einen Exchange Day aus
-          </option>
-          <option
-            v-for="exchangeDay in exchangeDays"
-            :key="exchangeDay.id"
-            :value="exchangeDay.id"
-          >
+        <select id="exchangeDaySelect" v-model="event.exchangeDayId" @change="handleExchangeDayChange" required>
+          <option v-for="exchangeDay in exchangeDays" :key="exchangeDay.id" :value="exchangeDay.id">
             {{ exchangeDay.name }}
           </option>
         </select>
       </div>
-      <div class="input-group">
+      <div class="form-group">
         <label for="date">Datum</label>
-        <input
-          type="date"
-          id="date"
-          v-model="date"
-          :min="selectedExchangeDay?.startDate || ''"
-          :max="selectedExchangeDay?.endDate || ''"
-          :disabled="!exchangeDaySelect"
-          required
-        />
+        <input type="date" id="date" v-model="event.date" :min="selectedExchangeDay?.startDate || ''"
+          :max="selectedExchangeDay?.endDate || ''" :disabled="!event.exchangeDayId" required />
       </div>
       <div class="form-group">
         <label for="room">Raum:</label>
@@ -68,14 +38,47 @@
       <div class="form-group">
         <label for="organizer">Organizer:</label>
         <select id="organizer" v-model="event.organizerId">
-          <option
-            v-for="user in registeredUsers"
-            :key="user.id"
-            :value="user.id"
-          >
+          <option v-for="user in registeredUsers" :key="user.id" :value="user.id">
             {{ user.firstname }} {{ user.lastname }}
           </option>
         </select>
+      </div>
+
+      <div class="form-group">
+        <label for="experienceLevel">Erfahrungslevel</label>
+        <select id="experienceLevel" v-model="event.recommendedExperience" required>
+          <option value="" disabled selected>Bitte wählen Sie ein Erfahrungslevel</option>
+          <option v-for="level in experienceLevels" :key="level" :value="level">
+            {{ germanExperienceLevels[level] }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="tags">Event Tags</label>
+        <p>Bitte wählen Sie bis zu 5 Event Tags für Ihr Event aus:</p>
+
+        <!-- Tag input field with autocomplete -->
+        <input type="text" id="tags" v-model="tagInput" placeholder="Tag eingeben und Komma drücken" @input="filterTags"
+          @keyup="handleKeyup" :disabled="selectedTags.length >= 5" />
+
+        <!-- Display selected tags as chips -->
+        <div class="tag-chips">
+          <span v-for="(tag, index) in selectedTags" :key="index" class="chip">
+            {{ tag }}
+            <button type="button" class="remove-tag" @click="removeTag(index)">
+              &times;
+            </button>
+          </span>
+        </div>
+
+        <!-- Display filtered tag list -->
+        <div class="tag-list">
+          <button v-for="tag in filteredTags" :key="tag" type="button" @click="addTag(tag)"
+            :disabled="selectedTags.includes(tag)">
+            {{ tag }}
+          </button>
+        </div>
       </div>
       <div class="button-group">
         <button type="button" class="back-button" @click="goBack">
@@ -102,12 +105,25 @@ const route = useRoute();
 const userId = Cookies.get("userId");
 const exchangeDayId = ref("");
 const exchangeDaySelect = ref("");
+const exchangeDays = ref([]);
+const registeredUsers = ref([]);
 
-// Computed property to find selected exchange day
+const experienceLevels = ref([]);
+const germanExperienceLevels = {
+  ALL_LEVELS: "Alle Ebenen",
+  JUNIOR: "Junior",
+  SENIOR: "Senior",
+  EXPERT: "Experte",
+}
+
+const selectedTags = ref([]);
+const tagInput = ref("");
+const allTags = ref([]);
+const filteredTags = ref([]);
+
+//Computed property to find selected exchange day
 const selectedExchangeDay = computed(() => {
-  return (
-    exchangeDays.value.find((day) => day.id === exchangeDaySelect.value) || null
-  );
+  return (exchangeDays.value.find((day) => day.id === event.value.exchangeDayId) || null);
 });
 
 // Event data
@@ -120,10 +136,10 @@ const event = ref({
   room: "",
   description: "",
   date: "",
+  recommendedExperience: "",
 });
 
-const exchangeDays = ref([]);
-const registeredUsers = ref([]);
+
 
 /**
  * Deletes an event after confirmation.
@@ -161,19 +177,13 @@ const fetchEventDetails = async () => {
   try {
     const response = await fetch(`${config.apiBaseUrl}/events/${eventId}`);
     const eventData = await response.json();
-    event.value = eventData;
+    event.value = { ...event.value, ...eventData };
 
     const organizerResponse = await fetch(
       `${config.apiBaseUrl}/events/${eventId}/organizer`,
     );
     const organizerData = await organizerResponse.json();
     event.value.organizerId = organizerData.id;
-
-    const exchangeDayResponse = await fetch(
-      `${config.apiBaseUrl}/events/${eventId}/exchange-day`,
-    );
-    const exchangeDayData = await exchangeDayResponse.json();
-    event.value.exchangeDayId = exchangeDayData.id;
   } catch (error) {
     console.error("Error fetching event details:", error);
     alert("Das Event konnte nicht geladen werden.");
@@ -218,6 +228,34 @@ const fetchExchangeDays = async () => {
   }
 };
 
+const fetchExperienceLevels = async () => {
+  try {
+    
+    const levelsResponse = await fetch(`${config.apiBaseUrl}/events/experience-levels`);
+    if (!levelsResponse.ok) {
+      throw new Error("Fehler beim Laden der Erfahrungslevel.");
+    }
+
+    experienceLevels.value = await levelsResponse.json();
+  } catch (error) {
+    console.error(error.message, error);
+  }
+}
+
+const fetchEventTags = async () => {
+  try {
+    const eventId = route.params.eventId;
+    const tagsResponse = await fetch(`${config.apiBaseUrl}/events/${eventId}/tags`)
+    if(!tagsResponse.ok){
+      throw new Error("Fehler beim Laden der Event Tags.")
+    }
+    selectedTags.value = await tagsResponse.json();
+    selectedTags.value = selectedTags.value.map(tag => tag.name);
+  } catch (error){
+    console.error(error.message, error);
+  }
+}
+
 /**
  * Updates the selected exchange day.
  */
@@ -246,6 +284,8 @@ const updateEvent = async () => {
       room: event.value.room,
       startTime: event.value.startTime,
       endTime: event.value.endTime,
+      recommendedExperience: event.value.recommendedExperience,
+      tags: selectedTags.value,
     };
 
     const response = await fetch(`${config.apiBaseUrl}/events/${eventId}`, {
@@ -266,6 +306,59 @@ const updateEvent = async () => {
   }
 };
 
+// Fetch tags from the server
+const fetchGlobalTags = async () => {
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/tags`);
+    if (response.ok) {
+      const tags = await response.json();
+      allTags.value = tags.map((tag) => tag.name);
+      filteredTags.value = [...allTags.value];
+    } else {
+      console.error("Fehler beim Abrufen der Tags.");
+    }
+  } catch (error) {
+    console.error("Fehler beim Abrufen der Tags:", error);
+  }
+}
+
+// Filter tags based on the input
+const filterTags = () => {
+  const query = tagInput.value.toLowerCase().trim();
+  filteredTags.value = allTags.value.filter((tag) =>
+    tag.toLowerCase().includes(query)
+  );
+};
+
+// Handle keyup event to add a tag when comma is pressed
+const handleKeyup = (event) => {
+  if (event.key === ",") {
+    addTagFromInput();
+  }
+};
+
+// Add a tag from the input
+const addTagFromInput = () => {
+  const trimmedInput = tagInput.value.trim().slice(0, -1); // Remove the trailing comma
+  if (trimmedInput && !selectedTags.value.includes(trimmedInput) && selectedTags.value.length < 5) {
+    selectedTags.value.push(trimmedInput);
+  }
+  tagInput.value = "";
+  filteredTags.value = [...allTags.value];
+};
+
+// Add a tag from the list
+const addTag = (tag) => {
+  if (!selectedTags.value.includes(tag) && selectedTags.value.length < 5) {
+    selectedTags.value.push(tag);
+  }
+};
+
+// Remove a tag
+const removeTag = (index) => {
+  selectedTags.value.splice(index, 1);
+};
+
 /**
  * Navigates the user back to the previous page.
  */
@@ -273,10 +366,13 @@ const goBack = () => {
   router.back();
 };
 
-onMounted(() => {
-  fetchExchangeDays();
-  fetchEventDetails();
-  fetchRegisteredUsers();
+onMounted(async () => {
+  await fetchExchangeDays();
+  await fetchEventDetails();
+  await fetchRegisteredUsers();
+  await fetchExperienceLevels();
+  await fetchGlobalTags();
+  await fetchEventTags();
 });
 
 watch(registeredUsers, (users) => {

@@ -10,14 +10,19 @@ import com.kennycason.kumo.palette.ColorPalette;
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.EventRepository;
 import com.sopra.eaplanner.event.participation.EventParticipationService;
+import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.feedback.dtos.FeedbackRequestDTO;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.feedback.summary.CommentType;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO.CommentAnalysis;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO.FeedbackStatistics;
+import com.sopra.eaplanner.trainerprofile.TrainerProfile;
+import com.sopra.eaplanner.trainerprofile.TrainerProfileRepository;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserRepository;
+import com.sopra.eaplanner.user.UserTagWeight;
+import com.sopra.eaplanner.user.UserTagWeightRepository;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import com.vader.sentiment.analyzer.SentimentAnalyzer;
 import com.vader.sentiment.analyzer.SentimentPolarities;
@@ -27,10 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.imageio.ImageIO;
@@ -53,6 +55,9 @@ public class FeedbackService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserTagWeightRepository userTagWeightRepository;
 
     @Autowired
     private EventParticipationService eventParticipationService;
@@ -84,6 +89,8 @@ public class FeedbackService {
             "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s",
             "t", "can", "will", "just", "don", "should", "now"
     );
+    @Autowired
+    private TrainerProfileRepository trainerProfileRepository;
 
     public Iterable<FeedbackResponseDTO> getAllFeedbacks() {
         Iterable<Feedback> feedbacks = feedbackRepository.findAll();
@@ -117,7 +124,7 @@ public class FeedbackService {
                 event.getOrganizer().getFirstname() + " " + event.getOrganizer().getLastname()
         );
 
-        if(feedback.isEmpty()){
+        if (feedback.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no feedback for this event yet, come back at a later time.");
         }
 
@@ -201,9 +208,45 @@ public class FeedbackService {
         Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback, feedbackAuthor);
 
         feedbackToSave = feedbackRepository.save(feedbackToSave);
-        eventParticipationService.postFeedback(feedbackAuthor, eventForFeedback);
+        eventParticipationService.confirmFeedback(feedbackAuthor, eventForFeedback);
+
+        double sentimentScore = getSentimentScoreFromPersonalFeedback(requestBody);
+        double ratingScore = getFeedbackRating(requestBody);
+
+        addTagWeightForFeedback(feedbackAuthor, eventForFeedback, sentimentScore, ratingScore);
+
+        TrainerProfile profile = eventForFeedback.getOrganizer().getTrainerProfile();
+
+        profile.setFeedbackCount(profile.getFeedbackCount() + 1);
+        Integer feedbackCount = profile.getFeedbackCount();
+        Double currentRating = profile.getAverageRating();
+        Double newRating = (currentRating * (feedbackCount - 1) + ratingScore) / feedbackCount;
+        profile.setAverageRating(newRating);
+
+        trainerProfileRepository.save(profile);
+
 
         return new FeedbackResponseDTO(feedbackToSave);
+    }
+
+    private void addTagWeightForFeedback(User user, Event event, Double sentiment, Double rating) {
+        for (Tag tag : event.getTags()) {
+            UserTagWeight tagWeight = userTagWeightRepository.findByUserAndTag(user, tag)
+                    .orElseGet(() -> new UserTagWeight(user, tag));
+
+            tagWeight.setGivenFeedbackWithTag(tagWeight.getGivenFeedbackWithTag() + 1);
+            int feedbackCount = tagWeight.getGivenFeedbackWithTag();
+
+            Double currentSentiment = tagWeight.getGivenFeedbackResponseSentiment();
+            Double newSentiment = (currentSentiment * (feedbackCount - 1) + sentiment) / feedbackCount;
+            tagWeight.setGivenFeedbackResponseSentiment(newSentiment);
+
+            Double currentRating = tagWeight.getGivenFeedbackRating();
+            Double newRating = (currentRating * (feedbackCount - 1) + rating) / feedbackCount;
+            tagWeight.setGivenFeedbackRating(newRating);
+
+            userTagWeightRepository.save(tagWeight);
+        }
     }
 
     public void deleteFeedback(Long id) {
@@ -261,7 +304,7 @@ public class FeedbackService {
         }
     }
 
-    private FeedbackStatistics createFeedbackStatistics(FeedbackType type, List<List<Integer>> scores){
+    private FeedbackStatistics createFeedbackStatistics(FeedbackType type, List<List<Integer>> scores) {
         double average = calculateAveragesOfAverages(scores);
         double median = calculateMedianOfMedians(scores);
         int responseCount = scores.getFirst() != null ? scores.getFirst().size() : 0;
@@ -270,27 +313,27 @@ public class FeedbackService {
         return new FeedbackStatistics(average, median, responseCount, subMedians);
     }
 
-    private double calculateAverage(List<Integer> scores){
+    private double calculateAverage(List<Integer> scores) {
         return scores.stream().mapToInt(Integer::intValue).average().orElse(0);
     }
 
-    private double calculateAveragesOfAverages(List<List<Integer>> scores){
-        if(scores == null || scores.isEmpty()){
+    private double calculateAveragesOfAverages(List<List<Integer>> scores) {
+        if (scores == null || scores.isEmpty()) {
             return 0.0;
         }
         double average = 0;
 
-        for(List<Integer> categoryScores: scores){
+        for (List<Integer> categoryScores : scores) {
             average += categoryScores.stream().mapToInt(Integer::intValue).average().orElse(0);
         }
         return average / scores.size();
     }
 
-    private double calculateMedian(List<Integer> scores){
-        if (scores == null ||scores.isEmpty()) {
+    private double calculateMedian(List<Integer> scores) {
+        if (scores == null || scores.isEmpty()) {
             return 0.0;
         }
-        if(scores.size() == 1){
+        if (scores.size() == 1) {
             return scores.getFirst().doubleValue();
         }
 
@@ -299,7 +342,7 @@ public class FeedbackService {
 
         int size = mediansScoreList.size();
         if (size % 2 == 0) {
-            return(mediansScoreList.get(size / 2 - 1) + mediansScoreList.get(size / 2)) / 2.0;
+            return (mediansScoreList.get(size / 2 - 1) + mediansScoreList.get(size / 2)) / 2.0;
         } else {
             return mediansScoreList.get(size / 2);
         }
@@ -307,12 +350,12 @@ public class FeedbackService {
 
     private double calculateMedianOfMedians(List<List<Integer>> scores) {
         List<Double> categoryMedians = new ArrayList<>();
-        for(List<Integer> categoryScores: scores){
-            if (categoryScores == null ||categoryScores.isEmpty()) {
+        for (List<Integer> categoryScores : scores) {
+            if (categoryScores == null || categoryScores.isEmpty()) {
                 categoryMedians.add(0.0);
                 continue;
             }
-            if(categoryScores.size() == 1){
+            if (categoryScores.size() == 1) {
                 categoryMedians.add(categoryScores.getFirst().doubleValue());
                 continue;
             }
@@ -332,7 +375,7 @@ public class FeedbackService {
 
         int size = mediansScoreList.size();
         if (size % 2 == 0) {
-            return(mediansScoreList.get(size / 2 - 1) + mediansScoreList.get(size / 2)) / 2.0;
+            return (mediansScoreList.get(size / 2 - 1) + mediansScoreList.get(size / 2)) / 2.0;
         } else {
             return mediansScoreList.get(size / 2);
         }
@@ -422,11 +465,84 @@ public class FeedbackService {
     }
 
     private <T> List<Integer> extractFeedbackScoresFromFeedback(List<FeedbackResponseDTO> feedback,
-                                                          Function<FeedbackResponseDTO, T> extractor) {
+                                                                Function<FeedbackResponseDTO, T> extractor) {
         return feedback.stream()
                 .map(extractor)
                 .filter(Objects::nonNull)
                 .map(val -> (Integer) val)
                 .collect(Collectors.toList());
+    }
+
+    private Double getSentimentScoreFromPersonalFeedback(FeedbackRequestDTO f) {
+        double sentiment = 0.0;
+
+        final double enjoymentWeight = 0.4;
+        final double improvementWeight = 0.1;
+        final double requestWeight = 0.05;
+        final double personalImprovementWeight = 0.1;
+        final double recommendationWeight = 0.4;
+
+        sentiment += enjoymentWeight * SentimentAnalyzer.getScoresFor(f.getEnjoymentComment()).getCompoundPolarity();
+        sentiment += improvementWeight * SentimentAnalyzer.getScoresFor(f.getImprovementComment()).getCompoundPolarity();
+        sentiment += requestWeight * SentimentAnalyzer.getScoresFor(f.getRequestComment()).getCompoundPolarity();
+        sentiment += personalImprovementWeight * SentimentAnalyzer.getScoresFor(f.getPersonalImprovementComment()).getCompoundPolarity();
+        sentiment += recommendationWeight * SentimentAnalyzer.getScoresFor(f.getRecommendationComment()).getCompoundPolarity();
+
+        return sentiment;
+    }
+
+    private Double getFeedbackRating(FeedbackRequestDTO f) {
+        double rating = 0.0;
+
+        //Overall
+        final double overallWeight = 0.4;
+        final double organisationalWeight = 0.2;
+        final double relevanceWeight = 0.4;
+
+        // Content and structure
+        final double understandabilityWeight = 0.3;
+        final double contentDepthWeight = 0.4;
+        final double practicalityWeight = 0.2;
+        final double reasonabilityWeight = 0.1;
+
+        // Trainer
+        final double competencyWeight = 0.25;
+        final double presentabilityWeight = 0.25;
+        final double interactivityWeight = 0.25;
+        final double timeManagementWeight = 0.25;
+
+        // Participation
+        final double participationWeight = 0.5;
+        final double atmosphereSWeight = 0.15;
+        final double networkingWeight = 0.35;
+
+        // IT and Organisation
+        final double equipmentWeight = 0.33;
+        final double comfortabilityWeight = 0.33;
+        final double communicationWeight = 0.33;
+
+        rating += overallWeight * f.getOverallScore()
+                + organisationalWeight * f.getOrganisationalScore()
+                + relevanceWeight * f.getRelevanceScore();
+        rating += understandabilityWeight * f.getUnderstandabilityScore()
+                + contentDepthWeight * f.getContentDepthScore()
+                + practicalityWeight * f.getPracticalityScore()
+                + reasonabilityWeight * f.getReasonabilityScore();
+        rating += competencyWeight * f.getCompetencyScore()
+                + presentabilityWeight * f.getPresentabilityScore()
+                + interactivityWeight * f.getInteractivityScore()
+                + timeManagementWeight * f.getTimeManagementScore();
+        rating += participationWeight * f.getParticipationScore()
+                + atmosphereSWeight * f.getAtmosphereScore()
+                + networkingWeight * f.getNetworkingScore();
+        rating += equipmentWeight * f.getEquipmentScore()
+                + communicationWeight * f.getCommunicationScore()
+                + comfortabilityWeight * f.getComfortabilityScore();
+
+        rating += f.getIsEventRecommended() ? 2.5 : -5;
+
+        double normalizedRating = rating / 6.0;
+
+        return Math.min(5.0, Math.max(1.0, normalizedRating));
     }
 }

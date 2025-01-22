@@ -1,5 +1,6 @@
 package com.sopra.eaplanner.event.dtos;
 
+import com.sopra.eaplanner.event.ExperienceLevel;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -7,6 +8,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EventRequestDTO {
 
@@ -37,7 +40,12 @@ public class EventRequestDTO {
     @NotNull(message = "Organizer must be specified")
     private Long organizerId;
 
-    public EventRequestDTO(){
+    @NotNull(message = "Recommended ExperienceLevel must be specified")
+    private ExperienceLevel recommendedExperience;
+
+    private Set<String> tags = new HashSet<>();
+
+    public EventRequestDTO() {
     }
 
     public void setOrganizerId(@NotNull(message = "Organizer must be specified") Long organizerId) {
@@ -104,11 +112,27 @@ public class EventRequestDTO {
         return organizerId;
     }
 
-    public static EventRequestDTO mockWith(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String description, String room, Long exchangeDayId, Long organizerId) {
-        return new EventRequestDTO(name, date, startTime, endTime, room, description, exchangeDayId, organizerId);
+    public ExperienceLevel getRecommendedExperience() {
+        return recommendedExperience;
     }
 
-    private EventRequestDTO(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room, String description, Long exchangeDayId, Long organizerId) {
+    public void setRecommendedExperience(ExperienceLevel recommendedExperience) {
+        this.recommendedExperience = recommendedExperience;
+    }
+
+    public Set<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<String> tags) {
+        this.tags = tags;
+    }
+
+    public static EventRequestDTO mockWith(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String description, String room, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags) {
+        return new EventRequestDTO(name, date, startTime, endTime, room, description, exchangeDayId, organizerId, recommendedExperience, tags);
+    }
+
+    private EventRequestDTO(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room, String description, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags) {
         this.name = name;
         this.date = date;
         this.startTime = startTime;
@@ -117,5 +141,7 @@ public class EventRequestDTO {
         this.description = description;
         this.exchangeDayId = exchangeDayId;
         this.organizerId = organizerId;
+        this.recommendedExperience = recommendedExperience;
+        this.tags = tags;
     }
 }

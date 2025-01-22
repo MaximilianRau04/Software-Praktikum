@@ -1,6 +1,7 @@
 package com.sopra.eaplanner.exchangeDay;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sopra.eaplanner.event.ExperienceLevel;
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.exchangeday.ExchangeDayService;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayRequestDTO;
@@ -120,8 +121,8 @@ public class ExchangeDayControllerTest {
     void testGetExchangeDayEvents() throws Exception {
         // Arrange
         Long exchangeDayId = 1L;
-        EventResponseDTO eventDTO1 = EventResponseDTO.mockWith(1L, LocalDate.of(2045, 12, 30), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A");
-        EventResponseDTO eventDTO2 = EventResponseDTO.mockWith(2L, LocalDate.of(2045, 12, 30), LocalTime.of(12, 0), LocalTime.of(13, 0), "Workshop B", "Room B", "Description B");
+        EventResponseDTO eventDTO1 = EventResponseDTO.mockWith(1L, exchangeDayId, LocalDate.of(2045, 12, 30), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A", ExperienceLevel.JUNIOR);
+        EventResponseDTO eventDTO2 = EventResponseDTO.mockWith(2L, exchangeDayId, LocalDate.of(2045, 12, 30), LocalTime.of(12, 0), LocalTime.of(13, 0), "Workshop B", "Room B", "Description B", ExperienceLevel.JUNIOR);
         when(exchangeDayService.getExchangeDayEvents(exchangeDayId)).thenReturn(Arrays.asList(eventDTO1, eventDTO2));
 
         // Act & Assert

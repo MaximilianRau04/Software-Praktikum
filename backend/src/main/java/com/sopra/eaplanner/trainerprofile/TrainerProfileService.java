@@ -1,10 +1,12 @@
 package com.sopra.eaplanner.trainerprofile;
 
-import com.sopra.eaplanner.event.Event;
-import com.sopra.eaplanner.event.EventRepository;
+import com.sopra.eaplanner.event.dtos.EventResponseDTO;
+import com.sopra.eaplanner.event.tags.Tag;
+import com.sopra.eaplanner.event.tags.TagRepository;
+import com.sopra.eaplanner.event.tags.TagResponseDTO;
+import com.sopra.eaplanner.event.tags.TagService;
 import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.feedback.FeedbackRepository;
-import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,13 +23,14 @@ public class TrainerProfileService {
     private TrainerProfileRepository trainerProfileRepository;
 
     @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private FeedbackRepository feedbackRepository;
+    @Autowired
+    private TagRepository tagRepository;
+    @Autowired
+    private TagService tagService;
 
     public List<TrainerProfileResponseDTO> getAllTrainerProfiles() {
         Iterable<TrainerProfile> profiles = trainerProfileRepository.findAll();
@@ -74,6 +77,22 @@ public class TrainerProfileService {
         }
 
         return pinnedComments;
+    }
+
+    public Set<TagResponseDTO> getExpertiseTags(Long id) {
+        TrainerProfile profile = trainerProfileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Trainer Profile not found"));
+
+        return profile.getExpertiseTags().stream()
+                .map(TagResponseDTO::new)
+                .collect(Collectors.toSet());
+    }
+
+    public List<EventResponseDTO> getHostedEvents(Long id) {
+        TrainerProfile profile = trainerProfileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Trainer Profile not found"));
+
+        return profile.getHostedEvents().stream()
+                .map(EventResponseDTO::new)
+                .collect(Collectors.toList());
     }
 
     public Feedback pinComment(Long trainerId, Long feedbackId, String commentType) {
@@ -180,8 +199,7 @@ public class TrainerProfileService {
 
         TrainerProfile trainerProfile = new TrainerProfile();
         trainerProfile.setBio(request.getBio());
-        trainerProfile.setAverageRating(request.getAverageRating());
-        trainerProfile.setExpertiseTags(request.getExpertiseTags());
+        trainerProfile.setExpertiseTags(tagService.mergeAndGetTagsFromRequest(request.getExpertiseTagNames()));
         trainerProfile.setUser(user);
 
         TrainerProfile savedProfile = trainerProfileRepository.save(trainerProfile);
@@ -201,8 +219,7 @@ public class TrainerProfileService {
         }
 
         existingProfile.setBio(request.getBio());
-        existingProfile.setAverageRating(request.getAverageRating());
-        existingProfile.setExpertiseTags(request.getExpertiseTags());
+        existingProfile.setExpertiseTags(tagService.mergeAndGetTagsFromRequest(request.getExpertiseTagNames()));
         existingProfile.setUser(user);
 
         TrainerProfile updatedProfile = trainerProfileRepository.save(existingProfile);
