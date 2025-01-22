@@ -2,11 +2,11 @@
   <NotificationCardBase :notification="notification" @mark-as-read="markAsRead">
     <template #message>
       <p>
-        Your Workshop
+        Dein Workshop
         <span class="notification-title" @click="navigateToEvent">
           "{{ notification.title }}"
         </span>
-        will take place {{ timeUntilEvent }},
+        findet statt {{ timeUntilEvent }}
       </p>
     </template>
   </NotificationCardBase>
@@ -17,6 +17,7 @@ import { computed } from "vue";
 import NotificationCardBase from "./NotificationCardBase.vue";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { useRouter } from "vue-router";
+import { de } from "date-fns/locale";
 
 export default {
   components: { NotificationCardBase },
@@ -27,6 +28,7 @@ export default {
     const timeUntilEvent = computed(() =>
       formatDistanceToNow(parseISO(props.notification.context.eventDateTime), {
         addSuffix: true,
+        locale: de
       }),
     );
     const navigateToEvent = () => {

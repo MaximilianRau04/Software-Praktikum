@@ -29,7 +29,7 @@
         <div v-if="showNotifications" class="notification-menu" @click.stop>
           <!-- EVENT_REMINDERS Section -->
           <div v-if="groupedNotifications.EVENT_REMINDER?.length">
-            <h3>Event Reminders</h3>
+            <h3>Event Erinnerungen</h3>
             <component
               v-for="(
                 notification, index
@@ -43,7 +43,7 @@
 
           <!-- FORUM_POST Section -->
           <div v-if="groupedNotifications.FORUM_POST?.length">
-            <h3>Forum Responses</h3>
+            <h3>Forum Antworten</h3>
             <component
               v-for="(notification, index) in groupedNotifications.FORUM_POST"
               :key="index"
@@ -179,10 +179,15 @@ export default {
 </script>
 
 <style scoped>
+h3{
+  margin-left: 5%;
+}
+
 .notification-container {
   position: relative;
-  margin-right: 20px;
   cursor: pointer;
+  margin-left: auto;
+  margin-right: 5%;
 }
 
 .notification-icon {

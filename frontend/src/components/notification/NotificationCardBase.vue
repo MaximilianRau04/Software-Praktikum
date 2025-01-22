@@ -1,19 +1,23 @@
 <template>
   <div class="notification-card">
     <div class="notification-details">
-      <slot name="message"></slot>
-      <div class="notification-meta">
-        <span>Time sent: {{ formattedCreatedAt }}</span>
+      <div class="notification-message">
+        <slot name="message"></slot>
       </div>
-      <button class="mark-as-read-btn" @click="markAsRead">
-        <img src="@/images/close.png" alt="Mark as Read" />
-      </button>
+      <div class="notification-meta">
+        <span>gesendet {{ formattedCreatedAt }}</span>
+      </div>
     </div>
+    <button class="mark-as-read-btn" @click="markAsRead">
+      <img src="@/images/close.png" alt="Mark as Read" />
+    </button>
   </div>
 </template>
 
+
 <script>
 import { formatDistanceToNow, parseISO } from "date-fns";
+import { de } from "date-fns/locale";
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import config from "@/config";
@@ -32,6 +36,7 @@ export default {
     const formattedCreatedAt = computed(() => {
       return formatDistanceToNow(parseISO(props.notification.createdAt), {
         addSuffix: true,
+        locale: de,
       });
     });
 
@@ -67,35 +72,38 @@ export default {
 <style scoped>
 .notification-card {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 15px;
-  border: 1px solid #ddd;
-  margin: 10px 0;
-  background-color: #f9f9f9;
-  border-radius: 8px;
+  align-items: flex-start;
+  padding: 20px;
+  margin: 12px 0;
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e1e1e1;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.notification-content {
-  flex-grow: 1;
+.notification-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
-.notification-card p {
-  margin: 5px 0;
+.notification-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.notification-title {
-  color: #007bff;
-  cursor: pointer;
-  text-decoration: underline;
-}
-.notification-title:hover {
-  color: #0056b3;
+.notification-message {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
 }
 
-.created-at {
-  font-size: 0.9em;
-  color: #777;
+.notification-meta {
+  font-size: 0.875rem;
+  color: #9e9e9e;
+  margin-top: 8px;
 }
 
 .mark-as-read-btn {
@@ -111,7 +119,8 @@ export default {
 }
 
 .mark-as-read-btn:hover {
-  background-color: #f0f0f0;
+  background-color: #f3f3f3;
+  transform: scale(1.15);
 }
 
 .mark-as-read-btn img {

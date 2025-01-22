@@ -2,7 +2,7 @@
   <NotificationCardBase :notification="notification" @mark-as-read="markAsRead">
     <template #message>
       <p>
-        {{ notification.context.responderName }} has replied in
+        {{ notification.context.responderName }} hat geantwortet in
         <span class="notification-title" @click="navigateToForumPost">
           "{{ notification.title }}"
         </span>
