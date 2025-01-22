@@ -3,6 +3,7 @@ package com.sopra.eaplanner.event;
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.dtos.EventRequestDTO;
 import com.sopra.eaplanner.event.participation.ConfirmAttendanceDTO;
+import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.feedback.FeedbackService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
@@ -31,11 +32,14 @@ public class EventController {
     private EventService eventService;
 
     @Autowired
-    FeedbackService feedbackService;
+    private FeedbackService feedbackService;
 
     @GetMapping("")
-    public Iterable<EventResponseDTO> getAllEvents() {
-        return eventService.getAllEvents();
+    public ResponseEntity<List<EventResponseDTO>> getEventsWithTags(@RequestParam(required = false) List<String> tags) {
+        if (tags == null || tags.isEmpty()) {
+            return ResponseEntity.ok(eventService.getAllEvents());
+        }
+        return ResponseEntity.ok(eventService.getEventsFromTags(tags));
     }
 
     @GetMapping("/{id}")
@@ -101,6 +105,13 @@ public class EventController {
         List<ResourceResponse> resources = eventService.getResourcesByEventId(id);
 
         return ResponseEntity.ok(resources);
+    }
+
+    @GetMapping("/{eventId}/tags")
+    public ResponseEntity<Set<TagResponseDTO>> getTagsFromEvent(@PathVariable Long eventId) {
+        Set<TagResponseDTO> tags = eventService.getTagsFromEvent(eventId);
+
+        return ResponseEntity.ok(tags);
     }
 
     @PostMapping("")

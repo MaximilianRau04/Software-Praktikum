@@ -4,12 +4,13 @@ import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.dtos.EventRequestDTO;
 import com.sopra.eaplanner.event.participation.ConfirmAttendanceDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationService;
+import com.sopra.eaplanner.event.tags.TagRepository;
+import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.exceptions.InvalidTokenException;
 import com.sopra.eaplanner.exceptions.UserNotRegisteredException;
 import com.sopra.eaplanner.exchangeday.ExchangeDay;
 import com.sopra.eaplanner.exchangeday.ExchangeDayRepository;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
-import com.sopra.eaplanner.forumthread.ForumThread;
 import com.sopra.eaplanner.forumthread.ForumThreadResponseDTO;
 import com.sopra.eaplanner.qrcode.QRCodeService;
 import com.sopra.eaplanner.resource.ResourceItem;
@@ -56,7 +57,7 @@ public class EventService {
     private ExchangeDayRepository exchangeDayRepository;
 
     @Autowired
-    TrainerProfileRepository trainerProfileRepository;
+    private TagRepository tagRepository;
 
     public EventResponseDTO createEvent(EventRequestDTO requestBody) throws Exception {
         ExchangeDay exchangeDay = exchangeDayRepository.findById(requestBody.getExchangeDayId())
@@ -97,14 +98,20 @@ public class EventService {
         return eventDTOs;
     }
 
+    public List<EventResponseDTO> getEventsFromTags(List<String> tagNames) {
+        return tagRepository.findByTagsNames(tagNames, (long) tagNames.size())
+                .stream().map(EventResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+
     public EventResponseDTO getEventById(Long id) {
-        Event event = eventRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Event not found."));
+        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
 
         return new EventResponseDTO(event);
     }
 
     public Iterable<UserResponseDTO> getRegisteredUsers(Long id) {
-        Event event = eventRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Event not found."));
+        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
 
         return event.getRegisteredUsers()
                 .stream()
@@ -113,19 +120,19 @@ public class EventService {
     }
 
     public Set<ForumThreadResponseDTO> getForumThreads(Long id) {
-        Event event = eventRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Event not found."));
+        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
 
         return event.getForumThreads().stream().map(ForumThreadResponseDTO::new).collect(Collectors.toSet());
     }
 
     public UserResponseDTO getOrganizerByEventId(Long id) {
-        Event event = eventRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Event not found."));
+        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
 
         return new UserResponseDTO(event.getOrganizer());
     }
 
     public ExchangeDayResponseDTO getExchangeDayByEventId(Long id) {
-        Event event = eventRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Event not found."));
+        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
 
         return new ExchangeDayResponseDTO(event.getExchangeDay());
     }
@@ -150,6 +157,12 @@ public class EventService {
         return resourceDTOs;
     }
 
+    public Set<TagResponseDTO> getTagsFromEvent(Long eventId) {
+        Event eventWithTags = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event not found."));
+
+        return eventWithTags.getTags().stream().map(TagResponseDTO::new).collect(Collectors.toSet());
+    }
+
     public EventResponseDTO updateEvent(Long id, EventRequestDTO requestBody) {
         Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
         ExchangeDay exchangeDay = exchangeDayRepository.findById(requestBody.getExchangeDayId())
@@ -164,6 +177,8 @@ public class EventService {
         event.setExchangeDay(exchangeDay);
         event.setOrganizer(userRepository.findById(requestBody.getOrganizerId())
                 .orElseThrow(() -> new EntityNotFoundException("Organizer not found.")));
+        event.setRecommendedExperience(requestBody.getRecommendedExperience());
+        event.setTags(requestBody.getTags());
 
         validateDate(exchangeDay, requestBody.getDate());
 
@@ -194,7 +209,7 @@ public class EventService {
     }
 
     public TrainerProfileResponseDTO getTrainerProfileByEventId(Long id) {
-        Event event = eventRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Event not found."));
+        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
 
         return new TrainerProfileResponseDTO(event.getTrainerProfile());
     }
@@ -224,7 +239,7 @@ public class EventService {
         return EVENT_ENDPOINT + eventId + TOKEN_SUFFIX + token;
     }
 
-    private void validateDate(ExchangeDay exchangeDay, LocalDate date){
+    private void validateDate(ExchangeDay exchangeDay, LocalDate date) {
         boolean isNotValid = exchangeDay.getStartDate().isAfter(date) || exchangeDay.getEndDate().isBefore(date);
         if (isNotValid) {
             throw new IllegalArgumentException("Event date must be within the exchange day.");

@@ -1,18 +1,15 @@
 package com.sopra.eaplanner.trainerprofile;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TrainerProfileRequestDTO {
 
     private String bio;
 
-    private Double averageRating;
-
-    private List<String> expertiseTags = new ArrayList<>();
+    private Set<String> expertiseTagNames = new HashSet<>();
 
     @NotNull(message = "User must be specified")
     private Long userId;
@@ -20,10 +17,9 @@ public class TrainerProfileRequestDTO {
     public TrainerProfileRequestDTO() {
     }
 
-    public TrainerProfileRequestDTO(String bio, Double averageRating, List<String> expertiseTags, Long userId) {
+    public TrainerProfileRequestDTO(String bio, Set<String> expertiseTagNames, Long userId) {
         this.bio = bio;
-        this.averageRating = averageRating;
-        this.expertiseTags = expertiseTags;
+        this.expertiseTagNames = expertiseTagNames;
         this.userId = userId;
     }
 
@@ -35,14 +31,6 @@ public class TrainerProfileRequestDTO {
         this.bio = bio;
     }
 
-    public Double getAverageRating() {
-        return averageRating;
-    }
-
-    public void setAverageRating(Double averageRating) {
-        this.averageRating = averageRating;
-    }
-
     public Long getUserId() {
         return userId;
     }
@@ -51,11 +39,15 @@ public class TrainerProfileRequestDTO {
         this.userId = userId;
     }
 
-    public List<String> getExpertiseTags() { return expertiseTags; }
+    public Set<String> getExpertiseTagNames() {
+        return expertiseTagNames;
+    }
 
-    public void setExpertiseTags(List<String> expertiseTags) { this.expertiseTags = expertiseTags; }
+    public void setExpertiseTagNames(Set<String> expertiseTagNames) {
+        this.expertiseTagNames = expertiseTagNames;
+    }
 
-    public static TrainerProfileRequestDTO mockWith(String bio, Double averageRating, List<String> expertiseTags, Long userId) {
-        return new TrainerProfileRequestDTO(bio, averageRating, expertiseTags,  userId);
+    public static TrainerProfileRequestDTO mockWith(String bio, Set<String> expertiseTagNames, Long userId) {
+        return new TrainerProfileRequestDTO(bio, expertiseTagNames, userId);
     }
 }

@@ -68,6 +68,9 @@ public class User {
     @JsonManagedReference
     private Set<EventParticipation> participations = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserTagWeight> tagWeights = new HashSet<>();
+
     public User() {
     }
 
@@ -164,6 +167,14 @@ public class User {
 
     public void setParticipations(Set<EventParticipation> participations) {
         this.participations = participations;
+    }
+
+    public Set<UserTagWeight> getTagWeights() {
+        return tagWeights;
+    }
+
+    public void setTagWeights(Set<UserTagWeight> tagWeights) {
+        this.tagWeights = tagWeights;
     }
 
     public void updateInformation(User user) {

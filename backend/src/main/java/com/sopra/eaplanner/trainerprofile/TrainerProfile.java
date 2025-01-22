@@ -1,9 +1,8 @@
 package com.sopra.eaplanner.trainerprofile;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sopra.eaplanner.event.Event;
-import com.sopra.eaplanner.feedback.Feedback;
+import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -21,8 +20,15 @@ public class TrainerProfile {
 
     private Double averageRating;
 
-    @ElementCollection
-    private List<String> expertiseTags = new ArrayList<>();
+    private Integer feedbackCount;
+
+    @ManyToMany
+    @JoinTable(
+            name = "trainer_profile_tag",
+            joinColumns = @JoinColumn(name = "trainer_profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> expertiseTags = new HashSet<>();
 
     @JsonBackReference
     @OneToMany(mappedBy = "trainerProfile", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -42,17 +48,15 @@ public class TrainerProfile {
     public TrainerProfile() {
     }
 
-    public TrainerProfile(Long id, String bio, Double averageRating, List<String> expertiseTags) {
+    public TrainerProfile(Long id, String bio, Set<Tag> expertiseTags) {
         this.id = id;
         this.bio = bio;
-        this.averageRating = averageRating;
         this.expertiseTags = expertiseTags;
     }
 
-    public TrainerProfile(TrainerProfileRequestDTO trainerProfileRequest) {
+    public TrainerProfile(TrainerProfileRequestDTO trainerProfileRequest, Set<Tag> expertiseTags) {
         this.bio = trainerProfileRequest.getBio();
-        this.averageRating = trainerProfileRequest.getAverageRating();
-        this.expertiseTags = trainerProfileRequest.getExpertiseTags();
+        this.expertiseTags = expertiseTags;
     }
 
     public Long getId() {
@@ -95,11 +99,11 @@ public class TrainerProfile {
         this.user = user;
     }
 
-    public List<String> getExpertiseTags() {
+    public Set<Tag> getExpertiseTags() {
         return expertiseTags;
     }
 
-    public void setExpertiseTags(List<String> expertiseTags) {
+    public void setExpertiseTags(Set<Tag> expertiseTags) {
         this.expertiseTags = expertiseTags;
     }
 
@@ -111,4 +115,11 @@ public class TrainerProfile {
         this.pinnedComments = pinnedComments;
     }
 
+    public Integer getFeedbackCount() {
+        return feedbackCount;
+    }
+
+    public void setFeedbackCount(Integer feedbackCount) {
+        this.feedbackCount = feedbackCount;
+    }
 }

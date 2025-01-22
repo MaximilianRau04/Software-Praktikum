@@ -3,6 +3,7 @@ package com.sopra.eaplanner.event;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sopra.eaplanner.event.dtos.EventRequestDTO;
 import com.sopra.eaplanner.event.participation.EventParticipation;
+import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.exchangeday.ExchangeDay;
 import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.forumthread.ForumThread;
@@ -100,12 +101,22 @@ public class Event {
     @JsonBackReference
     private List<ResourceItem> resources = new ArrayList<>();
 
+    private ExperienceLevel recommendedExperience;
+
+    @ManyToMany
+    @JoinTable(
+            name = "event_tag",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
+
     public Event() {
     }
 
     public Event(Long id, String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room,
                  String description, ExchangeDay exchangeDay, User organizer, TrainerProfile trainerProfile,
-                 String qrCodeFilePath, Set<ForumThread>  forumthreads) {
+                 String qrCodeFilePath, Set<ForumThread> forumthreads, ExperienceLevel recommendedExperience) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -119,6 +130,7 @@ public class Event {
         this.attendanceToken = generateAttendanceToken();
         this.forumThreads = forumthreads;
         this.date = date;
+        this.recommendedExperience = recommendedExperience;
     }
 
     public Event(EventRequestDTO eventDTO, ExchangeDay exchangeDay, User organizer) {
@@ -131,6 +143,7 @@ public class Event {
         this.exchangeDay = exchangeDay;
         this.organizer = organizer;
         this.attendanceToken = generateAttendanceToken();
+        this.recommendedExperience = eventDTO.getRecommendedExperience();
     }
 
     public Long getId() {
@@ -262,13 +275,33 @@ public class Event {
     }
 
     @Transient
-    public LocalDateTime getStartDateTime(){
+    public LocalDateTime getStartDateTime() {
         return LocalDateTime.of(exchangeDay.getStartDate(), startTime);
     }
 
-    public List<ResourceItem> getResources() { return resources; }
+    public List<ResourceItem> getResources() {
+        return resources;
+    }
 
-    public void addResource(ResourceItem resource) { resources.add(resource); }
+    public void addResource(ResourceItem resource) {
+        resources.add(resource);
+    }
+
+    public ExperienceLevel getRecommendedExperience() {
+        return recommendedExperience;
+    }
+
+    public void setRecommendedExperience(ExperienceLevel recommendedExperience) {
+        this.recommendedExperience = recommendedExperience;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 
     @PostLoad
     public void initRemindersSent() {

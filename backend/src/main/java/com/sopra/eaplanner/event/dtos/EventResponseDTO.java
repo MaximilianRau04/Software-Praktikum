@@ -1,6 +1,7 @@
 package com.sopra.eaplanner.event.dtos;
 
 import com.sopra.eaplanner.event.Event;
+import com.sopra.eaplanner.event.ExperienceLevel;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,6 +14,7 @@ public class EventResponseDTO {
     private String name;
     private String room;
     private String description;
+    private ExperienceLevel recommendedExperience;
 
     public EventResponseDTO() {
     }
@@ -25,9 +27,10 @@ public class EventResponseDTO {
         this.name = event.getName();
         this.room = event.getRoom();
         this.description = event.getDescription();
+        this.recommendedExperience = event.getRecommendedExperience();
     }
 
-    public EventResponseDTO(Event event){
+    public EventResponseDTO(Event event) {
         this.id = event.getId();
         this.date = event.getDate();
         this.startTime = event.getStartTime();
@@ -35,6 +38,7 @@ public class EventResponseDTO {
         this.name = event.getName();
         this.room = event.getRoom();
         this.description = event.getDescription();
+        this.recommendedExperience = event.getRecommendedExperience();
     }
 
     public Long getId() {
@@ -69,6 +73,10 @@ public class EventResponseDTO {
         return description;
     }
 
+    public ExperienceLevel getRecommendedExperience() {
+        return recommendedExperience;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -93,12 +101,15 @@ public class EventResponseDTO {
         this.description = description;
     }
 
-
-    public static EventResponseDTO mockWith(Long id, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description) {
-        return new EventResponseDTO(id, date, startTime, endTime, name, room, description);
+    public void setRecommendedExperience(ExperienceLevel recommendedExperience) {
+        this.recommendedExperience = recommendedExperience;
     }
 
-    private EventResponseDTO(Long id, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description) {
+    public static EventResponseDTO mockWith(Long id, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience) {
+        return new EventResponseDTO(id, date, startTime, endTime, name, room, description, recommendedExperience);
+    }
+
+    private EventResponseDTO(Long id, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience) {
         this.id = id;
         this.date = date;
         this.startTime = startTime;
@@ -106,6 +117,7 @@ public class EventResponseDTO {
         this.name = name;
         this.room = room;
         this.description = description;
+        this.recommendedExperience = recommendedExperience;
     }
 }
 

@@ -131,18 +131,13 @@ public class UserService {
         if (userToSave.getRole() == User.Role.ADMIN) {
             TrainerProfile trainerProfile = new TrainerProfile();
             trainerProfile.setUser(userToSave);
-
-
             trainerProfile.setBio("");
             trainerProfile.setAverageRating(0.0);
-            trainerProfile.setExpertiseTags(new ArrayList<>());
-
             trainerProfileRepository.save(trainerProfile);
         }
 
         return new UserResponseDTO(userToSave);
     }
-
 
 
     public UserResponseDTO updateUser(Long id, UserRequestDTO user) {
