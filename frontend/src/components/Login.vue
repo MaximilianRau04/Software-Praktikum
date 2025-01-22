@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <div class="create-box">
+    <div class="login-box">
       <h2 class="login-header" v-if="!isRegistered">Registrieren</h2>
       <h2 class="login-header" v-else>Login</h2>
       <form @submit.prevent="handleLogin">
