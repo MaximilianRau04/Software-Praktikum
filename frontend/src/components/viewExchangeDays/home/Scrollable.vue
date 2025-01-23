@@ -33,7 +33,12 @@ Users can select a date to filter the list of Exchange Days based on the selecte
           <!-- Exchange Day details -->
           <div class="infos">
             <h2>{{ exchangeDay.name }}</h2>
-            <p>{{ exchangeDay.location }}</p>
+            <p>
+              {{ exchangeDay.location.street }}
+              {{ exchangeDay.location.houseNumber }},
+              {{ exchangeDay.location.city }},
+              {{ exchangeDay.location.country }}
+            </p>
           </div>
         </div>
       </div>

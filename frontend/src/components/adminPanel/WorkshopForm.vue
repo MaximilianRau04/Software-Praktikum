@@ -52,10 +52,10 @@
 
       <div class="input-group">
         <label for="room">Raum</label>
-        <select id="room" v-model="room" required>
+        <select id="room" v-model="room" :disabled="!filteredRooms.length">
           <option value="" disabled>Bitte wählen Sie einen Raum</option>
           <option
-            v-for="availableRoom in availableRooms"
+            v-for="availableRoom in filteredRooms"
             :key="availableRoom.id"
             :value="availableRoom.id"
           >
@@ -133,8 +133,8 @@ const userId = Cookies.get("userId");
 const name = ref("");
 const exchangeDaySelect = ref("");
 const date = ref("");
-const startTime = ref("");
-const endTime = ref("");
+const startTime = ref("00:00");
+const endTime = ref("01:00");
 const room = ref("");
 const description = ref("");
 const selectedExperienceLevel = ref("");
@@ -143,10 +143,10 @@ const tagInput = ref("");
 const filteredTags = ref([]);
 const exchangeDays = ref([]);
 
-const availableRooms = ref([]);
-const availableResources = ref([]);
 const selectedResources = ref([]);
 const allTags = ref([]);
+const availableRooms = ref([]);
+const filteredRooms = ref([]);
 
 defineProps({
   exchangeDays: {
@@ -225,6 +225,43 @@ const selectedExchangeDay = computed(() =>
   exchangeDays.value.find((day) => day.id === exchangeDaySelect.value),
 );
 
+/**
+ * Updates the available rooms based on the location of the selected Exchange Day.
+ */
+const updateFilteredRooms = async () => {
+  if (selectedExchangeDay.value) {
+    const exchangeDayLocationId = selectedExchangeDay.value.location.id;
+
+    try {
+      const response = await fetch(
+        `${config.apiBaseUrl}/resources/location/${exchangeDayLocationId}`,
+      );
+
+      if (response.ok) {
+        const rooms = await response.json();
+        filteredRooms.value = rooms;
+      } else {
+        console.error("Fehler beim Laden der Ressourcen für die Location.");
+        filteredRooms.value = [];
+      }
+    } catch (error) {
+      console.error("Fehler beim Abrufen der Räume:", error);
+      filteredRooms.value = [];
+    }
+  } else {
+    filteredRooms.value = [];
+  }
+};
+
+/**
+ * Called when a new Exchange Day is selected.
+ */
+const updateSelectedExchangeDay = async () => {
+  await updateFilteredRooms();
+  date.value = "";
+  room.value = "";
+};
+
 const handleKeyup = (event) => {
   if (event.key === ",") {
     addTagFromInput();
@@ -287,18 +324,6 @@ const updateEndTime = (startTime) => {
   const formattedEndTime = `${formattedEndHour}:${startMinute < 10 ? "0" + startMinute : startMinute}`;
 
   endTime.value = formattedEndTime;
-};
-
-/**
- * Updates the selected exchange day.
- */
-const updateSelectedExchangeDay = () => {
-  const selectedDay = exchangeDays.value.find(
-    (day) => day.id === exchangeDaySelect.value,
-  );
-  if (selectedDay) {
-    date.value = "";
-  }
 };
 
 const onSubmit = () => {

@@ -4,7 +4,10 @@
     <div v-if="!selectedThreadId" class="threads-view">
       <h1>Diskussionsforum</h1>
 
-      <button class="btn-primary create-thread-btn" @click="prepareCreateThread">
+      <button
+        class="btn-primary create-thread-btn"
+        @click="prepareCreateThread"
+      >
         + Neuer Thread
       </button>
 
@@ -24,14 +27,14 @@
             <span>{{ thread.forumPosts?.length || 0 }} Antworten</span>
           </div>
           <div v-if="isAdmin" class="post-actions" @click.stop>
-            <button 
-              class="btn-secondary edit-btn" 
+            <button
+              class="btn-secondary edit-btn"
               @click.stop="prepareEditThread(thread)"
             >
               Bearbeiten
             </button>
-            <button 
-              class="btn-secondary delete-btn" 
+            <button
+              class="btn-secondary delete-btn"
               @click.stop="deleteThread(thread.threadId)"
             >
               Löschen
@@ -135,8 +138,13 @@
     <!-- Thread Creation/Edit Modal -->
     <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
       <div class="modal-content">
-        <h2>{{ isEditing ? 'Thread bearbeiten' : 'Neuen Thread erstellen' }}</h2>
-        <form @submit.prevent="isEditing ? updateThread() : createThread()" class="thread-form">
+        <h2>
+          {{ isEditing ? "Thread bearbeiten" : "Neuen Thread erstellen" }}
+        </h2>
+        <form
+          @submit.prevent="isEditing ? updateThread() : createThread()"
+          class="thread-form"
+        >
           <div class="form-group">
             <label for="title">Titel:</label>
             <input
@@ -160,7 +168,7 @@
           </div>
           <div class="modal-actions">
             <button type="submit" class="btn-primary">
-              {{ isEditing ? 'Speichern' : 'Thread erstellen' }}
+              {{ isEditing ? "Speichern" : "Thread erstellen" }}
             </button>
             <button
               type="button"
@@ -208,7 +216,7 @@ export default {
       currentThread: {
         title: "",
         description: "",
-        id: null
+        id: null,
       },
       newPost: {
         content: "",
@@ -247,14 +255,14 @@ export default {
             content: this.editingPost.content,
             authorId: this.editingPost.author.id,
             forumThreadId: this.selectedThreadId,
-          }
+          },
         );
         this.fetchThreadDetail();
         this.editingPost = null;
       } catch (error) {
         console.error("Fehler beim Bearbeiten des Posts:", error);
         alert(
-          `Fehler beim Bearbeiten: ${error.response?.data?.message || "Unbekannter Fehler"}`
+          `Fehler beim Bearbeiten: ${error.response?.data?.message || "Unbekannter Fehler"}`,
         );
       }
     },
@@ -271,16 +279,18 @@ export default {
 
     prepareEditThread(thread) {
       this.isEditing = true;
-      this.currentThread = { 
-        id: thread.threadId, 
-        title: thread.title, 
-        description: thread.description 
+      this.currentThread = {
+        id: thread.threadId,
+        title: thread.title,
+        description: thread.description,
       };
       this.showModal = true;
     },
 
     async deleteThread(threadId) {
-      if (!confirm("Sind Sie sicher, dass Sie diesen Thread löschen möchten?")) {
+      if (
+        !confirm("Sind Sie sicher, dass Sie diesen Thread löschen möchten?")
+      ) {
         return;
       }
       try {
@@ -294,15 +304,18 @@ export default {
     async updateThread() {
       const eventId = this.$route.params.eventId;
       try {
-      await axios.put(`${config.apiBaseUrl}/forumthreads/${this.currentThread.id}`, {
-        title: this.currentThread.title,
-        description: this.currentThread.description,
-        eventId: eventId,
-      });
-      this.fetchThreads();
-      this.showModal = false;
+        await axios.put(
+          `${config.apiBaseUrl}/forumthreads/${this.currentThread.id}`,
+          {
+            title: this.currentThread.title,
+            description: this.currentThread.description,
+            eventId: eventId,
+          },
+        );
+        this.fetchThreads();
+        this.showModal = false;
       } catch (error) {
-      console.error("Fehler beim Aktualisieren des Threads:", error);
+        console.error("Fehler beim Aktualisieren des Threads:", error);
       }
     },
 
@@ -310,7 +323,7 @@ export default {
       const eventId = this.$route.params.eventId;
       try {
         const response = await axios.get(
-          `${config.apiBaseUrl}/events/${eventId}/forum`
+          `${config.apiBaseUrl}/events/${eventId}/forum`,
         );
         this.threads = response.data;
       } catch (error) {
@@ -345,7 +358,7 @@ export default {
     async fetchThreadDetail() {
       try {
         const response = await axios.get(
-          `${config.apiBaseUrl}/forumthreads/${this.selectedThreadId}`
+          `${config.apiBaseUrl}/forumthreads/${this.selectedThreadId}`,
         );
         this.selectedThread = response.data;
       } catch (error) {

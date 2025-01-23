@@ -4,9 +4,10 @@ Content-Type: application/json
 {
   "name": "Fresh Try ResponseEntities",
   "description": "Bla Bla",
-  "date": "",
+  "date": "2025-01-31",
+  "recommendedExperience": "ALL_LEVELS",
   "room": "0.108",
-  "exchangeDayId": 2,
+  "exchangeDayId": 1,
   "organizerId": 1,
   "startTime": "13:00:00",
   "endTime": "14:00:00"
@@ -175,3 +176,29 @@ Content-Type: application/json
 ###
 
 GET http://localhost:8080/api/forumthreads
+
+###
+POST http://localhost:8080/api/locations
+Content-Type: application/json
+
+{
+  "city": "Stuttgart",
+    "country": "Germany",
+    "postalCode": "70173",
+  "houseNumber": "3",
+  "street": "Königstraße"
+
+}
+###
+POST http://localhost:8080/api/exchange-days
+Content-Type: application/json
+
+{
+  "startDate": "2025-12-30",
+  "endDate": "2025-12-31",
+  "name": "Fresh",
+  "locationId": 1,
+  "description": "A day dedicated to learning Spring Boot"
+}
+###
+GET http://localhost:8080/api/exchange-days

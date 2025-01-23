@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/resources")
@@ -25,6 +26,11 @@ public class ResourceController {
         return resourceService.getResourcesByType(type);
     }
 
+    @GetMapping("/location/{locationId}")
+    public Iterable<ResourceResponse> getRoomsByLocation(@PathVariable Long locationId) {
+        return resourceService.getRoomsByLocation(locationId);
+    }
+
     @GetMapping("/{id}")
     public ResourceResponse getResource(@PathVariable Long id) {
         return resourceService.getResourceById(id);
@@ -39,7 +45,7 @@ public class ResourceController {
     }
 
     @PutMapping("/{id}")
-    public ResourceResponse updateResource(@PathVariable Long id, @RequestBody ResourceItem resource) {
+    public ResourceResponse updateResource(@PathVariable Long id, @RequestBody ResourceRequest resource) {
         return resourceService.updateResource(id, resource);
     }
 

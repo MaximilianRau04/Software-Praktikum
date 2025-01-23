@@ -7,7 +7,12 @@
     <!-- Displaying exchange day details -->
     <div class="exchangeDayInfos">
       <h1>{{ selectedExchangeDay.name }}</h1>
-      <p><strong>Ort:</strong> {{ selectedExchangeDay.location }}</p>
+      <p>
+        <strong>Ort:</strong> {{ selectedExchangeDay.location.street }}
+        {{ selectedExchangeDay.location.houseNumber }},
+        {{ selectedExchangeDay.location.city }},
+        {{ selectedExchangeDay.location.country }}
+      </p>
       <p>
         <strong>Beschreibung:</strong> {{ selectedExchangeDay.description }}
       </p>
@@ -70,7 +75,6 @@ async function fetchExchangeDayDetails(id: number) {
     const data = await response.json();
     console.log("ExchangeDay data loaded:", data);
 
-    // Store the fetched exchange day details in `selectedExchangeDay
     selectedExchangeDay.value = {
       id: data.id,
       name: data.name,
@@ -80,7 +84,6 @@ async function fetchExchangeDayDetails(id: number) {
       location: data.location,
     };
 
-    // Fetch details of associated events, if available
     await fetchEventDetails();
   } catch (error) {
     console.error("Error fetching exchange day details:", error);

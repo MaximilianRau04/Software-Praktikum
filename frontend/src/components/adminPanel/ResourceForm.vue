@@ -28,7 +28,14 @@
       </div>
       <div class="input-group">
         <label for="resourceLocation">Ort</label>
-        <input type="text" id="resourceLocation" v-model="location" required />
+        <!-- Dropdown für Locations -->
+        <select id="resourceLocation" v-model="location" required>
+          <option value="" disabled>Wähle einen Ort</option>
+          <option v-for="loc in locations" :key="loc.id" :value="loc">
+            {{ loc.street }} {{ loc.houseNumber }}, {{ loc.city }},
+            {{ loc.country }}
+          </option>
+        </select>
       </div>
       <button type="submit" class="login-button">Ressource erstellen</button>
     </form>
@@ -36,24 +43,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import config from "@/config";
 
 const name = ref("");
 const type = ref("");
 const description = ref("");
 const capacity = ref<number | null>(null);
-const location = ref("");
+const location = ref<any>(null);
 const availability = ref(true);
+const locations = ref<any[]>([]);
 
 const resourceTypes = ["ROOM", "EQUIPMENT", "MATERIAL"];
 
 const apiUrl = `${config.apiBaseUrl}/resources`;
-
+const locationsApiUrl = `${config.apiBaseUrl}/locations`;
 const emit = defineEmits(["update:showResourceBox"]);
 
 /**
- * create a new resource
+ * Creates a new resource using the form data
  */
 const createResource = async () => {
   try {
@@ -65,7 +73,7 @@ const createResource = async () => {
         type: type.value,
         capacity: capacity.value,
         description: description.value,
-        location: location.value,
+        locationId: location.value.id,
         availability: availability.value,
       }),
     });
@@ -85,15 +93,33 @@ const createResource = async () => {
 };
 
 /**
- * reset the form
+ * Resets the form after submission
  */
 const resetForm = () => {
   name.value = "";
   type.value = "";
   description.value = "";
   capacity.value = null;
-  location.value = "";
+  location.value = null;
   availability.value = true;
   emit("update:showResourceBox", false);
 };
+
+/**
+ * Fetch locations from the backend
+ */
+onMounted(async () => {
+  try {
+    const response = await fetch(locationsApiUrl);
+    if (response.ok) {
+      const data = await response.json();
+      locations.value = data;
+    } else {
+      alert("Fehler beim Abrufen der Locations.");
+    }
+  } catch (error) {
+    console.error("Fehler beim Abrufen der Locations:", error);
+    alert("Fehler beim Abrufen der Locations.");
+  }
+});
 </script>

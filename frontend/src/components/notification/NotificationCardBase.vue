@@ -14,7 +14,6 @@
   </div>
 </template>
 
-
 <script>
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { de } from "date-fns/locale";
@@ -80,7 +79,9 @@ export default {
   border-radius: 16px;
   border: 1px solid #e1e1e1;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 
 .notification-card:hover {
