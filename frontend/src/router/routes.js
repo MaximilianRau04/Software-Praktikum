@@ -10,6 +10,7 @@ import UserProfile from "@/components/navigation/UserProfile.vue";
 import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
 import UpdateEvent from "@/components/adminPanel/UpdateEvent.vue";
 import EventPage from "@/components/viewEvents/EventPage.vue";
+import UpdateExchangeDay from "@/components/adminPanel/UpdateExchangeDay.vue";
 
 export default [
   {
@@ -45,6 +46,12 @@ export default [
         path: "/events/:eventId/update",
         name: "updateEvent",
         component: UpdateEvent,
+        props: true,
+      },
+      {
+        path: "/exchangeDays/:exchangeDayId/update",
+        name: "updateExchangeDay",
+        component: UpdateExchangeDay,
         props: true,
       },
       {
