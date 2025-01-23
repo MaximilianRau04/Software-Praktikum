@@ -1,5 +1,7 @@
 package com.sopra.eaplanner.trainerprofile;
 
+import com.sopra.eaplanner.event.Event;
+import com.sopra.eaplanner.event.EventRepository;
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.event.tags.TagRepository;
@@ -27,8 +29,10 @@ public class TrainerProfileService {
 
     @Autowired
     private FeedbackRepository feedbackRepository;
+
     @Autowired
-    private TagRepository tagRepository;
+    private EventRepository eventRepository;
+
     @Autowired
     private TagService tagService;
 
@@ -85,14 +89,6 @@ public class TrainerProfileService {
         return profile.getExpertiseTags().stream()
                 .map(TagResponseDTO::new)
                 .collect(Collectors.toSet());
-    }
-
-    public List<EventResponseDTO> getHostedEvents(Long id) {
-        TrainerProfile profile = trainerProfileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Trainer Profile not found"));
-
-        return profile.getHostedEvents().stream()
-                .map(EventResponseDTO::new)
-                .collect(Collectors.toList());
     }
 
     public Feedback pinComment(Long trainerId, Long feedbackId, String commentType) {

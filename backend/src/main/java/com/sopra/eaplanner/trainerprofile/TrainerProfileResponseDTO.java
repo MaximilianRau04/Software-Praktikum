@@ -2,14 +2,15 @@ package com.sopra.eaplanner.trainerprofile;
 
 public class TrainerProfileResponseDTO {
 
-    private long id;
+    private Long id;
+    private Long userId;
     private String bio;
     private Double averageRating;
 
     public TrainerProfileResponseDTO() {
     }
 
-    public TrainerProfileResponseDTO(Long id, String bio, Double averageRating) {
+    public TrainerProfileResponseDTO(Long id, Long userId, String bio, Double averageRating) {
         this.id = id;
         this.bio = bio;
         this.averageRating = averageRating;
@@ -17,6 +18,7 @@ public class TrainerProfileResponseDTO {
 
     public TrainerProfileResponseDTO(TrainerProfile trainerProfile) {
         this.id = trainerProfile.getId();
+        this.userId = trainerProfile.getUser().getId();
         this.bio = trainerProfile.getBio();
         this.averageRating = trainerProfile.getAverageRating();
     }
@@ -27,6 +29,14 @@ public class TrainerProfileResponseDTO {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public String getBio() {
@@ -45,7 +55,7 @@ public class TrainerProfileResponseDTO {
         this.averageRating = averageRating;
     }
 
-    public static TrainerProfileResponseDTO mockWith(Long id, String bio, Double averageRating) {
-        return new TrainerProfileResponseDTO(id, bio, averageRating);
+    public static TrainerProfileResponseDTO mockWith(Long id, Long userId, String bio, Double averageRating) {
+        return new TrainerProfileResponseDTO(id, userId, bio, averageRating);
     }
 }

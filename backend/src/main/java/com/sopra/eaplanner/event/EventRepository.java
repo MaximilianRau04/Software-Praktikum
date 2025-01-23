@@ -16,4 +16,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 
     @Query("SELECT e FROM Event e JOIN e.tags t WHERE t IN :tags")
     List<Event> findEventsByTags(@Param("tags") List<Tag> tags);
+
+    @Query("SELECT e FROM Event e JOIN e.organizer o WHERE o.id = :organizerId")
+    List<Event> findAllEventsOfOrganizer(@Param("organizerId") Long organizerId);
 }

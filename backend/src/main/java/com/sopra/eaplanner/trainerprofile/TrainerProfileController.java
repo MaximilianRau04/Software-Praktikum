@@ -1,6 +1,5 @@
 package com.sopra.eaplanner.trainerprofile;
 
-import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.user.User;
@@ -48,11 +47,6 @@ public class TrainerProfileController {
     @GetMapping("/{id}/expertiseTags")
     public ResponseEntity<Set<TagResponseDTO>> getExpertiseTags(@PathVariable Long id) {
         return ResponseEntity.ok().body(trainerProfileService.getExpertiseTags(id));
-    }
-
-    @GetMapping("/{id}/hostedEvents")
-    public ResponseEntity<List<EventResponseDTO>> getHostedEvents(@PathVariable Long id) {
-        return ResponseEntity.ok().body(trainerProfileService.getHostedEvents(id));
     }
 
     @PostMapping("/{trainerId}/{feedbackId}/pin")

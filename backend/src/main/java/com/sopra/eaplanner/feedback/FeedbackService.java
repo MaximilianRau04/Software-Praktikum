@@ -491,7 +491,15 @@ public class FeedbackService {
         return sentiment;
     }
 
+    public Double getFeedbackRating(Feedback f) {
+        return getFeedbackRating((FeedbackScore) f);
+    }
+
     private Double getFeedbackRating(FeedbackRequestDTO f) {
+        return getFeedbackRating((FeedbackScore) f);
+    }
+
+    private Double getFeedbackRating(FeedbackScore f) {
         double rating = 0.0;
 
         //Overall

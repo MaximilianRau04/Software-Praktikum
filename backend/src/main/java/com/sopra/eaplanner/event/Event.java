@@ -65,10 +65,6 @@ public class Event {
     @JsonManagedReference
     private User organizer;
 
-    @ManyToOne
-    @JoinColumn(name = "trainer_profile_id")
-    private TrainerProfile trainerProfile;
-
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "user_event",
@@ -115,7 +111,7 @@ public class Event {
     }
 
     public Event(Long id, String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room,
-                 String description, ExchangeDay exchangeDay, User organizer, TrainerProfile trainerProfile,
+                 String description, ExchangeDay exchangeDay, User organizer,
                  String qrCodeFilePath, Set<ForumThread> forumthreads, ExperienceLevel recommendedExperience) {
         this.id = id;
         this.name = name;
@@ -125,7 +121,6 @@ public class Event {
         this.description = description;
         this.exchangeDay = exchangeDay;
         this.organizer = organizer;
-        this.trainerProfile = trainerProfile;
         this.qrCodeFilePath = qrCodeFilePath;
         this.attendanceToken = generateAttendanceToken();
         this.forumThreads = forumthreads;
@@ -217,14 +212,6 @@ public class Event {
 
     public void setOrganizer(User organizer) {
         this.organizer = organizer;
-    }
-
-    public TrainerProfile getTrainerProfile() {
-        return trainerProfile;
-    }
-
-    public void setTrainerProfile(TrainerProfile trainerProfile) {
-        this.trainerProfile = trainerProfile;
     }
 
     public Set<User> getRegisteredUsers() {

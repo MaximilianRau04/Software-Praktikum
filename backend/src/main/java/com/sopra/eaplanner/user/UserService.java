@@ -3,11 +3,16 @@ package com.sopra.eaplanner.user;
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.EventRepository;
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
+import com.sopra.eaplanner.event.dtos.RatedEventDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationService;
+import com.sopra.eaplanner.event.tags.Tag;
+import com.sopra.eaplanner.event.tags.TagResponseDTO;
+import com.sopra.eaplanner.feedback.FeedbackService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.forumpost.ForumPostResponseDTO;
 import com.sopra.eaplanner.reward.dtos.RewardResponseDTO;
+import com.sopra.eaplanner.trainerprofile.HostedEventsDTO;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileRepository;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
@@ -18,6 +23,9 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -28,13 +36,18 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private TrainerProfileRepository trainerProfileRepository;
+
     @Autowired
     private EventParticipationService eventParticipationService;
 
     @Autowired
-    private TrainerProfileRepository trainerProfileRepository;
+    private FeedbackService feedbackService;
 
     public UserResponseDTO getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
@@ -67,6 +80,38 @@ public class UserService {
                 .stream()
                 .map(EventResponseDTO::new)
                 .collect(Collectors.toSet());
+    }
+
+    public HostedEventsDTO getHostedEvents(Long id) {
+        List<Event> hostedEvents = eventRepository.findAllEventsOfOrganizer(id);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        List<RatedEventDTO> pastEvents = new ArrayList<>();
+        List<RatedEventDTO> futureEvents = new ArrayList<>();
+
+        for (Event event : hostedEvents) {
+            Set<TagResponseDTO> tags = event.getTags().stream().map(TagResponseDTO::new).collect(Collectors.toSet());
+            LocalDate eventDate = event.getDate();
+            LocalTime eventStartTime = event.getStartTime();
+            LocalTime eventEndTime = event.getEndTime();
+
+            LocalDateTime eventStartDateTime = eventDate.atTime(eventStartTime);
+            LocalDateTime eventEndDateTime = eventDate.atTime(eventEndTime);
+
+            if (eventEndDateTime.isBefore(now)) {
+                Double averageRating = event.getFeedbacks().stream()
+                        .mapToDouble(f -> feedbackService.getFeedbackRating(f))
+                        .sum() / event.getFeedbacks().size();
+                pastEvents.add(new RatedEventDTO(event, averageRating, tags));
+            } else if (eventStartDateTime.isAfter(now)) {
+                futureEvents.add(new RatedEventDTO(event, 0.0, tags));
+            } else {
+                futureEvents.add(new RatedEventDTO(event, 0.0, tags));
+            }
+        }
+
+        return new HostedEventsDTO(pastEvents, futureEvents);
     }
 
     public Iterable<FeedbackResponseDTO> getGivenFeedback(Long id) {

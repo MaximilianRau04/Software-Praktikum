@@ -224,13 +224,6 @@ public class EventService {
         return file;
     }
 
-    public TrainerProfileResponseDTO getTrainerProfileByEventId(Long id) {
-        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
-
-        return new TrainerProfileResponseDTO(event.getTrainerProfile());
-    }
-
-
     private void generateAndSaveQRCode(Event requestBody) throws Exception {
         String eventUrl = generateEventUrl(requestBody.getId(), requestBody.getAttendanceToken());
         byte[] qrCode = QRCodeService.getQRCodeImage(eventUrl, 300, 300);

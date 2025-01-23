@@ -30,10 +30,6 @@ public class TrainerProfile {
     )
     private Set<Tag> expertiseTags = new HashSet<>();
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "trainerProfile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Event> hostedEvents = new ArrayList<Event>();
-
     @OneToOne
     @JoinColumn(name = "user_id")
     @NotNull
@@ -81,14 +77,6 @@ public class TrainerProfile {
 
     public void setAverageRating(Double averageRating) {
         this.averageRating = averageRating;
-    }
-
-    public List<Event> getHostedEvents() {
-        return hostedEvents;
-    }
-
-    public void setHostedEvents(List<Event> events) {
-        this.hostedEvents = events;
     }
 
     public User getUser() {

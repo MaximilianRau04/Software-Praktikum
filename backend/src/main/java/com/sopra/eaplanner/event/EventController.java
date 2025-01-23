@@ -10,7 +10,6 @@ import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO;
 import com.sopra.eaplanner.forumthread.ForumThreadResponseDTO;
 import com.sopra.eaplanner.resource.dtos.ResourceResponse;
-import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,11 +92,6 @@ public class EventController {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)
                 .body(file);
-    }
-
-    @GetMapping("/{id}/trainerProfile")
-    public TrainerProfileResponseDTO getTrainerProfileByEventId(@PathVariable Long id) {
-        return eventService.getTrainerProfileByEventId(id);
     }
 
     @GetMapping("/{id}/resources")

@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
-public class Feedback {
+public class Feedback implements FeedbackScore {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

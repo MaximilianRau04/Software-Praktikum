@@ -146,7 +146,7 @@ export default {
     },
     navigateToProfile() {
       if (this.currentUser.id) {
-        this.$router.push(`/user/${this.currentUser.username}`);
+        this.$router.push(`/profile/${this.currentUser.username}`);
       } else {
         this.$router.push("/login");
       }

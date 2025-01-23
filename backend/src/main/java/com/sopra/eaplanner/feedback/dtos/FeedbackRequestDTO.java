@@ -1,8 +1,9 @@
 package com.sopra.eaplanner.feedback.dtos;
 
+import com.sopra.eaplanner.feedback.FeedbackScore;
 import jakarta.validation.constraints.*;
 
-public class FeedbackRequestDTO {
+public class FeedbackRequestDTO implements FeedbackScore {
 
     //Overall
     @Min(value = 1, message = "overallScore must be between 1 and 5.")

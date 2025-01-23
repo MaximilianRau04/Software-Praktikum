@@ -5,6 +5,7 @@ import com.sopra.eaplanner.event.participation.EventParticipationDTO;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.forumpost.ForumPostResponseDTO;
 import com.sopra.eaplanner.reward.dtos.RewardResponseDTO;
+import com.sopra.eaplanner.trainerprofile.HostedEventsDTO;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
 import com.sopra.eaplanner.user.dtos.UserRequestDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
@@ -50,6 +51,11 @@ public class UserController {
     public ResponseEntity<List<EventResponseDTO>> getRecommendedEvents(@PathVariable Long id, @RequestParam("limit") Integer limit) {
         List<EventResponseDTO> recommendedEvents = userTagWeightService.recommendEvents(id, limit);
         return ResponseEntity.ok().body(recommendedEvents);
+    }
+
+    @GetMapping("/{userId}/hostedEvents")
+    public ResponseEntity<HostedEventsDTO> getHostedEvents(@PathVariable Long userId) {
+        return ResponseEntity.ok().body(userService.getHostedEvents(userId));
     }
 
     @GetMapping("/{id}/feedback")

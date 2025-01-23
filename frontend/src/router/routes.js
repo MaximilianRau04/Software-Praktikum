@@ -6,7 +6,7 @@ import HomePage from "@/components/HomePage.vue";
 import GiveFeedback from "@/components/feedback/GiveFeedback.vue";
 import FeedbackSummary from "@/components/feedback/FeedbackSummary.vue";
 import Forum from "@/components/forum/Forum.vue";
-import UserProfile from "@/components/navigation/UserProfile.vue";
+import Profile from "@/components/profile/Profile.vue";
 import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
 import UpdateEvent from "@/components/adminPanel/UpdateEvent.vue";
 import EventPage from "@/components/viewEvents/EventPage.vue";
@@ -65,9 +65,9 @@ export default [
         props: true,
       },
       {
-        path: "/user/:username",
-        name: "UserProfile",
-        component: UserProfile,
+        path: "/profile/:username",
+        name: "Profile",
+        component: Profile,
         props: true,
       },
       {
