@@ -4,7 +4,7 @@
     <div v-if="!selectedThreadId" class="threads-view">
       <h1>Diskussionsforum</h1>
 
-      <button class="btn-primary create-thread-btn" @click="showModal = true">
+      <button class="btn-primary create-thread-btn" @click="prepareCreateThread">
         + Neuer Thread
       </button>
 
@@ -23,10 +23,25 @@
           <div class="thread-meta">
             <span>{{ thread.forumPosts?.length || 0 }} Antworten</span>
           </div>
+          <div v-if="isAdmin" class="post-actions" @click.stop>
+            <button 
+              class="btn-secondary edit-btn" 
+              @click.stop="prepareEditThread(thread)"
+            >
+              Bearbeiten
+            </button>
+            <button 
+              class="btn-secondary delete-btn" 
+              @click.stop="deleteThread(thread.threadId)"
+            >
+              Löschen
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
+    <!-- Thread Detail View -->
     <div v-else class="thread-detail">
       <button class="btn-secondary back-btn" @click="selectedThreadId = null">
         ← Zurück
@@ -36,7 +51,23 @@
         <h2>{{ selectedThread.title }}</h2>
         <p class="thread-description">{{ selectedThread.description }}</p>
 
-        <!-- display all posts -->
+        <div v-if="editingPost" class="edit-post-modal">
+          <h3>Post bearbeiten</h3>
+          <form @submit.prevent="savePostEdits">
+            <textarea
+              v-model="editingPost.content"
+              rows="4"
+              required
+              class="input-field no-resize"
+            ></textarea>
+            <button type="submit" class="btn-primary">Speichern</button>
+            <button type="button" class="btn-secondary" @click="cancelEdit">
+              Abbrechen
+            </button>
+          </form>
+        </div>
+
+        <!-- Posts Section -->
         <div class="posts-section">
           <div v-if="selectedThread.forumPosts?.length" class="post-list">
             <div
@@ -53,13 +84,31 @@
               <div class="post-body">
                 <p class="post-content">{{ post.content }}</p>
               </div>
+
+              <div class="post-actions">
+                <button
+                  v-if="post.author.id == userId"
+                  class="btn-secondary edit-btn"
+                  @click="editPost(post)"
+                >
+                  Bearbeiten
+                </button>
+
+                <button
+                  v-if="post.author.id == userId || isAdmin"
+                  class="btn-secondary delete-btn"
+                  @click="deletePost(post.id)"
+                >
+                  Löschen
+                </button>
+              </div>
             </div>
           </div>
 
           <p v-else class="no-posts">Noch keine Antworten.</p>
         </div>
 
-        <!-- form for answers -->
+        <!-- Post Creation Form -->
         <form @submit.prevent="createPost" class="post-form">
           <textarea
             v-model="newPost.content"
@@ -83,16 +132,16 @@
       </div>
     </div>
 
-    <!-- form for create Thread -->
+    <!-- Thread Creation/Edit Modal -->
     <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
       <div class="modal-content">
-        <h2>Neuen Thread erstellen</h2>
-        <form @submit.prevent="createThread" class="thread-form">
+        <h2>{{ isEditing ? 'Thread bearbeiten' : 'Neuen Thread erstellen' }}</h2>
+        <form @submit.prevent="isEditing ? updateThread() : createThread()" class="thread-form">
           <div class="form-group">
             <label for="title">Titel:</label>
             <input
               id="title"
-              v-model="newThread.title"
+              v-model="currentThread.title"
               placeholder="Titel des Threads"
               required
               class="input-field"
@@ -102,7 +151,7 @@
             <label for="description">Beschreibung:</label>
             <textarea
               id="description"
-              v-model="newThread.description"
+              v-model="currentThread.description"
               placeholder="Beschreibung hinzufügen"
               rows="3"
               required
@@ -110,7 +159,9 @@
             ></textarea>
           </div>
           <div class="modal-actions">
-            <button type="submit" class="btn-primary">Thread erstellen</button>
+            <button type="submit" class="btn-primary">
+              {{ isEditing ? 'Speichern' : 'Thread erstellen' }}
+            </button>
             <button
               type="button"
               class="btn-secondary cancel-btn"
@@ -154,68 +205,147 @@ export default {
         title: "",
         description: "",
       },
+      currentThread: {
+        title: "",
+        description: "",
+        id: null
+      },
       newPost: {
         content: "",
         isAnonymous: false,
       },
       showModal: false,
+      editingPost: null,
+      isAdmin: false,
+      isEditing: false,
+      userId: Cookies.get("userId"),
     };
   },
   methods: {
-    /**
-     * Fetches all threads from the backend
-     */
+    async deletePost(postId) {
+      if (!confirm("Sind Sie sicher, dass Sie diesen Post löschen möchten?")) {
+        return;
+      }
+      try {
+        await axios.delete(`${config.apiBaseUrl}/forumposts/${postId}`);
+        this.fetchThreadDetail();
+      } catch (error) {
+        console.error("Fehler beim Löschen des Posts:", error);
+      }
+      alert("Post wurde gelöscht");
+    },
+
+    editPost(post) {
+      this.editingPost = { ...post };
+    },
+
+    async savePostEdits() {
+      try {
+        await axios.put(
+          `${config.apiBaseUrl}/forumposts/${this.editingPost.id}`,
+          {
+            content: this.editingPost.content,
+            authorId: this.editingPost.author.id,
+            forumThreadId: this.selectedThreadId,
+          }
+        );
+        this.fetchThreadDetail();
+        this.editingPost = null;
+      } catch (error) {
+        console.error("Fehler beim Bearbeiten des Posts:", error);
+        alert(
+          `Fehler beim Bearbeiten: ${error.response?.data?.message || "Unbekannter Fehler"}`
+        );
+      }
+    },
+
+    cancelEdit() {
+      this.editingPost = null;
+    },
+
+    prepareCreateThread() {
+      this.isEditing = false;
+      this.currentThread = { title: "", description: "" };
+      this.showModal = true;
+    },
+
+    prepareEditThread(thread) {
+      this.isEditing = true;
+      this.currentThread = { 
+        id: thread.threadId, 
+        title: thread.title, 
+        description: thread.description 
+      };
+      this.showModal = true;
+    },
+
+    async deleteThread(threadId) {
+      if (!confirm("Sind Sie sicher, dass Sie diesen Thread löschen möchten?")) {
+        return;
+      }
+      try {
+        await axios.delete(`${config.apiBaseUrl}/forumthreads/${threadId}`);
+        this.fetchThreads();
+      } catch (error) {
+        console.error("Fehler beim Löschen des Threads:", error);
+      }
+    },
+
+    async updateThread() {
+      const eventId = this.$route.params.eventId;
+      try {
+      await axios.put(`${config.apiBaseUrl}/forumthreads/${this.currentThread.id}`, {
+        title: this.currentThread.title,
+        description: this.currentThread.description,
+        eventId: eventId,
+      });
+      this.fetchThreads();
+      this.showModal = false;
+      } catch (error) {
+      console.error("Fehler beim Aktualisieren des Threads:", error);
+      }
+    },
+
     async fetchThreads() {
       const eventId = this.$route.params.eventId;
       try {
         const response = await axios.get(
-          `${config.apiBaseUrl}/events/${eventId}/forum`,
+          `${config.apiBaseUrl}/events/${eventId}/forum`
         );
         this.threads = response.data;
-        console.log(this.threads.threadId);
       } catch (error) {
         console.error("Fehler beim Abrufen der Threads:", error);
       }
     },
-    /**
-     * Creates a new thread
-     */
+
     async createThread() {
       const eventId = this.$route.params.eventId;
-      console.log(eventId);
       try {
         const newThreadData = {
-          title: this.newThread.title,
-          description: this.newThread.description,
+          title: this.currentThread.title,
+          description: this.currentThread.description,
           eventId: eventId,
         };
 
         await axios.post(`${config.apiBaseUrl}/forumthreads`, newThreadData);
         this.fetchThreads();
-        this.newThread.title = "";
-        this.newThread.description = "";
+        this.currentThread.title = "";
+        this.currentThread.description = "";
         this.showModal = false;
       } catch (error) {
         console.error("Fehler beim Erstellen des Threads:", error);
       }
     },
 
-    /**
-     * Selects a thread and fetches its details
-     * @param {number} threadId - The id of the thread
-     */
     async selectThread(threadId) {
       this.selectedThreadId = threadId;
       this.fetchThreadDetail();
     },
 
-    /**
-     * Fetches the details of a thread
-     */
     async fetchThreadDetail() {
       try {
         const response = await axios.get(
-          `${config.apiBaseUrl}/forumthreads/${this.selectedThreadId}`,
+          `${config.apiBaseUrl}/forumthreads/${this.selectedThreadId}`
         );
         this.selectedThread = response.data;
       } catch (error) {
@@ -223,9 +353,6 @@ export default {
       }
     },
 
-    /**
-     * Creates a new post
-     */
     async createPost() {
       try {
         const userId = Cookies.get("userId");
@@ -247,11 +374,6 @@ export default {
       }
     },
 
-    /**
-     * Formats a date to a human-readable format
-     * @param {string} date - The date to format
-     * @returns {string} The formatted date
-     */
     formatDate(date) {
       return new Date(date).toLocaleDateString("de-DE", {
         day: "2-digit",
@@ -261,6 +383,7 @@ export default {
         minute: "2-digit",
       });
     },
+
     truncate(text, length) {
       return text.length > length ? text.substring(0, length) + "..." : text;
     },
@@ -268,6 +391,8 @@ export default {
 
   mounted() {
     this.fetchThreads();
+    this.userId = Cookies.get("userId");
+    this.isAdmin = Cookies.get("role") === "ADMIN";
   },
 };
 </script>
@@ -478,5 +603,31 @@ p.thread-description {
   align-items: center;
   gap: 15px;
   margin-bottom: 10px;
+}
+
+.post-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.edit-post-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 2000;
+}
+.delete-btn {
+  background-color: #dc3545;
+  margin-left: auto;
+}
+
+.edit-btn {
+  background-color: #42b983;
 }
 </style>

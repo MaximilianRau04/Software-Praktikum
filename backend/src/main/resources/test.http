@@ -17,7 +17,7 @@ POST http://localhost:8080/api/users
 Content-Type: application/json
 
 {
-  "username": "max",
+  "username": "maxTwo",
   "firstname": "Maximilian",
   "lastname": "Peresunchak",
   "role": "ADMIN"
@@ -154,9 +154,9 @@ POST http://localhost:8080/api/resources
 Content-Type: application/json
 
 {
-  "name": "stuhl",
-  "type": "MATERIAL",
-  "description": "Eins beamer",
+  "name": "38.01",
+  "type": "ROOM",
+  "description": "Raum",
   "capacity": 200,
   "location": "Stuttgart",
   "availability": true
@@ -174,4 +174,4 @@ Content-Type: application/json
 }
 ###
 
-GET http://localhost:8080/api/users
+GET http://localhost:8080/api/forumthreads
