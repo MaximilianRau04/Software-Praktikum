@@ -1,5 +1,6 @@
 package com.sopra.eaplanner.exchangeday.dtos;
 
+import com.sopra.eaplanner.locations.Location;
 import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -21,7 +22,8 @@ public class ExchangeDayRequestDTO {
     @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters")
     private String name;
 
-    private String location;
+    @NotNull(message = "LocationId cannot be null")
+    private Long locationId;
 
     @Size(max = 255, message = "Description cannot exceed 255 characters")
     private String description;
@@ -45,12 +47,12 @@ public class ExchangeDayRequestDTO {
         this.name = name;
     }
 
-    public @NotNull @NotEmpty String getLocation() {
-        return location;
+    public @NotNull Long getLocationId() {
+        return locationId;
     }
 
-    public void setLocation(@NotNull @NotEmpty String location) {
-        this.location = location;
+    public void setLocationId(@NotNull Long locationId) {
+        this.locationId = locationId;
     }
 
     public @Size(max = 255, message = "Description cannot exceed 255 characters") String getDescription() {
@@ -70,15 +72,15 @@ public class ExchangeDayRequestDTO {
     }
 
 
-    public static ExchangeDayRequestDTO mockWith(LocalDate startDate, LocalDate endDate, String name, String location, String description) {
-        return new ExchangeDayRequestDTO(startDate, endDate, name, location, description);
+    public static ExchangeDayRequestDTO mockWith(LocalDate startDate, LocalDate endDate, String name, Long locationId, String description) {
+        return new ExchangeDayRequestDTO(startDate, endDate, name, locationId, description);
     }
 
-    private ExchangeDayRequestDTO(LocalDate startDate, LocalDate endDate, String name, String location, String description) {
+    private ExchangeDayRequestDTO(LocalDate startDate, LocalDate endDate, String name, Long locationId, String description) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.name = name;
-        this.location = location;
+        this.locationId = locationId;
         this.description = description;
     }
 }

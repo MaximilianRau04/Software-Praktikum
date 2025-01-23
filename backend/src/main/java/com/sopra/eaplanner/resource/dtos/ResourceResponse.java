@@ -1,5 +1,6 @@
 package com.sopra.eaplanner.resource.dtos;
 
+import com.sopra.eaplanner.locations.Location;
 import com.sopra.eaplanner.resource.ResourceItem;
 
 public class ResourceResponse {
@@ -8,12 +9,12 @@ public class ResourceResponse {
     private String name;
     private String type;
     private String description;
-    private String location;
+    private Location location;
     private Boolean availability;
     private Integer capacity;
 
     public ResourceResponse(Long id, String name, String type, String description,
-                            String location, Boolean availability, Integer capacity) {
+                            Location location, Boolean availability, Integer capacity) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -65,11 +66,11 @@ public class ResourceResponse {
         this.description = description;
     }
 
-    public String getLocation() {
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 

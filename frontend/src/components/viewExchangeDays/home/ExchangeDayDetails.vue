@@ -1,13 +1,14 @@
-<!--
- * This Vue component displays detailed information about a selected exchange day,
- * including its name, location, description, date, and associated events.
--->
 <template>
   <div v-if="selectedExchangeDay" class="exchangeDayDetails">
     <!-- Displaying exchange day details -->
     <div class="exchangeDayInfos">
       <h1>{{ selectedExchangeDay.name }}</h1>
-      <p><strong>Ort:</strong> {{ selectedExchangeDay.location }}</p>
+      <p>
+        <strong>Ort:</strong> {{ selectedExchangeDay.location.street }}
+        {{ selectedExchangeDay.location.houseNumber }},
+        {{ selectedExchangeDay.location.city }},
+        {{ selectedExchangeDay.location.country }}
+      </p>
       <p>
         <strong>Beschreibung:</strong> {{ selectedExchangeDay.description }}
       </p>
@@ -17,8 +18,11 @@
         {{ formatDate(selectedExchangeDay.endDate) }}
       </p>
       <p>Id: {{ selectedExchangeDay.id }}</p>
-    </div>
 
+      <button @click="navigateToUpdateExchangeDay(selectedExchangeDay.id)" class="edit-button">
+  Bearbeiten
+</button>
+    </div>
     <!-- Displaying associated events -->
     <div class="scrollableEvents">
       <h2>Workshops</h2>
@@ -37,8 +41,12 @@ import EventDetails from "@/components/viewExchangeDays/home/EventDetails.vue";
 import config from "@/config";
 import "@/assets/exchange-day-details.css";
 import { ExchangeDay, exchangeDays } from "@/types/ExchangeDay";
-const selectedExchangeDay = ref<ExchangeDay | null>(null);
 import { Event } from "@/types/Event";
+import UpdateExchangeDay from "@/components/adminPanel/UpdateExchangeDay.vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const selectedExchangeDay = ref<ExchangeDay | null>(null);
 
 const props = defineProps<{
   exchangeDay: ExchangeDay | null;
@@ -70,7 +78,6 @@ async function fetchExchangeDayDetails(id: number) {
     const data = await response.json();
     console.log("ExchangeDay data loaded:", data);
 
-    // Store the fetched exchange day details in `selectedExchangeDay
     selectedExchangeDay.value = {
       id: data.id,
       name: data.name,
@@ -80,7 +87,6 @@ async function fetchExchangeDayDetails(id: number) {
       location: data.location,
     };
 
-    // Fetch details of associated events, if available
     await fetchEventDetails();
   } catch (error) {
     console.error("Error fetching exchange day details:", error);
@@ -106,6 +112,10 @@ async function fetchEventDetails() {
     console.error("Error fetching event:", error);
   }
 }
+
+const navigateToUpdateExchangeDay = (exchangeDayId) => {
+  router.push({ name: 'updateExchangeDay', params: { exchangeDayId } });
+};
 
 /**
  * Watch for changes to the `exchangeDay` prop and fetch new details when it changes.

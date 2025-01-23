@@ -6,6 +6,7 @@ import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -33,7 +34,7 @@ public class ExchangeDayController {
     }
 
     @PostMapping("")
-    public ResponseEntity<ExchangeDayResponseDTO> createExchangeDay(@Valid @RequestBody ExchangeDayRequestDTO requestBody) {
+    public ResponseEntity<ExchangeDayResponseDTO> createExchangeDay(@Valid @RequestBody ExchangeDayRequestDTO requestBody, BindingResult bindingResult) {
         ExchangeDayResponseDTO savedDTO = exchangeDayService.createExchangeDay(requestBody);
         URI location = URI.create("/api/exchange-days/" + savedDTO.getId());
 

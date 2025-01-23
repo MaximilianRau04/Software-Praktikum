@@ -1,10 +1,12 @@
 package com.sopra.eaplanner.resource;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.sopra.eaplanner.locations.Location;
 import com.sopra.eaplanner.resource.dtos.ResourceRequest;
 import com.sopra.eaplanner.resource.resourceAssignment.ResourceAssignment;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -27,8 +29,9 @@ public class ResourceItem {
 
     private Integer capacity;
 
-    @NotNull
-    private String location;
+    @ManyToOne
+    @JoinColumn(name = "location_id", nullable = false)
+    private Location location;
 
     private Boolean availability = true;
 
@@ -36,7 +39,8 @@ public class ResourceItem {
     @OneToMany(mappedBy = "resource")
     private List<ResourceAssignment> assignments;
 
-    public ResourceItem(Long id, String name, ResourceType type, String description, Integer capacity, String location, Boolean availability) {
+
+    public ResourceItem(Long id, String name, ResourceType type, String description, Integer capacity, Location location, Boolean availability) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -46,12 +50,12 @@ public class ResourceItem {
         this.availability = availability;
     }
 
-    public ResourceItem(ResourceRequest resourceRequest) {
+    public ResourceItem(ResourceRequest resourceRequest, Location location) {
         this.name = resourceRequest.getName();
         this.type = Enum.valueOf(ResourceType.class, resourceRequest.getType().toString());
         this.description = resourceRequest.getDescription();
         this.capacity = resourceRequest.getCapacity();
-        this.location = resourceRequest.getLocation();
+        this.location = location;
         this.availability = resourceRequest.getAvailability();
     }
 
@@ -93,11 +97,11 @@ public class ResourceItem {
         this.capacity = capacity;
     }
 
-    public String getLocation() {
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 

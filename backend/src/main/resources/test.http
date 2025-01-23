@@ -4,9 +4,10 @@ Content-Type: application/json
 {
   "name": "Fresh Try ResponseEntities",
   "description": "Bla Bla",
-  "date": "",
+  "date": "2025-01-31",
+  "recommendedExperience": "ALL_LEVELS",
   "room": "0.108",
-  "exchangeDayId": 2,
+  "exchangeDayId": 1,
   "organizerId": 1,
   "startTime": "13:00:00",
   "endTime": "14:00:00"
@@ -17,7 +18,7 @@ POST http://localhost:8080/api/users
 Content-Type: application/json
 
 {
-  "username": "max",
+  "username": "maxTwo",
   "firstname": "Maximilian",
   "lastname": "Peresunchak",
   "role": "ADMIN"
@@ -42,10 +43,6 @@ GET http://localhost:8080/api/users/1/feedbacks/trainer
 GET http://localhost:8080/api/events/8/trainer-profile
 ###
 GET http://localhost:8080/api/users/search?username=maxTwo
-
-###
-GET http://localhost:8080/api/users
-
 
 ###
 POST http://localhost:8080/api/feedback
@@ -88,12 +85,6 @@ DELETE http://localhost:8080/api/feedback/3
 GET http://localhost:8080/api/feedback
 
 ###
-GET http://localhost:8080/api/events/11/summary
-
-###
-GET http://localhost:8080/api/events/11/word-cloud
-
-###
 POST http://localhost:8080/api/events/11/attendance
 Content-Type: application/json
 
@@ -116,7 +107,7 @@ GET http://localhost:8080/api/events/5/qr-code
 ###
 GET http://localhost:8080/api/events/8/trainer-profile
 ###
-GET http://localhost:8080/api/events/11/summary
+GET http://localhost:8080/api/events/1/summary
 ###
 POST http://localhost:8080/api/forumposts
 Content-Type: application/json
@@ -138,16 +129,13 @@ Content-Type: application/json
 GET http://localhost:8080/api/events/1/feedback
 
 ###
-POST http://localhost:8080/api/notifications/send-test-notification?userId=1
+POST http://localhost:8080/api/notifications/send-test-notification?userId=2
 ###
 GET http://localhost:8080/api/events
 ###
 GET http://localhost:8080/api/users/2/trainerProfile
 ###
 GET http://localhost:8080/api/trainerProfiles/1/pinned-comments
-
-###
-GET http://localhost:8080/api/notifications/unread/2
 ###
 PUT http://localhost:8080/api/trainerProfiles/2
 Content-Type: application/json
@@ -167,9 +155,9 @@ POST http://localhost:8080/api/resources
 Content-Type: application/json
 
 {
-  "name": "stuhl",
-  "type": "MATERIAL",
-  "description": "Eins beamer",
+  "name": "38.01",
+  "type": "ROOM",
+  "description": "Raum",
   "capacity": 200,
   "location": "Stuttgart",
   "availability": true
@@ -187,20 +175,30 @@ Content-Type: application/json
 }
 ###
 
-GET http://localhost:8080/api/users/1/recommendedEvents?limit=10
+GET http://localhost:8080/api/forumthreads
 
 ###
-GET http://localhost:8080/api/events/experience-levels
-
-###
-GET http://localhost:8080/api/trainerProfiles/2/expertiseTags
-
-###
-PUT http://localhost:8080/api/trainerProfiles/2
+POST http://localhost:8080/api/locations
 Content-Type: application/json
 
 {
-  "bio": "Maxiiiii, arbeiten",
-  "userId": 2,
-  "expertiseTagNames": ["Travis", "Spring", "Diddy Party"]
+  "city": "Stuttgart",
+    "country": "Germany",
+    "postalCode": "70173",
+  "houseNumber": "3",
+  "street": "Königstraße"
+
 }
+###
+POST http://localhost:8080/api/exchange-days
+Content-Type: application/json
+
+{
+  "startDate": "2025-12-30",
+  "endDate": "2025-12-31",
+  "name": "Fresh",
+  "locationId": 1,
+  "description": "A day dedicated to learning Spring Boot"
+}
+###
+GET http://localhost:8080/api/exchange-days

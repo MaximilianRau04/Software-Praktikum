@@ -1,6 +1,8 @@
 package com.sopra.eaplanner.exchangeday.dtos;
 
 import com.sopra.eaplanner.exchangeday.ExchangeDay;
+import com.sopra.eaplanner.locations.Location;
+import com.sopra.eaplanner.locations.LocationDTO;
 
 import java.time.LocalDate;
 
@@ -9,7 +11,7 @@ public class ExchangeDayResponseDTO {
     private Long id;
     private LocalDate startDate;
     private String name;
-    private String location;
+    private LocationDTO location;
     private String description;
     private LocalDate endDate;
 
@@ -21,7 +23,7 @@ public class ExchangeDayResponseDTO {
         this.startDate = exchangeDay.getStartDate();
         this.endDate = exchangeDay.getEndDate();
         this.name = exchangeDay.getName();
-        this.location = exchangeDay.getLocation();
+        this.location = new LocationDTO(exchangeDay.getLocation());
         this.description = exchangeDay.getDescription();
     }
 
@@ -57,11 +59,11 @@ public class ExchangeDayResponseDTO {
         this.name = name;
     }
 
-    public String getLocation() {
+    public LocationDTO getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(LocationDTO location) {
         this.location = location;
     }
 
@@ -73,11 +75,11 @@ public class ExchangeDayResponseDTO {
         this.description = description;
     }
 
-    public static ExchangeDayResponseDTO mockWith(Long id, LocalDate startDate, LocalDate endDate, String name, String location, String description) {
+    public static ExchangeDayResponseDTO mockWith(Long id, LocalDate startDate, LocalDate endDate, String name, LocationDTO location, String description) {
         return new ExchangeDayResponseDTO(id, startDate, endDate, name, location, description);
     }
 
-    private ExchangeDayResponseDTO(Long id, LocalDate startDate, LocalDate endDate, String name, String location, String description) {
+    private ExchangeDayResponseDTO(Long id, LocalDate startDate, LocalDate endDate, String name, LocationDTO location, String description) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;

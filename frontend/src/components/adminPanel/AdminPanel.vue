@@ -36,6 +36,16 @@
           />
           Neue Resource
         </button>
+        <button @click="toggleLocationBox" class="action-button" type="button">
+          <img
+            src="@/images/plus.png"
+            alt="Plus"
+            class="plus-icon"
+            width="35"
+            height="35"
+          />
+          Neue Location
+        </button>
       </div>
 
       <div class="form-container">
@@ -45,7 +55,6 @@
             v-model:showExchangeDayBox="showExchangeDayBox"
             :exchange-days="exchangeDays"
             :users="users"
-            @create-exchange-day="createExchangeDay"
             v-show="showExchangeDayBox"
           />
         </transition>
@@ -57,7 +66,6 @@
             :exchange-days="exchangeDays"
             :experience-levels="experienceLevels"
             :all-tags="allTags"
-            @create-workshop="createWorkshop"
             v-show="showWorkshopBox"
           />
         </transition>
@@ -66,8 +74,15 @@
         <transition name="roll">
           <ResourceForm
             v-model:showResourceBox="showResourceBox"
-            @create-Resource="createResource"
             v-if="showResourceBox"
+          />
+        </transition>
+
+        <!-- Location form -->
+        <transition name="roll">
+          <LocationForm
+            v-model:showLocationBox="showLocationBox"
+            v-if="showLocationBox"
           />
         </transition>
       </div>
@@ -82,10 +97,12 @@ import config from "@/config";
 import WorkshopForm from "@/components/adminPanel/WorkshopForm.vue";
 import ExchangeDayForm from "@/components/adminPanel/ExchangeDayForm.vue";
 import ResourceForm from "@/components/adminPanel/ResourceForm.vue";
+import LocationForm from "@/components/adminPanel/LocationForm.vue";
 
 const showWorkshopBox = ref(false);
 const showExchangeDayBox = ref(false);
 const showResourceBox = ref(false);
+const showLocationBox = ref(false);
 
 const filteredTags = ref([]);
 
@@ -161,6 +178,7 @@ const toggleWorkshopBox = () => {
   showWorkshopBox.value = !showWorkshopBox.value;
   if (showWorkshopBox.value) showExchangeDayBox.value = false;
   showResourceBox.value = false;
+  showLocationBox.value = false;
 };
 
 /**
@@ -179,17 +197,16 @@ const toggleResourceBox = () => {
   showResourceBox.value = !showResourceBox.value;
   if (showResourceBox.value) showWorkshopBox.value = false;
   showExchangeDayBox.value = false;
+  showLocationBox.value = false;
 };
 
-const createWorkshop = () => {
-  console.log("Workshop wird erstellt...");
-};
-
-const createExchangeDay = () => {
-  console.log("Exchange Day wird erstellt...");
-};
-
-const createResource = () => {
-  console.log("Resource wird erstellt...");
+/**
+ * Toggles the visibility of the resource form.
+ */
+const toggleLocationBox = () => {
+  showLocationBox.value = !showLocationBox.value;
+  if (showLocationBox.value) showWorkshopBox.value = false;
+  showExchangeDayBox.value = false;
+  showResourceBox.value = false;
 };
 </script>

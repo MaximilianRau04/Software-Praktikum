@@ -3,6 +3,8 @@ package com.sopra.eaplanner.exchangeday;
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayRequestDTO;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
+import com.sopra.eaplanner.locations.Location;
+import com.sopra.eaplanner.locations.LocationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,9 +17,16 @@ import java.util.stream.Collectors;
 public class ExchangeDayService {
     @Autowired
     private ExchangeDayRepository exchangeDayRepository;
+    @Autowired
+    private LocationRepository locationRepository;
 
     public ExchangeDayResponseDTO createExchangeDay(ExchangeDayRequestDTO requestBody) {
-        ExchangeDay exchangeDayToSave = exchangeDayRepository.save(new ExchangeDay(requestBody));
+        System.out.println("ID: "+ requestBody.getLocationId());
+        Location location = locationRepository.findById(requestBody.getLocationId())
+                .orElseThrow(() -> new EntityNotFoundException("Location not found"));
+
+        ExchangeDay exchangeDayToSave = new ExchangeDay(requestBody, location);
+        exchangeDayRepository.save(exchangeDayToSave);
         return new ExchangeDayResponseDTO(exchangeDayToSave);
     }
 
@@ -47,12 +56,13 @@ public class ExchangeDayService {
 
     public ExchangeDayResponseDTO updateExchangeDay(Long id, ExchangeDayRequestDTO requestBody) {
         ExchangeDay exchangeDay = exchangeDayRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Exchange Day not found"));
-
+        Location location = locationRepository.findById(requestBody.getLocationId())
+                .orElseThrow(()->new EntityNotFoundException("Location not found"));
         exchangeDay.setName(requestBody.getName());
         exchangeDay.setDescription(requestBody.getDescription());
         exchangeDay.setStartDate(requestBody.getStartDate());
         exchangeDay.setEndDate(requestBody.getEndDate());
-        exchangeDay.setLocation(requestBody.getLocation());
+        exchangeDay.setLocation(location);
         exchangeDayRepository.save(exchangeDay);
 
         return new ExchangeDayResponseDTO(exchangeDay);

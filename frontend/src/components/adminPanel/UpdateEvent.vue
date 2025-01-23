@@ -364,7 +364,9 @@ const updateEvent = async () => {
   }
 };
 
-// Fetch tags from the server
+/**
+ * Fetches the global tags from the server.
+ */
 const fetchGlobalTags = async () => {
   try {
     const response = await fetch(`${config.apiBaseUrl}/tags`);
@@ -380,7 +382,9 @@ const fetchGlobalTags = async () => {
   }
 };
 
-// Filter tags based on the input
+/**
+ * Filters the tags based on the input query.
+ */
 const filterTags = () => {
   const query = tagInput.value.toLowerCase().trim();
   filteredTags.value = allTags.value.filter((tag) =>
@@ -388,16 +392,22 @@ const filterTags = () => {
   );
 };
 
-// Handle keyup event to add a tag when comma is pressed
+/**
+ * Handles the keyup event on the tag input field.
+ * Adds a tag if the user presses the comma key.
+ * @param {KeyboardEvent} event - The keyup event.
+ */
 const handleKeyup = (event) => {
   if (event.key === ",") {
     addTagFromInput();
   }
 };
 
-// Add a tag from the input
+/**
+ * Adds a tag from the input field to the selected tags.
+ */
 const addTagFromInput = () => {
-  const trimmedInput = tagInput.value.trim().slice(0, -1); // Remove the trailing comma
+  const trimmedInput = tagInput.value.trim().slice(0, -1);
   if (
     trimmedInput &&
     !selectedTags.value.includes(trimmedInput) &&
@@ -409,7 +419,10 @@ const addTagFromInput = () => {
   filteredTags.value = [...allTags.value];
 };
 
-// Add a tag from the list
+/**
+ * Adds a tag to the selected tags.
+ * @param {string} tag - The tag to add.
+ */
 const addTag = (tag) => {
   if (!selectedTags.value.includes(tag) && selectedTags.value.length < 5) {
     selectedTags.value.push(tag);
@@ -437,6 +450,9 @@ onMounted(async () => {
   await fetchEventTags();
 });
 
+/**
+ * Watcher to update the date field based on the selected exchange day.
+ */
 watch(registeredUsers, (users) => {
   if (
     users.length > 0 &&

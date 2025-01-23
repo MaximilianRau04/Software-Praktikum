@@ -10,7 +10,7 @@
     </div>
 
     <div v-if="isLoading" class="loading">
-      <p>Loading...</p>
+      <p>Kein Feedback für diese Event verfügbar</p>
     </div>
 
     <div v-else>

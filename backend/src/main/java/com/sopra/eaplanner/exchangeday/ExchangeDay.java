@@ -2,6 +2,7 @@ package com.sopra.eaplanner.exchangeday;
 
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayRequestDTO;
+import com.sopra.eaplanner.locations.Location;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -38,7 +39,9 @@ public class ExchangeDay {
     @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters")
     private String name;
 
-    private String location;
+    @ManyToOne
+    @JoinColumn(name = "location_id", nullable = false)
+    private Location location;
 
     @Size(max = 255, message = "Description cannot exceed 255 characters")
     private String description;
@@ -50,7 +53,7 @@ public class ExchangeDay {
     public ExchangeDay() {
     }
 
-    public ExchangeDay(Long id, LocalDate startDate, LocalDate endDate, String name, String location, String description) {
+    public ExchangeDay(Long id, LocalDate startDate, LocalDate endDate, String name, Location location, String description) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -59,11 +62,11 @@ public class ExchangeDay {
         this.description = description;
     }
 
-    public ExchangeDay(ExchangeDayRequestDTO dto) {
+    public ExchangeDay(ExchangeDayRequestDTO dto, Location location) {
         this.startDate = dto.getStartDate();
         this.endDate = dto.getEndDate();
         this.name = dto.getName();
-        this.location = dto.getLocation();
+        this.location = location;
         this.description = dto.getDescription();
     }
 
@@ -99,11 +102,11 @@ public class ExchangeDay {
         this.name = name;
     }
 
-    public String getLocation() {
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 

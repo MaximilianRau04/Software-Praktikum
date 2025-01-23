@@ -28,7 +28,7 @@ export default {
     const timeUntilEvent = computed(() =>
       formatDistanceToNow(parseISO(props.notification.context.eventDateTime), {
         addSuffix: true,
-        locale: de
+        locale: de,
       }),
     );
     const navigateToEvent = () => {

@@ -16,7 +16,14 @@
       </div>
       <div class="input-group">
         <label for="location">Ort</label>
-        <input type="text" id="location" v-model="location" />
+        <!-- Dropdown für Locations -->
+        <select id="location" v-model="location" required>
+          <option value="" disabled>Wähle einen Ort</option>
+          <option v-for="loc in locations" :key="loc.id" :value="loc">
+            {{ loc.street }} {{ loc.houseNumber }}, {{ loc.city }},
+            {{ loc.country }}
+          </option>
+        </select>
       </div>
       <div class="input-group">
         <label for="exchangeDescription">Beschreibung</label>
@@ -34,19 +41,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { defineEmits, watch, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
+import { defineEmits } from "vue";
 import config from "@/config";
 
 const exchangeName = ref("");
 const startDate = ref("");
 const endDate = ref("");
-const location = ref("");
+const location = ref<any>(null);
 const exchangeDescription = ref("");
+const locations = ref<any[]>([]);
 
 const emit = defineEmits(["update:showExchangeDayBox"]);
 
 const exchangeApiUrl = `${config.apiBaseUrl}/exchange-days`;
+const locationsApiUrl = `${config.apiBaseUrl}/locations`;
 
 /**
  * Creates a new Exchange Day using the form data.
@@ -60,7 +69,7 @@ const createExchangeDay = async () => {
         name: exchangeName.value,
         startDate: startDate.value,
         endDate: endDate.value,
-        location: location.value,
+        locationId: location.value.id,
         description: exchangeDescription.value,
       }),
     });
@@ -87,7 +96,7 @@ const resetExchangeDayForm = () => {
   exchangeDescription.value = "";
   startDate.value = "";
   endDate.value = "";
-  location.value = "";
+  location.value = null;
   emit("update:showExchangeDayBox", false);
 };
 
@@ -118,7 +127,20 @@ watch(startDate, (newStartDate) => {
   }
 });
 
-onMounted(() => {
+// Fetch locations from the backend
+onMounted(async () => {
   setStartDateToToday();
+  try {
+    const response = await fetch(locationsApiUrl);
+    if (response.ok) {
+      const data = await response.json();
+      locations.value = data;
+    } else {
+      alert("Fehler beim Abrufen der Locations.");
+    }
+  } catch (error) {
+    console.error("Fehler beim Abrufen der Locations:", error);
+    alert("Fehler beim Abrufen der Locations.");
+  }
 });
 </script>
