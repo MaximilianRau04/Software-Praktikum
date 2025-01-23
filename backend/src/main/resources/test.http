@@ -44,6 +44,10 @@ GET http://localhost:8080/api/events/8/trainer-profile
 GET http://localhost:8080/api/users/search?username=maxTwo
 
 ###
+GET http://localhost:8080/api/users
+
+
+###
 POST http://localhost:8080/api/feedback
 Content-Type: application/json
 
@@ -84,6 +88,12 @@ DELETE http://localhost:8080/api/feedback/3
 GET http://localhost:8080/api/feedback
 
 ###
+GET http://localhost:8080/api/events/11/summary
+
+###
+GET http://localhost:8080/api/events/11/word-cloud
+
+###
 POST http://localhost:8080/api/events/11/attendance
 Content-Type: application/json
 
@@ -106,7 +116,7 @@ GET http://localhost:8080/api/events/5/qr-code
 ###
 GET http://localhost:8080/api/events/8/trainer-profile
 ###
-GET http://localhost:8080/api/events/1/summary
+GET http://localhost:8080/api/events/11/summary
 ###
 POST http://localhost:8080/api/forumposts
 Content-Type: application/json
@@ -128,13 +138,16 @@ Content-Type: application/json
 GET http://localhost:8080/api/events/1/feedback
 
 ###
-POST http://localhost:8080/api/notifications/send-test-notification?userId=2
+POST http://localhost:8080/api/notifications/send-test-notification?userId=1
 ###
 GET http://localhost:8080/api/events
 ###
 GET http://localhost:8080/api/users/2/trainerProfile
 ###
 GET http://localhost:8080/api/trainerProfiles/1/pinned-comments
+
+###
+GET http://localhost:8080/api/notifications/unread/2
 ###
 PUT http://localhost:8080/api/trainerProfiles/2
 Content-Type: application/json
@@ -174,4 +187,20 @@ Content-Type: application/json
 }
 ###
 
-GET http://localhost:8080/api/users
+GET http://localhost:8080/api/users/1/recommendedEvents?limit=10
+
+###
+GET http://localhost:8080/api/events/experience-levels
+
+###
+GET http://localhost:8080/api/trainerProfiles/2/expertiseTags
+
+###
+PUT http://localhost:8080/api/trainerProfiles/2
+Content-Type: application/json
+
+{
+  "bio": "Maxiiiii, arbeiten",
+  "userId": 2,
+  "expertiseTagNames": ["Travis", "Spring", "Diddy Party"]
+}
