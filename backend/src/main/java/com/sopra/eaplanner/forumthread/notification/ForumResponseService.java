@@ -33,6 +33,7 @@ public class ForumResponseService {
         forumForNotifications.getForumPosts().stream()
                 .map(ForumPost::getAuthor)
                 .filter(author -> !Objects.equals(author.getId(), responder.getId()))
+                .distinct()
                 .forEach(user -> sendReminder(eventWithForumThreads, forumForNotifications, user, isAnonymous ? "Anonym" : responder.getFirstname() + " " + responder.getLastname()));
     }
 
