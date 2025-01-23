@@ -9,7 +9,6 @@ import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.forumthread.ForumThread;
 import com.sopra.eaplanner.notification.reminder.ReminderType;
 import com.sopra.eaplanner.resource.ResourceItem;
-import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;

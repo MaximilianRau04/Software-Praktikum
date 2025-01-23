@@ -17,7 +17,6 @@ import com.sopra.eaplanner.qrcode.QRCodeService;
 import com.sopra.eaplanner.resource.ResourceItem;
 import com.sopra.eaplanner.resource.dtos.ResourceResponse;
 import com.sopra.eaplanner.resource.ResourceType;
-import com.sopra.eaplanner.trainerprofile.*;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserRepository;
 import com.sopra.eaplanner.user.UserService;
@@ -26,7 +25,9 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -68,6 +69,12 @@ public class EventService {
         ExchangeDay exchangeDay = exchangeDayRepository.findById(requestBody.getExchangeDayId())
                 .orElseThrow(() -> new EntityNotFoundException("ExchangeDay not found."));
 
+        if (isDateOutsideExchangeDay(exchangeDay, requestBody.getDate())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Event Date must be during Exchange day: "
+                            + exchangeDay.getStartDate() + " to " + exchangeDay.getEndDate());
+        }
+
         User eventOrganizer = userRepository.findById(requestBody.getOrganizerId())
                 .orElseThrow(() -> new EntityNotFoundException("Organizer not found."));
 
@@ -76,8 +83,6 @@ public class EventService {
                         exchangeDay,
                         eventOrganizer,
                         tagService.mergeAndGetTagsFromRequest(requestBody.getTags())));
-
-        validateDate(exchangeDay, requestBody.getDate());
 
         userService.registerUserToEvent(eventOrganizer.getId(), savedEvent.getId()); // TODO: Implement proper organizer handling
         generateAndSaveQRCode(savedEvent);
@@ -172,7 +177,7 @@ public class EventService {
         return eventWithTags.getTags().stream().map(TagResponseDTO::new).collect(Collectors.toSet());
     }
 
-    public List<String> getAllExperienceLevels(){
+    public List<String> getAllExperienceLevels() {
         return Arrays.stream(ExperienceLevel.values())
                 .map(Enum::name)
                 .toList();
@@ -182,6 +187,12 @@ public class EventService {
         Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
         ExchangeDay exchangeDay = exchangeDayRepository.findById(requestBody.getExchangeDayId())
                 .orElseThrow(() -> new EntityNotFoundException("ExchangeDay not found."));
+
+        if (isDateOutsideExchangeDay(exchangeDay, requestBody.getDate())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Event Date must be during Exchange day: "
+                            + exchangeDay.getStartDate() + " to " + exchangeDay.getEndDate());
+        }
 
         event.setName(requestBody.getName());
         event.setDate(requestBody.getDate());
@@ -195,8 +206,6 @@ public class EventService {
         event.setRecommendedExperience(requestBody.getRecommendedExperience());
         event.setTags(tagService.mergeAndGetTagsFromRequest(requestBody.getTags()));
         event.setTags(tagService.mergeAndGetTagsFromRequest(requestBody.getTags()));
-
-        validateDate(exchangeDay, requestBody.getDate());
 
         eventRepository.save(event);
         return new EventResponseDTO(event);
@@ -248,10 +257,7 @@ public class EventService {
         return EVENT_ENDPOINT + eventId + TOKEN_SUFFIX + token;
     }
 
-    private void validateDate(ExchangeDay exchangeDay, LocalDate date) {
-        boolean isNotValid = exchangeDay.getStartDate().isAfter(date) || exchangeDay.getEndDate().isBefore(date);
-        if (isNotValid) {
-            throw new IllegalArgumentException("Event date must be within the exchange day.");
-        }
+    private boolean isDateOutsideExchangeDay(ExchangeDay exchangeDay, LocalDate date) {
+        return exchangeDay.getStartDate().isAfter(date) || exchangeDay.getEndDate().isBefore(date);
     }
 }
