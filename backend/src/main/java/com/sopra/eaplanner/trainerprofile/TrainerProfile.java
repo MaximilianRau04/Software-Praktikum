@@ -18,9 +18,15 @@ public class TrainerProfile {
 
     private String bio;
 
-    private Double averageRating;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    @NotNull
+    @JsonBackReference
+    private User user;
 
-    private Integer feedbackCount;
+    private Double averageRating = 0.0;
+
+    private Integer feedbackCount = 0;
 
     @ManyToMany
     @JoinTable(
@@ -30,12 +36,6 @@ public class TrainerProfile {
     )
     private Set<Tag> expertiseTags = new HashSet<>();
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    @NotNull
-    @JsonBackReference
-    private User user;
-
     @ElementCollection
     @MapKeyColumn(name = "comment_type")
     @Column(name = "comment")
@@ -44,15 +44,9 @@ public class TrainerProfile {
     public TrainerProfile() {
     }
 
-    public TrainerProfile(Long id, String bio, Set<Tag> expertiseTags) {
-        this.id = id;
-        this.bio = bio;
-        this.expertiseTags = expertiseTags;
-    }
-
-    public TrainerProfile(TrainerProfileRequestDTO trainerProfileRequest, Set<Tag> expertiseTags) {
+    public TrainerProfile(TrainerProfileRequestDTO trainerProfileRequest, User user) {
         this.bio = trainerProfileRequest.getBio();
-        this.expertiseTags = expertiseTags;
+        this.user = user;
     }
 
     public Long getId() {

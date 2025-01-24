@@ -193,12 +193,7 @@ public class TrainerProfileService {
             throw new IllegalArgumentException("Only users with ADMIN role can create a trainer profile.");
         }
 
-        TrainerProfile trainerProfile = new TrainerProfile();
-        trainerProfile.setBio(request.getBio());
-        trainerProfile.setExpertiseTags(tagService.mergeAndGetTagsFromRequest(request.getExpertiseTagNames()));
-        trainerProfile.setUser(user);
-
-        TrainerProfile savedProfile = trainerProfileRepository.save(trainerProfile);
+        TrainerProfile savedProfile = trainerProfileRepository.save(new TrainerProfile(request, user));
 
         return new TrainerProfileResponseDTO(savedProfile);
     }
