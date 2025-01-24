@@ -1,7 +1,6 @@
 package com.sopra.eaplanner.exchangeday.dtos;
 
 import com.sopra.eaplanner.exchangeday.ExchangeDay;
-import com.sopra.eaplanner.locations.Location;
 import com.sopra.eaplanner.locations.LocationDTO;
 
 import java.time.LocalDate;
@@ -14,9 +13,6 @@ public class ExchangeDayResponseDTO {
     private LocationDTO location;
     private String description;
     private LocalDate endDate;
-
-    public ExchangeDayResponseDTO() {
-    }
 
     public ExchangeDayResponseDTO(ExchangeDay exchangeDay) {
         this.id = exchangeDay.getId();

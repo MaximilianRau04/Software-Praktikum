@@ -4,7 +4,6 @@ import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayRequestDTO;
 import com.sopra.eaplanner.locations.Location;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

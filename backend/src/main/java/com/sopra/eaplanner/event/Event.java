@@ -12,6 +12,7 @@ import com.sopra.eaplanner.resource.ResourceItem;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -36,7 +37,7 @@ public class Event {
     private String name;
 
     @DateTimeFormat(pattern = "dd.MM.yyyy")
-    @Future(message = "Date must be in the future")
+    @FutureOrPresent(message = "Date must be in the future")
     @NotNull(message = "Date cannot be null")
     private LocalDate date;
 
