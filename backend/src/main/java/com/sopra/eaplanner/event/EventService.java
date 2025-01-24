@@ -33,10 +33,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -233,6 +230,15 @@ public class EventService {
         return file;
     }
 
+    public Map<String, String> getAttendanceToken(Long eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EntityNotFoundException("Event not found."));
+
+        Map<String, String> response = new HashMap<>();
+        response.put("attendanceToken", event.getAttendanceToken());
+        return response;
+    }
+
     private void generateAndSaveQRCode(Event requestBody) throws Exception {
         String eventUrl = generateEventUrl(requestBody.getId(), requestBody.getAttendanceToken());
         byte[] qrCode = QRCodeService.getQRCodeImage(eventUrl, 300, 300);
@@ -253,6 +259,7 @@ public class EventService {
         return eventToValidate;
     }
 
+    // TODO: Swap to use this for attendance link QR frontend
     private String generateEventUrl(Long eventId, String token) {
         return EVENT_ENDPOINT + eventId + TOKEN_SUFFIX + token;
     }

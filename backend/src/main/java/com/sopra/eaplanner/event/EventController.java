@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -83,6 +84,12 @@ public class EventController {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)
                 .body(file);
+    }
+
+    // TODO: Add Admin only fetch request
+    @GetMapping("/{eventId}/attendance-token")
+    public ResponseEntity<Map<String, String>> getAttendanceToken(@PathVariable Long eventId){
+        return ResponseEntity.ok(eventService.getAttendanceToken(eventId));
     }
 
     @GetMapping("/{eventId}/qr-code")

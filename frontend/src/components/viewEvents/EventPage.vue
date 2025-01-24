@@ -159,9 +159,10 @@
       <div class="qr-modal">
         <h2>QR-Code für Event Nr.{{ eventId }}</h2>
         <img :src="qrCodeUrl" alt="QR Code" />
-        <p>
-          <a :href="qrCodeUrl">{{ qrCodeUrl }}</a>
-        </p>
+        <div>
+          <button class="download-button" @click="copyToClipboard" :disabled="!qrCodeLink">QR-Link kopieren</button>
+          <p v-if="copySuccess" class="qr-success-message">QR-Link wurde in die Zwischenablage kopiert!</p>
+        </div>
         <a :href="qrCodeUrl" :download="'event-' + eventId + '-qr-code.png'">
           <button class="download-button">QR-Code herunterladen</button>
         </a>
@@ -204,11 +205,13 @@ const router = useRouter();
 const eventId = Number(route.params?.eventId);
 const showQRCodeModal = ref(false);
 const qrCodeUrl = ref("");
+const qrCodeLink = ref("");
+const copySuccess = ref(false);
 
 const focusedThreadId = ref<number | null>(null);
 
 const goToUser = (username: string) => {
-  router.push({ name: "UserProfile", params: { username } });
+  router.push({ name: "Profile", params: { username } });
 };
 
 const goToUpdate = () => {
@@ -294,10 +297,42 @@ const generateColor = (username: string) => {
  * Opens the QR code modal for a specific event.
  * @param {number} id - The ID of the event.
  */
-const openQRCode = () => {
-  qrCodeUrl.value = `${config.apiBaseUrl}/events/${eventId}/qr-code`;
-  showQRCodeModal.value = true;
+const openQRCode = async () => {
+  try {
+    qrCodeUrl.value = `${config.apiBaseUrl}/events/${eventId}/qr-code`;
+
+    // Fetch attendance token from backend
+    const response = await fetch(`${config.apiBaseUrl}/events/${eventId}/attendance-token`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch attendance token: ${response.status} ${response.statusText}`);
+    }
+
+    // Parse the response JSON and extract the token
+    const responseData = await response.json();
+    const attendanceToken = responseData.attendanceToken; // Access the token field
+
+    // Construct the QR code link with the token
+    qrCodeLink.value = `http://193.196.54.172:8000/events/${eventId}/attendance?token=${attendanceToken}`;
+    showQRCodeModal.value = true;
+  } catch (error) {
+    console.error('Error opening QR code modal:', error);
+    // Optionally, display a user-friendly error message
+  }
 };
+
+const copyToClipboard = async () => {
+  if (qrCodeLink.value) {
+    try {
+      await navigator.clipboard.writeText(qrCodeLink.value);
+      copySuccess.value = true;
+      setTimeout(() => {
+        copySuccess.value = false;
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to copy: ', error);
+    }
+  }
+}
 
 /**
  * Closes the QR code modal.

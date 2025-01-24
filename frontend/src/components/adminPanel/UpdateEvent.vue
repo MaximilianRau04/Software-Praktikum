@@ -24,15 +24,7 @@
       <div class="form-group">
         <label for="exchangeDaySelect">Exchange Day</label>
         <select id="exchangeDaySelect" v-model="event.exchangeDayId" required>
-<<<<<<< Updated upstream:frontend/src/components/adminPanel/UpdateEvent.vue
-          <option
-            v-for="exchangeDay in exchangeDays"
-            :key="exchangeDay.id"
-            :value="exchangeDay.id"
-          >
-=======
           <option v-for="exchangeDay in exchangeDays" :key="exchangeDay.id" :value="exchangeDay.id">
->>>>>>> Stashed changes:frontend/src/components/createNewEvents/UpdateEvent.vue
             {{ exchangeDay.name }}
           </option>
         </select>
