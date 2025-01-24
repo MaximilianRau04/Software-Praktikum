@@ -23,7 +23,7 @@ public class EventParticipationDTO {
         this.event = new EventResponseDTO(eventParticipation.getEvent());
         this.participationConfirmed = eventParticipation.getIsParticipationConfirmed();
         this.confirmationTime = eventParticipation.getConfirmationTime();
-        this.feedbackGiven = eventParticipation.isFeedbackGiven();
+        this.feedbackGiven = eventParticipation.getFeedbackGiven();
         this.feedbackTime = eventParticipation.getFeedbackTime();
     }
 

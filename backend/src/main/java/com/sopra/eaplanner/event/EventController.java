@@ -9,6 +9,7 @@ import com.sopra.eaplanner.feedback.FeedbackService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO;
 import com.sopra.eaplanner.forumthread.ForumThreadResponseDTO;
+import com.sopra.eaplanner.locations.LocationDTO;
 import com.sopra.eaplanner.resource.dtos.ResourceResponse;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 import jakarta.validation.Valid;
@@ -55,6 +56,11 @@ public class EventController {
     @GetMapping("/{id}/forum")
     public Set<ForumThreadResponseDTO> getForumThreads(@PathVariable Long id) {
         return eventService.getForumThreads(id);
+    }
+
+    @GetMapping("/{id}/location")
+    public LocationDTO getLocation(@PathVariable Long id) {
+        return eventService.getLocation(id);
     }
 
     @GetMapping("/{id}/organizer")

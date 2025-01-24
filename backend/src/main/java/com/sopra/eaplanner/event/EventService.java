@@ -13,6 +13,7 @@ import com.sopra.eaplanner.exchangeday.ExchangeDay;
 import com.sopra.eaplanner.exchangeday.ExchangeDayRepository;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.forumthread.ForumThreadResponseDTO;
+import com.sopra.eaplanner.locations.LocationDTO;
 import com.sopra.eaplanner.qrcode.QRCodeService;
 import com.sopra.eaplanner.resource.ResourceItem;
 import com.sopra.eaplanner.resource.dtos.ResourceResponse;
@@ -134,6 +135,12 @@ public class EventService {
         Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
 
         return event.getForumThreads().stream().map(ForumThreadResponseDTO::new).collect(Collectors.toSet());
+    }
+
+    public LocationDTO getLocation(Long id) {
+        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
+
+        return new LocationDTO(event.getExchangeDay().getLocation());
     }
 
     public UserResponseDTO getOrganizerByEventId(Long id) {

@@ -434,6 +434,7 @@ public class FeedbackService {
     private List<CommentAnalysis> extractCommentsByType(List<FeedbackResponseDTO> feedback, Function<FeedbackResponseDTO, CommentAnalysis> mapper) {
         return feedback.stream()
                 .map(mapper)
+                .filter(commentAnalysis -> !commentAnalysis.getComment().isEmpty())
                 .toList();
     }
 
