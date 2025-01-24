@@ -185,6 +185,14 @@
   margin-top: 10px;
 }
 
+.qr-success-message {
+  color: green;
+  font-weight: bold;
+}
+button:disabled {
+  background-color: #ccc;
+}
+
 .close-modal-button {
   background-color: #009ee2;
   color: white;

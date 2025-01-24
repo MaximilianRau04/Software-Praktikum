@@ -62,6 +62,3 @@ application.yml
 *.tmp
 *.swp
 *.swo
-backend/src/main/resources/test.http
-backend/src/main/resources/posts.http
-backend/src/main/resources/localDatabaseFiller.http
