@@ -18,8 +18,8 @@ public class RewardService {
     @Autowired
     private RewardNotificationService rewardNotificationService;
 
-    private static final List<Integer> ATTENDANCE_REWARD_THRESHOLDS = List.of(25, 50, 100, 250, 500);
-    private static final List<Integer> FEEDBACK_GIVER_REWARD_THRESHOLDS = List.of(50, 100, 200, 500, 1000);
+    private static final List<Integer> ATTENDANCE_REWARD_THRESHOLDS = List.of(250, 500, 1000, 2500, 5000);
+    private static final List<Integer> FEEDBACK_GIVER_REWARD_THRESHOLDS = List.of(500, 1000, 2000, 5000, 10000);
 
     public void createAttendanceAndFeedbackRewards(User user) {
         for (Reward reward : user.getRewards()) {
@@ -37,7 +37,7 @@ public class RewardService {
     public void grantAttendancePoints(User user) {
         for (Reward reward : user.getRewards()) {
             if (reward.getType() == Reward.Type.ATTENDER) {
-                final Integer DEFAULT_ATTENDANCE_REWARD_VALUE = 5;
+                final Integer DEFAULT_ATTENDANCE_REWARD_VALUE = 50;
                 reward.setPoints(reward.getPoints() + DEFAULT_ATTENDANCE_REWARD_VALUE);
                 updateRewardLevel(reward, ATTENDANCE_REWARD_THRESHOLDS);
                 rewardRepository.save(reward);
@@ -48,7 +48,7 @@ public class RewardService {
     public void grantFeedbackGiverPoints(User user) {
         for (Reward reward : user.getRewards()) {
             if (reward.getType() == Reward.Type.FEEDBACK_GIVER) {
-                final Integer DEFAULT_FEEDBACK_REWARD_VALUE = 10;
+                final Integer DEFAULT_FEEDBACK_REWARD_VALUE = 100;
                 reward.setPoints(reward.getPoints() + DEFAULT_FEEDBACK_REWARD_VALUE);
                 updateRewardLevel(reward, FEEDBACK_GIVER_REWARD_THRESHOLDS);
                 rewardRepository.save(reward);
