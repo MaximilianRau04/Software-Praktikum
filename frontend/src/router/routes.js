@@ -10,6 +10,7 @@ import Profile from "@/components/profile/Profile.vue";
 import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
 import EventPage from "@/components/viewEvents/EventPage.vue";
 import TrainerProfileManage from "@/components/profile/TrainerProfileManage.vue";
+import ExchangeDayPage from "@/components/viewExchangeDays/ExchangeDayPage.vue";
 
 export default [
   {
@@ -40,6 +41,12 @@ export default [
         path: "/events/registrations",
         name: "eventRegistrations",
         component: EventRegistrations,
+      },
+      {
+        path: "/exchangeDays/:exchangeDayId/manage",
+        name: "manageExchangeDay",
+        component: ExchangeDayPage,
+        props: true,
       },
       {
         path: "/events/:eventId",

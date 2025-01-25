@@ -40,6 +40,7 @@ public class ResourceService {
         Location location = locationRepository.findById(requestBody.getLocationId())
                 .orElseThrow(() -> new EntityNotFoundException("Location not found"));
         ResourceItem resourceToSave = resourceRepository.save(new ResourceItem(requestBody, location));
+        resourceToSave.setAvailability(resourceToSave.getCapacity() > 0);
         return new ResourceResponse(resourceToSave);
     }
 

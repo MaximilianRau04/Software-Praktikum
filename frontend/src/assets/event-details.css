@@ -31,3 +31,7 @@ p {
 .register-button:hover {
   background-color: #005fa3;
 }
+
+.register-button:disabled {
+  background-color: black;
+}

@@ -16,7 +16,7 @@ public class ResourceAssignmentController {
     private ResourceAssignmentService assignmentService;
 
     @PostMapping
-    public ResponseEntity<?> assignResource(@RequestBody ResourceAssignmentRequest assignment) {
+    public ResponseEntity<String> assignResource(@RequestBody ResourceAssignmentRequest assignment) {
         return assignmentService.assignResource(assignment);
     }
 }

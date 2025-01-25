@@ -1,21 +1,21 @@
-<!-- 
-  This component displays a two-column layout: 
-   1. Left Column: Shows details of the currently selected Exchange Day using the `ExchangeDayDetails` component.
-   2. Right Column: Displays a scrollable list of all available Exchange Days using the `ScrollableDivs` component. 
-      - Users can select an Exchange Day from the list.
-      - The selected Exchange Day is shown in the left column.
-  Data is fetched from the API on component mount, populating the scrollable list.
--->
 <template>
   <div class="container">
-    <!-- Left side: Details of the selected Exchange Day -->
+    <!-- left side for details -->
     <div class="leftSide">
-      <ExchangeDayDetails :exchangeDay="selectedExchangeDay" />
+      <ExchangeDayDetails v-if="selectedExchangeDay" :exchangeDay="selectedExchangeDay" />
     </div>
-    <!-- Right side: Scrollable list of all Exchange Days -->
+
+    <!-- right side for scrollables -->
     <div class="rightSide">
+      <h2>Kommende Exchange Days</h2>
       <ScrollableDivs
-        :items="exchangeDays"
+        :exchangeDays="upcomingExchangeDaysList"
+        @select-exchange-day="selectExchangeDay"
+      />
+
+      <h2>Vergangene Exchange Days</h2>
+      <ScrollableDivs
+        :exchangeDays="pastExchangeDaysList"
         @select-exchange-day="selectExchangeDay"
       />
     </div>
@@ -23,32 +23,54 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import ScrollableDivs from "@/components/viewExchangeDays/home/Scrollable.vue";
 import ExchangeDayDetails from "@/components/viewExchangeDays/home/ExchangeDayDetails.vue";
 import config from "@/config";
 import "@/assets/main.css";
-import {
-  ExchangeDay,
-  exchangeDays,
-  selectedExchangeDay,
-} from "@/types/ExchangeDay";
-import { useRoute } from "vue-router";
+import { ExchangeDay } from "@/types/ExchangeDay";
 
-const route = useRoute();
-const userData = route.query;
+const exchangeDays = ref<ExchangeDay[]>([]); 
+const upcomingExchangeDaysList = ref<ExchangeDay[]>([]); 
+const pastExchangeDaysList = ref<ExchangeDay[]>([]); 
+const selectedExchangeDay = ref<ExchangeDay | null>(null); 
+const today = new Date().setHours(0, 0, 0, 0);
 
 /**
- * Fetches all Exchange Days from the API and stores them in the `exchangeDays` ref.
+ * Fetches all Exchange Days from the API and categorizes them.
  */
 function fetchAllExchangeDays() {
   fetch(`${config.apiBaseUrl}/exchange-days`)
     .then((response) => response.json())
-    .then((data) => data as ExchangeDay[])
-    .then((data) => {
-      exchangeDays.value = data;
+    .then((data: ExchangeDay[]) => {
+      exchangeDays.value = data.map((day) => ({
+        ...day,
+        startDate: new Date(day.startDate).getTime(), 
+        endDate: new Date(day.endDate).getTime(), 
+      }));
+
+      categorizeExchangeDays();
     })
-    .catch((error) => console.error(error));
+    .catch((error) => console.error("Error fetching exchange days:", error));
+}
+
+/**
+ * Categorizes Exchange Days into upcoming and past based on today's date.
+ */
+function categorizeExchangeDays() {
+  upcomingExchangeDaysList.value = exchangeDays.value.filter((day) => {
+    const startDate = new Date(day.startDate).setHours(0, 0, 0, 0);
+    const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
+    return startDate > today || (startDate <= today && endDate >= today);
+  });
+
+  pastExchangeDaysList.value = exchangeDays.value.filter((day) => {
+    const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
+    return endDate < today;
+  });
+
+  console.log("Upcoming Days:", upcomingExchangeDaysList.value);
+  console.log("Past Days:", pastExchangeDaysList.value);
 }
 
 /**

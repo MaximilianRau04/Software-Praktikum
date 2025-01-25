@@ -45,9 +45,11 @@ import EventDetails from "@/components/viewExchangeDays/home/EventDetails.vue";
 import config from "@/config";
 import "@/assets/exchange-day-details.css";
 import { ExchangeDay } from "@/types/ExchangeDay";
+
 import { Event } from "@/types/Event";
 import { useRouter } from "vue-router";
 import Cookies from "js-cookie";
+
 
 const router = useRouter();
 const selectedExchangeDay = ref<ExchangeDay | null>(null);
@@ -120,11 +122,11 @@ async function fetchExchangeDayDetails(id: number) {
 async function fetchEventDetails() {
   try {
     const response = await fetch(
-      `${config.apiBaseUrl}/exchange-days/${selectedExchangeDay.value.id}/events`,
+      `${config.apiBaseUrl}/exchange-days/${selectedExchangeDay.value.id}/events`
     );
     if (!response.ok) {
       throw new Error(
-        `Failed to fetch events from exchange day ${selectedExchangeDay.value.id}`,
+        `Failed to fetch events from exchange day ${selectedExchangeDay.value.id}`
       );
     }
     const responseData: Event[] = await response.json();
@@ -136,7 +138,7 @@ async function fetchEventDetails() {
 
 const navigateToManageExchangeDay = (exchangeDayId) => {
   router.push({ name: "manageExchangeDay", params: { exchangeDayId } });
-};
+}
 
 /**
  * Watch for changes to the `exchangeDay` prop and fetch new details when it changes.
@@ -147,7 +149,7 @@ watch(
     if (newId !== oldId && newId != null) {
       fetchExchangeDayDetails(newId);
     }
-  },
+  }
 );
 
 /**
@@ -158,4 +160,6 @@ onMounted(() => {
     fetchExchangeDayDetails(props.exchangeDay.id);
   }
 });
+
+
 </script>

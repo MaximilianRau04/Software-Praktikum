@@ -3,6 +3,8 @@ package com.sopra.eaplanner.event;
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.dtos.EventRequestDTO;
 import com.sopra.eaplanner.event.participation.ConfirmAttendanceDTO;
+import com.sopra.eaplanner.event.resources.EventResource;
+import com.sopra.eaplanner.event.resources.EventResourceResponse;
 import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.feedback.FeedbackService;
@@ -107,10 +109,9 @@ public class EventController {
                 .body(file);
     }
 
-    @GetMapping("/{id}/resources")
-    public ResponseEntity<List<ResourceResponse>> getResourcesByEventId(@PathVariable Long id) {
-        List<ResourceResponse> resources = eventService.getResourcesByEventId(id);
-
+    @GetMapping("/{eventId}/resources")
+    public ResponseEntity<List<EventResourceResponse>> getResourcesByEventId(@PathVariable Long eventId) {
+        List<EventResourceResponse> resources = eventService.getResourcesByEventId(eventId);
         return ResponseEntity.ok(resources);
     }
 
