@@ -103,6 +103,7 @@ const resetForm = () => {
   location.value = null;
   availability.value = true;
   emit("update:showResourceBox", false);
+  window.location.reload();
 };
 
 /**

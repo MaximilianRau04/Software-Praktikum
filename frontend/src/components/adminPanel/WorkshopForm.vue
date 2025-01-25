@@ -109,10 +109,10 @@
             v-for="tag in filteredTags"
             :key="tag"
             type="button"
-            @click="addTag(tag)"
+            @click="addTag(tag.name)"
             :disabled="selectedTags.includes(tag)"
           >
-            {{ tag }}
+            {{ tag.name }}
           </button>
         </div>
       </div>
@@ -359,6 +359,7 @@ const resetWorkshopForm = () => {
   filteredTags.value = [...allTags.value];
   selectedResources.value = [];
   emit("update:showWorkshopBox", false);
+  window.location.reload();
 };
 
 onMounted(async () => {
@@ -393,3 +394,44 @@ watch(startTime, (newStartTime) => {
   updateEndTime(newStartTime);
 });
 </script>
+
+<style scoped>
+.tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.chip {
+  background-color: #e0e0e0;
+  padding: 5px 10px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.remove-tag {
+  background: none;
+  border: none;
+  color: red;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.tag-list button {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.tag-list button:disabled {
+  background-color: #ccc;
+}
+
+.tag-list {
+  margin-bottom: 20px;
+}
+</style>

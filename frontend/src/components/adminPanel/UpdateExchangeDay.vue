@@ -1,333 +1,277 @@
 <template>
-  <div class="updateExchangeDay">
-    <h1>Exchange Day bearbeiten</h1>
+  <div class="create-box">
+    <h2 class="login-header">ExchangeDay bearbeiten</h2>
     <form @submit.prevent="updateExchangeDay">
-      <div class="form-group">
-        <label for="name">Name:</label>
-        <input
-          type="text"
-          id="name"
-          v-model="exchangeDay.name"
+      <!-- ExchangeDay Auswahl -->
+      <div class="input-group">
+        <label for="exchangeDaySelect">ExchangeDay auswählen</label>
+        <select
+          id="exchangeDaySelect"
+          v-model="selectedExchangeDay"
+          @change="fetchExchangeDayDetails"
           required
-          minlength="3"
-          maxlength="100"
-        />
-      </div>
-      <div class="form-group">
-        <label for="description">Beschreibung:</label>
-        <textarea
-          id="description"
-          v-model="exchangeDay.description"
-          maxlength="255"
-        ></textarea>
-      </div>
-      <div class="form-group">
-        <label for="location">Location:</label>
-        <select id="location" v-model="selectedLocation">
+        >
+          <option value="" disabled>Wähle einen ExchangeDay</option>
           <option
-            v-for="location in locations"
-            :key="location.id"
-            :value="location"
+            v-for="exchangeDay in exchangeDays"
+            :key="exchangeDay.id"
+            :value="exchangeDay"
           >
-            {{ location.street }} {{ location.houseNumber }},
-            {{ location.city }}, {{ location.country }}
+            {{ exchangeDay.name }} ({{ formatDate(exchangeDay.startDate) }} -
+            {{ formatDate(exchangeDay.endDate) }})
           </option>
         </select>
       </div>
-      <div class="form-group">
-        <label for="startDate">Startdatum:</label>
-        <input
-          type="date"
-          id="startDate"
-          v-model="exchangeDay.startDate"
-          required
-        />
+
+      <!-- Name -->
+      <div class="input-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" v-model="name" required />
       </div>
-      <div class="form-group">
-        <label for="endDate">Enddatum:</label>
-        <input
-          type="date"
-          id="endDate"
-          v-model="exchangeDay.endDate"
-          :min="exchangeDay.startDate"
-          required
-        />
+
+      <!-- Beschreibung -->
+      <div class="input-group">
+        <label for="description">Beschreibung</label>
+        <input type="text" id="description" v-model="description" />
       </div>
+
+      <!-- Startdatum -->
+      <div class="input-group">
+        <label for="startDate">Startdatum</label>
+        <input type="date" id="startDate" v-model="startDate" required />
+      </div>
+
+      <!-- Enddatum -->
+      <div class="input-group">
+        <label for="endDate">Enddatum</label>
+        <input type="date" id="endDate" v-model="endDate" required />
+      </div>
+
+      <!-- Standort -->
+      <div class="input-group">
+        <label for="location">Ort</label>
+        <select id="location" v-model="location" required>
+          <option value="" disabled>Wähle einen Ort</option>
+          <option v-for="loc in locations" :key="loc.id" :value="loc">
+            {{ loc.street }} {{ loc.houseNumber }}, {{ loc.city }},
+            {{ loc.country }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Buttons -->
       <div class="button-group">
-        <button type="button" class="back-button" @click="goBack">
-          Zurück
+        <button type="submit" class="update-button">
+          ExchangeDay aktualisieren
         </button>
-        <button type="button" class="delete-button" @click="deleteExchangeDay">
-          Löschen
+        <button
+          type="button"
+          class="delete-button"
+          @click="deleteExchangeDay"
+          :disabled="!selectedExchangeDay"
+        >
+          ExchangeDay löschen
         </button>
-        <button type="submit" class="submit-button">Speichern</button>
       </div>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import config from "../../config";
+import { ref, onMounted } from "vue";
+import config from "@/config";
 
-const router = useRouter();
-const route = useRoute();
+const selectedExchangeDay = ref<any | null>(null);
+const exchangeDays = ref<any[]>([]);
 const locations = ref<any[]>([]);
-const selectedLocation = ref<any | null>(null);
+const name = ref("");
+const description = ref("");
+const startDate = ref("");
+const endDate = ref("");
+const location = ref<any>(null);
 
-const exchangeDay = ref({
-  name: "",
-  description: "",
-  location: {
-    street: "",
-    houseNumber: "",
-    city: "",
-    country: "",
-  },
-  startDate: "",
-  endDate: "",
-});
+// API-URLs
+const exchangeDayApiUrl = `${config.apiBaseUrl}/exchange-days`;
+const locationApiUrl = `${config.apiBaseUrl}/locations`;
 
 /**
- * Fetches all locations from the API and stores them in the `locations` ref.
+ * Fetches a list of all ExchangeDays.
+ */
+const fetchExchangeDays = async () => {
+  try {
+    const response = await fetch(exchangeDayApiUrl);
+    if (response.ok) {
+      exchangeDays.value = await response.json();
+    } else {
+      alert("Fehler beim Abrufen der ExchangeDays.");
+    }
+  } catch (error) {
+    console.error("Fehler beim Abrufen der ExchangeDays:", error);
+    alert("Fehler beim Abrufen der ExchangeDays.");
+  }
+};
+
+/**
+ * Fetches a list of all Locations.
  */
 const fetchLocations = async () => {
   try {
-    const response = await fetch(`${config.apiBaseUrl}/locations`);
-    if (!response.ok) {
-      throw new Error("Fehler beim Abrufen der Locations.");
-    }
-    const data = await response.json();
-    locations.value = data;
-    if (locations.value.length > 0) {
-      selectedLocation.value = locations.value[0];
+    const response = await fetch(locationApiUrl);
+    if (response.ok) {
+      locations.value = await response.json();
+    } else {
+      alert("Fehler beim Abrufen der Standorte.");
     }
   } catch (error) {
-    console.error("Fehler beim Laden der Locations:", error);
+    console.error("Fehler beim Abrufen der Standorte:", error);
+    alert("Fehler beim Abrufen der Standorte.");
   }
 };
 
 /**
- * Fetches the details of the selected Exchange Day from the API.
+ * Fetches the details of the selected ExchangeDay.
  */
 const fetchExchangeDayDetails = async () => {
-  const exchangeDayId = route.params.exchangeDayId;
+  if (!selectedExchangeDay.value) return;
+
   try {
     const response = await fetch(
-      `${config.apiBaseUrl}/exchange-days/${exchangeDayId}`
+      `${exchangeDayApiUrl}/${selectedExchangeDay.value.id}`,
     );
-    if (!response.ok) {
-      throw new Error("Fehler beim Abrufen der Exchange Day-Daten.");
+    if (response.ok) {
+      const data = await response.json();
+      name.value = data.name;
+      description.value = data.description;
+      startDate.value = data.startDate;
+      endDate.value = data.endDate;
+      location.value = data.location;
+    } else {
+      alert("Fehler beim Abrufen der ExchangeDay-Details.");
     }
-    const data = await response.json();
-    exchangeDay.value = data;
   } catch (error) {
-    console.error("Error fetching exchange day details:", error);
-    alert("Der Exchange Day konnte nicht geladen werden.");
+    console.error("Fehler beim Abrufen der ExchangeDay-Details:", error);
+    alert("Fehler beim Abrufen der ExchangeDay-Details.");
   }
 };
 
 /**
- * Automatically updates the end date to one day after the start date.
- */
-const updateEndDate = () => {
-  const startDate = new Date(exchangeDay.value.startDate);
-  startDate.setDate(startDate.getDate() + 1); // Set to the next day
-  const formattedDate = startDate.toISOString().split("T")[0];
-  exchangeDay.value.endDate = formattedDate;
-};
-
-// Watch for changes in the start date and update the end date
-watch(() => exchangeDay.value.startDate, updateEndDate);
-
-/**
- * Updates the Exchange Day in the database.
+ * Updates the selected ExchangeDay with new data.
  */
 const updateExchangeDay = async () => {
-  const exchangeDayId = route.params.exchangeDayId;
+  if (!selectedExchangeDay.value) return;
 
-  const cleanExchangeDayData = {
-    name: exchangeDay.value.name,
-    startDate: exchangeDay.value.startDate,
-    endDate: exchangeDay.value.endDate,
-    description: exchangeDay.value.description,
-    locationId: selectedLocation.value ? selectedLocation.value.id : null,
+  const payload = {
+    name: name.value,
+    description: description.value,
+    startDate: startDate.value,
+    endDate: endDate.value,
+    locationId: location.value.id,
   };
 
   try {
     const response = await fetch(
-      `${config.apiBaseUrl}/exchange-days/${exchangeDayId}`,
+      `${exchangeDayApiUrl}/${selectedExchangeDay.value.id}`,
       {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(cleanExchangeDayData),
-      }
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
     );
 
-    if (!response.ok) {
-      throw new Error("Fehler beim Aktualisieren des Exchange Days.");
+    if (response.ok) {
+      alert("ExchangeDay erfolgreich aktualisiert!");
+      await fetchExchangeDays();
+    } else {
+      alert("Fehler beim Aktualisieren des ExchangeDays.");
     }
-
-    alert("Der Exchange Day wurde erfolgreich aktualisiert!");
-    router.push({ name: "home" });
   } catch (error) {
-    console.error("Error updating exchange day:", error);
-    alert("Der Exchange Day konnte nicht aktualisiert werden.");
+    console.error("Fehler beim Aktualisieren des ExchangeDays:", error);
+    alert("Fehler beim Aktualisieren des ExchangeDays.");
   }
 };
 
 /**
- * Deletes the Exchange Day from the database.
+ * Deletes the selected ExchangeDay after confirmation.
  */
 const deleteExchangeDay = async () => {
-  const exchangeDayId = route.params.exchangeDayId;
-  if (
-    !confirm("Sind Sie sicher, dass Sie diesen Exchange Day löschen möchten?")
-  ) {
+  if (!selectedExchangeDay.value) {
+    alert("Kein ExchangeDay ausgewählt.");
     return;
   }
 
-  try {
-    const response = await fetch(
-      `${config.apiBaseUrl}/exchange-days/${exchangeDayId}`,
-      {
-        method: "DELETE",
+  if (confirm("Möchten Sie diesen ExchangeDay wirklich löschen?")) {
+    try {
+      const response = await fetch(
+        `${exchangeDayApiUrl}/${selectedExchangeDay.value.id}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (response.ok) {
+        alert("ExchangeDay erfolgreich gelöscht.");
+        selectedExchangeDay.value = null;
+        name.value = "";
+        description.value = "";
+        startDate.value = "";
+        endDate.value = "";
+        location.value = null;
+        await fetchExchangeDays();
+      } else {
+        alert("Fehler beim Löschen des ExchangeDays.");
       }
-    );
-
-    if (!response.ok) {
-      throw new Error("Fehler beim Löschen des Exchange Days.");
+    } catch (error) {
+      console.error("Fehler beim Löschen des ExchangeDays:", error);
+      alert("Fehler beim Löschen des ExchangeDays.");
     }
-
-    alert("Der Exchange Day wurde erfolgreich gelöscht.");
-    router.push({ name: "home" });
-  } catch (error) {
-    console.error("Error deleting exchange day:", error);
-    alert("Der Exchange Day konnte nicht gelöscht werden.");
   }
 };
 
-const goBack = () => {
-  router.back();
-};
+/**
+ * Formats a timestamp into a human-readable date string.
+ *
+ * @param {number} timestamp - The date in milliseconds.
+ * @returns {string} - The formatted date string in 'DD.MM.YYYY' format.
+ */
+function formatDate(timestamp: number): string {
+  const date = new Date(timestamp);
+  return date.toLocaleDateString("de-DE");
+}
 
-onMounted(() => {
-  fetchExchangeDayDetails();
-  fetchLocations();
+onMounted(async () => {
+  await fetchExchangeDays();
+  await fetchLocations();
 });
 </script>
 
 <style scoped>
-.updateExchangeDay {
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-  font-size: 24px;
-  color: #333;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  font-size: 16px;
-  color: #555;
-}
-
-input,
-textarea,
-select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
-
-textarea {
-  resize: vertical;
-  min-height: 100px;
-  resize: none;
-}
-
-select {
-  appearance: none;
-  background-color: white;
-  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none"%3E%3Cpath fill="%23000" d="M10 13l5-5H5l5 5z"%3E%3C/path%3E%3C/svg%3E');
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 12px;
-  padding-right: 30px;
-}
-
-select:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
-button {
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
 .button-group {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
+  gap: 10px;
 }
 
-.back-button {
-  background-color: #007bff;
+.update-button {
+  background-color: #009ee2;
   color: white;
   border: none;
-}
-
-.back-button:hover {
-  background-color: #0056b3;
-}
-
-.submit-button {
-  background-color: #28a745;
-  color: white;
-  border: none;
-}
-
-.submit-button:hover {
-  background-color: #218838;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
 .delete-button {
   background-color: #dc3545;
   color: white;
   border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
-.delete-button:hover {
-  background-color: #c82333;
-}
-
-select option {
-  padding: 10px;
-  font-size: 16px;
-}
-
-select:hover {
-  background-color: #f0f0f0;
+.delete-button:disabled {
+  background-color: #e0e0e0;
+  color: #6c757d;
+  cursor: not-allowed;
 }
 </style>

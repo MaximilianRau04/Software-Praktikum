@@ -154,6 +154,7 @@ const resetForm = () => {
   customCountry.value = "";
   customCity.value = "";
   emit("update:showLocationBox", false);
+  window.location.reload();
 };
 
 onMounted(() => {

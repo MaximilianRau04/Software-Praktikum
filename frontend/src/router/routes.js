@@ -8,9 +8,7 @@ import FeedbackSummary from "@/components/feedback/FeedbackSummary.vue";
 import Forum from "@/components/forum/Forum.vue";
 import Profile from "@/components/profile/Profile.vue";
 import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
-import UpdateEvent from "@/components/adminPanel/UpdateEvent.vue";
 import EventPage from "@/components/viewEvents/EventPage.vue";
-import UpdateExchangeDay from "@/components/adminPanel/UpdateExchangeDay.vue";
 
 export default [
   {
@@ -41,18 +39,6 @@ export default [
         path: "/events/registrations",
         name: "eventRegistrations",
         component: EventRegistrations,
-      },
-      {
-        path: "/events/:eventId/update",
-        name: "updateEvent",
-        component: UpdateEvent,
-        props: true,
-      },
-      {
-        path: "/exchangeDays/:exchangeDayId/update",
-        name: "updateExchangeDay",
-        component: UpdateExchangeDay,
-        props: true,
       },
       {
         path: "/events/:eventId",

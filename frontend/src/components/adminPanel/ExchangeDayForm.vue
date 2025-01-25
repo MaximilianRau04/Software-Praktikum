@@ -98,6 +98,7 @@ const resetExchangeDayForm = () => {
   endDate.value = "";
   location.value = null;
   emit("update:showExchangeDayBox", false);
+  window.location.reload();
 };
 
 /**

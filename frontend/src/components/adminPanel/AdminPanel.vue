@@ -2,50 +2,110 @@
   <div class="container">
     <div class="box">
       <div class="action-buttons">
-        <button
-          @click="toggleExchangeDayBox"
-          class="action-button"
-          type="button"
-        >
-          <img
-            src="@/images/plus.png"
-            alt="Plus"
-            class="plus-icon"
-            width="35"
-            height="35"
-          />
-          Neuer Exchange Day
-        </button>
-        <button @click="toggleWorkshopBox" class="action-button" type="button">
-          <img
-            src="@/images/plus.png"
-            alt="Plus"
-            class="plus-icon"
-            width="35"
-            height="35"
-          />
-          Neuer Workshop
-        </button>
-        <button @click="toggleResourceBox" class="action-button" type="button">
-          <img
-            src="@/images/plus.png"
-            alt="Plus"
-            class="plus-icon"
-            width="35"
-            height="35"
-          />
-          Neue Resource
-        </button>
-        <button @click="toggleLocationBox" class="action-button" type="button">
-          <img
-            src="@/images/plus.png"
-            alt="Plus"
-            class="plus-icon"
-            width="35"
-            height="35"
-          />
-          Neue Location
-        </button>
+        <!-- Create Buttons -->
+        <div class="create-buttons-group">
+          <button
+            @click="toggleExchangeDayBox"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            Neuer Exchange Day
+          </button>
+          <button
+            @click="toggleWorkshopBox"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            Neuer Workshop
+          </button>
+          <button
+            @click="toggleResourceBox"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            Neue Resource
+          </button>
+          <button
+            @click="toggleLocationBox"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            Neue Location
+          </button>
+        </div>
+
+        <div class="update-buttons-group">
+          <button
+            @click="toggleUpdateResourceBox"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            Ressource bearbeiten
+          </button>
+          <button
+            @click="SelectEventToUpdate"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            Event bearbeiten
+          </button>
+          <button
+            @click="SelectExchangeDayToUpdate"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            ExchangeDay bearbeiten
+          </button>
+        </div>
       </div>
 
       <div class="form-container">
@@ -85,6 +145,30 @@
             v-if="showLocationBox"
           />
         </transition>
+
+        <!-- Update Resource form -->
+        <transition name="roll">
+          <UpdateResource
+            v-model:showUpdateResourceBox="showUpdateResourceBox"
+            v-if="showUpdateResourceBox"
+          />
+        </transition>
+
+        <!-- Update Event form -->
+        <transition name="roll">
+          <UpdateEvent
+            v-model:selectEventToUpdate="SelectEventToUpdate"
+            v-if="selectEventToUpdate"
+          />
+        </transition>
+
+        <!-- Update Exchange Day form -->
+        <transition name="roll">
+          <UpdateExchangeDay
+            v-model:selectExchangeDayToUpdate="selectExchangeDayToUpdate"
+            v-if="selectExchangeDayToUpdate"
+          />
+        </transition>
       </div>
     </div>
   </div>
@@ -92,40 +176,34 @@
 
 <script setup lang="ts">
 import "@/assets/event-planning.css";
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted } from "vue";
 import config from "@/config";
 import WorkshopForm from "@/components/adminPanel/WorkshopForm.vue";
 import ExchangeDayForm from "@/components/adminPanel/ExchangeDayForm.vue";
 import ResourceForm from "@/components/adminPanel/ResourceForm.vue";
 import LocationForm from "@/components/adminPanel/LocationForm.vue";
+import UpdateResource from "./UpdateResource.vue";
+import UpdateEvent from "./UpdateEvent.vue";
+import UpdateExchangeDay from "./UpdateExchangeDay.vue";
 
 const showWorkshopBox = ref(false);
 const showExchangeDayBox = ref(false);
 const showResourceBox = ref(false);
 const showLocationBox = ref(false);
-
-const filteredTags = ref([]);
+const showUpdateResourceBox = ref(false);
+const selectEventToUpdate = ref(false);
+const selectExchangeDayToUpdate = ref(false);
 
 const exchangeDays = ref([]);
 const users = ref([]);
 const experienceLevels = ref([]);
-const germanExperienceLevels = {
-  ALL_LEVELS: "Alle Ebenen",
-  JUNIOR: "Junior",
-  SENIOR: "Senior",
-  EXPERT: "Experte",
-};
-
 const allTags = ref([]);
-const selectedTags = ref([]);
+const filteredTags = ref([]);
 
 onMounted(async () => {
   await fetchData();
 });
 
-/**
- * Fetches exchange days, users and experience levels from the API.
- */
 const fetchData = async () => {
   try {
     const [exchangeDaysResponse, usersResponse, levelsResponse] =
@@ -153,9 +231,6 @@ const fetchData = async () => {
   }
 };
 
-/**
- * Fetches all tags from the API.
- */
 const fetchTags = async () => {
   try {
     const response = await fetch(`${config.apiBaseUrl}/tags`);
@@ -171,42 +246,68 @@ const fetchTags = async () => {
   }
 };
 
-/**
- * Toggles the visibility of the workshop form.
- */
 const toggleWorkshopBox = () => {
+  resetForms();
   showWorkshopBox.value = !showWorkshopBox.value;
-  if (showWorkshopBox.value) showExchangeDayBox.value = false;
-  showResourceBox.value = false;
-  showLocationBox.value = false;
 };
 
-/**
- * Toggles the visibility of the exchange day form.
- */
 const toggleExchangeDayBox = () => {
+  resetForms();
   showExchangeDayBox.value = !showExchangeDayBox.value;
-  if (showExchangeDayBox.value) showWorkshopBox.value = false;
-  showResourceBox.value = false;
 };
 
-/**
- * Toggles the visibility of the resource form.
- */
 const toggleResourceBox = () => {
+  resetForms();
   showResourceBox.value = !showResourceBox.value;
-  if (showResourceBox.value) showWorkshopBox.value = false;
-  showExchangeDayBox.value = false;
-  showLocationBox.value = false;
 };
 
-/**
- * Toggles the visibility of the resource form.
- */
 const toggleLocationBox = () => {
+  resetForms();
   showLocationBox.value = !showLocationBox.value;
-  if (showLocationBox.value) showWorkshopBox.value = false;
+};
+
+const toggleUpdateResourceBox = () => {
+  resetForms();
+  showUpdateResourceBox.value = !showUpdateResourceBox.value;
+};
+
+const SelectEventToUpdate = () => {
+  resetForms();
+  selectEventToUpdate.value = !selectEventToUpdate.value;
+};
+
+const SelectExchangeDayToUpdate = () => {
+  resetForms();
+  selectExchangeDayToUpdate.value = !selectExchangeDayToUpdate.value;
+};
+
+const resetForms = () => {
+  showWorkshopBox.value = false;
   showExchangeDayBox.value = false;
   showResourceBox.value = false;
+  showLocationBox.value = false;
+  showUpdateResourceBox.value = false;
+  selectEventToUpdate.value = false;
+  selectExchangeDayToUpdate.value = false;
 };
 </script>
+
+<style scoped>
+.create-buttons-group {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 0px;
+}
+
+.update-buttons-group {
+  background-color: #e0e0e0;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.action-button {
+  margin: 5px;
+}
+</style>

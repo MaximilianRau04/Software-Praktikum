@@ -50,15 +50,6 @@
         QR-Code
       </a>
       <a
-        v-if="userRole === 'ADMIN'"
-        href="#"
-        class="tab"
-        :class="{ active: view === 'edit' }"
-        @click.prevent="goToUpdate"
-      >
-        Bearbeiten
-      </a>
-      <a
         href="#"
         class="tab"
         :class="{ active: view === 'unregister' }"
@@ -160,8 +151,16 @@
         <h2>QR-Code für Event Nr.{{ eventId }}</h2>
         <img :src="qrCodeUrl" alt="QR Code" />
         <div>
-          <button class="download-button" @click="copyToClipboard" :disabled="!qrCodeLink">QR-Link kopieren</button>
-          <p v-if="copySuccess" class="qr-success-message">QR-Link wurde in die Zwischenablage kopiert!</p>
+          <button
+            class="download-button"
+            @click="copyToClipboard"
+            :disabled="!qrCodeLink"
+          >
+            QR-Link kopieren
+          </button>
+          <p v-if="copySuccess" class="qr-success-message">
+            QR-Link wurde in die Zwischenablage kopiert!
+          </p>
         </div>
         <a :href="qrCodeUrl" :download="'event-' + eventId + '-qr-code.png'">
           <button class="download-button">QR-Code herunterladen</button>
@@ -212,10 +211,6 @@ const focusedThreadId = ref<number | null>(null);
 
 const goToUser = (username: string) => {
   router.push({ name: "Profile", params: { username } });
-};
-
-const goToUpdate = () => {
-  router.push({ name: "updateEvent", params: { eventId } });
 };
 
 const showForum = () => {
@@ -302,9 +297,13 @@ const openQRCode = async () => {
     qrCodeUrl.value = `${config.apiBaseUrl}/events/${eventId}/qr-code`;
 
     // Fetch attendance token from backend
-    const response = await fetch(`${config.apiBaseUrl}/events/${eventId}/attendance-token`);
+    const response = await fetch(
+      `${config.apiBaseUrl}/events/${eventId}/attendance-token`,
+    );
     if (!response.ok) {
-      throw new Error(`Failed to fetch attendance token: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch attendance token: ${response.status} ${response.statusText}`,
+      );
     }
 
     // Parse the response JSON and extract the token
@@ -315,7 +314,7 @@ const openQRCode = async () => {
     qrCodeLink.value = `http://193.196.54.172:8000/events/${eventId}/attendance?token=${attendanceToken}`;
     showQRCodeModal.value = true;
   } catch (error) {
-    console.error('Error opening QR code modal:', error);
+    console.error("Error opening QR code modal:", error);
     // Optionally, display a user-friendly error message
   }
 };
@@ -329,10 +328,10 @@ const copyToClipboard = async () => {
         copySuccess.value = false;
       }, 2000);
     } catch (error) {
-      console.error('Failed to copy: ', error);
+      console.error("Failed to copy: ", error);
     }
   }
-}
+};
 
 /**
  * Closes the QR code modal.
