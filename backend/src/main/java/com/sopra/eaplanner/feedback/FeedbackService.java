@@ -113,6 +113,8 @@ public class FeedbackService {
         return new FeedbackResponseDTO(feedback);
     }
 
+
+
     public FeedbackSummaryDTO generateFeedbackSummary(Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Event not found."));
@@ -207,7 +209,7 @@ public class FeedbackService {
 
         Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback, feedbackAuthor);
 
-        feedbackToSave = feedbackRepository.save(feedbackToSave);
+
         eventParticipationService.confirmFeedback(feedbackAuthor, eventForFeedback);
 
         double sentimentScore = getSentimentScoreFromPersonalFeedback(requestBody);
@@ -223,8 +225,11 @@ public class FeedbackService {
         Double newRating = (currentRating * (feedbackCount - 1) + ratingScore) / feedbackCount;
         profile.setAverageRating(newRating);
 
+        feedbackToSave.setSentiment(sentimentScore);
+        feedbackToSave = feedbackRepository.save(feedbackToSave);
         trainerProfileRepository.save(profile);
-
+        eventRepository.save(eventForFeedback);
+        userRepository.save(feedbackAuthor);
 
         return new FeedbackResponseDTO(feedbackToSave);
     }
@@ -434,6 +439,7 @@ public class FeedbackService {
     private List<CommentAnalysis> extractCommentsByType(List<FeedbackResponseDTO> feedback, Function<FeedbackResponseDTO, CommentAnalysis> mapper) {
         return feedback.stream()
                 .map(mapper)
+                .filter(commentAnalysis -> !commentAnalysis.getComment().isEmpty())
                 .toList();
     }
 

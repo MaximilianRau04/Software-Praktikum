@@ -13,6 +13,7 @@ import com.sopra.eaplanner.exchangeday.ExchangeDay;
 import com.sopra.eaplanner.exchangeday.ExchangeDayRepository;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.forumthread.ForumThreadResponseDTO;
+import com.sopra.eaplanner.locations.LocationDTO;
 import com.sopra.eaplanner.qrcode.QRCodeService;
 import com.sopra.eaplanner.resource.ResourceItem;
 import com.sopra.eaplanner.resource.dtos.ResourceResponse;
@@ -136,6 +137,12 @@ public class EventService {
         return event.getForumThreads().stream().map(ForumThreadResponseDTO::new).collect(Collectors.toSet());
     }
 
+    public LocationDTO getLocation(Long id) {
+        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
+
+        return new LocationDTO(event.getExchangeDay().getLocation());
+    }
+
     public UserResponseDTO getOrganizerByEventId(Long id) {
         Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
 
@@ -201,7 +208,6 @@ public class EventService {
         event.setOrganizer(userRepository.findById(requestBody.getOrganizerId())
                 .orElseThrow(() -> new EntityNotFoundException("Organizer not found.")));
         event.setRecommendedExperience(requestBody.getRecommendedExperience());
-        event.setTags(tagService.mergeAndGetTagsFromRequest(requestBody.getTags()));
         event.setTags(tagService.mergeAndGetTagsFromRequest(requestBody.getTags()));
 
         eventRepository.save(event);

@@ -90,7 +90,7 @@ public class EventParticipation {
         this.confirmationTime = confirmationTime;
     }
 
-    public boolean isFeedbackGiven() {
+    public boolean getFeedbackGiven() {
         return feedbackGiven;
     }
 

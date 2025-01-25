@@ -1,16 +1,17 @@
 <template>
+  <div>
+    <button class="back-button" @click="goBack">Zurück</button>
+  </div>
+
   <div class="feedback-summary-container">
-    <div
-      class="event-header"
-      :style="{
-        backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : '',
-      }"
-    >
+    <div class="event-header" :style="{
+      backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : '',
+    }">
       <h1 class="event-title">Zusammenfassung</h1>
     </div>
 
     <div v-if="isLoading" class="loading">
-      <p>Kein Feedback für diese Event verfügbar</p>
+      <p>Kein Feedback für dieses Event verfügbar. Kommen Sie gerne zu einem späteren Zeitpunkt wieder.</p>
     </div>
 
     <div v-else>
@@ -21,26 +22,36 @@
           <table>
             <tr>
               <td><strong>Event Name:</strong></td>
-              <td>{{ data.eventName || "undefined" }}</td>
+              <td>{{ event.name || "undefined" }}</td>
             </tr>
             <tr>
-              <td><strong>Organizer:</strong></td>
-              <td>{{ data.organizerName || "undefined" }}</td>
+              <td><strong>Trainer:</strong></td>
+              <td>{{ organizer.firstname + " " + organizer.lastname || "undefined" }}</td>
             </tr>
             <tr>
-              <td><strong>Date and Time:</strong></td>
-              <td>{{ data.eventDate || "undefined" }}</td>
+              <td><strong>Datum und Uhrzeit:</strong></td>
+              <td>{{ new Date(event.date).toLocaleDateString('de-DE', {
+                weekday: 'long', year: 'numeric',
+                month: 'long', day: 'numeric'
+              }) }} <br /></td>
             </tr>
             <tr>
-              <td><strong>Description:</strong></td>
-              <td>{{ data.description || "No description available" }}</td>
+              <td><strong>Ort:</strong></td>
+              <td>{{ location.street + " " + location.houseNumber + ", " + location.postalCode + " " + location.city +
+                ", " + location.country }}</td>
+            </tr>
+            <tr>
+              <td><strong>Beschreibung:</strong></td>
+              <td>{{ event.description || "Keine Beschreibung vorhanden." }}</td>
             </tr>
             <tr>
               <td><strong>Tags:</strong></td>
-              <td>{{ data.tags?.join(", ") || "No tags available" }}</td>
+              <td>
+                <TrainerTags :tags="data.tags || []" />
+              </td>
             </tr>
           </table>
-          <button @click="generatePDF">Download PDF</button>
+          <button @click="generatePDF">Als PDF exportieren</button>
         </div>
 
         <div class="general-info-right">
@@ -56,11 +67,7 @@
         <h2>Statistische Analyse</h2>
         <div class="feedback-blocks">
           <!-- Loop through ordered categories -->
-          <div
-            v-for="(category, index) in categoryOrder"
-            :key="index"
-            class="feedback-block"
-          >
+          <div v-for="(category, index) in categoryOrder" :key="index" class="feedback-block">
             <h3>
               {{
                 category.name.charAt(0).toUpperCase() + category.name.slice(1)
@@ -71,41 +78,28 @@
             <div class="large-scale">
               <div class="scale">
                 <div class="scale-track">
-                  <div
-                    class="pin"
-                    :style="{ left: `${(category.data.average - 1) * 25}%` }"
-                    @mouseover="
-                      showPopup('category', index, category.data.average)
-                    "
-                    @mouseleave="hidePopup"
-                  >
-                    <div
-                      v-if="
-                        popupVisible['category'] &&
-                        hoveredPinIndex['category'] === index
-                      "
-                      class="popup"
-                    >
+                  <div class="pin" :style="{ left: `${(category.data.average - 1) * 25}%` }" @mouseover="
+                    showPopup('category', index, category.data.average)
+                    " @mouseleave="hidePopup">
+                    <div v-if="
+                      popupVisible['category'] &&
+                      hoveredPinIndex['category'] === index
+                    " class="popup">
                       Average: {{ category.data.average.toFixed(2) }}
                     </div>
                   </div>
                 </div>
                 <div class="scale-labels">
-                  <span>1</span><span>2</span><span>3</span><span>4</span
-                  ><span>5</span>
+                  <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
                 </div>
               </div>
             </div>
 
             <!-- Small scales for each sub-score -->
             <div class="small-scales">
-              <div
-                v-for="(subScore, subIndex) in getOrderedSubScores(
-                  category.data.subAverages,
-                )"
-                :key="subIndex"
-                class="small-scale"
-              >
+              <div v-for="(subScore, subIndex) in getOrderedSubScores(
+                category.data.subAverages,
+              )" :key="subIndex" class="small-scale">
                 <h4>
                   {{
                     subScore.name.charAt(0).toUpperCase() +
@@ -114,28 +108,19 @@
                 </h4>
                 <div class="scale">
                   <div class="scale-track">
-                    <div
-                      class="pin"
-                      :style="{ left: `${((subScore.value - 1) / 4) * 100}%` }"
-                      @mouseover="
-                        showPopup('subScore', subIndex, subScore.value)
-                      "
-                      @mouseleave="hidePopup"
-                    >
-                      <div
-                        v-if="
-                          popupVisible['subScore'] &&
-                          hoveredPinIndex['subScore'] === subIndex
-                        "
-                        class="popup"
-                      >
+                    <div class="pin" :style="{ left: `${((subScore.value - 1) / 4) * 100}%` }" @mouseover="
+                      showPopup('subScore', subIndex, subScore.value)
+                      " @mouseleave="hidePopup">
+                      <div v-if="
+                        popupVisible['subScore'] &&
+                        hoveredPinIndex['subScore'] === subIndex
+                      " class="popup">
                         Sub-score: {{ subScore.value.toFixed(2) }}
                       </div>
                     </div>
                   </div>
                   <div class="scale-labels">
-                    <span>1</span><span>2</span><span>3</span><span>4</span
-                    ><span>5</span>
+                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
                   </div>
                 </div>
               </div>
@@ -147,22 +132,14 @@
       <div class="comments">
         <h2>Kommentare</h2>
 
-        <div
-          v-for="(categoryComments, category) in data.comments"
-          :key="category"
-          class="comment-category"
-        >
+        <div v-for="(categoryComments, category) in data.comments" :key="category" class="comment-category">
           <!-- Category Title -->
           <h3>{{ formatKey(category) }}</h3>
 
           <!-- Card for Comments -->
           <div v-if="categoryComments.length" class="comment-cards">
-            <div
-              v-for="(commentObj, index) in categoryComments"
-              :key="index"
-              class="comment-card"
-              :style="getCardGradient(commentObj.sentiment)"
-            >
+            <div v-for="(commentObj, index) in categoryComments" :key="index" class="comment-card"
+              :style="getCardGradient(commentObj.sentiment)">
               <p class="comment-author">
                 <strong>{{ commentObj.author || "Anonymous" }}:</strong>
               </p>
@@ -179,7 +156,9 @@
 </template>
 
 <script>
+import { useRoute, useRouter } from "vue-router";
 import config from "@/config";
+import TrainerTags from "@/components/profile/TrainerTags.vue";
 import {
   Chart,
   RadarController,
@@ -205,11 +184,24 @@ Chart.register(
 );
 
 export default {
+  components: "TrainerTags",
   name: "EventSummary",
   data() {
     return {
+      router: useRouter(),
       event: null,
+      organizer: {
+        firstname: "",
+        lastname: "",
+      },
+      location: {
+        street: "",
+        houseNumber: "",
+        postalCode: "",
+        city: "",
+      },
       data: null,
+      tags: null,
       isLoading: true,
       error: null,
       backgroundImageUrl: null,
@@ -240,6 +232,23 @@ export default {
     },
   },
   methods: {
+    goBack() {
+      this.router.push({
+        name: "EventPage",
+        params: { eventId: this.eventId.toString() },
+      });
+    },
+
+    getColorPalette() {
+      return ["#009EE2", "#01172F", "#4CAF50"];
+    },
+
+    getRandomColor() {
+      const palette = this.getColorPalette();
+      const randomIndex = Math.floor(Math.random() * palette.length);
+      return palette[randomIndex];
+    },
+
     /**
      * Fetches event summary data and trainer profile ID.
      */
@@ -298,20 +307,21 @@ export default {
       }
     },
 
-    async fetchEvent() {
+    async fetchEventDetails() {
       try {
-        const response = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}`,
-        );
-        if (!response.ok) {
-          throw new Error(`Failed to fetch event: ${response.status}`);
-        }
-        this.event = await response.json();
-        console.log("Event fetched successfully:", this.event);
-      } catch (err) {
-        this.error =
-          err.message || "An error occurred while fetching the event.";
-        console.error("Error fetching event:", err);
+        const response = await fetch(`${config.apiBaseUrl}/events/${this.eventId}`);
+        const eventData = await response.json();
+        this.event = eventData;
+
+        const organizerResponse = await fetch(`${config.apiBaseUrl}/events/${this.eventId}/organizer`);
+        this.organizer = await organizerResponse.json();
+
+        const locationResponse = await fetch(`${config.apiBaseUrl}/events/${this.eventId}/location`);
+        this.location = await locationResponse.json();
+
+
+      } catch (error) {
+        console.error("Fehler beim Laden der Eventdaten:", error);
       }
     },
 
@@ -336,6 +346,15 @@ export default {
       } catch (err) {
         this.error = err.message || "An error occurred";
         console.error("Error fetching word cloud:", err);
+      }
+    },
+    async fetchEventTags() {
+      try {
+        const tagsResponse = await fetch(`${config.apiBaseUrl}/tags`);
+        if (!tagsResponse.ok) throw new Error("Event Tags konnten nicht geladen werden.");
+        this.tags = await tagsResponse.json();
+      } catch (error) {
+        console.error("Fehler beim Laden der Tags:", error);
       }
     },
 
@@ -435,16 +454,16 @@ export default {
     getCardGradient(sentiment) {
       const colors = {
         positive:
-          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #2ecc71 99%)",
+          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9) 30%, #2ecc71 170%)",
         neutral:
-          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #3498db 99%)",
+          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9) 30%, #3498db 170%)",
         negative:
-          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #e74c3c 99%)",
+          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9) 30%, #e74c3c 170%)",
       };
       return {
         background:
           colors[sentiment] ||
-          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #7f8c8d 99%)",
+          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9) 30%, #7f8c8d 170%)",
       };
     },
     showPopup(type, index, value) {
@@ -621,12 +640,32 @@ export default {
   mounted() {
     this.fetchData();
     this.fetchWordCloud();
-    this.fetchEvent();
+    this.fetchEventDetails();
+    this.fetchEventTags();
   },
 };
 </script>
 
 <style scoped>
+.back-button {
+  position: fixed;
+  top: 5rem;
+  left: 5rem;
+  background-color: #009ee2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
+}
+
+.back-button:hover {
+  background-color: #007bb5;
+}
+
 .feedback-summary-container {
   width: 100%;
   max-width: 1000px;
@@ -672,6 +711,29 @@ export default {
   z-index: 2;
 }
 
+.trainer-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.chip:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
 h1,
 h2 {
   color: #34495e;
@@ -714,7 +776,8 @@ h2 {
 
 .general-info-right .chart-container {
   max-width: 500px;
-  height: 400px;
+  height: 470px;
+  align-items: center;
 }
 
 h2 {

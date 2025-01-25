@@ -1,8 +1,11 @@
 package com.sopra.eaplanner.trainerprofile;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.tags.Tag;
+import com.sopra.eaplanner.trainerprofile.comments.PinnedComment;
+import com.sopra.eaplanner.trainerprofile.comments.dtos.CommentDTO;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -18,9 +21,15 @@ public class TrainerProfile {
 
     private String bio;
 
-    private Double averageRating;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    @NotNull
+    @JsonBackReference
+    private User user;
 
-    private Integer feedbackCount;
+    private Double averageRating = 0.0;
+
+    private Integer feedbackCount = 0;
 
     @ManyToMany
     @JoinTable(
@@ -30,29 +39,16 @@ public class TrainerProfile {
     )
     private Set<Tag> expertiseTags = new HashSet<>();
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    @NotNull
-    @JsonBackReference
-    private User user;
-
-    @ElementCollection
-    @MapKeyColumn(name = "comment_type")
-    @Column(name = "comment")
-    private Map<String, String> pinnedComments = new HashMap<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<PinnedComment> pinnedComments = new ArrayList<>();
 
     public TrainerProfile() {
     }
 
-    public TrainerProfile(Long id, String bio, Set<Tag> expertiseTags) {
-        this.id = id;
-        this.bio = bio;
-        this.expertiseTags = expertiseTags;
-    }
-
-    public TrainerProfile(TrainerProfileRequestDTO trainerProfileRequest, Set<Tag> expertiseTags) {
+    public TrainerProfile(TrainerProfileRequestDTO trainerProfileRequest, User user) {
         this.bio = trainerProfileRequest.getBio();
-        this.expertiseTags = expertiseTags;
+        this.user = user;
     }
 
     public Long getId() {
@@ -95,11 +91,11 @@ public class TrainerProfile {
         this.expertiseTags = expertiseTags;
     }
 
-    public Map<String, String> getPinnedComments() {
+    public List<PinnedComment> getPinnedComments() {
         return pinnedComments;
     }
 
-    public void setPinnedComments(Map<String, String> pinnedComments) {
+    public void setPinnedComments(List<PinnedComment> pinnedComments) {
         this.pinnedComments = pinnedComments;
     }
 

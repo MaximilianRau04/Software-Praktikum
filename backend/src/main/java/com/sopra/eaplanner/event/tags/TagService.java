@@ -49,6 +49,7 @@ public class TagService {
         List<String> existingTagNames = tagRepository.findExistingTagNames(tagNames);
 
         Set<String> missingTagNames = tagNames.stream()
+                .map(String::trim)
                 .filter(name -> !existingTagNames.contains(name.trim()))
                 .collect(Collectors.toSet());
 

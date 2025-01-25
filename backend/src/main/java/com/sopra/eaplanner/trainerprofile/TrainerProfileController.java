@@ -1,7 +1,9 @@
 package com.sopra.eaplanner.trainerprofile;
 
 import com.sopra.eaplanner.event.tags.TagResponseDTO;
-import com.sopra.eaplanner.feedback.Feedback;
+import com.sopra.eaplanner.trainerprofile.comments.PinnedCommentService;
+import com.sopra.eaplanner.trainerprofile.comments.dtos.CommentDTO;
+import com.sopra.eaplanner.trainerprofile.comments.dtos.TrainerCommentResponseDTO;
 import com.sopra.eaplanner.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,9 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/trainerProfiles")
@@ -20,6 +20,9 @@ public class TrainerProfileController {
 
     @Autowired
     private TrainerProfileService trainerProfileService;
+
+    @Autowired
+    private PinnedCommentService pinnedCommentService;
 
     @GetMapping("")
     public ResponseEntity<List<TrainerProfileResponseDTO>> getAllTrainerProfiles() {
@@ -40,8 +43,8 @@ public class TrainerProfileController {
     }
 
     @GetMapping("/{id}/pinned-comments")
-    public List<Map<String, String>> getPinnedComments(@PathVariable Long id) {
-        return trainerProfileService.getPinnedComments(id);
+    public ResponseEntity<List<CommentDTO>> getPinnedComments(@PathVariable Long id) {
+        return ResponseEntity.ok(pinnedCommentService.getPinnedComments(id));
     }
 
     @GetMapping("/{id}/expertiseTags")
@@ -49,14 +52,16 @@ public class TrainerProfileController {
         return ResponseEntity.ok().body(trainerProfileService.getExpertiseTags(id));
     }
 
-    @PostMapping("/{trainerId}/{feedbackId}/pin")
-    public Feedback pinComment(@PathVariable Long trainerId, @PathVariable Long feedbackId, @RequestParam String commentType) {
-        return trainerProfileService.pinComment(trainerId, feedbackId, commentType);
+    @GetMapping("/{trainerId}/comments-by-event")
+    public ResponseEntity<TrainerCommentResponseDTO> getReceivedComments(@PathVariable Long trainerId) {
+        return ResponseEntity.ok().body(trainerProfileService.getReceivedComments(trainerId));
     }
 
-    @PostMapping("{trainerId}/{feedbackId}/unpin")
-    public Feedback unpinComment(@PathVariable Long trainerId, @PathVariable Long feedbackId, @RequestParam String commentType) {
-        return trainerProfileService.unpinComment(trainerId, feedbackId, commentType);
+    @PostMapping("/{trainerId}/pinned-comments")
+    public ResponseEntity<?> pinComments(
+            @PathVariable Long trainerId,
+            @RequestBody ArrayList<Long> feedbackIds) {
+        return ResponseEntity.ok(pinnedCommentService.pinComments(trainerId, feedbackIds));
     }
 
     @PostMapping("")
@@ -64,6 +69,11 @@ public class TrainerProfileController {
         TrainerProfileResponseDTO savedDTO = trainerProfileService.createTrainerProfile(request);
         URI location = URI.create("/api/trainerProfiles/" + savedDTO.getId());
         return ResponseEntity.created(location).body(savedDTO);
+    }
+
+    @PostMapping("/{profileId}/expertiseTags")
+    public ResponseEntity<List<TagResponseDTO>> postTagsToTrainerProfile(@PathVariable Long profileId, @RequestBody HashSet<String> tags){
+        return ResponseEntity.ok(trainerProfileService.setExpertiseTags(profileId, tags));
     }
 
     @PutMapping("/{id}")

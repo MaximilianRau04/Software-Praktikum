@@ -9,6 +9,7 @@ import Forum from "@/components/forum/Forum.vue";
 import Profile from "@/components/profile/Profile.vue";
 import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
 import EventPage from "@/components/viewEvents/EventPage.vue";
+import TrainerProfileManage from "@/components/profile/TrainerProfileManage.vue";
 
 export default [
   {
@@ -68,6 +69,12 @@ export default [
         name: "Leaderboard",
         component: Leaderboard,
       },
+      {
+        path: "/trainerProfile/:trainerId/manage",
+        name: "TrainerProfileManage",
+        component: TrainerProfileManage,
+        props: true,
+      }
     ],
   },
   {
