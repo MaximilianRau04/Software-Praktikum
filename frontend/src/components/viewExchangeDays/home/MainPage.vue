@@ -2,7 +2,10 @@
   <div class="container">
     <!-- left side for details -->
     <div class="leftSide">
-      <ExchangeDayDetails v-if="selectedExchangeDay" :exchangeDay="selectedExchangeDay" />
+      <ExchangeDayDetails
+        v-if="selectedExchangeDay"
+        :exchangeDay="selectedExchangeDay"
+      />
     </div>
 
     <!-- right side for scrollables -->
@@ -29,11 +32,13 @@ import ExchangeDayDetails from "@/components/viewExchangeDays/home/ExchangeDayDe
 import config from "@/config";
 import "@/assets/main.css";
 import { ExchangeDay } from "@/types/ExchangeDay";
+import { showToast, Toast } from "@/types/toasts";
+import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
 
-const exchangeDays = ref<ExchangeDay[]>([]); 
-const upcomingExchangeDaysList = ref<ExchangeDay[]>([]); 
-const pastExchangeDaysList = ref<ExchangeDay[]>([]); 
-const selectedExchangeDay = ref<ExchangeDay | null>(null); 
+const exchangeDays = ref<ExchangeDay[]>([]);
+const upcomingExchangeDaysList = ref<ExchangeDay[]>([]);
+const pastExchangeDaysList = ref<ExchangeDay[]>([]);
+const selectedExchangeDay = ref<ExchangeDay | null>(null);
 const today = new Date().setHours(0, 0, 0, 0);
 
 /**
@@ -45,13 +50,23 @@ function fetchAllExchangeDays() {
     .then((data: ExchangeDay[]) => {
       exchangeDays.value = data.map((day) => ({
         ...day,
-        startDate: new Date(day.startDate).getTime(), 
-        endDate: new Date(day.endDate).getTime(), 
+        startDate: new Date(day.startDate).getTime(),
+        endDate: new Date(day.endDate).getTime(),
       }));
 
       categorizeExchangeDays();
     })
-    .catch((error) => console.error("Error fetching exchange days:", error));
+    .catch((error) =>
+      showToast(
+        new Toast(
+          "Error",
+          `Fehler beim Abrufen der Exchange Days.`,
+          "error",
+          faXmark,
+          10,
+        ),
+      ),
+    );
 }
 
 /**
@@ -68,9 +83,6 @@ function categorizeExchangeDays() {
     const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
     return endDate < today;
   });
-
-  console.log("Upcoming Days:", upcomingExchangeDaysList.value);
-  console.log("Past Days:", pastExchangeDaysList.value);
 }
 
 /**

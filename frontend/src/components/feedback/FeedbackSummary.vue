@@ -4,14 +4,20 @@
   </div>
 
   <div class="feedback-summary-container">
-    <div class="event-header" :style="{
-      backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : '',
-    }">
+    <div
+      class="event-header"
+      :style="{
+        backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : '',
+      }"
+    >
       <h1 class="event-title">Zusammenfassung</h1>
     </div>
 
     <div v-if="isLoading" class="loading">
-      <p>Kein Feedback für dieses Event verfügbar. Kommen Sie gerne zu einem späteren Zeitpunkt wieder.</p>
+      <p>
+        Kein Feedback für dieses Event verfügbar. Kommen Sie gerne zu einem
+        späteren Zeitpunkt wieder.
+      </p>
     </div>
 
     <div v-else>
@@ -26,23 +32,47 @@
             </tr>
             <tr>
               <td><strong>Trainer:</strong></td>
-              <td>{{ organizer.firstname + " " + organizer.lastname || "undefined" }}</td>
+              <td>
+                {{
+                  organizer.firstname + " " + organizer.lastname || "undefined"
+                }}
+              </td>
             </tr>
             <tr>
               <td><strong>Datum und Uhrzeit:</strong></td>
-              <td>{{ new Date(event.date).toLocaleDateString('de-DE', {
-                weekday: 'long', year: 'numeric',
-                month: 'long', day: 'numeric'
-              }) }} <br /></td>
+              <td>
+                {{
+                  new Date(event.date).toLocaleDateString("de-DE", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })
+                }}
+                <br />
+              </td>
             </tr>
             <tr>
               <td><strong>Ort:</strong></td>
-              <td>{{ location.street + " " + location.houseNumber + ", " + location.postalCode + " " + location.city +
-                ", " + location.country }}</td>
+              <td>
+                {{
+                  location.street +
+                  " " +
+                  location.houseNumber +
+                  ", " +
+                  location.postalCode +
+                  " " +
+                  location.city +
+                  ", " +
+                  location.country
+                }}
+              </td>
             </tr>
             <tr>
               <td><strong>Beschreibung:</strong></td>
-              <td>{{ event.description || "Keine Beschreibung vorhanden." }}</td>
+              <td>
+                {{ event.description || "Keine Beschreibung vorhanden." }}
+              </td>
             </tr>
             <tr>
               <td><strong>Tags:</strong></td>
@@ -67,7 +97,11 @@
         <h2>Statistische Analyse</h2>
         <div class="feedback-blocks">
           <!-- Loop through ordered categories -->
-          <div v-for="(category, index) in categoryOrder" :key="index" class="feedback-block">
+          <div
+            v-for="(category, index) in categoryOrder"
+            :key="index"
+            class="feedback-block"
+          >
             <h3>
               {{
                 category.name.charAt(0).toUpperCase() + category.name.slice(1)
@@ -78,28 +112,41 @@
             <div class="large-scale">
               <div class="scale">
                 <div class="scale-track">
-                  <div class="pin" :style="{ left: `${(category.data.average - 1) * 25}%` }" @mouseover="
-                    showPopup('category', index, category.data.average)
-                    " @mouseleave="hidePopup">
-                    <div v-if="
-                      popupVisible['category'] &&
-                      hoveredPinIndex['category'] === index
-                    " class="popup">
+                  <div
+                    class="pin"
+                    :style="{ left: `${(category.data.average - 1) * 25}%` }"
+                    @mouseover="
+                      showPopup('category', index, category.data.average)
+                    "
+                    @mouseleave="hidePopup"
+                  >
+                    <div
+                      v-if="
+                        popupVisible['category'] &&
+                        hoveredPinIndex['category'] === index
+                      "
+                      class="popup"
+                    >
                       Average: {{ category.data.average.toFixed(2) }}
                     </div>
                   </div>
                 </div>
                 <div class="scale-labels">
-                  <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                  <span>1</span><span>2</span><span>3</span><span>4</span
+                  ><span>5</span>
                 </div>
               </div>
             </div>
 
             <!-- Small scales for each sub-score -->
             <div class="small-scales">
-              <div v-for="(subScore, subIndex) in getOrderedSubScores(
-                category.data.subAverages,
-              )" :key="subIndex" class="small-scale">
+              <div
+                v-for="(subScore, subIndex) in getOrderedSubScores(
+                  category.data.subAverages,
+                )"
+                :key="subIndex"
+                class="small-scale"
+              >
                 <h4>
                   {{
                     subScore.name.charAt(0).toUpperCase() +
@@ -108,19 +155,28 @@
                 </h4>
                 <div class="scale">
                   <div class="scale-track">
-                    <div class="pin" :style="{ left: `${((subScore.value - 1) / 4) * 100}%` }" @mouseover="
-                      showPopup('subScore', subIndex, subScore.value)
-                      " @mouseleave="hidePopup">
-                      <div v-if="
-                        popupVisible['subScore'] &&
-                        hoveredPinIndex['subScore'] === subIndex
-                      " class="popup">
+                    <div
+                      class="pin"
+                      :style="{ left: `${((subScore.value - 1) / 4) * 100}%` }"
+                      @mouseover="
+                        showPopup('subScore', subIndex, subScore.value)
+                      "
+                      @mouseleave="hidePopup"
+                    >
+                      <div
+                        v-if="
+                          popupVisible['subScore'] &&
+                          hoveredPinIndex['subScore'] === subIndex
+                        "
+                        class="popup"
+                      >
                         Sub-score: {{ subScore.value.toFixed(2) }}
                       </div>
                     </div>
                   </div>
                   <div class="scale-labels">
-                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                    <span>1</span><span>2</span><span>3</span><span>4</span
+                    ><span>5</span>
                   </div>
                 </div>
               </div>
@@ -132,14 +188,22 @@
       <div class="comments">
         <h2>Kommentare</h2>
 
-        <div v-for="(categoryComments, category) in data.comments" :key="category" class="comment-category">
+        <div
+          v-for="(categoryComments, category) in data.comments"
+          :key="category"
+          class="comment-category"
+        >
           <!-- Category Title -->
           <h3>{{ formatKey(category) }}</h3>
 
           <!-- Card for Comments -->
           <div v-if="categoryComments.length" class="comment-cards">
-            <div v-for="(commentObj, index) in categoryComments" :key="index" class="comment-card"
-              :style="getCardGradient(commentObj.sentiment)">
+            <div
+              v-for="(commentObj, index) in categoryComments"
+              :key="index"
+              class="comment-card"
+              :style="getCardGradient(commentObj.sentiment)"
+            >
               <p class="comment-author">
                 <strong>{{ commentObj.author || "Anonymous" }}:</strong>
               </p>
@@ -171,6 +235,9 @@ import {
 } from "chart.js";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
+import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+
 pdfMake.addVirtualFileSystem(pdfFonts);
 
 Chart.register(
@@ -260,7 +327,15 @@ export default {
         this.setRadarChartLabels();
       } catch (err) {
         this.error = err.message || "An unknown error occurred";
-        console.error("Error fetching data:", err);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim laden der Daten`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       } finally {
         this.isLoading = false;
         this.$nextTick(() => {
@@ -279,7 +354,15 @@ export default {
         );
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch event summary: ${response.status}`);
+          showToast(
+            new Toast(
+              "Error",
+              `Fehler beim laden der Daten`,
+              "error",
+              faXmark,
+              10,
+            ),
+          );
         }
 
         this.data = await response.json();
@@ -303,25 +386,48 @@ export default {
         ];
       } catch (err) {
         this.error = err.message || "An error occurred";
-        console.error("Error fetching Summary:", err);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim laden der Daten`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     },
 
+    /**
+     * Fetches the event details from the API.
+     */
     async fetchEventDetails() {
       try {
-        const response = await fetch(`${config.apiBaseUrl}/events/${this.eventId}`);
+        const response = await fetch(
+          `${config.apiBaseUrl}/events/${this.eventId}`,
+        );
         const eventData = await response.json();
         this.event = eventData;
 
-        const organizerResponse = await fetch(`${config.apiBaseUrl}/events/${this.eventId}/organizer`);
+        const organizerResponse = await fetch(
+          `${config.apiBaseUrl}/events/${this.eventId}/organizer`,
+        );
         this.organizer = await organizerResponse.json();
 
-        const locationResponse = await fetch(`${config.apiBaseUrl}/events/${this.eventId}/location`);
+        const locationResponse = await fetch(
+          `${config.apiBaseUrl}/events/${this.eventId}/location`,
+        );
         this.location = await locationResponse.json();
-
-
       } catch (error) {
-        console.error("Fehler beim Laden der Eventdaten:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Laden der Eventdaten`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     },
 
@@ -330,8 +436,9 @@ export default {
      */
     async fetchWordCloud() {
       if (!this.eventId) {
-        console.error("Event ID is missing.");
-        this.error = "Event ID is missing.";
+        showToast(
+          new Toast("Error", `Event ID is missing.`, "error", faXmark, 10),
+        );
         return;
       }
       try {
@@ -339,22 +446,46 @@ export default {
           `${config.apiBaseUrl}/events/${this.eventId}/word-cloud`,
         );
         if (!response.ok) {
-          throw new Error(`Failed to fetch word cloud: ${response.status}`);
+          showToast(
+            new Toast(
+              "Error",
+              `Fehler beim Laden der Word Cloud.`,
+              "error",
+              faXmark,
+              10,
+            ),
+          );
         }
         const blob = await response.blob();
         this.backgroundImageUrl = URL.createObjectURL(blob);
       } catch (err) {
-        this.error = err.message || "An error occurred";
-        console.error("Error fetching word cloud:", err);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Laden der Word Cloud.`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     },
     async fetchEventTags() {
       try {
         const tagsResponse = await fetch(`${config.apiBaseUrl}/tags`);
-        if (!tagsResponse.ok) throw new Error("Event Tags konnten nicht geladen werden.");
+        if (!tagsResponse.ok)
+          throw new Error("Event Tags konnten nicht geladen werden.");
         this.tags = await tagsResponse.json();
       } catch (error) {
-        console.error("Fehler beim Laden der Tags:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Laden der Tags`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     },
 
@@ -380,10 +511,21 @@ export default {
       });
     },
 
+    /**
+     * Creates a radar chart using Chart.js.
+     */
     createRadarChart() {
       const canvas = document.getElementById("radarChart");
       if (!canvas) {
-        console.error("Canvas element for radar chart not found.");
+        showToast(
+          new Toast(
+            "Error",
+            `Canvas element für radar chart nicht gefunden.`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
         return;
       }
 
@@ -483,9 +625,21 @@ export default {
       };
       this.hoveredPinValue = null;
     },
+
+    /**
+     * Generates a PDF document with the event summary.
+     */
     async generatePDF() {
       if (!this.backgroundImageUrl) {
-        console.error("Word cloud image is not available.");
+        showToast(
+          new Toast(
+            "Error",
+            `Word Cloud Bild ist nicht verfügbar.`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
         return;
       }
 
@@ -616,9 +770,22 @@ export default {
           .createPdf(docDefinition)
           .download(`event-summary-${this.eventId}`);
       } catch (err) {
-        console.error("Error generating PDF:", err);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Generieren der PDF`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     },
+    /**
+     * Converts a blob URL to a data URL.
+     * @param {string} blobUrl - The blob URL to convert.
+     * @returns {Promise<string>} The data URL.
+     */
     async blobToDataUrl(blobUrl) {
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -726,7 +893,9 @@ export default {
   color: white;
   cursor: pointer;
   user-select: none;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .chip:hover {

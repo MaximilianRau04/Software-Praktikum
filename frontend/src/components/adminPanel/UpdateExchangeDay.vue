@@ -2,7 +2,7 @@
   <div class="create-box">
     <h2 class="login-header">ExchangeDay bearbeiten</h2>
     <form @submit.prevent="updateExchangeDay">
-      <!-- ExchangeDay Auswahl -->
+      <!-- exchange day select -->
       <div class="input-group">
         <label for="exchangeDaySelect">ExchangeDay auswählen</label>
         <select
@@ -23,31 +23,26 @@
         </select>
       </div>
 
-      <!-- Name -->
       <div class="input-group">
         <label for="name">Name</label>
         <input type="text" id="name" v-model="name" required />
       </div>
 
-      <!-- Beschreibung -->
       <div class="input-group">
         <label for="description">Beschreibung</label>
         <input type="text" id="description" v-model="description" />
       </div>
 
-      <!-- Startdatum -->
       <div class="input-group">
         <label for="startDate">Startdatum</label>
         <input type="date" id="startDate" v-model="startDate" required />
       </div>
 
-      <!-- Enddatum -->
       <div class="input-group">
         <label for="endDate">Enddatum</label>
         <input type="date" id="endDate" v-model="endDate" required />
       </div>
 
-      <!-- Standort -->
       <div class="input-group">
         <label for="location">Ort</label>
         <select id="location" v-model="location" required>
@@ -59,7 +54,6 @@
         </select>
       </div>
 
-      <!-- Buttons -->
       <div class="button-group">
         <button type="submit" class="update-button">
           ExchangeDay aktualisieren
@@ -80,6 +74,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import config from "@/config";
+import { showToast, Toast } from "@/types/toasts";
+import { s } from "vite/dist/node/types.d-aGj9QkWt";
 
 const selectedExchangeDay = ref<any | null>(null);
 const exchangeDays = ref<any[]>([]);
@@ -90,7 +86,6 @@ const startDate = ref("");
 const endDate = ref("");
 const location = ref<any>(null);
 
-// API-URLs
 const exchangeDayApiUrl = `${config.apiBaseUrl}/exchange-days`;
 const locationApiUrl = `${config.apiBaseUrl}/locations`;
 
@@ -103,11 +98,14 @@ const fetchExchangeDays = async () => {
     if (response.ok) {
       exchangeDays.value = await response.json();
     } else {
-      alert("Fehler beim Abrufen der ExchangeDays.");
+      showToast(
+        new Toast("Error", "Fehler beim Abrufen der ExchangeDays", "error"),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der ExchangeDays:", error);
-    alert("Fehler beim Abrufen der ExchangeDays.");
+    showToast(
+      new Toast("Error", "Fehler beim Abrufen der ExchangeDays", "error"),
+    );
   }
 };
 
@@ -120,11 +118,12 @@ const fetchLocations = async () => {
     if (response.ok) {
       locations.value = await response.json();
     } else {
-      alert("Fehler beim Abrufen der Standorte.");
+      showToast(
+        new Toast("Error", "Fehler beim Abrufen der Standorte", "error"),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Standorte:", error);
-    alert("Fehler beim Abrufen der Standorte.");
+    showToast(new Toast("Error", "Fehler beim Abrufen der Standorte", "error"));
   }
 };
 
@@ -146,11 +145,22 @@ const fetchExchangeDayDetails = async () => {
       endDate.value = data.endDate;
       location.value = data.location;
     } else {
-      alert("Fehler beim Abrufen der ExchangeDay-Details.");
+      showToast(
+        new Toast(
+          "Error",
+          "Fehler beim Abrufen der ExchangeDay-Details",
+          "error",
+        ),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der ExchangeDay-Details:", error);
-    alert("Fehler beim Abrufen der ExchangeDay-Details.");
+    showToast(
+      new Toast(
+        "Error",
+        "Fehler beim Abrufen der ExchangeDay-Details",
+        "error",
+      ),
+    );
   }
 };
 
@@ -179,14 +189,23 @@ const updateExchangeDay = async () => {
     );
 
     if (response.ok) {
-      alert("ExchangeDay erfolgreich aktualisiert!");
+      showToast(
+        new Toast("Success", "ExchangeDay erfolgreich aktualisiert", "success"),
+      );
       await fetchExchangeDays();
     } else {
-      alert("Fehler beim Aktualisieren des ExchangeDays.");
+      showToast(
+        new Toast(
+          "Error",
+          "Fehler beim Aktualisieren des ExchangeDays",
+          "error",
+        ),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Aktualisieren des ExchangeDays:", error);
-    alert("Fehler beim Aktualisieren des ExchangeDays.");
+    showToast(
+      new Toast("Error", "Fehler beim Aktualisieren des ExchangeDays", "error"),
+    );
   }
 };
 
@@ -195,7 +214,7 @@ const updateExchangeDay = async () => {
  */
 const deleteExchangeDay = async () => {
   if (!selectedExchangeDay.value) {
-    alert("Kein ExchangeDay ausgewählt.");
+    showToast(new Toast("Error", "Kein ExchangeDay ausgewählt", "error"));
     return;
   }
 
@@ -209,7 +228,9 @@ const deleteExchangeDay = async () => {
       );
 
       if (response.ok) {
-        alert("ExchangeDay erfolgreich gelöscht.");
+        showToast(
+          new Toast("Success", "ExchangeDay erfolgreich gelöscht", "success"),
+        );
         selectedExchangeDay.value = null;
         name.value = "";
         description.value = "";
@@ -218,11 +239,14 @@ const deleteExchangeDay = async () => {
         location.value = null;
         await fetchExchangeDays();
       } else {
-        alert("Fehler beim Löschen des ExchangeDays.");
+        showToast(
+          new Toast("Error", "Fehler beim Löschen des ExchangeDays", "error"),
+        );
       }
     } catch (error) {
-      console.error("Fehler beim Löschen des ExchangeDays:", error);
-      alert("Fehler beim Löschen des ExchangeDays.");
+      showToast(
+        new Toast("Error", "Fehler beim Löschen des ExchangeDays", "error"),
+      );
     }
   }
 };

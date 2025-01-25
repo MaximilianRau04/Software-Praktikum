@@ -95,10 +95,7 @@
               <p><strong>Beschreibung:</strong> {{ event.description }}</p>
             </div>
 
-            <button
-              @click="goToEvent(event.id)"
-              class="edit-event-button"
-            >
+            <button @click="goToEvent(event.id)" class="edit-event-button">
               Verwalten
             </button>
 
@@ -157,12 +154,13 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import config from "@/config";
 import Cookies from "js-cookie";
+import { showToast, Toast } from "@/types/toasts";
+import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
 
 // exchange day details
 const exchangeDay = ref({
@@ -207,8 +205,8 @@ const filteredResources = computed(() =>
         resource.type.toLowerCase() === "equipment") &&
       resource.name
         .toLowerCase()
-        .includes(resourceSearchQuery.value.toLowerCase())
-  )
+        .includes(resourceSearchQuery.value.toLowerCase()),
+  ),
 );
 
 /**
@@ -216,8 +214,8 @@ const filteredResources = computed(() =>
  */
 const filteredEvents = computed(() =>
   events.value.filter((event) =>
-    event.name.toLowerCase().includes(eventSearchQuery.value.toLowerCase())
-  )
+    event.name.toLowerCase().includes(eventSearchQuery.value.toLowerCase()),
+  ),
 );
 
 /**
@@ -225,13 +223,25 @@ const filteredEvents = computed(() =>
  */
 const fetchExchangeDayDetails = async () => {
   const response = await fetch(
-    `${config.apiBaseUrl}/exchange-days/${exchangeDayId}`
+    `${config.apiBaseUrl}/exchange-days/${exchangeDayId}`,
   );
+  if (!response.ok)
+    [
+      showToast(
+        new Toast(
+          "Error",
+          `Fehler beim Fetchen der Exchange days`,
+          "error",
+          faXmark,
+          10,
+        ),
+      ),
+    ];
   const data = await response.json();
   exchangeDay.value = data;
 
   const eventsResponse = await fetch(
-    `${config.apiBaseUrl}/exchange-days/${exchangeDayId}/events`
+    `${config.apiBaseUrl}/exchange-days/${exchangeDayId}/events`,
   );
   const eventsData = await eventsResponse.json();
   events.value = eventsData;
@@ -242,6 +252,18 @@ const fetchExchangeDayDetails = async () => {
  */
 const fetchResources = async () => {
   const response = await fetch(`${config.apiBaseUrl}/resources`);
+  if (!response.ok)
+    [
+      showToast(
+        new Toast(
+          "Error",
+          `Fehler beim Fetchen der Ressourcen`,
+          "error",
+          faXmark,
+          10,
+        ),
+      ),
+    ];
   const data = await response.json();
   availableResources.value = data;
   availableResources.value = data.map((resource) => ({
@@ -298,26 +320,28 @@ const startDrag = (resource) => {
 /**
  * fetches the resources for a specific event
  */
- const fetchEventResources = async (eventId) => {
+const fetchEventResources = async (eventId) => {
   try {
     const response = await fetch(
-      `${config.apiBaseUrl}/events/${eventId}/resources`
+      `${config.apiBaseUrl}/events/${eventId}/resources`,
     );
     const resourcesData = await response.json();
 
     const updatedEventIndex = events.value.findIndex(
-      (event) => event.id === eventId
+      (event) => event.id === eventId,
     );
     if (updatedEventIndex !== -1) {
       events.value[updatedEventIndex].resources = resourcesData.map((res) => ({
         id: res.id,
-        name: res.resource?.name || "Unbekannt", 
-        type: res.resource?.type || "Unbekannt", 
+        name: res.resource?.name || "Unbekannt",
+        type: res.resource?.type || "Unbekannt",
         quantity: res.quantity || 0,
       }));
     }
   } catch (error) {
-    console.error("Fehler beim Neuladen der Ressourcen für das Event:", error);
+    showToast(
+      new Toast("Error", `Fehler Fetchen der ressourcen`, "error", faXmark, 10),
+    );
   }
 };
 
@@ -326,17 +350,25 @@ const startDrag = (resource) => {
  */
 const dropResource = async (eventId) => {
   if (!draggedResource.value) {
-    alert("Keine Ressource ausgewählt.");
+    showToast(
+      new Toast("Error", `Keine Resource ausgewählt`, "error", faXmark, 10),
+    );
     return;
   }
   const quantity = resourceQuantities.value[draggedResource.value.id] || 1;
   if (quantity <= 0) {
-    alert("Ungültige Anzahl.");
+    showToast(new Toast("Error", `ungültige Anzahl`, "error", faXmark, 10));
     return;
   }
   if (quantity > draggedResource.value.capacity) {
-    alert(
-      `Maximale Kapazität überschritten: ${draggedResource.value.capacity}`
+    showToast(
+      new Toast(
+        "Error",
+        `Maximale Kapazität überschritten: ${draggedResource.value.capacity}`,
+        "error",
+        faXmark,
+        10,
+      ),
     );
     return;
   }
@@ -351,11 +383,21 @@ const dropResource = async (eventId) => {
       }),
     });
     if (!response.ok) {
-      alert("Fehler bei der Zuweisung.");
+      showToast(
+        new Toast("Error", `Fehler bei der Zuweisung`, "error", faXmark, 10),
+      );
       return;
     }
 
-    alert(`Erfolgreich ${quantity}x ${draggedResource.value.name} zugewiesen.`);
+    showToast(
+      new Toast(
+        "Success",
+        `Erfolgreich ${quantity}x ${draggedResource.value.name} zugewiesen`,
+        "success",
+        faCheck,
+        5,
+      ),
+    );
     await fetchEventResources(eventId);
 
     draggedResource.value = null;
@@ -363,8 +405,7 @@ const dropResource = async (eventId) => {
 
     await fetchResources();
   } catch (error) {
-    console.error("Fehler beim Zuweisen:", error);
-    alert("Ein Fehler ist aufgetreten.");
+    showToast(new Toast("Error", `Fehler beim Zuweisen`, "error", faXmark, 10));
   }
 };
 
@@ -461,7 +502,7 @@ onMounted(async () => {
 
 .edit-event-button {
   position: absolute;
-  top: 10px; 
+  top: 10px;
   left: 10px;
   background-color: #000000;
   color: white;
@@ -568,4 +609,3 @@ onMounted(async () => {
   border-radius: 4px;
 }
 </style>
-

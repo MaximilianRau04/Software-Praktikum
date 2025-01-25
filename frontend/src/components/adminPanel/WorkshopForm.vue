@@ -128,6 +128,8 @@
 import { ref, computed, watch, onMounted } from "vue";
 import config from "@/config";
 import Cookies from "js-cookie";
+import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const userId = Cookies.get("userId");
 const name = ref("");
@@ -175,7 +177,15 @@ const germanExperienceLevels = {
  */
 const createWorkshop = async () => {
   if (!selectedExchangeDay.value) {
-    alert("Bitte wählen Sie einen gültigen Exchange Day aus.");
+    showToast(
+      new Toast(
+        "Info",
+        `Bitte wählens sie einen gültigen Exchange day aus`,
+        "info",
+        faXmark,
+        10,
+      ),
+    );
     return;
   }
   const selectedDate = new Date(date.value);
@@ -183,8 +193,14 @@ const createWorkshop = async () => {
   const end = new Date(selectedExchangeDay.value.endDate);
 
   if (selectedDate < start || selectedDate > end) {
-    alert(
-      "Das Datum muss zwischen dem Start- und Enddatum des ausgewählten Exchange Days liegen.",
+    showToast(
+      new Toast(
+        "Error",
+        `Das Datum muss zwischen dem Start- und Enddatum des ausgewählten Exchange Days liegen.`,
+        "error",
+        faXmark,
+        10,
+      ),
     );
     return;
   }
@@ -209,15 +225,37 @@ const createWorkshop = async () => {
 
     if (response.ok) {
       const data = await response.json();
-      console.log("Workshop erstellt:", data);
-      alert(`Workshop erstellt: ${data.name}`);
+      showToast(
+        new Toast(
+          "Success",
+          `Workshop erstellt: ${data.name}`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
       resetWorkshopForm();
     } else {
-      alert("Fehler beim Erstellen des Workshops.");
+      showToast(
+        new Toast(
+          "Error",
+          `Fehler beim Erstellen des Workshops.`,
+          "error",
+          faXmark,
+          10,
+        ),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Erstellen des Workshops:", error);
-    alert("Fehler beim Erstellen des Workshops.");
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler beim Erstellen des Workshops.`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
   }
 };
 
@@ -241,11 +279,27 @@ const updateFilteredRooms = async () => {
         const rooms = await response.json();
         filteredRooms.value = rooms;
       } else {
-        console.error("Fehler beim Laden der Ressourcen für die Location.");
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Laden der Ressourcen für die Location.`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
         filteredRooms.value = [];
       }
     } catch (error) {
-      console.error("Fehler beim Abrufen der Räume:", error);
+      showToast(
+        new Toast(
+          "Error",
+          `Fehler beim Abrufen der Räume.`,
+          "error",
+          faXmark,
+          10,
+        ),
+      );
       filteredRooms.value = [];
     }
   } else {
@@ -303,10 +357,13 @@ const removeTag = (index) => {
 const filterTags = () => {
   const query = tagInput.value.toLowerCase();
   filteredTags.value = allTags.value.filter((tag) =>
-    tag.toLowerCase().includes(query),
+    tag.name.toLowerCase().includes(query),
   );
 };
 
+/**
+ * Sets the start time to the current hour.
+ */
 const setStartTimeToCurrentHour = () => {
   const currentHour = new Date().getHours();
   const formattedHour = currentHour < 10 ? `0${currentHour}` : currentHour;
@@ -339,7 +396,6 @@ const onSubmit = () => {
     tags: selectedTags.value,
     selectedResources: selectedResources.value,
   };
-  console.log("Workshop erstellt mit Daten:", workshopData);
 };
 
 /**
@@ -359,32 +415,72 @@ const resetWorkshopForm = () => {
   filteredTags.value = [...allTags.value];
   selectedResources.value = [];
   emit("update:showWorkshopBox", false);
-  window.location.reload();
 };
 
+/**
+ * Fetches the available rooms and exchange days when the component is mounted.
+ */
 onMounted(async () => {
   try {
     const daysResponse = await fetch(`${config.apiBaseUrl}/exchange-days`);
     const roomsResponse = await fetch(
       `${config.apiBaseUrl}/resources/type/ROOM`,
     );
-    if (!roomsResponse.ok) throw new Error("Failed to load rooms");
+    if (!roomsResponse.ok)
+      showToast(
+        new Toast(
+          "Error",
+          `Fehler beim Abrufen der Räume.`,
+          "error",
+          faXmark,
+          10,
+        ),
+      );
     availableRooms.value = await roomsResponse.json();
-    if (!daysResponse.ok) throw new Error("Failed to load exchange days");
+    if (!daysResponse.ok)
+      showToast(
+        new Toast(
+          "Error",
+          `Fehler beim Abrufen der Exchange days.`,
+          "error",
+          faXmark,
+          10,
+        ),
+      );
     exchangeDays.value = await daysResponse.json();
 
     const tagsResponse = await fetch(`${config.apiBaseUrl}/tags`);
-    if (!tagsResponse.ok) throw new Error("Failed to load tags");
+    if (!tagsResponse.ok)
+      showToast(
+        new Toast(
+          "Error",
+          `Fehler beim Abrufen der Tags.`,
+          "error",
+          faXmark,
+          10,
+        ),
+      );
     allTags.value = await tagsResponse.json();
     filteredTags.value = [...allTags.value];
 
     const levelsResponse = await fetch(
       `${config.apiBaseUrl}/events/experience-levels`,
     );
-    if (!levelsResponse.ok) throw new Error("Failed to load experience levels");
+    if (!levelsResponse.ok)
+      showToast(
+        new Toast(
+          "Error",
+          `Fehler beim Abrufen der Erfahrungslevels.`,
+          "error",
+          faXmark,
+          10,
+        ),
+      );
     experienceLevels.value = await levelsResponse.json();
   } catch (error) {
-    console.error("Fehler beim Laden der Daten:", error);
+    showToast(
+      new Toast("Error", `Fehler beim Abrufen der Daten`, "error", faXmark, 10),
+    );
   }
 
   setStartTimeToCurrentHour();

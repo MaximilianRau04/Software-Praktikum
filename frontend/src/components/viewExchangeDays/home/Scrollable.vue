@@ -1,15 +1,14 @@
 <template>
+  <div class="date-filter">
+    <input
+      type="date"
+      id="date-picker"
+      v-model="selectedDate"
+      @change="filterExchangeDays"
+    />
+  </div>
   <div class="scroll-container">
-
-    <div class="date-filter">
-      <input
-        type="date"
-        id="date-picker"
-        v-model="selectedDate"
-        @change="filterExchangeDays"
-      />
-    </div>
-   <!-- list of exchange days-->
+    <!-- list of exchange days-->
     <div class="exchangeDay-list">
       <div
         v-for="(exchangeDay, index) in exchangeDays"
@@ -25,7 +24,7 @@
               <p>{{ formatDate(exchangeDay.endDate) }}</p>
             </div>
           </div>
-          <!-- Details des Exchange Days -->
+          <!-- details of the exchange days -->
           <div class="infos">
             <h2>{{ exchangeDay.name }}</h2>
             <p>
@@ -52,9 +51,8 @@ export default {
       required: true,
     },
   },
-  emits: ["select-exchange-day"], 
+  emits: ["select-exchange-day"],
   setup(props, { emit }) {
-
     /**
      * select exchange day
      * @param {Object} exchangeDay - selected exchange day
@@ -80,5 +78,3 @@ export default {
   },
 };
 </script>
-
-

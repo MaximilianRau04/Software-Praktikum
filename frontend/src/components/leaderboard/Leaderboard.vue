@@ -35,6 +35,8 @@
 <script>
 import axios from "axios";
 import config from "@/config.js";
+import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default {
   data() {
@@ -62,7 +64,15 @@ export default {
         this.currentPage = page;
         this.hasMore = !response.data.last;
       } catch (error) {
-        console.error("Error fetching leaderboard:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Laden des leaderboards`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     },
   },

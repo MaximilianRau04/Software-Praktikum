@@ -49,6 +49,8 @@ import { ExchangeDay } from "@/types/ExchangeDay";
 import { Event } from "@/types/Event";
 import { useRouter } from "vue-router";
 import Cookies from "js-cookie";
+import { showToast, Toast } from "@/types/toasts";
+import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
 
 
 const router = useRouter();
@@ -95,10 +97,18 @@ function checkIfPastExchangeDay() {
 async function fetchExchangeDayDetails(id: number) {
   try {
     const response = await fetch(`${config.apiBaseUrl}/exchange-days/${id}`);
-    if (!response.ok) throw new Error("Failed to fetch exchange day details.");
+    if (!response.ok)
+      showToast(
+        new Toast(
+          "Error",
+          `Fehler Fetchen der exchange days`,
+          "error",
+          faXmark,
+          10,
+        ),
+      );
 
     const data = await response.json();
-    console.log("ExchangeDay data loaded:", data);
 
     selectedExchangeDay.value = {
       id: data.id,
@@ -112,7 +122,15 @@ async function fetchExchangeDayDetails(id: number) {
     checkIfPastExchangeDay();
     await fetchEventDetails();
   } catch (error) {
-    console.error("Error fetching exchange day details:", error);
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler Fetchen der exchange days: ${error.message}`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
   }
 }
 
@@ -132,7 +150,15 @@ async function fetchEventDetails() {
     const responseData: Event[] = await response.json();
     events.value = responseData;
   } catch (error) {
-    console.error("Error fetching event:", error);
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler beim Abrufen der Events.`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
   }
 }
 

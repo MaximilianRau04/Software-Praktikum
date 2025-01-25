@@ -81,7 +81,7 @@ export default [
         name: "TrainerProfileManage",
         component: TrainerProfileManage,
         props: true,
-      }
+      },
     ],
   },
   {

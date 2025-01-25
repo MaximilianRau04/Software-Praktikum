@@ -97,6 +97,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import config from "@/config";
+import { showToast, Toast } from "@/types/toasts";
+import { s } from "vite/dist/node/types.d-aGj9QkWt";
 
 const selectedLocation = ref<number | null>(null);
 const selectedResource = ref<number | null>(null);
@@ -124,11 +126,14 @@ const fetchLocations = async () => {
       const data = await response.json();
       locations.value = data;
     } else {
-      alert("Fehler beim Abrufen der Locations.");
+      showToast(
+        new Toast("Error", "Fehler beim Abrufen der Locations.", "error"),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Locations:", error);
-    alert("Fehler beim Abrufen der Locations.");
+    showToast(
+      new Toast("Error", "Fehler beim Abrufen der Locations.", "error"),
+    );
   }
 };
 
@@ -149,11 +154,14 @@ const fetchResourcesByLocation = async () => {
       const data = await response.json();
       resources.value = data;
     } else {
-      alert("Fehler beim Abrufen der Ressourcen.");
+      showToast(
+        new Toast("Error", "Fehler beim Abrufen der Ressourcen.", "error"),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Ressourcen:", error);
-    alert("Fehler beim Abrufen der Ressourcen.");
+    showToast(
+      new Toast("Error", "Fehler beim Abrufen der Ressourcen.", "error"),
+    );
   }
 };
 
@@ -173,11 +181,18 @@ const fetchResourceDetails = async () => {
       capacity.value = data.capacity;
       availability.value = data.availability;
     } else {
-      alert("Fehler beim Abrufen der Ressourcendetails.");
+      showToast(
+        new Toast(
+          "Error",
+          "Fehler beim Abrufen der Ressourcendetails.",
+          "error",
+        ),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Ressourcendetails:", error);
-    alert("Fehler beim Abrufen der Ressourcendetails.");
+    showToast(
+      new Toast("Error", "Fehler beim Abrufen der Ressourcendetails.", "error"),
+    );
   }
 };
 
@@ -186,7 +201,7 @@ const fetchResourceDetails = async () => {
  */
 const updateResource = async () => {
   if (!selectedResource.value) {
-    alert("Keine Ressource ausgewählt.");
+    showToast(new Toast("Error", "Keine Ressource ausgewählt.", "error"));
     return;
   }
 
@@ -208,14 +223,19 @@ const updateResource = async () => {
 
     if (response.ok) {
       const data = await response.json();
-      alert(`Ressource aktualisiert: ${data.name}`);
+      showToast(
+        new Toast("Success", `Ressource aktualisiert: ${data.name}`, "success"),
+      );
       resetForm();
     } else {
-      alert("Fehler beim Aktualisieren der Ressource.");
+      showToast(
+        new Toast("Error", "Fehler beim Aktualisieren der Ressource.", "error"),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Aktualisieren der Ressource:", error);
-    alert("Fehler beim Aktualisieren der Ressource.");
+    showToast(
+      new Toast("Error", "Fehler beim Aktualisieren der Ressource.", "error"),
+    );
   }
 };
 
@@ -224,7 +244,7 @@ const updateResource = async () => {
  */
 const deleteResource = async () => {
   if (!selectedResource.value) {
-    alert("Keine Ressource ausgewählt.");
+    showToast(new Toast("Warning", "Keine Ressource ausgewählt.", "warning"));
     return;
   }
 
@@ -239,14 +259,19 @@ const deleteResource = async () => {
     });
 
     if (response.ok) {
-      alert("Ressource erfolgreich gelöscht.");
+      showToast(
+        new Toast("Success", "Ressource erfolgreich gelöscht.", "success"),
+      );
       resetForm();
     } else {
-      alert("Fehler beim Löschen der Ressource.");
+      showToast(
+        new Toast("Error", "Fehler beim Löschen der Ressource.", "error"),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Löschen der Ressource:", error);
-    alert("Fehler beim Löschen der Ressource.");
+    showToast(
+      new Toast("Error", "Fehler beim Löschen der Ressource.", "error"),
+    );
   }
 };
 

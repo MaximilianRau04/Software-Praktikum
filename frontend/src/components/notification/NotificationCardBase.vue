@@ -20,6 +20,8 @@ import { de } from "date-fns/locale";
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import config from "@/config";
+import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default {
   props: {
@@ -39,6 +41,9 @@ export default {
       });
     });
 
+    /**
+     * Mark the notification as read
+     */
     const markAsRead = async () => {
       try {
         const response = await fetch(
@@ -52,11 +57,27 @@ export default {
         );
 
         if (!response.ok) {
-          throw new Error("Failed to mark notification as read");
+          showToast(
+            new Toast(
+              "Error",
+              `Fehler beim Setzen auf gelesen`,
+              "error",
+              faXmark,
+              10,
+            ),
+          );
         }
         emit("mark-as-read", props.notification.id);
       } catch (error) {
-        console.error("Error marking notification as read:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler Fetchen der exchange days: ${error.message}`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     };
 

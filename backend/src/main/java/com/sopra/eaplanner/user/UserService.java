@@ -6,8 +6,8 @@ import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.dtos.RatedEventDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationService;
-import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.event.tags.TagResponseDTO;
+import com.sopra.eaplanner.feedback.FeedbackRepository;
 import com.sopra.eaplanner.feedback.FeedbackService;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.forumpost.ForumPostResponseDTO;
@@ -167,6 +167,17 @@ public class UserService {
         return user.getParticipations()
                 .stream()
                 .map(EventParticipationDTO::new)
+                .collect(Collectors.toSet());
+    }
+
+    public Iterable<EventResponseDTO> getPendingFeedbackEvents(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        return user.getRegisteredEvents().stream()
+                .filter(event -> feedbackRepository.findByEventId(event.getId()).stream()
+                            .noneMatch(feedback -> feedback.getUser().getId().equals(id)))
+                .map(EventResponseDTO::new)
                 .collect(Collectors.toSet());
     }
 

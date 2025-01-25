@@ -109,7 +109,7 @@
       </div>
 
       <div class="form-container">
-        <!-- Exchange Day form -->
+        <!-- exchange day form -->
         <transition name="roll">
           <ExchangeDayForm
             v-model:showExchangeDayBox="showExchangeDayBox"
@@ -119,7 +119,7 @@
           />
         </transition>
 
-        <!-- Workshop form -->
+        <!-- workshop form -->
         <transition name="roll">
           <WorkshopForm
             v-model:showWorkshopBox="showWorkshopBox"
@@ -130,7 +130,7 @@
           />
         </transition>
 
-        <!-- Resource form -->
+        <!-- resource form -->
         <transition name="roll">
           <ResourceForm
             v-model:showResourceBox="showResourceBox"
@@ -138,7 +138,7 @@
           />
         </transition>
 
-        <!-- Location form -->
+        <!-- location form -->
         <transition name="roll">
           <LocationForm
             v-model:showLocationBox="showLocationBox"
@@ -146,7 +146,7 @@
           />
         </transition>
 
-        <!-- Update Resource form -->
+        <!-- update Resource form -->
         <transition name="roll">
           <UpdateResource
             v-model:showUpdateResourceBox="showUpdateResourceBox"
@@ -154,7 +154,7 @@
           />
         </transition>
 
-        <!-- Update Event form -->
+        <!-- update Event form -->
         <transition name="roll">
           <UpdateEvent
             v-model:selectEventToUpdate="SelectEventToUpdate"
@@ -162,7 +162,7 @@
           />
         </transition>
 
-        <!-- Update Exchange Day form -->
+        <!-- update Exchange Day form -->
         <transition name="roll">
           <UpdateExchangeDay
             v-model:selectExchangeDayToUpdate="selectExchangeDayToUpdate"
@@ -185,6 +185,8 @@ import LocationForm from "@/components/adminPanel/LocationForm.vue";
 import UpdateResource from "./UpdateResource.vue";
 import UpdateEvent from "./UpdateEvent.vue";
 import UpdateExchangeDay from "./UpdateExchangeDay.vue";
+import { showToast, Toast } from "@/types/toasts";
+import { s } from "vite/dist/node/types.d-aGj9QkWt";
 
 const showWorkshopBox = ref(false);
 const showExchangeDayBox = ref(false);
@@ -204,6 +206,9 @@ onMounted(async () => {
   await fetchData();
 });
 
+/**
+ * Fetches all exchange days, users and experience levels from the backend
+ */
 const fetchData = async () => {
   try {
     const [exchangeDaysResponse, usersResponse, levelsResponse] =
@@ -213,13 +218,17 @@ const fetchData = async () => {
         fetch(`${config.apiBaseUrl}/events/experience-levels`),
       ]);
     if (!exchangeDaysResponse.ok) {
-      throw new Error("Fehler beim Laden der Exchange Days");
+      showToast(
+        new Toast("Error", "Fehler beim Laden der Exchange Days", "error"),
+      );
     }
     if (!usersResponse.ok) {
-      throw new Error("Fehler beim Laden der Benutzer");
+      showToast(new Toast("Error", "Fehler beim Laden der Benutzer", "error"));
     }
     if (!levelsResponse.ok) {
-      throw new Error("Fehler beim Laden der Erfahrungslevel.");
+      showToast(
+        new Toast("Error", "Fehler beim Laden der Erfahrungslevel", "error"),
+      );
     }
     fetchTags();
 
@@ -227,10 +236,13 @@ const fetchData = async () => {
     users.value = await usersResponse.json();
     experienceLevels.value = await levelsResponse.json();
   } catch (error) {
-    console.error(error.message, error);
+    showToast(new Toast("Error", "Fehler beim Laden der Daten", "error"));
   }
 };
 
+/**
+ * Fetches all tags from the backend
+ */
 const fetchTags = async () => {
   try {
     const response = await fetch(`${config.apiBaseUrl}/tags`);
@@ -239,10 +251,10 @@ const fetchTags = async () => {
       allTags.value = tags.map((tag) => tag.name);
       filteredTags.value = [...allTags.value];
     } else {
-      console.error("Fehler beim Abrufen der Tags.");
+      showToast(new Toast("Error", "Fehler beim Abrufen der Tags", "error"));
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Tags:", error);
+    showToast(new Toast("Error", "Fehler beim Abrufen der Tags", "error"));
   }
 };
 
@@ -281,6 +293,9 @@ const SelectExchangeDayToUpdate = () => {
   selectExchangeDayToUpdate.value = !selectExchangeDayToUpdate.value;
 };
 
+/**
+ * Resets all forms
+ */
 const resetForms = () => {
   showWorkshopBox.value = false;
   showExchangeDayBox.value = false;

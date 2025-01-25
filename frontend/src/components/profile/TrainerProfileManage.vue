@@ -1,65 +1,86 @@
 <template>
-    <div>
-        <button class="back-button" @click="goBack">Zurück</button>
-    </div>
+  <div>
+    <button class="back-button" @click="goBack">Zurück</button>
+  </div>
 
-    <div class="manage-page">
-        <h1>Trainerprofil verwalten</h1>
-        <div class="manage-section">
-            <h2>Expertise Tags</h2>
-            <div>
-                <label for="tags">Expertise Tags</label>
-                <p>Bitte wählen Sie bis zu 5 Expertise Tags für Ihr Trainerprofil aus:</p>
+  <div class="manage-page">
+    <h1>Trainerprofil verwalten</h1>
+    <div class="manage-section">
+      <h2>Expertise Tags</h2>
+      <div>
+        <label for="tags">Expertise Tags</label>
+        <p>
+          Bitte wählen Sie bis zu 5 Expertise Tags für Ihr Trainerprofil aus:
+        </p>
 
-                <!-- Input field for tags -->
-                <input type="text" v-model="tagInput" placeholder="Tags eingeben und durch Komma trennen"
-                    @input="filterTags" @keyup="handleKeyup" :disabled="selectedTags.length >= 5" />
+        <!-- Input field for tags -->
+        <input
+          type="text"
+          v-model="tagInput"
+          placeholder="Tags eingeben und durch Komma trennen"
+          @input="filterTags"
+          @keyup="handleKeyup"
+          :disabled="selectedTags.length >= 5"
+        />
 
-                <!-- Display selected tags -->
-                <div class="tag-chips">
-                    <span v-for="(tag, index) in selectedTags" :key="index" class="chip">
-                        {{ tag }}
-                        <button type="button" class="remove-tag" @click="removeTag(index)">
-                            &times;
-                        </button>
-                    </span>
-                </div>
-
-                <!-- Display filtered tags to choose from -->
-                <div class="tag-list">
-                    <button v-for="tag in filteredTags" :key="tag" type="button" @click="addTag(tag)"
-                        :disabled="selectedTags.includes(tag)">
-                        {{ tag }}
-                    </button>
-                </div>
-            </div>
+        <!-- Display selected tags -->
+        <div class="tag-chips">
+          <span v-for="(tag, index) in selectedTags" :key="index" class="chip">
+            {{ tag }}
+            <button type="button" class="remove-tag" @click="removeTag(index)">
+              &times;
+            </button>
+          </span>
         </div>
 
-        <div class="manage-section">
-            <h2>Empfohlene Kommentare</h2>
-            <div v-for="event in events" :key="event.id" class="event-section">
-                <button @click="toggleDropdown(event.id)" class="event-toggle">
-                    {{ event.name }}
-                </button>
-                <div v-if="activeEvent === event.id" class="dropdown">
-                    <div class="comments-grid">
-                        <div v-for="comment in event.comments" :key="comment.id" class="comment-card">
-                            <div class="card-header">
-                                <span class="author">{{ comment.author }}</span>
-                                <span class="rating">⭐ {{ comment.rating.toFixed(1) }}</span>
-                            </div>
-                            <div class="card-body">
-                                <p>{{ comment.comment }}</p>
-                                <input type="checkbox" :value="comment" v-model="pinnedComments" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Display filtered tags to choose from -->
+        <div class="tag-list">
+          <button
+            v-for="tag in filteredTags"
+            :key="tag"
+            type="button"
+            @click="addTag(tag)"
+            :disabled="selectedTags.includes(tag)"
+          >
+            {{ tag }}
+          </button>
         </div>
-
-        <button @click="saveChanges" class="save-button">Save Changes</button>
+      </div>
     </div>
+
+    <div class="manage-section">
+      <h2>Empfohlene Kommentare</h2>
+      <div v-for="event in events" :key="event.id" class="event-section">
+        <button @click="toggleDropdown(event.id)" class="event-toggle">
+          {{ event.name }}
+        </button>
+        <div v-if="activeEvent === event.id" class="dropdown">
+          <div class="comments-grid">
+            <div
+              v-for="comment in event.comments"
+              :key="comment.id"
+              class="comment-card"
+            >
+              <div class="card-header">
+                <span class="author">{{ comment.author }}</span>
+                <span class="rating">⭐ {{ comment.rating.toFixed(1) }}</span>
+              </div>
+              <div class="card-body">
+                <p>{{ comment.comment }}</p>
+                <input
+                  type="checkbox"
+                  :value="comment"
+                  v-model="pinnedComments"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button @click="saveChanges" class="save-button">Save Changes</button>
+  </div>
 </template>
 
 <script>
@@ -69,251 +90,295 @@ import Cookies from "js-cookie";
 import { useRoute, useRouter } from "vue-router";
 
 export default {
-    props: {
-        trainerId: {
-            type: Number,
-            required: true,
-        },
+  props: {
+    trainerId: {
+      type: Number,
+      required: true,
     },
-    data() {
-        return {
-            router: useRouter(),
-            username: Cookies.get("username"),
-            allTags: [],
-            selectedTags: [],
-            tagInput: "",
-            filteredTags: [],
-            events: [],
-            pinnedComments: [],
-            activeEvent: null,
-        };
+  },
+  data() {
+    return {
+      router: useRouter(),
+      username: Cookies.get("username"),
+      allTags: [],
+      selectedTags: [],
+      tagInput: "",
+      filteredTags: [],
+      events: [],
+      pinnedComments: [],
+      activeEvent: null,
+    };
+  },
+  methods: {
+    /**
+     * Fetch data for selected tags and pinned comments
+     */
+    async fetchData() {
+      try {
+        const trainerTagsResponse = await axios.get(
+          `${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/expertiseTags`,
+        );
+        this.selectedTags = trainerTagsResponse.data.map((tag) => tag.name);
+        const eventsResponse = await axios.get(
+          `${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/comments-by-event`,
+        );
+        this.events = eventsResponse.data.events;
+
+        const tagsResponse = await axios.get(`${config.apiBaseUrl}/tags`);
+        this.allTags = tagsResponse.data.map((tag) => tag.name);
+        this.filteredTags = this.allTags.filter(
+          (tag) =>
+            !this.selectedTags.some((selectedTag) => selectedTag === tag),
+        );
+      } catch (error) {
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Laden der expertise tage und Kommentare`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
+      }
     },
-    methods: {
-        async fetchData() {
-            try {
-                const trainerTagsResponse = await axios.get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/expertiseTags`);
-                this.selectedTags = trainerTagsResponse.data.map(tag => tag.name);
-                console.log(this.selectedTags)
-                const eventsResponse = await axios.get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/comments-by-event`);
-                this.events = eventsResponse.data.events;
-
-                const tagsResponse = await axios.get(`${config.apiBaseUrl}/tags`);
-                this.allTags = tagsResponse.data.map(tag => tag.name);
-                this.filteredTags = this.allTags.filter(tag =>
-                    !this.selectedTags.some(selectedTag => selectedTag === tag)
-                );
-                console.log(this.filteredTags);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        },
-        toggleDropdown(eventId) {
-            this.activeEvent = this.activeEvent === eventId ? null : eventId;
-        },
-        async saveChanges() {
-            try {
-                await axios.post(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/expertiseTags`, this.selectedTags);
-
-                const pinnedIds = this.pinnedComments.length > 0
-                    ? this.pinnedComments.map((comment) => comment.feedbackId)
-                    : [];
-                await axios.post(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/pinned-comments`, pinnedIds);
-
-                alert("Changes saved successfully!");
-            } catch (error) {
-                console.error("Error saving changes:", error);
-            }
-        },
-        handleKeyup(event) {
-            if (event.key === ",") {
-                this.addTagFromInput();
-            }
-        },
-
-        addTagFromInput() {
-            const trimmedInput = this.tagInput.trim().slice(0, -1);
-
-            if (!trimmedInput) return;
-
-            if (
-                trimmedInput &&
-                !this.selectedTags.includes(trimmedInput) &&
-                this.selectedTags.length < 5
-            ) {
-                this.selectedTags.push(trimmedInput);
-            }
-
-            this.tagInput = "";
-            this.filteredTags = [...this.allTags];
-        },
-
-        addTag(tag) {
-            if (!this.selectedTags.includes(tag) && this.selectedTags.length < 5) {
-                this.selectedTags.push(tag);
-            }
-        },
-
-        removeTag(index) {
-            this.selectedTags.splice(index, 1);
-            this.filteredTags = this.allTags.filter((tag) =>
-                !this.selectedTags.some(selectedTag => selectedTag.id === tag.id)
-            );
-        },
-
-        filterTags() {
-            const query = this.tagInput.toLowerCase();
-            this.filteredTags = this.allTags
-                .filter((tagName) => tagName.toLowerCase().includes(query));
-        },
-
-        goBack() {
-            this.router.push({
-                name: "Profile",
-                params: { username: Cookies.get("username") },
-            });
-        },
-
+    toggleDropdown(eventId) {
+      this.activeEvent = this.activeEvent === eventId ? null : eventId;
     },
-    created() {
-        this.fetchData();
+    /**
+     * Save changes to selected tags and pinned comments
+     */
+    async saveChanges() {
+      try {
+        await axios.post(
+          `${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/expertiseTags`,
+          this.selectedTags,
+        );
+
+        const pinnedIds =
+          this.pinnedComments.length > 0
+            ? this.pinnedComments.map((comment) => comment.feedbackId)
+            : [];
+        await axios.post(
+          `${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/pinned-comments`,
+          pinnedIds,
+        );
+
+        showToast(
+          new Toast(
+            "Info",
+            `änderungen wurden erfolgreich gespeichert!`,
+            "info",
+            faCheck,
+            5,
+          ),
+        );
+      } catch (error) {
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler Fetchen der exchange days: ${error.message}`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
+      }
     },
+    handleKeyup(event) {
+      if (event.key === ",") {
+        this.addTagFromInput();
+      }
+    },
+
+    /**
+     * Add tag from input field to selected tags
+     */
+    addTagFromInput() {
+      const trimmedInput = this.tagInput.trim().slice(0, -1);
+
+      if (!trimmedInput) return;
+
+      if (
+        trimmedInput &&
+        !this.selectedTags.includes(trimmedInput) &&
+        this.selectedTags.length < 5
+      ) {
+        this.selectedTags.push(trimmedInput);
+      }
+
+      this.tagInput = "";
+      this.filteredTags = [...this.allTags];
+    },
+
+    addTag(tag) {
+      if (!this.selectedTags.includes(tag) && this.selectedTags.length < 5) {
+        this.selectedTags.push(tag);
+      }
+    },
+
+    removeTag(index) {
+      this.selectedTags.splice(index, 1);
+      this.filteredTags = this.allTags.filter(
+        (tag) =>
+          !this.selectedTags.some((selectedTag) => selectedTag.id === tag.id),
+      );
+    },
+
+    filterTags() {
+      const query = this.tagInput.toLowerCase();
+      this.filteredTags = this.allTags.filter((tagName) =>
+        tagName.toLowerCase().includes(query),
+      );
+    },
+
+    goBack() {
+      this.router.push({
+        name: "Profile",
+        params: { username: Cookies.get("username") },
+      });
+    },
+  },
+  created() {
+    this.fetchData();
+  },
 };
 </script>
 
 <style scoped>
 .back-button {
-    position: fixed;
-    top: 5rem;
-    left: 5rem;
-    background-color: #009ee2;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s;
+  position: fixed;
+  top: 5rem;
+  left: 5rem;
+  background-color: #009ee2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
 }
 
 .back-button:hover {
-    background-color: #007bb5;
+  background-color: #007bb5;
 }
 
 .manage-page {
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .manage-section {
-    border: 1px solid #ddd;
-    padding: 1rem;
-    border-radius: 10px;
-    background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 1rem;
+  border-radius: 10px;
+  background-color: #f9f9f9;
 }
 
 .event-section {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .event-toggle {
-    background-color: #009ee2;
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 0.5rem;
+  background-color: #009ee2;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
 }
 
 .event-toggle:hover {
-    background-color: #007bb8;
+  background-color: #007bb8;
 }
 
 .dropdown {
-    margin-top: 0.5rem;
-    padding-left: 1rem;
-    border-left: 2px solid #ddd;
+  margin-top: 0.5rem;
+  padding-left: 1rem;
+  border-left: 2px solid #ddd;
 }
 
 .comments-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
 }
 
 .comment-card {
-    padding: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fff;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
 }
 
 .card-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
 }
 
 .save-button {
-    background-color: #4caf50;
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
+  background-color: #4caf50;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
 }
 
 .save-button:hover {
-    background-color: #3e8e41;
+  background-color: #3e8e41;
 }
 
 .input-group {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .input-group input {
-    padding: 0.5rem;
-    margin-right: 1rem;
+  padding: 0.5rem;
+  margin-right: 1rem;
 }
 
 .tag-chips {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0.5rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0.5rem 0;
 }
 
 .chip {
-    background-color: #009ee2;
-    color: white;
-    padding: 0.5rem;
-    border-radius: 20px;
-    margin-right: 0.5rem;
+  background-color: #009ee2;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 20px;
+  margin-right: 0.5rem;
 }
 
 .remove-tag {
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    margin-left: 0.5rem;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
 }
 
 .tag-list button {
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    padding: 0.5rem;
-    border-radius: 5px;
-    margin-right: 0.5rem;
-    cursor: pointer;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  border-radius: 5px;
+  margin-right: 0.5rem;
+  cursor: pointer;
 }
 
 .tag-list button:disabled {
-    background-color: #e0e0e0;
-    cursor: not-allowed;
+  background-color: #e0e0e0;
+  cursor: not-allowed;
 }
 </style>
