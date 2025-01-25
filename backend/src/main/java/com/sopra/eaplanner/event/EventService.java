@@ -209,7 +209,6 @@ public class EventService {
                 .orElseThrow(() -> new EntityNotFoundException("Organizer not found.")));
         event.setRecommendedExperience(requestBody.getRecommendedExperience());
         event.setTags(tagService.mergeAndGetTagsFromRequest(requestBody.getTags()));
-        event.setTags(tagService.mergeAndGetTagsFromRequest(requestBody.getTags()));
 
         eventRepository.save(event);
         return new EventResponseDTO(event);

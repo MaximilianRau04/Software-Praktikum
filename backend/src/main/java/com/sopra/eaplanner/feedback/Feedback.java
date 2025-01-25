@@ -118,7 +118,7 @@ public class Feedback implements FeedbackScore {
     @JsonBackReference
     private TrainerProfile trainerProfile;
 
-    private Double sentiment;
+    private Double sentiment = 0.0;
 
     private boolean enjoymentCommentPinned;
 

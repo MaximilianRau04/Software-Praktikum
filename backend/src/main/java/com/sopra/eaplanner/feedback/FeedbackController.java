@@ -41,8 +41,6 @@ public class FeedbackController {
         return ResponseEntity.created(location).body(savedDTO);
     }
 
-    // TODO: PutMapping here
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteFeedback(@PathVariable Long id) {
         feedbackService.deleteFeedback(id);

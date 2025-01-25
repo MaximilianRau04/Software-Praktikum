@@ -7,63 +7,26 @@
 
     <!-- Navigationsleiste -->
     <nav class="tabs">
-      <a
-        href="#"
-        class="tab"
-        :class="{ active: view === 'details' }"
-        @click.prevent="showDetails"
-      >
+      <a href="#" class="tab" :class="{ active: view === 'details' }" @click.prevent="showDetails">
         Details anzeigen
       </a>
-      <a
-        href="#"
-        class="tab"
-        :class="{ active: view === 'forum' }"
-        @click.prevent="showForum"
-      >
+      <a href="#" class="tab" :class="{ active: view === 'forum' }" @click.prevent="showForum">
         Diskussionsforum
       </a>
-      <a
-        href="#"
-        class="tab"
-        :class="{ active: view === 'users' }"
-        @click.prevent="showUsers"
-      >
+      <a href="#" class="tab" :class="{ active: view === 'users' }" @click.prevent="showUsers">
         Angemeldete User
       </a>
-      <a
-        v-if="isOrganizer"
-        href="#"
-        class="tab"
-        :class="{ active: view === 'feedback' }"
-        @click.prevent="openFeedback"
-      >
+      <a v-if="isOrganizer" href="#" class="tab" :class="{ active: view === 'feedback' }" @click.prevent="openFeedback">
         Feedback
       </a>
-      <a
-        v-if="isOrganizer"
-        href="#"
-        class="tab"
-        :class="{ active: view === 'qr' }"
-        @click.prevent="openQRCode"
-      >
+      <a v-if="isOrganizer" href="#" class="tab" :class="{ active: view === 'qr' }" @click.prevent="openQRCode">
         QR-Code
       </a>
-      <a
-        v-if="userRole === 'ADMIN'"
-        href="#"
-        class="tab"
-        :class="{ active: view === 'edit' }"
-        @click.prevent="goToUpdate"
-      >
+      <a v-if="userRole === 'ADMIN'" href="#" class="tab" :class="{ active: view === 'edit' }"
+        @click.prevent="goToUpdate">
         Bearbeiten
       </a>
-      <a
-        href="#"
-        class="tab"
-        :class="{ active: view === 'unregister' }"
-        @click.prevent="unregisterFromEvent"
-      >
+      <a href="#" class="tab" :class="{ active: view === 'unregister' }" @click.prevent="unregisterFromEvent">
         Abmelden
       </a>
     </nav>
@@ -73,17 +36,13 @@
       <div class="event-header">
         <h1 class="event-title">{{ event.name }}</h1>
         <p class="event-date">
-          <i class="icon-calendar"></i
-          ><strong> {{ formatDate(event.date) }}</strong>
+          <i class="icon-calendar"></i><strong> {{ formatDate(event.date) }}</strong>
         </p>
       </div>
       <!-- Veranstalter oben anzeigen -->
       <div class="organizer-info" @click="goToUser(organizer.username)">
         Veranstalter:
-        <div
-          class="organizer-avatar"
-          :style="{ backgroundColor: generateColor(organizer.username) }"
-        >
+        <div class="organizer-avatar" :style="{ backgroundColor: generateColor(organizer.username) }">
           {{ getInitials(organizer.firstname, organizer.lastname) }}
         </div>
         <div class="organizer-details">
@@ -120,25 +79,14 @@
 
     <!-- Forum anzeigen -->
     <div v-if="view === 'forum'">
-      <Forum
-        :threads="event.forumThreads"
-        :focused-thread-id.sync="focusedThreadId"
-      />
+      <Forum :threads="event.forumThreads" :focused-thread-id.sync="focusedThreadId" />
     </div>
 
     <!-- Liste der angemeldeten Benutzer -->
     <div v-if="view === 'users'" class="user-list">
       <div class="user-items">
-        <div
-          v-for="user in sortedUsers"
-          :key="user.username"
-          class="user-item"
-          @click="goToUser(user.username)"
-        >
-          <div
-            class="user-avatar"
-            :style="{ backgroundColor: generateColor(user.username) }"
-          >
+        <div v-for="user in sortedUsers" :key="user.username" class="user-item" @click="goToUser(user.username)">
+          <div class="user-avatar" :style="{ backgroundColor: generateColor(user.username) }">
             {{ getInitials(user.firstname, user.lastname) }}
           </div>
           <div class="user-details">

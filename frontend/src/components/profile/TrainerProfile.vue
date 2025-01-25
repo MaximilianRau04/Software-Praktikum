@@ -1,21 +1,28 @@
 <template>
-    <div v-if="trainer">
-        <TrainerHeader :user="user" :bio="trainer.bio" />
-    </div>
-    <div v-else>
-        <p>Lade Trainerdaten...</p>
-    </div>
     <div>
-        <TrainerTags :tags="trainerTags" />
-    </div>
-    <div>
-        <TrainerStarRating :averageRating="trainer.averageRating" />
-    </div>
-    <div>
-        <TrainerComments :comments="trainerComments" />
-    </div>
-    <div>
-        <TrainerEvents :pastEvents="pastEvents" :futureEvents="futureEvents" />
+        <div class="header-container">
+            <TrainerHeader :user="user" :bio="trainer.bio" />
+            <button v-if="user.id === trainer.userId" @click="navigateToManage" class="manage-button">
+                Verwalten
+            </button>
+        </div>
+        <div v-if="trainer">
+            <div>
+                <TrainerTags :tags="trainerTags" />
+            </div>
+            <div>
+                <TrainerStarRating :averageRating="trainer.averageRating" />
+            </div>
+            <div>
+                <TrainerComments :trainerId="trainer.id" :userId="trainer.userId" />
+            </div>
+            <div>
+                <TrainerEvents :pastEvents="pastEvents" :futureEvents="futureEvents" />
+            </div>
+        </div>
+        <div v-else>
+            <p>Lade Trainerdaten...</p>
+        </div>
     </div>
 </template>
 
@@ -50,13 +57,12 @@ export default {
     data() {
         return {
             trainerTags: [],
-            trainerComments: [],
             pastEvents: [],
             futureEvents: [],
         };
     },
     watch: {
-        trainerData: "fetchTrainerDetails",
+        trainer: "fetchTrainerDetails",
     },
     methods: {
         async fetchTrainerDetails() {
@@ -65,8 +71,6 @@ export default {
                 if (tagsResponse.ok) {
                     this.trainerTags = await tagsResponse.json();
                 }
-
-                const commentsResponse = 0;
 
                 const eventResponse = await fetch(`${config.apiBaseUrl}/users/${this.trainer.userId}/hostedEvents`);
                 if (eventResponse.ok) {
@@ -78,6 +82,9 @@ export default {
                 console.error("Error fetching trainer details:", error);
             }
         },
+        navigateToManage() {
+            this.$router.push({ name: "TrainerProfileManage", params: { trainerId: Number(this.trainer.id) } });
+        },
     },
     created() {
         this.fetchTrainerDetails();
@@ -86,10 +93,25 @@ export default {
 </script>
 
 <style scoped>
-.trainer-profile {
+.header-container {
     display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    padding: 2rem;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.manage-button {
+    background-color: #009ee2;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+
+.manage-button:hover {
+    background-color: #007bb8;
 }
 </style>

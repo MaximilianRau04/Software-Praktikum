@@ -2,13 +2,15 @@ package com.sopra.eaplanner.trainerprofile;
 
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.EventRepository;
-import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.tags.Tag;
-import com.sopra.eaplanner.event.tags.TagRepository;
 import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.event.tags.TagService;
 import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.feedback.FeedbackRepository;
+import com.sopra.eaplanner.feedback.FeedbackService;
+import com.sopra.eaplanner.trainerprofile.comments.dtos.CommentDTO;
+import com.sopra.eaplanner.trainerprofile.comments.dtos.EventWithCommentsDTO;
+import com.sopra.eaplanner.trainerprofile.comments.dtos.TrainerCommentResponseDTO;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -36,6 +38,9 @@ public class TrainerProfileService {
     @Autowired
     private TagService tagService;
 
+    @Autowired
+    private FeedbackService feedbackService;
+
     public List<TrainerProfileResponseDTO> getAllTrainerProfiles() {
         Iterable<TrainerProfile> profiles = trainerProfileRepository.findAll();
         List<TrainerProfileResponseDTO> responseDTOs = new ArrayList<>();
@@ -56,31 +61,27 @@ public class TrainerProfileService {
         return profileOpt.map(TrainerProfile::getUser).orElse(null);
     }
 
-    public List<Map<String, String>> getPinnedComments(Long id) {
-        Optional<TrainerProfile> trainerProfileOpt = trainerProfileRepository.findById(id);
-        if (trainerProfileOpt.isEmpty()) {
-            throw new RuntimeException("Trainer Profile not found for the specified trainer");
-        }
+    public TrainerCommentResponseDTO getReceivedComments(Long trainerId) {
 
-        TrainerProfile trainerProfile = trainerProfileOpt.get();
+        List<Event> events = eventRepository.findAllEventsOfOrganizer(trainerId);
 
-        List<Map<String, String>> pinnedComments = new ArrayList<>();
-        for (Map.Entry<String, String> entry : trainerProfile.getPinnedComments().entrySet()) {
-            String commentType = entry.getKey();
-            String commentContent = entry.getValue();
+        List<EventWithCommentsDTO> preparedEvents = events.stream()
+                // Mapping events to the required dTO
+                .map((event) -> new EventWithCommentsDTO(event.getId(),
+                        event.getName(),
+                        event.getFeedbacks().stream()
+                                // Mapping feedback to the CommentDTO and collecting a CommentDTO to be sent off
+                                .map(feedback -> new CommentDTO(
+                                        feedback.getId(),
+                                        feedback.getEnjoymentComment(),
+                                        feedback.isAnonymousFeedback() ? "Anonym" : feedback.getUser().getFirstname() + " " + feedback.getUser().getLastname(),
+                                        feedback.getEvent().getName(),
+                                        feedbackService.getFeedbackRating(feedback)
+                                ))
+                                .toList()))
+                .toList();
 
-            Feedback feedback = feedbackRepository.findByTrainerProfileId(id)
-                    .orElseThrow(() -> new RuntimeException("Feedback not found for pinned comment"));
-
-            Map<String, String> commentData = new HashMap<>();
-            commentData.put("category", commentType);
-            commentData.put("content", commentContent);
-            commentData.put("feedbackId", feedback.getId().toString());
-
-            pinnedComments.add(commentData);
-        }
-
-        return pinnedComments;
+        return new TrainerCommentResponseDTO(trainerId, preparedEvents);
     }
 
     public Set<TagResponseDTO> getExpertiseTags(Long id) {
@@ -91,98 +92,12 @@ public class TrainerProfileService {
                 .collect(Collectors.toSet());
     }
 
-    public Feedback pinComment(Long trainerId, Long feedbackId, String commentType) {
-        Optional<Feedback> feedbackOpt = feedbackRepository.findByTrainerProfileId(trainerId);
-        if (feedbackOpt.isEmpty()) {
-            throw new RuntimeException("Feedback not found for the specified trainer");
-        }
-
-        Feedback feedback = feedbackOpt.get();
-
-        Optional<TrainerProfile> trainerProfileOpt = trainerProfileRepository.findById(trainerId);
-        if (trainerProfileOpt.isEmpty()) {
-            throw new RuntimeException("Trainer Profile not found for the specified trainer");
-        }
-
-        TrainerProfile trainerProfile = trainerProfileOpt.get();
-
-        if (trainerProfile.getPinnedComments().size() > 5) {
-            throw new RuntimeException("Pinned comment limit exceeded");
-        }
-
-        switch (commentType.toLowerCase()) {
-            case "enjoyment":
-                feedback.setEnjoymentCommentPinned(true);
-                trainerProfile.getPinnedComments().put("enjoyment", feedback.getEnjoymentComment());
-                break;
-            case "improvement":
-                feedback.setImprovementCommentPinned(true);
-                trainerProfile.getPinnedComments().put("improvement", feedback.getImprovementComment());
-                break;
-            case "request":
-                feedback.setRequestCommentPinned(true);
-                trainerProfile.getPinnedComments().put("request", feedback.getRequestComment());
-                break;
-            case "personalimprovement":
-                feedback.setPersonalImprovementCommentPinned(true);
-                trainerProfile.getPinnedComments().put("personalimprovement", feedback.getPersonalImprovementComment());
-                break;
-            case "recommendation":
-                feedback.setRecommendationCommentPinned(true);
-                trainerProfile.getPinnedComments().put("recommendation", feedback.getRecommendationComment());
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid comment type");
-        }
-
-        trainerProfileRepository.save(trainerProfile);
-
-        return feedback;
-    }
-
-    public Feedback unpinComment(Long trainerId, Long feedbackId, String commentType) {
-        Optional<Feedback> feedbackOpt = feedbackRepository.findByTrainerProfileId(trainerId);
-        if (feedbackOpt.isEmpty()) {
-            throw new RuntimeException("Feedback not found for the specified trainer");
-        }
-
-        Feedback feedback = feedbackOpt.get();
-
-        Optional<TrainerProfile> trainerProfileOpt = trainerProfileRepository.findById(trainerId);
-        if (trainerProfileOpt.isEmpty()) {
-            throw new RuntimeException("Trainer Profile not found for the specified trainer");
-        }
-
-        TrainerProfile trainerProfile = trainerProfileOpt.get();
-
-        switch (commentType.toLowerCase()) {
-            case "enjoyment":
-                feedback.setEnjoymentCommentPinned(false);
-                trainerProfile.getPinnedComments().remove("enjoyment");
-                break;
-            case "improvement":
-                feedback.setImprovementCommentPinned(false);
-                trainerProfile.getPinnedComments().remove("improvement");
-                break;
-            case "request":
-                feedback.setRequestCommentPinned(false);
-                trainerProfile.getPinnedComments().remove("request");
-                break;
-            case "personalimprovement":
-                feedback.setPersonalImprovementCommentPinned(false);
-                trainerProfile.getPinnedComments().remove("personalimprovement");
-                break;
-            case "recommendation":
-                feedback.setRecommendationCommentPinned(false);
-                trainerProfile.getPinnedComments().remove("recommendation");
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid comment type");
-        }
-
-        trainerProfileRepository.save(trainerProfile);
-
-        return feedback;
+    public List<TagResponseDTO> setExpertiseTags(Long profileId, Set<String> tags){
+        TrainerProfile profile = trainerProfileRepository.findById(profileId).orElseThrow(() -> new EntityNotFoundException("Trainer Profile not found"));
+        Set<Tag> setTags = tagService.mergeAndGetTagsFromRequest(tags);
+        profile.setExpertiseTags(setTags);
+        trainerProfileRepository.save(profile);
+        return setTags.stream().map(TagResponseDTO::new).collect(Collectors.toList());
     }
 
     public TrainerProfileResponseDTO createTrainerProfile(TrainerProfileRequestDTO request) {

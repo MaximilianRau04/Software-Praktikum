@@ -47,17 +47,7 @@
             <tr>
               <td><strong>Tags:</strong></td>
               <td>
-                <div v-if="data.tags?.length">
-                  <div class="trainer-tags">
-                    <span v-for="(tag, index) in tags" :key="index" class="chip"
-                      :style="{ backgroundColor: getRandomColor() }">
-                      {{ tag }}
-                    </span>
-                  </div>
-                </div>
-                <div v-else>
-                  Keine Tags gesetzt.
-                </div>
+                <TrainerTags :tags="data.tags || []" />
               </td>
             </tr>
           </table>
@@ -168,6 +158,7 @@
 <script>
 import { useRoute, useRouter } from "vue-router";
 import config from "@/config";
+import TrainerTags from "@/components/profile/TrainerTags.vue";
 import {
   Chart,
   RadarController,
@@ -193,6 +184,7 @@ Chart.register(
 );
 
 export default {
+  components: "TrainerTags",
   name: "EventSummary",
   data() {
     return {

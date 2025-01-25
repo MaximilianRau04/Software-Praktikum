@@ -11,6 +11,7 @@ import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
 import UpdateEvent from "@/components/adminPanel/UpdateEvent.vue";
 import EventPage from "@/components/viewEvents/EventPage.vue";
 import UpdateExchangeDay from "@/components/adminPanel/UpdateExchangeDay.vue";
+import TrainerProfileManage from "@/components/profile/TrainerProfileManage.vue";
 
 export default [
   {
@@ -81,6 +82,12 @@ export default [
         path: "/leaderboard",
         name: "Leaderboard",
         component: Leaderboard,
+      },
+      {
+        path: "/trainerProfile/:trainerId/manage",
+        name: "TrainerProfileManage",
+        component: TrainerProfileManage,
+        props: true,
       },
     ],
   },
