@@ -98,7 +98,6 @@
 import { ref } from "vue";
 import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
-import { s } from "vite/dist/node/types.d-aGj9QkWt";
 
 const selectedLocation = ref<number | null>(null);
 const selectedResource = ref<number | null>(null);

@@ -49,6 +49,9 @@ public class UserService {
     @Autowired
     private FeedbackService feedbackService;
 
+    @Autowired
+    private FeedbackRepository feedbackRepository;
+
     public UserResponseDTO getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));

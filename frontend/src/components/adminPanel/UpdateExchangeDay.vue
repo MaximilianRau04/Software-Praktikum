@@ -75,7 +75,6 @@
 import { ref, onMounted } from "vue";
 import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
-import { s } from "vite/dist/node/types.d-aGj9QkWt";
 
 const selectedExchangeDay = ref<any | null>(null);
 const exchangeDays = ref<any[]>([]);

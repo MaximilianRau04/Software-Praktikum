@@ -20,7 +20,7 @@
     </button>
 
     <p v-else class="past-event-message">
-     Eine Anmeldung ist nicht mehr möglich...
+      Eine Anmeldung ist nicht mehr möglich...
     </p>
   </div>
 </template>
@@ -34,7 +34,6 @@ import config from "@/config";
 import Cookies from "js-cookie";
 import { showToast, Toast } from "@/types/toasts";
 import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
-import { s } from "vite/dist/node/types.d-aGj9QkWt";
 
 const props = defineProps<{ event: Event }>();
 const isAlreadyRegistered = ref(false);
@@ -58,7 +57,7 @@ function formatDate(timestamp: string): string {
 function checkIfPastEvent() {
   const eventDate = new Date(props.event.date);
   const now = new Date();
-  isPastEvent.value = eventDate < now; 
+  isPastEvent.value = eventDate < now;
 }
 
 /**
@@ -156,7 +155,7 @@ const register = async (eventId: number) => {
 };
 
 onMounted(() => {
-  checkIfPastEvent(); 
+  checkIfPastEvent();
   checkRegistrationStatus();
 });
 </script>

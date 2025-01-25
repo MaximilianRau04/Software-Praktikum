@@ -186,7 +186,6 @@ import UpdateResource from "./UpdateResource.vue";
 import UpdateEvent from "./UpdateEvent.vue";
 import UpdateExchangeDay from "./UpdateExchangeDay.vue";
 import { showToast, Toast } from "@/types/toasts";
-import { s } from "vite/dist/node/types.d-aGj9QkWt";
 
 const showWorkshopBox = ref(false);
 const showExchangeDayBox = ref(false);

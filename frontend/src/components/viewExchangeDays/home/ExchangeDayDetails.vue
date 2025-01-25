@@ -52,7 +52,6 @@ import Cookies from "js-cookie";
 import { showToast, Toast } from "@/types/toasts";
 import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
 
-
 const router = useRouter();
 const selectedExchangeDay = ref<ExchangeDay | null>(null);
 
@@ -140,11 +139,11 @@ async function fetchExchangeDayDetails(id: number) {
 async function fetchEventDetails() {
   try {
     const response = await fetch(
-      `${config.apiBaseUrl}/exchange-days/${selectedExchangeDay.value.id}/events`
+      `${config.apiBaseUrl}/exchange-days/${selectedExchangeDay.value.id}/events`,
     );
     if (!response.ok) {
       throw new Error(
-        `Failed to fetch events from exchange day ${selectedExchangeDay.value.id}`
+        `Failed to fetch events from exchange day ${selectedExchangeDay.value.id}`,
       );
     }
     const responseData: Event[] = await response.json();
@@ -164,7 +163,7 @@ async function fetchEventDetails() {
 
 const navigateToManageExchangeDay = (exchangeDayId) => {
   router.push({ name: "manageExchangeDay", params: { exchangeDayId } });
-}
+};
 
 /**
  * Watch for changes to the `exchangeDay` prop and fetch new details when it changes.
@@ -175,7 +174,7 @@ watch(
     if (newId !== oldId && newId != null) {
       fetchExchangeDayDetails(newId);
     }
-  }
+  },
 );
 
 /**
@@ -186,6 +185,4 @@ onMounted(() => {
     fetchExchangeDayDetails(props.exchangeDay.id);
   }
 });
-
-
 </script>
