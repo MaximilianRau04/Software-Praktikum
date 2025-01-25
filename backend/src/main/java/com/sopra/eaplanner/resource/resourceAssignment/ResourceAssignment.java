@@ -23,18 +23,13 @@ public class ResourceAssignment {
     @JsonBackReference
     private Event event;
 
-    @Column(nullable = false)
-    private LocalTime startTime;
+    private int quantity;
 
-    @Column(nullable = false)
-    private LocalTime endTime;
-
-    public ResourceAssignment(Long id, ResourceItem resource, Event event, LocalTime startTime, LocalTime endTime) {
+    public ResourceAssignment(Long id, ResourceItem resource, int quantity, Event event) {
         this.id = id;
         this.resource = resource;
+        this.quantity = quantity;
         this.event = event;
-        this.startTime = startTime;
-        this.endTime = endTime;
     }
 
     public ResourceAssignment() {
@@ -61,19 +56,11 @@ public class ResourceAssignment {
 
     public void setEvent(Event event) { this.event = event; }
 
-    public LocalTime getStartTime() {
-        return startTime;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setStartTime(LocalTime startTime) {
-        this.startTime = startTime;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
-
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalTime endTime) { this.endTime = endTime;
-    }
-
 }

@@ -4,7 +4,7 @@ Content-Type: application/json
 {
   "name": "Fresh Try ResponseEntities",
   "description": "Bla Bla",
-  "date": "2025-12-31",
+  "date": "2025-12-30",
   "recommendedExperience": "ALL_LEVELS",
   "room": "0.108",
   "exchangeDayId": 1,
@@ -12,6 +12,7 @@ Content-Type: application/json
   "startTime": "13:00:00",
   "endTime": "14:00:00"
 }
+
 
 ###
 POST http://localhost:8080/api/users
@@ -28,9 +29,10 @@ POST http://localhost:8080/api/exchange-days
 Content-Type: application/json
 
 {
-  "date": "2025-12-30",
+  "startDate": "2025-12-30",
+  "endDate": "2025-12-31",
   "name": "Fresh",
-  "location": "Frankfurt",
+  "locationId": 1,
   "description": "A day dedicated to learning Spring Boot with multiple sessions."
 }
 ###
@@ -155,11 +157,11 @@ POST http://localhost:8080/api/resources
 Content-Type: application/json
 
 {
-  "name": "38.01",
-  "type": "ROOM",
-  "description": "Raum",
+  "name": "Beamer",
+  "type": "EQUIPMENT",
+  "description": "Stuhl",
   "capacity": 200,
-  "location": "Stuttgart",
+  "locationId": 1,
   "availability": true
 }
 ###
@@ -168,25 +170,24 @@ POST http://localhost:8080/api/assignments
 Content-Type: application/json
 
 {
-"resourceId": 1,
+ "resourceId": 3,
   "eventId": 1,
-"startTime": "12:00:00",
-  "endTime": "13:00:00"
+  "quantity": 1
 }
 ###
 
-GET http://localhost:8080/api/forumthreads
+GET http://localhost:8080/api/locations
 
 ###
 POST http://localhost:8080/api/locations
 Content-Type: application/json
 
 {
-  "city": "Stuttgart",
+  "city": "München",
     "country": "Germany",
     "postalCode": "70173",
   "houseNumber": "3",
-  "street": "Königstraße"
+  "street": "Gustavstraße"
 
 }
 ###
@@ -201,4 +202,6 @@ Content-Type: application/json
   "description": "A day dedicated to learning Spring Boot"
 }
 ###
-GET http://localhost:8080/api/exchange-days
+GET http://localhost:8080/api/resources
+###
+GET http://localhost:8080/api/events/1/resources

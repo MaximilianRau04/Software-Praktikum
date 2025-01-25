@@ -11,12 +11,17 @@
     <p><strong>Raum:</strong> {{ event.room || "No Room" }}</p>
 
     <button
+      v-if="!isPastEvent"
       @click="register(event.id)"
       class="register-button"
       :disabled="isAlreadyRegistered"
     >
       {{ isAlreadyRegistered ? "Bereits registriert" : "Registrieren" }}
     </button>
+
+    <p v-else class="past-event-message">
+     Eine Anmeldung ist nicht mehr möglich...
+    </p>
   </div>
 </template>
 
@@ -30,6 +35,7 @@ import Cookies from "js-cookie";
 
 const props = defineProps<{ event: Event }>();
 const isAlreadyRegistered = ref(false);
+const isPastEvent = ref(false);
 const userId = Cookies.get("userId");
 
 /**
@@ -41,6 +47,15 @@ const userId = Cookies.get("userId");
 function formatDate(timestamp: string): string {
   const date = new Date(timestamp);
   return date.toLocaleDateString("de-DE");
+}
+
+/**
+ * Checks if the event is in the past.
+ */
+function checkIfPastEvent() {
+  const eventDate = new Date(props.event.date);
+  const now = new Date();
+  isPastEvent.value = eventDate < now; 
 }
 
 /**
@@ -102,6 +117,7 @@ const register = async (eventId: number) => {
 };
 
 onMounted(() => {
+  checkIfPastEvent(); 
   checkRegistrationStatus();
 });
 </script>

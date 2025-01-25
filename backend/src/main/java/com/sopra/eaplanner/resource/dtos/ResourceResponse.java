@@ -11,10 +11,10 @@ public class ResourceResponse {
     private String description;
     private Location location;
     private Boolean availability;
-    private Integer capacity;
+    private int capacity;
 
     public ResourceResponse(Long id, String name, String type, String description,
-                            Location location, Boolean availability, Integer capacity) {
+                            Location location, Boolean availability, int capacity) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -82,12 +82,13 @@ public class ResourceResponse {
         this.availability = availability;
     }
 
-    public Integer getCapacity() {
+    public int getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(Integer capacity) {
+    public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
+
 }
 

@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ResourceRepository extends CrudRepository<ResourceItem, Long> {
-    List<ResourceItem> findByTypeAndLocationAndAvailability(ResourceType type, Location location, Boolean availability);
+
 }

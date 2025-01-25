@@ -27,7 +27,7 @@ public class ResourceItem {
 
     private String description;
 
-    private Integer capacity;
+    private int capacity;
 
     @ManyToOne
     @JoinColumn(name = "location_id", nullable = false)
@@ -40,7 +40,7 @@ public class ResourceItem {
     private List<ResourceAssignment> assignments;
 
 
-    public ResourceItem(Long id, String name, ResourceType type, String description, Integer capacity, Location location, Boolean availability) {
+    public ResourceItem(Long id, String name, ResourceType type, String description, int capacity, Location location, Boolean availability) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -89,11 +89,11 @@ public class ResourceItem {
         this.description = description;
     }
 
-    public Integer getCapacity() {
+    public int getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(Integer capacity) {
+    public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
 
@@ -120,6 +120,7 @@ public class ResourceItem {
     public void setAssignments(List<ResourceAssignment> assignments) {
         this.assignments = assignments;
     }
+
 }
 
 
