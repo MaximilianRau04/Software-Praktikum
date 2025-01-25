@@ -9,10 +9,11 @@
 </template>
 
 <script>
-import axios from "axios";
 import TrainerProfile from "@/components/profile/TrainerProfile.vue";
 import UserProfile from "@/components/profile/UserProfile.vue";
 import config from "@/config";
+import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 // <UserProfile v-else :user="userData" />
 export default {
@@ -31,6 +32,9 @@ export default {
     },
   },
   methods: {
+    /**
+     * Fetches the user data and the trainer profile data if the user is a trainer
+     */
     async fetchProfile() {
       try {
         const userResponse = await fetch(
@@ -46,13 +50,28 @@ export default {
             `/api/trainerProfiles/${this.userData.id}`,
           );
           if (!trainerResponse.ok) {
-            throw new Error("Trainer data fetch failed");
+            showToast(
+              new Toast(
+                "Error",
+                `Fehler der Laden der Trainer Profils`,
+                "error",
+                faXmark,
+                10,
+              ),
+            );
           }
           this.trainerProfileData = await trainerResponse.json();
-          console.log(this.trainerProfileData.bio);
         }
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler der Laden der Trainer Profils`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     },
   },

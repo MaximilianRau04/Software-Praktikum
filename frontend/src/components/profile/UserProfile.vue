@@ -201,7 +201,15 @@ export default {
 
         fetchThreadTitles(postsRes.data);
       } catch (error) {
-        console.error("Fehler beim Abrufen der Benutzerdaten:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Abrufen der Benutzerdaten}`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     };
 
@@ -221,7 +229,15 @@ export default {
           threadTitles.value[threadId] = response.data.title;
         });
       } catch (error) {
-        console.error("Fehler beim Abrufen der Thread-Titel:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler bei der Abrufen der Thread-Titel`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     };
 
@@ -242,7 +258,15 @@ export default {
           feedbackId: comment.feedbackId,
         }));
       } catch (error) {
-        console.error("Fehler beim Abrufen der gepinnten Kommentare:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Abrufen der gepinnten Kommentare`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     };
 
@@ -262,7 +286,15 @@ export default {
           (comment) => comment.feedbackId !== feedbackId,
         );
       } catch (error) {
-        console.error("Fehler beim Entpinnen des Kommentars:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Entpinnen des Kommentars`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     };
 
@@ -295,11 +327,28 @@ export default {
 
           router.push(`/user/${newUsername.value}`);
         } catch (error) {
-          console.error("Fehler beim Aktualisieren des Benutzernamens:", error);
+          showToast(
+            new Toast(
+              "Error",
+              `Fehler beim Aktualisieren des Benutzers`,
+              "error",
+              faXmark,
+              10,
+            ),
+          );
         }
       } else {
         isEditing.value = false;
       }
+      showToast(
+        new Toast(
+          "Success",
+          `Benutzername erfolgreich aktualisiert`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
     };
 
     /**

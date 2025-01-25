@@ -7,19 +7,46 @@
 
     <!-- Navigationsleiste -->
     <nav class="tabs">
-      <a href="#" class="tab" :class="{ active: view === 'details' }" @click.prevent="showDetails">
+      <a
+        href="#"
+        class="tab"
+        :class="{ active: view === 'details' }"
+        @click.prevent="showDetails"
+      >
         Details anzeigen
       </a>
-      <a href="#" class="tab" :class="{ active: view === 'forum' }" @click.prevent="showForum">
+      <a
+        href="#"
+        class="tab"
+        :class="{ active: view === 'forum' }"
+        @click.prevent="showForum"
+      >
         Diskussionsforum
       </a>
-      <a href="#" class="tab" :class="{ active: view === 'users' }" @click.prevent="showUsers">
+      <a
+        href="#"
+        class="tab"
+        :class="{ active: view === 'users' }"
+        @click.prevent="showUsers"
+      >
         Angemeldete User
       </a>
-      <a v-if="isOrganizer" href="#" class="tab" :class="{ active: view === 'feedback' }" @click.prevent="openFeedback">
+      <a
+        v-if="isOrganizer"
+        href="#"
+        class="tab"
+        :class="{ active: view === 'feedback' }"
+        @click.prevent="openFeedback"
+      >
         Feedback
       </a>
-      <a v-if="isOrganizer" href="#" class="tab" :class="{ active: view === 'qr' }" @click.prevent="openQRCode">
+      <a
+        v-if="isOrganizer"
+        href="#"
+        class="tab"
+        :class="{ active: view === 'qr' }"
+        @click.prevent="openQRCode"
+      >
         QR-Code
       </a>
       <a
@@ -37,13 +64,17 @@
       <div class="event-header">
         <h1 class="event-title">{{ event.name }}</h1>
         <p class="event-date">
-          <i class="icon-calendar"></i><strong> {{ formatDate(event.date) }}</strong>
+          <i class="icon-calendar"></i
+          ><strong> {{ formatDate(event.date) }}</strong>
         </p>
       </div>
       <!-- Veranstalter oben anzeigen -->
       <div class="organizer-info" @click="goToUser(organizer.username)">
         Veranstalter:
-        <div class="organizer-avatar" :style="{ backgroundColor: generateColor(organizer.username) }">
+        <div
+          class="organizer-avatar"
+          :style="{ backgroundColor: generateColor(organizer.username) }"
+        >
           {{ getInitials(organizer.firstname, organizer.lastname) }}
         </div>
         <div class="organizer-details">
@@ -80,14 +111,25 @@
 
     <!-- Forum anzeigen -->
     <div v-if="view === 'forum'">
-      <Forum :threads="event.forumThreads" :focused-thread-id.sync="focusedThreadId" />
+      <Forum
+        :threads="event.forumThreads"
+        :focused-thread-id.sync="focusedThreadId"
+      />
     </div>
 
     <!-- Liste der angemeldeten Benutzer -->
     <div v-if="view === 'users'" class="user-list">
       <div class="user-items">
-        <div v-for="user in sortedUsers" :key="user.username" class="user-item" @click="goToUser(user.username)">
-          <div class="user-avatar" :style="{ backgroundColor: generateColor(user.username) }">
+        <div
+          v-for="user in sortedUsers"
+          :key="user.username"
+          class="user-item"
+          @click="goToUser(user.username)"
+        >
+          <div
+            class="user-avatar"
+            :style="{ backgroundColor: generateColor(user.username) }"
+          >
             {{ getInitials(user.firstname, user.lastname) }}
           </div>
           <div class="user-details">
@@ -139,6 +181,8 @@ import Cookies from "js-cookie";
 import { Event } from "@/types/Event";
 import Forum from "@/components/forum/Forum.vue";
 import "@/assets/event-page.css";
+import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const event = ref<Event>({
   id: 0,
@@ -197,7 +241,15 @@ const fetchEventDetails = async () => {
 
     await fetchRegisteredUsers();
   } catch (error) {
-    console.error("Fehler beim Laden der Eventdaten:", error);
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler Fetchen der exchange days: ${error.message}`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
   }
 };
 
@@ -216,7 +268,15 @@ const fetchRegisteredUsers = async () => {
       a.username.localeCompare(b.username),
     );
   } catch (error) {
-    console.error("Fehler beim Laden der Benutzer:", error);
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler beim Laden der Benutzer.`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
   }
 };
 
@@ -254,7 +314,6 @@ const openQRCode = async () => {
   try {
     qrCodeUrl.value = `${config.apiBaseUrl}/events/${eventId}/qr-code`;
 
-    // Fetch attendance token from backend
     const response = await fetch(
       `${config.apiBaseUrl}/events/${eventId}/attendance-token`,
     );
@@ -264,19 +323,27 @@ const openQRCode = async () => {
       );
     }
 
-    // Parse the response JSON and extract the token
     const responseData = await response.json();
-    const attendanceToken = responseData.attendanceToken; // Access the token field
+    const attendanceToken = responseData.attendanceToken;
 
-    // Construct the QR code link with the token
     qrCodeLink.value = `http://193.196.54.172:8000/events/${eventId}/attendance?token=${attendanceToken}`;
     showQRCodeModal.value = true;
   } catch (error) {
-    console.error("Error opening QR code modal:", error);
-    // Optionally, display a user-friendly error message
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler beim Öffnen des QR-Codes.`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
   }
 };
 
+/**
+ * Copies the QR code link to the clipboard.
+ */
 const copyToClipboard = async () => {
   if (qrCodeLink.value) {
     try {
@@ -286,14 +353,13 @@ const copyToClipboard = async () => {
         copySuccess.value = false;
       }, 2000);
     } catch (error) {
-      console.error("Failed to copy: ", error);
+      showToast(
+        new Toast("Error", `Fehler beim Kopieren`, "error", faXmark, 10),
+      );
     }
   }
 };
 
-/**
- * Closes the QR code modal.
- */
 const closeQRCodeModal = () => {
   showQRCodeModal.value = false;
 };
@@ -318,13 +384,37 @@ const unregisterFromEvent = async () => {
       },
     );
     if (!response.ok) {
-      alert("Abmeldung fehlgeschlagen. Bitte erneut versuchen.");
+      showToast(
+        new Toast(
+          "Error",
+          `Anmeldung fehlgeschlagen. Bitte versuchen sie es erneut}`,
+          "error",
+          faXmark,
+          10,
+        ),
+      );
       return;
     }
-    alert(`Sie wurden erfolgreich von ${event.value.name} abgemeldet.`);
+    showToast(
+      new Toast(
+        "Success",
+        `Sie wurden erfolgreich von ${event.value.name} abgemeldet!`,
+        "success",
+        faCheck,
+        5,
+      ),
+    );
     router.push("/home");
   } catch (error) {
-    console.error("Fehler bei der Abmeldung vom Event:", error);
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler bei der Abmeldung vom Event`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
   }
 };
 
@@ -335,6 +425,9 @@ const showUsers = () => {
   view.value = "users";
 };
 
+/**
+ * Handles the thread navigation.
+ */
 const handleThreadNavigation = () => {
   const threadId = Number(route.query.threadId);
   if (threadId) {

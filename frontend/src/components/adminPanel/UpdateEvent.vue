@@ -98,6 +98,7 @@
         </select>
       </div>
 
+      <!-- event tags -->
       <div class="input-group">
         <label for="tags">Event Tags</label>
         <p>Bitte wählen Sie bis zu 5 Event Tags für Ihr Event aus:</p>
@@ -154,6 +155,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import config from "@/config";
+import { showToast, Toast } from "@/types/toasts";
 
 const emit = defineEmits(["update:selectEventToUpdate"]);
 
@@ -193,11 +195,14 @@ const fetchExchangeDays = async () => {
       const data = await response.json();
       exchangeDays.value = data;
     } else {
-      alert("Fehler beim Abrufen der ExchangeDays.");
+      showToast(
+        new Toast("Error", "Fehler beim Abrufen der ExchangeDays.", "error"),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der ExchangeDays:", error);
-    alert("Fehler beim Abrufen der ExchangeDays.");
+    showToast(
+      new Toast("Error", "Fehler beim Abrufen der ExchangeDays.", "error"),
+    );
   }
 };
 
@@ -220,11 +225,10 @@ const fetchEventsByExchangeDay = async () => {
       events.value = data;
       await fetchRoomsForEvent();
     } else {
-      alert("Fehler beim Abrufen der Events.");
+      showToast(new Toast("Error", "Fehler beim Abrufen der Events.", "error"));
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Events:", error);
-    alert("Fehler beim Abrufen der Events.");
+    showToast(new Toast("Error", "Fehler beim Abrufen der Events.", "error"));
   }
 };
 
@@ -251,11 +255,14 @@ const fetchEventDetails = async () => {
       await fetchEventTags();
       await fetchRoomsForEvent();
     } else {
-      alert("Fehler beim Abrufen der Eventdetails.");
+      showToast(
+        new Toast("Error", "Fehler beim Abrufen der Eventdetails.", "error"),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Eventdetails:", error);
-    alert("Fehler beim Abrufen der Eventdetails.");
+    showToast(
+      new Toast("Error", "Fehler beim Abrufen der Eventdetails.", "error"),
+    );
   }
 };
 
@@ -271,11 +278,14 @@ const fetchOrganizerId = async () => {
       const data = await response.json();
       organizerId.value = data.id;
     } else {
-      alert("Fehler beim Abrufen der Organizer ID.");
+      showToast(
+        new Toast("Error", "Fehler beim Abrufen der Organizer ID.", "error"),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Organizer ID:", error);
-    alert("Fehler beim Abrufen der Organizer ID.");
+    showToast(
+      new Toast("Error", "Fehler beim Abrufen der Organizer ID.", "error"),
+    );
   }
 };
 
@@ -290,7 +300,13 @@ const fetchRoomsForEvent = async () => {
 
   const exchangeDayLocationId = selectedExchangeDay.value.location.id;
   if (!exchangeDayLocationId) {
-    console.warn("Keine gültige Location für den ExchangeDay gefunden.");
+    showToast(
+      new Toast(
+        "Error",
+        "Keine gültige Location für den ExchangeDay gefunden.",
+        "error",
+      ),
+    );
     filteredRooms.value = [];
     return;
   }
@@ -306,11 +322,10 @@ const fetchRoomsForEvent = async () => {
       );
       updateFilteredRooms();
     } else {
-      alert("Fehler beim Abrufen der Räume.");
+      showToast(new Toast("Error", "Fehler beim Abrufen der Räume.", "error"));
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Räume:", error);
-    alert("Fehler beim Abrufen der Räume.");
+    showToast(new Toast("Error", "Fehler beim Abrufen der Räume.", "error"));
   }
 };
 
@@ -330,11 +345,23 @@ const updateFilteredRooms = async () => {
         const rooms = await response.json();
         filteredRooms.value = rooms;
       } else {
-        console.error("Fehler beim Laden der Ressourcen für die Location.");
+        showToast(
+          new Toast(
+            "Error",
+            "Fehler beim Laden der Ressourcen für die Location.",
+            "error",
+          ),
+        );
         filteredRooms.value = [];
       }
     } catch (error) {
-      console.error("Fehler beim Abrufen der Räume:", error);
+      showToast(
+        new Toast(
+          "Error",
+          "Fehler beim Laden der Ressourcen für die Location.",
+          "error",
+        ),
+      );
       filteredRooms.value = [];
     }
   } else {
@@ -352,11 +379,18 @@ const fetchExperienceLevels = async () => {
       const data = await response.json();
       experienceLevels.value = data;
     } else {
-      alert("Fehler beim Abrufen der Erfahrungslevels.");
+      showToast(
+        new Toast(
+          "Error",
+          "Fehler beim Abrufen der Erfahrungslevels.",
+          "error",
+        ),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Erfahrungslevels:", error);
-    alert("Fehler beim Abrufen der Erfahrungslevels.");
+    showToast(
+      new Toast("Error", "Fehler beim Abrufen der Erfahrungslevels.", "error"),
+    );
   }
 };
 
@@ -365,7 +399,7 @@ const fetchExperienceLevels = async () => {
  */
 const updateEvent = async () => {
   if (!selectedEvent.value) {
-    alert("Kein Event ausgewählt.");
+    showToast(new Toast("Error", "Kein Event ausgewählt.", "error"));
     return;
   }
 
@@ -392,13 +426,18 @@ const updateEvent = async () => {
     });
 
     if (response.ok) {
-      alert("Event erfolgreich aktualisiert.");
+      showToast(
+        new Toast("Success", "Event erfolgreich aktualisiert.", "success"),
+      );
     } else {
-      alert("Fehler beim Aktualisieren des Events.");
+      showToast(
+        new Toast("Error", "Fehler beim Aktualisieren des Events.", "error"),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Aktualisieren des Events:", error);
-    alert("Fehler beim Aktualisieren des Events.");
+    showToast(
+      new Toast("Error", "Fehler beim Aktualisieren des Events.", "error"),
+    );
   }
 };
 
@@ -407,7 +446,7 @@ const updateEvent = async () => {
  */
 const deleteEvent = async () => {
   if (!selectedEvent.value) {
-    alert("Kein Event ausgewählt.");
+    showToast(new Toast("Warning", "Kein Event ausgewählt.", "warning"));
     return;
   }
 
@@ -418,7 +457,9 @@ const deleteEvent = async () => {
       });
 
       if (response.ok) {
-        alert("Event erfolgreich gelöscht.");
+        showToast(
+          new Toast("Success", "Event erfolgreich gelöscht.", "success"),
+        );
         selectedEvent.value = null;
         name.value = "";
         description.value = "";
@@ -428,11 +469,12 @@ const deleteEvent = async () => {
         room.value = "";
         recommendedExperience.value = "";
       } else {
-        alert("Fehler beim Löschen des Events.");
+        showToast(
+          new Toast("Error", "Fehler beim Löschen des Events.", "error"),
+        );
       }
     } catch (error) {
-      console.error("Fehler beim Löschen des Events:", error);
-      alert("Fehler beim Löschen des Events.");
+      showToast(new Toast("Error", "Fehler beim Löschen des Events.", "error"));
     }
   }
 };
@@ -448,11 +490,10 @@ const fetchTags = async () => {
       allTags.value = data.map((tag: any) => String(tag.name));
       filterTags();
     } else {
-      alert("Fehler beim Abrufen der Tags.");
+      showToast(new Toast("Error", "Fehler beim Abrufen der Tags.", "error"));
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Tags:", error);
-    alert("Fehler beim Abrufen der Tags.");
+    showToast(new Toast("Error", "Fehler beim Abrufen der Tags.", "error"));
   }
 };
 
@@ -469,11 +510,14 @@ const fetchEventTags = async () => {
       selectedTags.value = data.map((tag: any) => tag.name);
       filterTags();
     } else {
-      alert("Fehler beim Abrufen der Tags des Events.");
+      showToast(
+        new Toast("Error", "Fehler beim Abrufen der Tags des Events.", "error"),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Tags des Events:", error);
-    alert("Fehler beim Abrufen der Tags des Events.");
+    showToast(
+      new Toast("Error", "Fehler beim Abrufen der Tags des Events.", "error"),
+    );
   }
 };
 

@@ -20,7 +20,7 @@
     </button>
 
     <p v-else class="past-event-message">
-     Eine Anmeldung ist nicht mehr möglich...
+      Eine Anmeldung ist nicht mehr möglich...
     </p>
   </div>
 </template>
@@ -32,6 +32,9 @@ import { Event } from "@/types/Event";
 import { defineProps } from "vue";
 import config from "@/config";
 import Cookies from "js-cookie";
+import { showToast, Toast } from "@/types/toasts";
+import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { s } from "vite/dist/node/types.d-aGj9QkWt";
 
 const props = defineProps<{ event: Event }>();
 const isAlreadyRegistered = ref(false);
@@ -55,7 +58,7 @@ function formatDate(timestamp: string): string {
 function checkIfPastEvent() {
   const eventDate = new Date(props.event.date);
   const now = new Date();
-  isPastEvent.value = eventDate < now; 
+  isPastEvent.value = eventDate < now;
 }
 
 /**
@@ -77,7 +80,9 @@ const checkRegistrationStatus = async () => {
       (event: { id: number }) => event.id === props.event.id,
     );
   } catch (error) {
-    console.error("Error checking registration status:", error);
+    showToast(
+      new Toast("Error", `Fehler bei der Registreirung`, "error", faXmark, 10),
+    );
     isAlreadyRegistered.value = false;
   }
 };
@@ -89,7 +94,15 @@ const checkRegistrationStatus = async () => {
 const register = async (eventId: number) => {
   try {
     if (!userId) {
-      window.alert("Bitte melden sie sich zuvor an.");
+      showToast(
+        new Toast(
+          "Warning",
+          `Bitte melden sie sich zuvor an.`,
+          "warning",
+          faXmark,
+          10,
+        ),
+      );
       return;
     }
 
@@ -104,20 +117,46 @@ const register = async (eventId: number) => {
     );
 
     if (response.status === 404) {
-      alert("Registrierung fehlgeschlagen. Bitte erneut versuchen.");
+      showToast(
+        new Toast(
+          "Error",
+          `Registrierung fehlgeschlagen. Bitte versuchen sie es erneut`,
+          "error",
+          faXmark,
+          10,
+        ),
+      );
     } else if (response.status === 409) {
-      alert("Sie sind bereits registriert.");
+      showToast(
+        new Toast("Error", `Sie sin bereits registriert`, "error", faXmark, 10),
+      );
     } else if (response.ok) {
-      alert(`Sie wurden erfolgreich zu ${props.event.name} angemeldet.`);
+      showToast(
+        new Toast(
+          "Success",
+          `Sie wurden erfolgreich zu ${props.event.name} angemeldet!`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
       isAlreadyRegistered.value = true;
     }
   } catch (error) {
-    console.error("Error registering for event:", error);
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler Fetchen der exchange days: ${error.message}`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
   }
 };
 
 onMounted(() => {
-  checkIfPastEvent(); 
+  checkIfPastEvent();
   checkRegistrationStatus();
 });
 </script>

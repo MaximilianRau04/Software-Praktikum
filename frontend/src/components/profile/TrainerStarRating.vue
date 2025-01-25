@@ -37,7 +37,6 @@ export default {
   },
   methods: {
     getStarClass(index) {
-      console.log(this.averageRating);
       const ratingFloor = Math.floor(this.averageRating);
       const fractionalPart = this.averageRating - ratingFloor;
 

@@ -28,7 +28,7 @@
       </div>
       <div class="input-group">
         <label for="resourceLocation">Ort</label>
-        <!-- Dropdown für Locations -->
+        <!-- dropdown for location -->
         <select id="resourceLocation" v-model="location" required>
           <option value="" disabled>Wähle einen Ort</option>
           <option v-for="loc in locations" :key="loc.id" :value="loc">
@@ -45,6 +45,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import config from "@/config";
+import { showToast, Toast } from "@/types/toasts";
+import { s } from "vite/dist/node/types.d-aGj9QkWt";
 
 const name = ref("");
 const type = ref("");
@@ -80,15 +82,19 @@ const createResource = async () => {
 
     if (response.ok) {
       const data = await response.json();
-      console.log("Resource erstellt:", data);
-      alert(`Resource erstellt: ${data.name}`);
+      showToast(
+        new Toast("Success", `Resource erfolgreich erstellt`, "success"),
+      );
       resetForm();
     } else {
-      alert("Fehler beim Erstellen der Resource.");
+      showToast(
+        new Toast("Error", `Fehler beim Erstellen der Resource`, "error"),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Erstellen der Resource:", error);
-    alert("Fehler beim Erstellen der Resource.");
+    showToast(
+      new Toast("Error", `Fehler beim Erstellen der Resource`, "error"),
+    );
   }
 };
 
@@ -103,7 +109,6 @@ const resetForm = () => {
   location.value = null;
   availability.value = true;
   emit("update:showResourceBox", false);
-  window.location.reload();
 };
 
 /**
@@ -116,11 +121,12 @@ onMounted(async () => {
       const data = await response.json();
       locations.value = data;
     } else {
-      alert("Fehler beim Abrufen der Locations.");
+      showToast(
+        new Toast("Error", "Fehler beim Abrufen der Locations", "error"),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Locations:", error);
-    alert("Fehler beim Abrufen der Locations.");
+    showToast(new Toast("Error", "Fehler beim Abrufen der Locations", "error"));
   }
 });
 </script>
