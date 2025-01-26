@@ -158,25 +158,32 @@ const filteredRegisteredEvents = computed(() =>
     .filter((event) => new Date(event.date) >= new Date(today))
     .filter((event) =>
       event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
-    ),
+    )
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
 );
 
 const filteredRecommendedEvents = computed(() =>
-  recommendedEvents.value.filter((event) =>
-    event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
-  ),
+  recommendedEvents.value
+    .filter((event) =>
+      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    )
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
 );
 
 const filteredFeedbackEvents = computed(() =>
-  pendingFeedbackEvents.value.filter((event) =>
-    event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
-  ),
+  pendingFeedbackEvents.value
+    .filter((event) =>
+      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    )
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
 );
 
 const filteredPastEvents = computed(() =>
-  pastEvents.value.filter((event) =>
-    event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
-  ),
+  pastEvents.value
+    .filter((event) =>
+      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    )
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
 );
 
 /*
