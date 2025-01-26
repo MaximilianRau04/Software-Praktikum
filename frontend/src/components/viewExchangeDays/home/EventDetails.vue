@@ -57,7 +57,8 @@ function formatDate(timestamp: string): string {
 function checkIfPastEvent() {
   const eventDate = new Date(props.event.date);
   const now = new Date();
-  isPastEvent.value = eventDate < now;
+  const currentTime = now.getTime();
+  isPastEvent.value = eventDate <= now && new Date(`${props.event.date}T${props.event.startTime}`).getTime() <= currentTime;
 }
 
 /**

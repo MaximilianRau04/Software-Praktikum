@@ -11,7 +11,7 @@
     <!-- list of exchange days-->
     <div class="exchangeDay-list">
       <div
-        v-for="(exchangeDay, index) in exchangeDays"
+        v-for="(exchangeDay, index) in sortedExchangeDays"
         :key="index"
         @click="selectExchangeDay(exchangeDay)"
         class="list-item"
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import { computed } from "vue";
 import "@/assets/scrollable.css";
 
 export default {
@@ -53,6 +54,16 @@ export default {
   },
   emits: ["select-exchange-day"],
   setup(props, { emit }) {
+    
+    /**
+     * sort exchangeDays by startDate
+     */
+    const sortedExchangeDays = computed(() => {
+      return props.exchangeDays.slice().sort((a, b) => {
+        return new Date(a.startDate) - new Date(b.startDate);
+      });
+    });
+
     /**
      * select exchange day
      * @param {Object} exchangeDay - selected exchange day
@@ -72,6 +83,7 @@ export default {
     }
 
     return {
+      sortedExchangeDays,
       formatDate,
       selectExchangeDay,
     };
