@@ -157,26 +157,26 @@ const filteredRegisteredEvents = computed(() =>
   registeredEvents.value
     .filter((event) => new Date(event.date) >= new Date(today))
     .filter((event) =>
-      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
-    ),
+      event.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
 );
 
 const filteredRecommendedEvents = computed(() =>
   recommendedEvents.value.filter((event) =>
-    event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
-  ),
+    event.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
 );
 
 const filteredFeedbackEvents = computed(() =>
   pendingFeedbackEvents.value.filter((event) =>
-    event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
-  ),
+    event.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
 );
 
 const filteredPastEvents = computed(() =>
   pastEvents.value.filter((event) =>
-    event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
-  ),
+    event.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
 );
 
 /*
@@ -194,8 +194,8 @@ const fetchTagsForEvent = async (eventId) => {
         `Fehler beim Laden der Tags für Event ${eventId}`,
         "error",
         faXmark,
-        10,
-      ),
+        10
+      )
     );
     return [];
   }
@@ -207,7 +207,7 @@ const fetchTagsForEvent = async (eventId) => {
 const fetchEvents = async () => {
   if (!userId) {
     showToast(
-      new Toast("Error", `Keine Benutzer-ID gefunden`, "error", faXmark, 10),
+      new Toast("Error", `Keine Benutzer-ID gefunden`, "error", faXmark, 10)
     );
     isLoading.value = false;
     return;
@@ -224,7 +224,7 @@ const fetchEvents = async () => {
 
     if (!registeredRes.ok || !recommendedRes.ok || !feedbackRes.ok) {
       showToast(
-        new Toast("Error", `Fehler der Laden der Events`, "error", faXmark, 10),
+        new Toast("Error", `Fehler der Laden der Events`, "error", faXmark, 10)
       );
     }
 
@@ -237,11 +237,11 @@ const fetchEvents = async () => {
     }
 
     pastEvents.value = registeredEvents.value.filter(
-      (event) => new Date(event.date) < new Date(today),
+      (event) => new Date(event.date) < new Date(today)
     );
   } catch (error) {
     showToast(
-      new Toast("Error", `Fehler der Laden der Events`, "error", faXmark, 10),
+      new Toast("Error", `Fehler der Laden der Events`, "error", faXmark, 10)
     );
   } finally {
     isLoading.value = false;
