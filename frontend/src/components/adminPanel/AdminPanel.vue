@@ -2,54 +2,127 @@
   <div class="container">
     <div class="box">
       <div class="action-buttons">
-        <button
-          @click="toggleExchangeDayBox"
-          class="action-button"
-          type="button"
-        >
-          <img
+        <!-- Create Buttons -->
+        <div class="create-buttons-group">
+          <button
+            @click="toggleExchangeDayBox"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            Neuer Exchange Day
+          </button>
+          <button
+            @click="toggleWorkshopBox"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            Neuer Workshop
+          </button>
+          <button
+            @click="toggleResourceBox"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            Neue Resource
+          </button>
+          <button
+            @click="toggleLocationBox"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            Neue Location
+          </button>
+        </div>
+
+        <div class="update-buttons-group">
+          <button
+            @click="toggleUpdateResourceBox"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            Ressource bearbeiten
+          </button>
+          <button
+            @click="SelectEventToUpdate"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            Event bearbeiten
+          </button>
+          <button
+            @click="SelectExchangeDayToUpdate"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            ExchangeDay bearbeiten
+          </button>
+          <button
+            @click="toggleEventListBox"
+            class="action-button"
+            type="button"
+          >
+            <img 
             src="@/images/plus.png"
-            alt="Plus"
-            class="plus-icon"
-            width="35"
-            height="35"
-          />
-          Neuer Exchange Day
-        </button>
-        <button @click="toggleWorkshopBox" class="action-button" type="button">
-          <img
-            src="@/images/plus.png"
-            alt="Plus"
-            class="plus-icon"
-            width="35"
-            height="35"
-          />
-          Neuer Workshop
-        </button>
-        <button @click="toggleResourceBox" class="action-button" type="button">
-          <img
-            src="@/images/plus.png"
-            alt="Plus"
-            class="plus-icon"
-            width="35"
-            height="35"
-          />
-          Neue Resource
-        </button>
-        <button @click="toggleLocationBox" class="action-button" type="button">
-          <img
-            src="@/images/plus.png"
-            alt="Plus"
-            class="plus-icon"
-            width="35"
-            height="35"
-          />
-          Neue Location
-        </button>
+            alt="List" 
+            class="plus-icon" 
+            width="35" 
+            height="35" />
+            Event Feedbacks
+          </button>
+        </div>
       </div>
 
       <div class="form-container">
-        <!-- Exchange Day form -->
+        <!-- exchange day form -->
         <transition name="roll">
           <ExchangeDayForm
             v-model:showExchangeDayBox="showExchangeDayBox"
@@ -59,7 +132,7 @@
           />
         </transition>
 
-        <!-- Workshop form -->
+        <!-- workshop form -->
         <transition name="roll">
           <WorkshopForm
             v-model:showWorkshopBox="showWorkshopBox"
@@ -70,7 +143,7 @@
           />
         </transition>
 
-        <!-- Resource form -->
+        <!-- resource form -->
         <transition name="roll">
           <ResourceForm
             v-model:showResourceBox="showResourceBox"
@@ -78,13 +151,60 @@
           />
         </transition>
 
-        <!-- Location form -->
+        <!-- location form -->
         <transition name="roll">
           <LocationForm
             v-model:showLocationBox="showLocationBox"
             v-if="showLocationBox"
           />
         </transition>
+
+        <!-- update Resource form -->
+        <transition name="roll">
+          <UpdateResource
+            v-model:showUpdateResourceBox="showUpdateResourceBox"
+            v-if="showUpdateResourceBox"
+          />
+        </transition>
+
+        <!-- update Event form -->
+        <transition name="roll">
+          <UpdateEvent
+            v-model:selectEventToUpdate="SelectEventToUpdate"
+            v-if="selectEventToUpdate"
+          />
+        </transition>
+
+        <!-- update Exchange Day form -->
+        <transition name="roll">
+          <UpdateExchangeDay
+            v-model:selectExchangeDayToUpdate="selectExchangeDayToUpdate"
+            v-if="selectExchangeDayToUpdate"
+          />
+        </transition>
+
+        <!-- event feedbacks -->
+        <transition name="roll">
+          <EventList
+            v-model:showEventListBox="showEventListBox"
+            v-if="showEventListBox"
+          />
+        </transition>
+      </div>
+      <div class="csv-actions">
+        <button  class="csv-button" @click="triggerFileUpload" v-if="areAllBoxesHidden()">
+          Ressourcen aus CSV importieren
+        </button>
+        <input
+          ref="fileInput"
+          type="file"
+          accept=".csv"a
+          @change="handleFileUpload"
+          style="display: none"
+        />
+        <button class="csv-button" @click="downloadCsvOfResources"  v-if="areAllBoxesHidden()">
+          Ressourcen als CSV downloaden
+        </button>
       </div>
     </div>
   </div>
@@ -92,39 +212,51 @@
 
 <script setup lang="ts">
 import "@/assets/event-planning.css";
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted } from "vue";
 import config from "@/config";
 import WorkshopForm from "@/components/adminPanel/WorkshopForm.vue";
 import ExchangeDayForm from "@/components/adminPanel/ExchangeDayForm.vue";
 import ResourceForm from "@/components/adminPanel/ResourceForm.vue";
 import LocationForm from "@/components/adminPanel/LocationForm.vue";
+import UpdateResource from "./UpdateResource.vue";
+import UpdateEvent from "./UpdateEvent.vue";
+import UpdateExchangeDay from "./UpdateExchangeDay.vue";
+import EventList from "./EventList.vue";
+import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const showWorkshopBox = ref(false);
 const showExchangeDayBox = ref(false);
 const showResourceBox = ref(false);
 const showLocationBox = ref(false);
-
-const filteredTags = ref([]);
+const showUpdateResourceBox = ref(false);
+const showEventListBox = ref(false);
+const selectEventToUpdate = ref(false);
+const selectExchangeDayToUpdate = ref(false);
 
 const exchangeDays = ref([]);
 const users = ref([]);
 const experienceLevels = ref([]);
-const germanExperienceLevels = {
-  ALL_LEVELS: "Alle Ebenen",
-  JUNIOR: "Junior",
-  SENIOR: "Senior",
-  EXPERT: "Experte",
-};
-
 const allTags = ref([]);
-const selectedTags = ref([]);
+const filteredTags = ref([]);
+const fileInput = ref<HTMLInputElement | null>(null);
+const allForms = {
+  showExchangeDayBox,
+  showWorkshopBox,
+  showResourceBox,
+  showLocationBox,
+  showUpdateResourceBox,
+  selectEventToUpdate,
+  selectExchangeDayToUpdate,
+  showEventListBox,
+};
 
 onMounted(async () => {
   await fetchData();
 });
 
 /**
- * Fetches exchange days, users and experience levels from the API.
+ * Fetches all exchange days, users and experience levels from the backend
  */
 const fetchData = async () => {
   try {
@@ -135,13 +267,17 @@ const fetchData = async () => {
         fetch(`${config.apiBaseUrl}/events/experience-levels`),
       ]);
     if (!exchangeDaysResponse.ok) {
-      throw new Error("Fehler beim Laden der Exchange Days");
+      showToast(
+        new Toast("Error", "Fehler beim Laden der Exchange Days", "error")
+      );
     }
     if (!usersResponse.ok) {
-      throw new Error("Fehler beim Laden der Benutzer");
+      showToast(new Toast("Error", "Fehler beim Laden der Benutzer", "error"));
     }
     if (!levelsResponse.ok) {
-      throw new Error("Fehler beim Laden der Erfahrungslevel.");
+      showToast(
+        new Toast("Error", "Fehler beim Laden der Erfahrungslevel", "error")
+      );
     }
     fetchTags();
 
@@ -149,12 +285,12 @@ const fetchData = async () => {
     users.value = await usersResponse.json();
     experienceLevels.value = await levelsResponse.json();
   } catch (error) {
-    console.error(error.message, error);
+    showToast(new Toast("Error", "Fehler beim Laden der Daten", "error"));
   }
 };
 
 /**
- * Fetches all tags from the API.
+ * Fetches all tags from the backend
  */
 const fetchTags = async () => {
   try {
@@ -164,49 +300,175 @@ const fetchTags = async () => {
       allTags.value = tags.map((tag) => tag.name);
       filteredTags.value = [...allTags.value];
     } else {
-      console.error("Fehler beim Abrufen der Tags.");
+      showToast(new Toast("Error", "Fehler beim Abrufen der Tags", "error"));
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Tags:", error);
+    showToast(new Toast("Error", "Fehler beim Abrufen der Tags", "error"));
+  }
+};
+
+const toggleWorkshopBox = () => {
+  resetForms(showWorkshopBox);
+  showWorkshopBox.value = !showWorkshopBox.value;
+};
+
+const toggleExchangeDayBox = () => {
+  resetForms(showExchangeDayBox);
+  showExchangeDayBox.value = !showExchangeDayBox.value;
+};
+
+const toggleResourceBox = () => {
+  resetForms(showResourceBox);
+  showResourceBox.value = !showResourceBox.value;
+};
+
+const toggleLocationBox = () => {
+  resetForms(showLocationBox);
+  showLocationBox.value = !showLocationBox.value;
+};
+
+const toggleUpdateResourceBox = () => {
+  resetForms(showUpdateResourceBox);
+  showUpdateResourceBox.value = !showUpdateResourceBox.value;
+};
+
+const toggleEventListBox = () => {
+  resetForms(showEventListBox);
+  showEventListBox.value = !showEventListBox.value;
+};
+
+const SelectEventToUpdate = () => {
+  resetForms(selectEventToUpdate);
+  selectEventToUpdate.value = !selectEventToUpdate.value;
+};
+
+const SelectExchangeDayToUpdate = () => {
+  resetForms(selectEventToUpdate);
+  selectExchangeDayToUpdate.value = !selectExchangeDayToUpdate.value;
+};
+
+const areAllBoxesHidden = () => {
+  return Object.values(allForms).every((box) => !box.value);
+};
+
+
+/**
+ * Resets all forms
+ */
+const resetForms = (currentForm) => {
+  for (const form in allForms) {
+    if (allForms[form] === currentForm) continue;
+    allForms[form].value = false;
   }
 };
 
 /**
- * Toggles the visibility of the workshop form.
+ * download CSV file of todos
  */
-const toggleWorkshopBox = () => {
-  showWorkshopBox.value = !showWorkshopBox.value;
-  if (showWorkshopBox.value) showExchangeDayBox.value = false;
-  showResourceBox.value = false;
-  showLocationBox.value = false;
+async function downloadCsvOfResources() {
+  try {
+    const response = await fetch(
+      `${config.apiBaseUrl}/resources/csv-downloads`
+    );
+    if (!response.ok) throw new Error("Download fehlgeschlagen!");
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "resources.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    showToast(
+      new Toast("Error", "CSV Download fehlgeschlagen!", "error", faXmark, 10)
+    );
+  }
+}
+
+/**
+ * Trigger file input click
+ */
+const triggerFileUpload = () => {
+  fileInput.value?.click();
 };
 
 /**
- * Toggles the visibility of the exchange day form.
+ * Handles the file upload event and sends the CSV to the backend
  */
-const toggleExchangeDayBox = () => {
-  showExchangeDayBox.value = !showExchangeDayBox.value;
-  if (showExchangeDayBox.value) showWorkshopBox.value = false;
-  showResourceBox.value = false;
-};
+const handleFileUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (!target.files || target.files.length === 0) {
+    showToast(new Toast("Error", "Keine Datei ausgewählt!", "error"));
+    return;
+  }
 
-/**
- * Toggles the visibility of the resource form.
- */
-const toggleResourceBox = () => {
-  showResourceBox.value = !showResourceBox.value;
-  if (showResourceBox.value) showWorkshopBox.value = false;
-  showExchangeDayBox.value = false;
-  showLocationBox.value = false;
-};
+  const file = target.files[0];
+  const formData = new FormData();
+  formData.append("file", file);
 
-/**
- * Toggles the visibility of the resource form.
- */
-const toggleLocationBox = () => {
-  showLocationBox.value = !showLocationBox.value;
-  if (showLocationBox.value) showWorkshopBox.value = false;
-  showExchangeDayBox.value = false;
-  showResourceBox.value = false;
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/resources/csv-import`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const responseText = await response.text();
+
+    if (!response.ok) {
+      throw new Error(responseText || "Import fehlgeschlagen!");
+    }
+
+    showToast(new Toast("Success", "CSV erfolgreich importiert!", "success"));
+    await fetchData();
+  } catch (error) {
+    showToast(new Toast("Error", "Import fehlgeschlagen", "error"));
+  } finally {
+    target.value = "";
+  }
 };
 </script>
+
+<style scoped>
+.action-button {
+  margin: 5px;
+}
+
+.create-buttons-group {
+  background-color: #e0e0e0;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 0px;
+}
+
+.update-buttons-group {
+  background-color: #e0e0e0;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.csv-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 20px;
+}
+
+.csv-button {
+  background-color: #003e81;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.csv-button:hover {
+  background-color: #013368;
+}
+</style>

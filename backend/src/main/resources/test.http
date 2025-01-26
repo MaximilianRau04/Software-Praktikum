@@ -4,14 +4,15 @@ Content-Type: application/json
 {
   "name": "Fresh Try ResponseEntities",
   "description": "Bla Bla",
-  "date": "2025-12-31",
+  "date": "2025-12-30",
   "recommendedExperience": "ALL_LEVELS",
   "room": "0.108",
-  "exchangeDayId": 1,
+  "exchangeDayId": 6,
   "organizerId": 1,
   "startTime": "13:00:00",
   "endTime": "14:00:00"
 }
+
 
 ###
 POST http://localhost:8080/api/users
@@ -28,9 +29,10 @@ POST http://localhost:8080/api/exchange-days
 Content-Type: application/json
 
 {
-  "date": "2025-12-30",
+  "startDate": "2025-12-30",
+  "endDate": "2025-12-31",
   "name": "Fresh",
-  "location": "Frankfurt",
+  "locationId": 1,
   "description": "A day dedicated to learning Spring Boot with multiple sessions."
 }
 ###
@@ -74,8 +76,8 @@ Content-Type: application/json
   "recommendationComment": "I would definitely recommend this workshop to anyone that wants to work in web deployment.",
   "similarEventParticipationScore": 5,
   "anonymousFeedback": true,
-  "eventId": 40,
-  "userId": 19
+  "eventId": 1,
+  "userId": 1
 }
 
 ###
@@ -155,11 +157,11 @@ POST http://localhost:8080/api/resources
 Content-Type: application/json
 
 {
-  "name": "38.01",
-  "type": "ROOM",
-  "description": "Raum",
+  "name": "Beamer",
+  "type": "EQUIPMENT",
+  "description": "Stuhl",
   "capacity": 200,
-  "location": "Stuttgart",
+  "locationId": 1,
   "availability": true
 }
 ###
@@ -168,25 +170,24 @@ POST http://localhost:8080/api/assignments
 Content-Type: application/json
 
 {
-"resourceId": 1,
+ "resourceId": 3,
   "eventId": 1,
-"startTime": "12:00:00",
-  "endTime": "13:00:00"
+  "quantity": 1
 }
 ###
 
-GET http://localhost:8080/api/forumthreads
+GET http://localhost:8080/api/locations
 
 ###
 POST http://localhost:8080/api/locations
 Content-Type: application/json
 
 {
-  "city": "Stuttgart",
+  "city": "München",
     "country": "Germany",
     "postalCode": "70173",
   "houseNumber": "3",
-  "street": "Königstraße"
+  "street": "Gustavstraße"
 
 }
 ###
@@ -194,11 +195,29 @@ POST http://localhost:8080/api/exchange-days
 Content-Type: application/json
 
 {
-  "startDate": "2025-12-30",
-  "endDate": "2025-12-31",
+  "startDate": "2025-10-29",
+  "endDate": "2025-10-30",
   "name": "Fresh",
   "locationId": 1,
   "description": "A day dedicated to learning Spring Boot"
 }
 ###
-GET http://localhost:8080/api/exchange-days
+GET http://localhost:8080/api/events/1/summary
+###
+GET http://localhost:8080/api/events/1/resources
+###
+GET http://localhost:8080/api/resources/csv-downloads
+###
+
+POST http://localhost:8080/api/resources/csv-import
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="resources.csv"
+Content-Type: text/csv
+
+name,type,description,capacity,country,postalCode,city,street,houseNumber
+Resource1,EQUIPMENT,Some description,100,Deutschland,12345,Berlin,Mainstreet,1
+Resource2,ROOM,Another description,150,Deutschland,67890,Hamburg,Sideway,2
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

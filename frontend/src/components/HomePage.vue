@@ -34,6 +34,7 @@ import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
 import Forum from "./forum/Forum.vue";
 import Cookies from "js-cookie";
 import config from "../config";
+import { showToast } from "@/types/toasts";
 
 export default {
   components: {
@@ -89,10 +90,13 @@ export default {
           this.notifications = unreadNotifications;
         }
 
-        console.log("Initial unread notifications:", this.notifications);
         this.fetchNotifications();
       } catch (err) {
-        console.error("Notifications could not be fetched:", err);
+        showToast(
+          "Error",
+          "Benachrichtigungen konnten nicht geladen werden",
+          "error",
+        );
         this.notifications = [];
       }
     },
@@ -110,11 +114,10 @@ export default {
       });
 
       eventSource.onerror = (event) => {
-        console.error("Error with SSE connection", event);
+        showToast("Error", "Fehler mit der SSE Verbindung", "error");
       };
     },
     handleMarkAsRead(notificationId) {
-      console.log("pressing mark as read");
       this.notifications = this.notifications.filter(
         (notification) => notification.id !== notificationId,
       );

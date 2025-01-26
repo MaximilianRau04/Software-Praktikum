@@ -17,11 +17,15 @@
         {{ formatDate(selectedExchangeDay.startDate) }} bis
         {{ formatDate(selectedExchangeDay.endDate) }}
       </p>
-      <p>Id: {{ selectedExchangeDay.id }}</p>
+      <p><strong>Id:</strong> {{ selectedExchangeDay.id }}</p>
 
-      <button @click="navigateToUpdateExchangeDay(selectedExchangeDay.id)" class="edit-button">
-  Bearbeiten
-</button>
+      <button
+        v-if="getCookie('role') === 'ADMIN'"
+        @click="navigateToManageExchangeDay(selectedExchangeDay.id)"
+        class="edit-button"
+      >
+        Verwalten
+      </button>
     </div>
     <!-- Displaying associated events -->
     <div class="scrollableEvents">
@@ -40,10 +44,13 @@ import { defineProps, onMounted, ref, watch } from "vue";
 import EventDetails from "@/components/viewExchangeDays/home/EventDetails.vue";
 import config from "@/config";
 import "@/assets/exchange-day-details.css";
-import { ExchangeDay, exchangeDays } from "@/types/ExchangeDay";
+import { ExchangeDay } from "@/types/ExchangeDay";
+
 import { Event } from "@/types/Event";
-import UpdateExchangeDay from "@/components/adminPanel/UpdateExchangeDay.vue";
 import { useRouter } from "vue-router";
+import Cookies from "js-cookie";
+import { showToast, Toast } from "@/types/toasts";
+import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
 
 const router = useRouter();
 const selectedExchangeDay = ref<ExchangeDay | null>(null);
@@ -53,6 +60,7 @@ const props = defineProps<{
 }>();
 
 const events = ref<Event[]>([]);
+const isPastExchangeDay = ref(false);
 
 /**
  * Formats a timestamp into a human-readable date string.
@@ -65,6 +73,21 @@ function formatDate(timestamp: number): string {
   return date.toLocaleDateString("de-DE");
 }
 
+function getCookie(name) {
+  return Cookies.get(name);
+}
+
+/**
+ * Checks if the exchange day is in the past.
+ */
+function checkIfPastExchangeDay() {
+  if (selectedExchangeDay.value) {
+    const now = new Date();
+    const endDate = new Date(selectedExchangeDay.value.endDate);
+    isPastExchangeDay.value = endDate < now;
+  }
+}
+
 /**
  * Fetches the details of a selected exchange day from the API.
  *
@@ -73,10 +96,18 @@ function formatDate(timestamp: number): string {
 async function fetchExchangeDayDetails(id: number) {
   try {
     const response = await fetch(`${config.apiBaseUrl}/exchange-days/${id}`);
-    if (!response.ok) throw new Error("Failed to fetch exchange day details.");
+    if (!response.ok)
+      showToast(
+        new Toast(
+          "Error",
+          `Fehler Fetchen der exchange days`,
+          "error",
+          faXmark,
+          10,
+        ),
+      );
 
     const data = await response.json();
-    console.log("ExchangeDay data loaded:", data);
 
     selectedExchangeDay.value = {
       id: data.id,
@@ -87,9 +118,18 @@ async function fetchExchangeDayDetails(id: number) {
       location: data.location,
     };
 
+    checkIfPastExchangeDay();
     await fetchEventDetails();
   } catch (error) {
-    console.error("Error fetching exchange day details:", error);
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler Fetchen der exchange days: ${error.message}`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
   }
 }
 
@@ -109,12 +149,20 @@ async function fetchEventDetails() {
     const responseData: Event[] = await response.json();
     events.value = responseData;
   } catch (error) {
-    console.error("Error fetching event:", error);
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler beim Abrufen der Events.`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
   }
 }
 
-const navigateToUpdateExchangeDay = (exchangeDayId) => {
-  router.push({ name: 'updateExchangeDay', params: { exchangeDayId } });
+const navigateToManageExchangeDay = (exchangeDayId) => {
+  router.push({ name: "manageExchangeDay", params: { exchangeDayId } });
 };
 
 /**

@@ -46,11 +46,11 @@ public class ExchangeDayRequestDTO {
     public ExchangeDayRequestDTO() {
     }
 
-    public @Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getStartDate() {
+    public @FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setDate(@Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate startDate) {
+    public void setDate(@FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate startDate) {
         this.startDate = startDate;
     }
 
@@ -78,11 +78,11 @@ public class ExchangeDayRequestDTO {
         this.description = description;
     }
 
-    public @Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getEndDate() {
+    public @FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(@Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate endDate) {
+    public void setEndDate(@FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate endDate) {
         this.endDate = endDate;
     }
 

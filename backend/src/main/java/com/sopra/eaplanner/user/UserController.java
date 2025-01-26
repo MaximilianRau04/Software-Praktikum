@@ -85,6 +85,11 @@ public class UserController {
         return userService.getParticipations(id);
     }
 
+    @GetMapping("/{id}/pendingFeedbackEvents")
+    public Iterable<EventResponseDTO> getPendingFeedbacks(@PathVariable Long id) {
+        return userService.getPendingFeedbackEvents(id);
+    }
+
     @PostMapping("")
     public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO requestBody) {
         UserResponseDTO savedDTO = userService.createUser(requestBody);

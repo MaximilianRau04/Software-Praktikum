@@ -7,42 +7,83 @@
 
     <!-- Navigationsleiste -->
     <nav class="tabs">
-      <a href="#" class="tab" :class="{ active: view === 'details' }" @click.prevent="showDetails">
+      <a
+        href="#"
+        class="tab"
+        :class="{ active: view === 'details' }"
+        @click.prevent="showDetails"
+      >
         Details anzeigen
       </a>
-      <a href="#" class="tab" :class="{ active: view === 'forum' }" @click.prevent="showForum">
+      <a
+        v-if="isAlreadyRegistered || isAdmin"
+        href="#"
+        class="tab"
+        :class="{ active: view === 'forum' }"
+        @click.prevent="showForum"
+      >
         Diskussionsforum
       </a>
-      <a href="#" class="tab" :class="{ active: view === 'users' }" @click.prevent="showUsers">
+      <a
+        href="#"
+        class="tab"
+        :class="{ active: view === 'users' }"
+        @click.prevent="showUsers"
+      >
         Angemeldete User
       </a>
-      <a v-if="isOrganizer" href="#" class="tab" :class="{ active: view === 'feedback' }" @click.prevent="openFeedback">
+      <a
+        v-if="isAdmin"
+        href="#"
+        class="tab"
+        :class="{ active: view === 'feedback' }"
+        @click.prevent="openFeedback"
+      >
         Feedback
       </a>
-      <a v-if="isOrganizer" href="#" class="tab" :class="{ active: view === 'qr' }" @click.prevent="openQRCode">
+      <a
+        v-if="isAdmin"
+        href="#"
+        class="tab"
+        :class="{ active: view === 'qr' }"
+        @click.prevent="openQRCode"
+      >
         QR-Code
       </a>
-      <a v-if="userRole === 'ADMIN'" href="#" class="tab" :class="{ active: view === 'edit' }"
-        @click.prevent="goToUpdate">
-        Bearbeiten
-      </a>
-      <a href="#" class="tab" :class="{ active: view === 'unregister' }" @click.prevent="unregisterFromEvent">
+      <a
+        v-if="isAlreadyRegistered"
+        href="#"
+        class="tab registration"
+        :class="{ active: view === 'unregister' }"
+        @click.prevent="unregisterFromEvent"
+      >
         Abmelden
+      </a>
+      <a 
+        v-else
+        href="#"
+        class="tab registation"
+        :class="{ active: view === 'register' }"
+        @click.prevent="registerForEvent"
+      > Registrieren
       </a>
     </nav>
 
     <!-- Details des Events -->
     <div class="event-details-card" v-if="view === 'details'">
       <div class="event-header">
-        <h1 class="event-title">{{ event.name }}</h1>
         <p class="event-date">
-          <i class="icon-calendar"></i><strong> {{ formatDate(event.date) }}</strong>
+          <i class="icon-calendar"></i
+          ><strong> {{ formatDate(event.date) }}</strong>
         </p>
       </div>
       <!-- Veranstalter oben anzeigen -->
       <div class="organizer-info" @click="goToUser(organizer.username)">
         Veranstalter:
-        <div class="organizer-avatar" :style="{ backgroundColor: generateColor(organizer.username) }">
+        <div
+          class="organizer-avatar"
+          :style="{ backgroundColor: generateColor(organizer.username) }"
+        >
           {{ getInitials(organizer.firstname, organizer.lastname) }}
         </div>
         <div class="organizer-details">
@@ -73,20 +114,40 @@
             <i class="icon-location"></i>
             <span><strong>Raum:</strong> {{ event.room }}</span>
           </div>
+          <div class="tag-chips">
+                <span
+                  v-for="(tag, index) in eventTags.slice(0, 5)"
+                  :key="tag.id"
+                  class="chip"
+                >
+                  {{ tag.name }}
+                </span>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Forum anzeigen -->
     <div v-if="view === 'forum'">
-      <Forum :threads="event.forumThreads" :focused-thread-id.sync="focusedThreadId" />
+      <Forum
+        :threads="event.forumThreads"
+        :focused-thread-id.sync="focusedThreadId"
+      />
     </div>
 
     <!-- Liste der angemeldeten Benutzer -->
     <div v-if="view === 'users'" class="user-list">
       <div class="user-items">
-        <div v-for="user in sortedUsers" :key="user.username" class="user-item" @click="goToUser(user.username)">
-          <div class="user-avatar" :style="{ backgroundColor: generateColor(user.username) }">
+        <div
+          v-for="user in sortedUsers"
+          :key="user.username"
+          class="user-item"
+          @click="goToUser(user.username)"
+        >
+          <div
+            class="user-avatar"
+            :style="{ backgroundColor: generateColor(user.username) }"
+          >
             {{ getInitials(user.firstname, user.lastname) }}
           </div>
           <div class="user-details">
@@ -103,22 +164,36 @@
     </div>
 
     <!-- QR-Code Modal -->
-    <div v-if="showQRCodeModal" class="qr-modal-overlay">
-      <div class="qr-modal">
-        <h2>QR-Code für Event Nr.{{ eventId }}</h2>
-        <img :src="qrCodeUrl" alt="QR Code" />
-        <div>
-          <button class="download-button" @click="copyToClipboard" :disabled="!qrCodeLink">QR-Link kopieren</button>
-          <p v-if="copySuccess" class="qr-success-message">QR-Link wurde in die Zwischenablage kopiert!</p>
-        </div>
-        <a :href="qrCodeUrl" :download="'event-' + eventId + '-qr-code.png'">
-          <button class="download-button">QR-Code herunterladen</button>
-        </a>
-        <button @click="closeQRCodeModal" class="close-modal-button">
-          Schließen
-        </button>
-      </div>
+<div v-if="showQRCodeModal" class="qr-modal-overlay">
+  <div class="qr-modal">
+    <button
+      @click="closeQRCodeModal"
+      class="close-modal-icon"
+      aria-label="Close QR Code Modal"
+    >
+      ✕
+    </button>
+
+    <h4>QR-Code für die Anwesenheit</h4>
+    <img :src="qrCodeUrl" alt="QR Code" />
+    <div>
+      <button
+        class="download-button"
+        @click="copyToClipboard"
+        :disabled="!qrCodeLink"
+      >
+        QR-Link kopieren
+      </button>
+      <p v-if="copySuccess" class="qr-success-message">
+        QR-Link wurde in die Zwischenablage kopiert!
+      </p>
     </div>
+    <a :href="qrCodeUrl" :download="'event-' + eventId + '-qr-code.png'">
+      <button class="download-button">QR-Code herunterladen</button>
+    </a>
+  </div>
+</div>
+
   </div>
 </template>
 
@@ -130,6 +205,8 @@ import Cookies from "js-cookie";
 import { Event } from "@/types/Event";
 import Forum from "@/components/forum/Forum.vue";
 import "@/assets/event-page.css";
+import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const event = ref<Event>({
   id: 0,
@@ -139,7 +216,7 @@ const event = ref<Event>({
   room: "",
   description: "",
   date: "",
-  forumThreads: [],
+  forumThreads: []
 });
 
 const organizer = ref({ username: "", id: 0, firstname: "", lastname: "" });
@@ -152,18 +229,16 @@ const route = useRoute();
 const router = useRouter();
 const eventId = Number(route.params?.eventId);
 const showQRCodeModal = ref(false);
+const eventTags = ref([]);
 const qrCodeUrl = ref("");
 const qrCodeLink = ref("");
 const copySuccess = ref(false);
 
 const focusedThreadId = ref<number | null>(null);
+const isAlreadyRegistered = ref(false);
 
 const goToUser = (username: string) => {
   router.push({ name: "Profile", params: { username } });
-};
-
-const goToUpdate = () => {
-  router.push({ name: "updateEvent", params: { eventId } });
 };
 
 const showForum = () => {
@@ -171,8 +246,8 @@ const showForum = () => {
   focusedThreadId.value = null;
 };
 
-const isOrganizer = computed(() => {
-  return organizer.value.id === Number(userId);
+const isAdmin = computed(() => {
+  return userRole === "ADMIN";
 });
 
 /**
@@ -192,7 +267,15 @@ const fetchEventDetails = async () => {
 
     await fetchRegisteredUsers();
   } catch (error) {
-    console.error("Fehler beim Laden der Eventdaten:", error);
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler Fetchen der exchange days: ${error.message}`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
   }
 };
 
@@ -211,7 +294,37 @@ const fetchRegisteredUsers = async () => {
       a.username.localeCompare(b.username),
     );
   } catch (error) {
-    console.error("Fehler beim Laden der Benutzer:", error);
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler beim Laden der Benutzer.`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
+  }
+};
+
+/*
+ * Fetches the tags for a given event
+ */
+ const fetchTagsForEvent = async () => {
+  try {
+    const res = await fetch(`${config.apiBaseUrl}/events/${eventId}/tags`);
+    if (!res.ok) throw new Error("Failed to fetch tags");
+    eventTags.value = await res.json();
+  } catch (error) {
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler beim Laden der Tags für Event ${eventId}`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
+    eventTags.value = [];
   }
 };
 
@@ -249,25 +362,36 @@ const openQRCode = async () => {
   try {
     qrCodeUrl.value = `${config.apiBaseUrl}/events/${eventId}/qr-code`;
 
-    // Fetch attendance token from backend
-    const response = await fetch(`${config.apiBaseUrl}/events/${eventId}/attendance-token`);
+    const response = await fetch(
+      `${config.apiBaseUrl}/events/${eventId}/attendance-token`,
+    );
     if (!response.ok) {
-      throw new Error(`Failed to fetch attendance token: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch attendance token: ${response.status} ${response.statusText}`,
+      );
     }
 
-    // Parse the response JSON and extract the token
     const responseData = await response.json();
-    const attendanceToken = responseData.attendanceToken; // Access the token field
+    const attendanceToken = responseData.attendanceToken;
 
-    // Construct the QR code link with the token
     qrCodeLink.value = `http://193.196.54.172:8000/events/${eventId}/attendance?token=${attendanceToken}`;
     showQRCodeModal.value = true;
   } catch (error) {
-    console.error('Error opening QR code modal:', error);
-    // Optionally, display a user-friendly error message
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler beim Öffnen des QR-Codes.`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
   }
 };
 
+/**
+ * Copies the QR code link to the clipboard.
+ */
 const copyToClipboard = async () => {
   if (qrCodeLink.value) {
     try {
@@ -277,14 +401,13 @@ const copyToClipboard = async () => {
         copySuccess.value = false;
       }, 2000);
     } catch (error) {
-      console.error('Failed to copy: ', error);
+      showToast(
+        new Toast("Error", `Fehler beim Kopieren`, "error", faXmark, 10),
+      );
     }
   }
-}
+};
 
-/**
- * Closes the QR code modal.
- */
 const closeQRCodeModal = () => {
   showQRCodeModal.value = false;
 };
@@ -309,13 +432,131 @@ const unregisterFromEvent = async () => {
       },
     );
     if (!response.ok) {
-      alert("Abmeldung fehlgeschlagen. Bitte erneut versuchen.");
+      showToast(
+        new Toast(
+          "Error",
+          `Anmeldung fehlgeschlagen. Bitte versuchen sie es erneut}`,
+          "error",
+          faXmark,
+          10,
+        ),
+      );
       return;
     }
-    alert(`Sie wurden erfolgreich von ${event.value.name} abgemeldet.`);
+    showToast(
+      new Toast(
+        "Success",
+        `Sie wurden erfolgreich von ${event.value.name} abgemeldet!`,
+        "success",
+        faCheck,
+        5,
+      ),
+    );
     router.push("/home");
   } catch (error) {
-    console.error("Fehler bei der Abmeldung vom Event:", error);
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler bei der Abmeldung vom Event`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
+  }
+};
+
+/**
+ * Checks if the user is already registered for the event.
+ */
+ const checkRegistrationStatus = async () => {
+  if (!userId) {
+    return;
+  }
+  try {
+    const response = await fetch(
+      `${config.apiBaseUrl}/users/${userId}/registeredEvents`,
+    );
+    if (!response.ok) throw new Error("Failed to fetch user data.");
+
+    const registeredEvents = await response.json();
+
+    isAlreadyRegistered.value = registeredEvents.some(
+      (event: { id: number }) => event.id === eventId,
+    );
+  } catch (error) {
+    showToast(
+      new Toast("Error", `Fehler bei der Registreirung`, "error", faXmark, 10),
+    );
+    isAlreadyRegistered.value = false;
+  }
+};
+
+/**
+ * Registers the user for the event.
+ * @param eventId The ID of the event to register for.
+ */
+ const registerForEvent = async () => {
+  try {
+    if (!userId) {
+      showToast(
+        new Toast(
+          "Warning",
+          `Bitte melden sie sich zuvor an.`,
+          "warning",
+          faXmark,
+          10,
+        ),
+      );
+      return;
+    }
+
+    const response = await fetch(
+      `${config.apiBaseUrl}/users/${userId}/eventRegistration?eventId=${eventId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (response.status === 404) {
+      showToast(
+        new Toast(
+          "Error",
+          `Registrierung fehlgeschlagen. Bitte versuchen sie es erneut`,
+          "error",
+          faXmark,
+          10,
+        ),
+      );
+    } else if (response.status === 409) {
+      showToast(
+        new Toast("Error", `Sie sin bereits registriert`, "error", faXmark, 10),
+      );
+    } else if (response.ok) {
+      showToast(
+        new Toast(
+          "Success",
+          `Sie wurden erfolgreich zu ${event.value.name} angemeldet!`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
+      isAlreadyRegistered.value = true;
+    }
+  } catch (error) {
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler Fetchen der exchange days: ${error.message}`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
   }
 };
 
@@ -326,6 +567,9 @@ const showUsers = () => {
   view.value = "users";
 };
 
+/**
+ * Handles the thread navigation.
+ */
 const handleThreadNavigation = () => {
   const threadId = Number(route.query.threadId);
   if (threadId) {
@@ -339,7 +583,8 @@ const setFocusedThread = (threadId) => {
 };
 
 onMounted(() => {
+  checkRegistrationStatus();
   fetchEventDetails();
-  handleThreadNavigation();
+  fetchTagsForEvent();
 });
 </script>

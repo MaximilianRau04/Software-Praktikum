@@ -44,6 +44,7 @@
 import { ref, onMounted, watch } from "vue";
 import { defineEmits } from "vue";
 import config from "@/config";
+import { showToast, Toast } from "@/types/toasts";
 
 const exchangeName = ref("");
 const startDate = ref("");
@@ -76,15 +77,19 @@ const createExchangeDay = async () => {
 
     if (response.ok) {
       const data = await response.json();
-      console.log("Exchange Day erstellt:", data);
-      alert(`Exchange Day erstellt: ${data.name}`);
+      showToast(
+        new Toast("Success", "Exchange Day erfolgreich erstellt", "success"),
+      );
       resetExchangeDayForm();
     } else {
-      alert("Fehler beim Erstellen des Exchange Days.");
+      showToast(
+        new Toast("Error", "Fehler beim Erstellen des Exchange Days", "error"),
+      );
     }
   } catch (error) {
-    console.error("Fehler beim Erstellen des Exchange Days:", error);
-    alert("Fehler beim Erstellen des Exchange Days.");
+    showToast(
+      new Toast("Error", "Fehler beim Erstellen des Exchange Days", "error"),
+    );
   }
 };
 
@@ -135,12 +140,9 @@ onMounted(async () => {
     if (response.ok) {
       const data = await response.json();
       locations.value = data;
-    } else {
-      alert("Fehler beim Abrufen der Locations.");
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Locations:", error);
-    alert("Fehler beim Abrufen der Locations.");
+    showToast(new Toast("Fehler beim Abrufen der Locations", "error"));
   }
 });
 </script>

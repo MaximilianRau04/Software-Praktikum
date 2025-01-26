@@ -9,9 +9,9 @@ import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.forumthread.ForumThread;
 import com.sopra.eaplanner.notification.reminder.ReminderType;
 import com.sopra.eaplanner.resource.ResourceItem;
+import com.sopra.eaplanner.resource.resourceAssignment.ResourceAssignment;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -106,6 +106,9 @@ public class Event {
     @JsonBackReference
     private List<ResourceItem> resources = new ArrayList<>();
 
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ResourceAssignment> resourceAssignments = new ArrayList<>();
+
     private ExperienceLevel recommendedExperience;
 
     @ManyToMany
@@ -167,11 +170,11 @@ public class Event {
         this.name = name;
     }
 
-    public @Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getDate() {
+    public @FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getDate() {
         return date;
     }
 
-    public void setDate(@Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate date) {
+    public void setDate(@FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate date) {
         this.date = date;
     }
 
@@ -330,5 +333,17 @@ public class Event {
 
     public void setForumThreads(Set<ForumThread> forumThreads) {
         this.forumThreads = forumThreads;
+    }
+
+    public void setResources(List<ResourceItem> resources) {
+        this.resources = resources;
+    }
+
+    public List<ResourceAssignment> getResourceAssignments() {
+        return resourceAssignments;
+    }
+
+    public void setResourceAssignments(List<ResourceAssignment> resourceAssignments) {
+        this.resourceAssignments = resourceAssignments;
     }
 }

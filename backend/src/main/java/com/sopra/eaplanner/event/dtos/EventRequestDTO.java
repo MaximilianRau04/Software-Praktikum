@@ -1,7 +1,7 @@
 package com.sopra.eaplanner.event.dtos;
 
 import com.sopra.eaplanner.event.ExperienceLevel;
-import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -42,7 +42,7 @@ public class EventRequestDTO {
     private LocalTime endTime;
 
     @DateTimeFormat(pattern = "dd.MM.yyyy")
-    @Future(message = "Date must be in the future")
+    @FutureOrPresent(message = "Date must be in the future")
     @NotNull(message = "Date cannot be null")
     private LocalDate date;
 
@@ -110,11 +110,11 @@ public class EventRequestDTO {
         this.startTime = startTime;
     }
 
-    public @Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getDate() {
+    public @FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getDate() {
         return date;
     }
 
-    public void setDate(@Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate date) {
+    public void setDate(@FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate date) {
         this.date = date;
     }
 

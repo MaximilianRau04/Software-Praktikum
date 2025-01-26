@@ -188,6 +188,8 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
+import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default {
   props: {
@@ -230,6 +232,10 @@ export default {
     };
   },
   methods: {
+    /**
+     * Deletes a post
+     * @param {number} postId
+     */
     async deletePost(postId) {
       if (!confirm("Sind Sie sicher, dass Sie diesen Post löschen möchten?")) {
         return;
@@ -238,15 +244,34 @@ export default {
         await axios.delete(`${config.apiBaseUrl}/forumposts/${postId}`);
         this.fetchThreadDetail();
       } catch (error) {
-        console.error("Fehler beim Löschen des Posts:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Löschen des Posts`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
-      alert("Post wurde gelöscht");
+      showToast(
+        new Toast(
+          "Success",
+          `Post wurde erflogreich gelöscht`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
     },
 
     editPost(post) {
       this.editingPost = { ...post };
     },
 
+    /**
+     * Saves the edited post
+     */
     async savePostEdits() {
       try {
         await axios.put(
@@ -260,11 +285,25 @@ export default {
         this.fetchThreadDetail();
         this.editingPost = null;
       } catch (error) {
-        console.error("Fehler beim Bearbeiten des Posts:", error);
-        alert(
-          `Fehler beim Bearbeiten: ${error.response?.data?.message || "Unbekannter Fehler"}`,
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Bearbeiten des Posts`,
+            "error",
+            faXmark,
+            10,
+          ),
         );
       }
+      showToast(
+        new Toast(
+          "Success",
+          `Post wurde erfolgreich bearbeitet`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
     },
 
     cancelEdit() {
@@ -287,6 +326,10 @@ export default {
       this.showModal = true;
     },
 
+    /**
+     * Deletes a thread
+     * @param {number} threadId
+     */
     async deleteThread(threadId) {
       if (
         !confirm("Sind Sie sicher, dass Sie diesen Thread löschen möchten?")
@@ -297,10 +340,30 @@ export default {
         await axios.delete(`${config.apiBaseUrl}/forumthreads/${threadId}`);
         this.fetchThreads();
       } catch (error) {
-        console.error("Fehler beim Löschen des Threads:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Löschen des Threads`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
+      showToast(
+        new Toast(
+          "Success",
+          `Thread wurde erfolgreich gelöscht`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
     },
 
+    /**
+     * Updates a thread
+     */
     async updateThread() {
       const eventId = this.$route.params.eventId;
       try {
@@ -315,10 +378,30 @@ export default {
         this.fetchThreads();
         this.showModal = false;
       } catch (error) {
-        console.error("Fehler beim Aktualisieren des Threads:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Bearbieten des Threads`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
+      showToast(
+        new Toast(
+          "Success",
+          `Thread wurde erfolgreich bearbeitet`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
     },
 
+    /**
+     * Fetches all threads
+     */
     async fetchThreads() {
       const eventId = this.$route.params.eventId;
       try {
@@ -327,10 +410,21 @@ export default {
         );
         this.threads = response.data;
       } catch (error) {
-        console.error("Fehler beim Abrufen der Threads:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim laden der Threads`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     },
 
+    /**
+     * Creates a new thread
+     */
     async createThread() {
       const eventId = this.$route.params.eventId;
       try {
@@ -346,15 +440,39 @@ export default {
         this.currentThread.description = "";
         this.showModal = false;
       } catch (error) {
-        console.error("Fehler beim Erstellen des Threads:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Erstellen der Threads`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
+      showToast(
+        new Toast(
+          "Success",
+          `Thread wurde erfolgreich erstellt`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
     },
 
+    /**
+     * Selects a thread
+     * @param {number} threadId
+     */
     async selectThread(threadId) {
       this.selectedThreadId = threadId;
       this.fetchThreadDetail();
     },
 
+    /**
+     * Fetches the details of a thread
+     */
     async fetchThreadDetail() {
       try {
         const response = await axios.get(
@@ -362,10 +480,21 @@ export default {
         );
         this.selectedThread = response.data;
       } catch (error) {
-        console.error("Fehler beim Abrufen der Thread-Details:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Laden des Threads`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     },
 
+    /**
+     * Creates a new post
+     */
     async createPost() {
       try {
         const userId = Cookies.get("userId");
@@ -383,8 +512,25 @@ export default {
         this.newPost.content = "";
         this.newPost.isAnonymous = false;
       } catch (error) {
-        console.error("Fehler beim Erstellen des Posts:", error);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Erstellen des Posts`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
+      showToast(
+        new Toast(
+          "Success",
+          `Post wurde erfolgreich erstellt`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
     },
 
     formatDate(date) {

@@ -4,6 +4,9 @@ import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.dtos.EventRequestDTO;
 import com.sopra.eaplanner.event.participation.ConfirmAttendanceDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationService;
+import com.sopra.eaplanner.event.resources.EventResource;
+import com.sopra.eaplanner.event.resources.EventResourceRepository;
+import com.sopra.eaplanner.event.resources.EventResourceResponse;
 import com.sopra.eaplanner.event.tags.TagRepository;
 import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.event.tags.TagService;
@@ -63,7 +66,10 @@ public class EventService {
     @Autowired
     private TagService tagService;
 
-    /**
+    @Autowired
+    private EventResourceRepository eventResourceRepository;
+
+	/**
      * Creates a new event based on the provided request body.
      * The method checks if the event date is within the given exchange day's range.
      * A QR code is generated and associated with the event.
@@ -232,24 +238,19 @@ public class EventService {
      * @return a list of resource response DTOs for the resources linked to the event.
      * @throws EntityNotFoundException if no event is found with the provided ID.
      */
-    public List<ResourceResponse> getResourcesByEventId(Long id) {
-        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found."));
+    public List<EventResourceResponse> getResourcesByEventId(Long id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Event not found."));
 
-        List<ResourceResponse> resourceDTOs = new ArrayList<>();
-
-        for (ResourceItem resource : event.getResources()) {
-            resourceDTOs.add(new ResourceResponse(
-                    resource.getId(),
-                    resource.getName(),
-                    resource.getType().toString(),
-                    resource.getDescription(),
-                    resource.getLocation(),
-                    resource.getAvailability(),
-                    resource.getType() == ResourceType.ROOM ? resource.getCapacity() : null
-            ));
-        }
-
-        return resourceDTOs;
+        return eventResourceRepository.findByEvent(event).stream()
+                .map(er -> {
+                    EventResourceResponse dto = new EventResourceResponse();
+                    dto.setId(er.getId());
+                    dto.setResource(er.getResource());
+                    dto.setQuantity(er.getQuantity());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     /**

@@ -55,6 +55,8 @@ import type { User } from "@/types/User";
 import config from "@/config.js";
 import "@/assets/login.css";
 import Cookies from "js-cookie";
+import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const router = useRouter();
 
@@ -91,7 +93,15 @@ const handleLogin = async () => {
 
         router.push("/home");
       } else {
-        alert("Anmeldung fehlgeschlagen. Benutzer nicht gefunden.");
+        showToast(
+          new Toast(
+            "Error",
+            `Anmeldung fehlgeschlagen. Benutzer nicht gefunden.`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     } else {
       const userData: User = {
@@ -110,18 +120,39 @@ const handleLogin = async () => {
       const data: User = await response.json();
 
       if (response.ok && data.id) {
-        alert("Registrierung erfolgreich");
+        showToast(
+          new Toast(
+            "Success",
+            `Registrierung erfolgreich`,
+            "success",
+            faCheck,
+            10,
+          ),
+        );
         isRegistered.value = true;
       } else {
-        alert("Registrierung fehlgeschlagen. Bereits registriert?");
+        showToast(
+          new Toast(
+            "Error",
+            `Registrierung fehlgeschlagen. Bereits angemeldet?`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
       }
     }
   } catch (error) {
-    console.error("Error:", error);
-    alert(
-      isRegistered.value
-        ? "Anmeldung fehlgeschlagen"
-        : "Fehler bei der Registrierung",
+    showToast(
+      new Toast(
+        "Error",
+        isRegistered.value
+          ? "Anmeldung fehlgeschlagen"
+          : "Fehler bei der Registrierung",
+        "error",
+        faXmark,
+        10,
+      ),
     );
   }
 };

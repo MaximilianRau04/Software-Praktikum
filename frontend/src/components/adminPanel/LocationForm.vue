@@ -59,6 +59,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import config from "@/config";
+import { showToast, Toast } from "@/types/toasts";
 
 const countries = ref<string[]>([]);
 const cities = ref<string[]>([]);
@@ -86,7 +87,7 @@ const fetchCountries = async () => {
       countries.value = await response.json();
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen der Länder:", error);
+    showToast(new Toast("Error", "Fehler beim Abrufen der Länder", "error"));
   }
 };
 
@@ -101,7 +102,7 @@ const updateCities = async () => {
         cities.value = await response.json();
       }
     } catch (error) {
-      console.error("Fehler beim Abrufen der Städte:", error);
+      showToast(new Toast("Error", "Fehler beim Abrufen der Städte", "error"));
     }
   } else {
     cities.value = [];
@@ -131,14 +132,19 @@ const createLocation = async () => {
 
     if (response.ok) {
       const data = await response.json();
-      alert(`Location erstellt: ${data.city}, ${data.street}`);
+      showToast(
+        new Toast("Success", "Location erfolgreich erstellt", "success"),
+      );
       resetForm();
     } else {
-      alert("Fehler beim Erstellen der Location.");
+      showToast(
+        new Toast("Error", "Fehler beim Erstellen der Location", "error"),
+      );
     }
   } catch (error) {
-    console.error("Error creating location:", error);
-    alert("Fehler beim Erstellen der Location.");
+    showToast(
+      new Toast("Error", "Fehler beim Erstellen der Location", "error"),
+    );
   }
 };
 
