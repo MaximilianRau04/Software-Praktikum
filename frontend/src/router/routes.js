@@ -1,15 +1,16 @@
 import EventRegistrations from "@/components/viewEvents/EventRegistrations.vue";
 import Login from "../components/Login.vue";
 import MainPage from "../components/viewExchangeDays/home/MainPage.vue";
-import EventPlanning from "../components/createNewEvents/EventPlanning.vue";
+import EventPlanning from "../components/adminPanel/AdminPanel.vue";
 import HomePage from "@/components/HomePage.vue";
 import GiveFeedback from "@/components/feedback/GiveFeedback.vue";
 import FeedbackSummary from "@/components/feedback/FeedbackSummary.vue";
 import Forum from "@/components/forum/Forum.vue";
-import UserProfile from "@/components/navigation/UserProfile.vue";
+import Profile from "@/components/profile/Profile.vue";
 import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
-import UpdateEvent from "@/components/createNewEvents/UpdateEvent.vue";
 import EventPage from "@/components/viewEvents/EventPage.vue";
+import TrainerProfileManage from "@/components/profile/TrainerProfileManage.vue";
+import ExchangeDayPage from "@/components/viewExchangeDays/ExchangeDayPage.vue";
 
 export default [
   {
@@ -42,9 +43,9 @@ export default [
         component: EventRegistrations,
       },
       {
-        path: "/events/:eventId/update",
-        name: "updateEvent",
-        component: UpdateEvent,
+        path: "/exchangeDays/:exchangeDayId/manage",
+        name: "manageExchangeDay",
+        component: ExchangeDayPage,
         props: true,
       },
       {
@@ -65,15 +66,21 @@ export default [
         props: true,
       },
       {
-        path: "/user/:username",
-        name: "UserProfile",
-        component: UserProfile,
+        path: "/profile/:username",
+        name: "Profile",
+        component: Profile,
         props: true,
       },
       {
         path: "/leaderboard",
         name: "Leaderboard",
         component: Leaderboard,
+      },
+      {
+        path: "/trainerProfile/:trainerId/manage",
+        name: "TrainerProfileManage",
+        component: TrainerProfileManage,
+        props: true,
       },
     ],
   },

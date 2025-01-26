@@ -25,7 +25,7 @@ public class ForumThread {
     private Event event;
 
     @OneToMany(mappedBy = "forumThread", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonBackReference
     private List<ForumPost> forumPosts;
 
     public ForumThread() {

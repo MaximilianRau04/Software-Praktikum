@@ -3,15 +3,17 @@ package com.sopra.eaplanner.event;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sopra.eaplanner.event.dtos.EventRequestDTO;
 import com.sopra.eaplanner.event.participation.EventParticipation;
+import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.exchangeday.ExchangeDay;
 import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.forumthread.ForumThread;
 import com.sopra.eaplanner.notification.reminder.ReminderType;
 import com.sopra.eaplanner.resource.ResourceItem;
-import com.sopra.eaplanner.trainerprofile.TrainerProfile;
+import com.sopra.eaplanner.resource.resourceAssignment.ResourceAssignment;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -23,6 +25,15 @@ import java.util.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.springframework.format.annotation.DateTimeFormat;
 
+/**
+ * Entity class representing an event in the system.
+ *
+ * <p>An event has details such as name, date, time, room, description, associated exchange day, organizer, and participants. It also supports feedback, reminders, forum threads, resources, and tags.</p>
+ *
+ * <p>Each event is related to a specific {@link ExchangeDay} and {@link User} (organizer). It can have multiple {@link User}s as registered participants, as well as associated {@link Tag}s for categorization.</p>
+ *
+ * <p>Additional features include managing participation, feedback, attendance, QR codes, and reminders.</p>
+ */
 @Entity
 @Table(name = "events")
 public class Event {
@@ -36,7 +47,7 @@ public class Event {
     private String name;
 
     @DateTimeFormat(pattern = "dd.MM.yyyy")
-    @Future(message = "Date must be in the future")
+    @FutureOrPresent(message = "Date must be in the future")
     @NotNull(message = "Date cannot be null")
     private LocalDate date;
 
@@ -63,10 +74,6 @@ public class Event {
     @JoinColumn(name = "organizer_id", nullable = false)
     @JsonManagedReference
     private User organizer;
-
-    @ManyToOne
-    @JoinColumn(name = "trainer_profile_id")
-    private TrainerProfile trainerProfile;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
@@ -100,12 +107,27 @@ public class Event {
     @JsonBackReference
     private List<ResourceItem> resources = new ArrayList<>();
 
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ResourceAssignment> resourceAssignments = new ArrayList<>();
+
+    private ExperienceLevel recommendedExperience;
+
+    private Boolean inviteOnly = false;
+
+    @ManyToMany
+    @JoinTable(
+            name = "event_tag",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
+
     public Event() {
     }
 
     public Event(Long id, String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room,
-                 String description, ExchangeDay exchangeDay, User organizer, TrainerProfile trainerProfile,
-                 String qrCodeFilePath, Set<ForumThread>  forumthreads) {
+                 String description, ExchangeDay exchangeDay, User organizer,
+                 String qrCodeFilePath, Set<ForumThread> forumthreads, ExperienceLevel recommendedExperience, Boolean inviteOnly) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -114,14 +136,15 @@ public class Event {
         this.description = description;
         this.exchangeDay = exchangeDay;
         this.organizer = organizer;
-        this.trainerProfile = trainerProfile;
         this.qrCodeFilePath = qrCodeFilePath;
         this.attendanceToken = generateAttendanceToken();
         this.forumThreads = forumthreads;
         this.date = date;
+        this.recommendedExperience = recommendedExperience;
+        this.inviteOnly= inviteOnly;
     }
 
-    public Event(EventRequestDTO eventDTO, ExchangeDay exchangeDay, User organizer) {
+    public Event(EventRequestDTO eventDTO, ExchangeDay exchangeDay, User organizer, Set<Tag> tags) {
         this.name = eventDTO.getName();
         this.startTime = eventDTO.getStartTime();
         this.endTime = eventDTO.getEndTime();
@@ -131,6 +154,9 @@ public class Event {
         this.exchangeDay = exchangeDay;
         this.organizer = organizer;
         this.attendanceToken = generateAttendanceToken();
+        this.recommendedExperience = eventDTO.getRecommendedExperience();
+        this.tags = tags;
+        this.inviteOnly = eventDTO.getInviteOnly();
     }
 
     public Long getId() {
@@ -149,11 +175,11 @@ public class Event {
         this.name = name;
     }
 
-    public @Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getDate() {
+    public @FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getDate() {
         return date;
     }
 
-    public void setDate(@Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate date) {
+    public void setDate(@FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate date) {
         this.date = date;
     }
 
@@ -205,14 +231,6 @@ public class Event {
         this.organizer = organizer;
     }
 
-    public TrainerProfile getTrainerProfile() {
-        return trainerProfile;
-    }
-
-    public void setTrainerProfile(TrainerProfile trainerProfile) {
-        this.trainerProfile = trainerProfile;
-    }
-
     public Set<User> getRegisteredUsers() {
         return registeredUsers;
     }
@@ -262,13 +280,33 @@ public class Event {
     }
 
     @Transient
-    public LocalDateTime getStartDateTime(){
+    public LocalDateTime getStartDateTime() {
         return LocalDateTime.of(exchangeDay.getStartDate(), startTime);
     }
 
-    public List<ResourceItem> getResources() { return resources; }
+    public List<ResourceItem> getResources() {
+        return resources;
+    }
 
-    public void addResource(ResourceItem resource) { resources.add(resource); }
+    public void addResource(ResourceItem resource) {
+        resources.add(resource);
+    }
+
+    public ExperienceLevel getRecommendedExperience() {
+        return recommendedExperience;
+    }
+
+    public void setRecommendedExperience(ExperienceLevel recommendedExperience) {
+        this.recommendedExperience = recommendedExperience;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 
     @PostLoad
     public void initRemindersSent() {
@@ -300,5 +338,24 @@ public class Event {
 
     public void setForumThreads(Set<ForumThread> forumThreads) {
         this.forumThreads = forumThreads;
+    }
+    public void setResources(List<ResourceItem> resources) {
+        this.resources = resources;
+    }
+
+    public List<ResourceAssignment> getResourceAssignments() {
+        return resourceAssignments;
+    }
+
+    public void setResourceAssignments(List<ResourceAssignment> resourceAssignments) {
+        this.resourceAssignments = resourceAssignments;
+    }
+
+    public Boolean getInviteOnly() {
+        return inviteOnly;
+    }
+
+    public void setInviteOnly(Boolean inviteOnly) {
+        this.inviteOnly = inviteOnly;
     }
 }

@@ -1,7 +1,6 @@
 package com.sopra.eaplanner.resource.resourceAssignment;
 
 import com.sopra.eaplanner.resource.resourceAssignment.dtos.ResourceAssignmentRequest;
-import com.sopra.eaplanner.resource.resourceAssignment.dtos.ResourceAssignmentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +16,7 @@ public class ResourceAssignmentController {
     private ResourceAssignmentService assignmentService;
 
     @PostMapping
-    public ResponseEntity<?> assignResource(@RequestBody ResourceAssignmentRequest assignment) {
+    public ResponseEntity<String> assignResource(@RequestBody ResourceAssignmentRequest assignment) {
         return assignmentService.assignResource(assignment);
     }
 }

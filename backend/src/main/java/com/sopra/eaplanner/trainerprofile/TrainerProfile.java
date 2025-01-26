@@ -2,8 +2,8 @@ package com.sopra.eaplanner.trainerprofile;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.sopra.eaplanner.event.Event;
-import com.sopra.eaplanner.feedback.Feedback;
+import com.sopra.eaplanner.event.tags.Tag;
+import com.sopra.eaplanner.trainerprofile.comments.PinnedComment;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -19,40 +19,34 @@ public class TrainerProfile {
 
     private String bio;
 
-    private Double averageRating;
-
-    @ElementCollection
-    private List<String> expertiseTags = new ArrayList<>();
-
-    @JsonBackReference
-    @OneToMany(mappedBy = "trainerProfile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Event> hostedEvents = new ArrayList<Event>();
-
     @OneToOne
     @JoinColumn(name = "user_id")
     @NotNull
     @JsonBackReference
     private User user;
 
-    @ElementCollection
-    @MapKeyColumn(name = "comment_type")
-    @Column(name = "comment")
-    private Map<String, String> pinnedComments = new HashMap<>();
+    private Double averageRating = 0.0;
+
+    private Integer feedbackCount = 0;
+
+    @ManyToMany
+    @JoinTable(
+            name = "trainer_profile_tag",
+            joinColumns = @JoinColumn(name = "trainer_profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> expertiseTags = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<PinnedComment> pinnedComments = new ArrayList<>();
 
     public TrainerProfile() {
     }
 
-    public TrainerProfile(Long id, String bio, Double averageRating, List<String> expertiseTags) {
-        this.id = id;
-        this.bio = bio;
-        this.averageRating = averageRating;
-        this.expertiseTags = expertiseTags;
-    }
-
-    public TrainerProfile(TrainerProfileRequestDTO trainerProfileRequest) {
+    public TrainerProfile(TrainerProfileRequestDTO trainerProfileRequest, User user) {
         this.bio = trainerProfileRequest.getBio();
-        this.averageRating = trainerProfileRequest.getAverageRating();
-        this.expertiseTags = trainerProfileRequest.getExpertiseTags();
+        this.user = user;
     }
 
     public Long getId() {
@@ -79,14 +73,6 @@ public class TrainerProfile {
         this.averageRating = averageRating;
     }
 
-    public List<Event> getHostedEvents() {
-        return hostedEvents;
-    }
-
-    public void setHostedEvents(List<Event> events) {
-        this.hostedEvents = events;
-    }
-
     public User getUser() {
         return user;
     }
@@ -95,20 +81,27 @@ public class TrainerProfile {
         this.user = user;
     }
 
-    public List<String> getExpertiseTags() {
+    public Set<Tag> getExpertiseTags() {
         return expertiseTags;
     }
 
-    public void setExpertiseTags(List<String> expertiseTags) {
+    public void setExpertiseTags(Set<Tag> expertiseTags) {
         this.expertiseTags = expertiseTags;
     }
 
-    public Map<String, String> getPinnedComments() {
+    public List<PinnedComment> getPinnedComments() {
         return pinnedComments;
     }
 
-    public void setPinnedComments(Map<String, String> pinnedComments) {
+    public void setPinnedComments(List<PinnedComment> pinnedComments) {
         this.pinnedComments = pinnedComments;
     }
 
+    public Integer getFeedbackCount() {
+        return feedbackCount;
+    }
+
+    public void setFeedbackCount(Integer feedbackCount) {
+        this.feedbackCount = feedbackCount;
+    }
 }

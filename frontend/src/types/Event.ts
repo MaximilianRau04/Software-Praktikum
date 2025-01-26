@@ -7,4 +7,5 @@ export interface Event {
   startTime: string;
   room: string;
   forumThreads: object[];
+  inviteOnly: boolean;
 }

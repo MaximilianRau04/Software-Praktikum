@@ -6,7 +6,15 @@ export interface ExchangeDay {
   startDate: number;
   endDate: number;
   description: string;
-  location: string;
+  location: Location;
+}
+
+export interface Location {
+  id: number;
+  street: string;
+  houseNumber: string;
+  city: string;
+  country: string;
 }
 
 export const exchangeDays = ref<ExchangeDay[]>([]);

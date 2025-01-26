@@ -12,12 +12,13 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+/**
+ * Represents a feedback entity for an event, storing scores and comments for various categories,
+ * including event-related aspects, trainer performance, participant experience, and IT/organizational factors.
+ * The feedback is linked to an event, a user, and optionally a trainer profile.
+ */
 @Entity
-public class Feedback {
+public class Feedback implements FeedbackScore {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -121,6 +122,8 @@ public class Feedback {
     @JoinColumn(name = "trainer_profile_id")
     @JsonBackReference
     private TrainerProfile trainerProfile;
+
+    private Double sentiment = 0.0;
 
     private boolean enjoymentCommentPinned;
 
@@ -467,6 +470,14 @@ public class Feedback {
 
     public void setRecommendationCommentPinned(boolean recommendationCommentPinned) {
         this.recommendationCommentPinned = recommendationCommentPinned;
+    }
+
+    public Double getSentiment(){
+        return sentiment;
+    }
+
+    public void setSentiment(Double sentiment){
+        this.sentiment = sentiment;
     }
 
 }

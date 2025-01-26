@@ -102,7 +102,8 @@ Content-Type: application/json
   "organizerId": 1,
   "date": "2025-03-20",
   "startTime": "10:00:00",
-  "endTime": "12:00:00"
+  "endTime": "12:00:00",
+  "recommendedExperience": "EXPERT"
 }
 
 ###
@@ -117,7 +118,8 @@ Content-Type: application/json
   "organizerId": 2,
   "date": "2025-04-15",
   "startTime": "14:00:00",
-  "endTime": "16:00:00"
+  "endTime": "16:00:00",
+  "recommendedExperience": "EXPERT"
 }
 
 ###
@@ -132,7 +134,8 @@ Content-Type: application/json
   "organizerId": 3,
   "date": "2025-06-10",
   "startTime": "09:00:00",
-  "endTime": "11:00:00"
+  "endTime": "11:00:00",
+  "recommendedExperience": "EXPERT"
 }
 
 ###
@@ -147,7 +150,8 @@ Content-Type: application/json
   "organizerId": 4,
   "date": "2025-07-25",
   "startTime": "13:00:00",
-  "endTime": "15:00:00"
+  "endTime": "15:00:00",
+  "recommendedExperience": "EXPERT"
 }
 
 ###
@@ -162,7 +166,8 @@ Content-Type: application/json
   "organizerId": 2,
   "date": "2025-03-20",
   "startTime": "16:00:00",
-  "endTime": "18:00:00"
+  "endTime": "18:00:00",
+  "recommendedExperience": "EXPERT"
 }
 
 ###
@@ -177,7 +182,8 @@ Content-Type: application/json
   "organizerId": 1,
   "date": "2025-04-15",
   "startTime": "09:30:00",
-  "endTime": "11:30:00"
+  "endTime": "11:30:00",
+  "recommendedExperience": "EXPERT"
 }
 
 ###
@@ -192,7 +198,8 @@ Content-Type: application/json
   "organizerId": 3,
   "date": "2025-06-10",
   "startTime": "14:30:00",
-  "endTime": "16:30:00"
+  "endTime": "16:30:00",
+  "recommendedExperience": "EXPERT"
 }
 
 ###
@@ -207,7 +214,8 @@ Content-Type: application/json
   "organizerId": 4,
   "date": "2025-07-25",
   "startTime": "12:00:00",
-  "endTime": "14:00:00"
+  "endTime": "14:00:00",
+  "recommendedExperience": "EXPERT"
 }
 
 ###
@@ -222,7 +230,8 @@ Content-Type: application/json
   "organizerId": 1,
   "date": "2025-03-20",
   "startTime": "15:00:00",
-  "endTime": "17:00:00"
+  "endTime": "17:00:00",
+  "recommendedExperience": "EXPERT"
 }
 
 ###
@@ -237,7 +246,8 @@ Content-Type: application/json
   "organizerId": 2,
   "date": "2025-04-15",
   "startTime": "11:00:00",
-  "endTime": "13:00:00"
+  "endTime": "13:00:00",
+  "recommendedExperience": "EXPERT"
 }
 
 ###
@@ -252,5 +262,6 @@ Content-Type: application/json
   "organizerId": 3,
   "date": "2025-06-10",
   "startTime": "10:00:00",
-  "endTime": "12:00:00"
+  "endTime": "12:00:00",
+  "recommendedExperience": "EXPERT"
 }

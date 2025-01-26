@@ -1,4 +1,8 @@
 <template>
+  <div>
+    <button class="back-button" @click="goBack">Zurück</button>
+  </div>
+
   <div class="feedback-summary-container">
     <div
       class="event-header"
@@ -10,7 +14,10 @@
     </div>
 
     <div v-if="isLoading" class="loading">
-      <p>Loading...</p>
+      <p>
+        Kein Feedback für dieses Event verfügbar. Kommen Sie gerne zu einem
+        späteren Zeitpunkt wieder.
+      </p>
     </div>
 
     <div v-else>
@@ -21,26 +28,64 @@
           <table>
             <tr>
               <td><strong>Event Name:</strong></td>
-              <td>{{ data.eventName || "undefined" }}</td>
+              <td>{{ event.name || "undefined" }}</td>
             </tr>
             <tr>
-              <td><strong>Organizer:</strong></td>
-              <td>{{ data.organizerName || "undefined" }}</td>
+              <td><strong>Trainer:</strong></td>
+              <td>
+                {{
+                  organizer.firstname + " " + organizer.lastname || "undefined"
+                }}
+              </td>
             </tr>
             <tr>
-              <td><strong>Date and Time:</strong></td>
-              <td>{{ data.eventDate || "undefined" }}</td>
+              <td><strong>Datum und Uhrzeit:</strong></td>
+              <td>
+                {{
+                  new Date(event.date).toLocaleDateString("de-DE", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })
+                }}
+                <br />
+              </td>
             </tr>
             <tr>
-              <td><strong>Description:</strong></td>
-              <td>{{ data.description || "No description available" }}</td>
+              <td><strong>Ort:</strong></td>
+              <td>
+                {{
+                  location.street +
+                  " " +
+                  location.houseNumber +
+                  ", " +
+                  location.postalCode +
+                  " " +
+                  location.city +
+                  ", " +
+                  location.country
+                }}
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Beschreibung:</strong></td>
+              <td>
+                {{ event.description || "Keine Beschreibung vorhanden." }}
+              </td>
             </tr>
             <tr>
               <td><strong>Tags:</strong></td>
-              <td>{{ data.tags?.join(", ") || "No tags available" }}</td>
+              <td>
+                <li v-for="(tag, index) in tags" :key="index">
+                  {{ tag.name }}
+                </li>
+              </td>
             </tr>
           </table>
-          <button @click="generatePDF">Download PDF</button>
+          <button class="pdf-button" @click="generatePDF">
+            Als PDF exportieren
+          </button>
         </div>
 
         <div class="general-info-right">
@@ -86,7 +131,7 @@
                       "
                       class="popup"
                     >
-                      Average: {{ category.data.average.toFixed(2) }}
+                      Durchschnitt: {{ category.data.average.toFixed(2) }}
                     </div>
                   </div>
                 </div>
@@ -101,15 +146,17 @@
             <div class="small-scales">
               <div
                 v-for="(subScore, subIndex) in getOrderedSubScores(
-                  category.data.subAverages,
+                  category.data.subAverages
                 )"
                 :key="subIndex"
                 class="small-scale"
               >
                 <h4>
                   {{
-                    subScore.name.charAt(0).toUpperCase() +
-                    subScore.name.slice(1)
+                    formatKey(
+                      subScore.name.charAt(0).toUpperCase() +
+                        subScore.name.slice(1)
+                    )
                   }}
                 </h4>
                 <div class="scale">
@@ -129,7 +176,7 @@
                         "
                         class="popup"
                       >
-                        Sub-score: {{ subScore.value.toFixed(2) }}
+                        Unterpunktzahl: {{ subScore.value.toFixed(2) }}
                       </div>
                     </div>
                   </div>
@@ -179,7 +226,9 @@
 </template>
 
 <script>
+import { useRoute, useRouter } from "vue-router";
 import config from "@/config";
+import TrainerTags from "@/components/profile/TrainerTags.vue";
 import {
   Chart,
   RadarController,
@@ -192,6 +241,9 @@ import {
 } from "chart.js";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
+import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+
 pdfMake.addVirtualFileSystem(pdfFonts);
 
 Chart.register(
@@ -201,15 +253,28 @@ Chart.register(
   PointElement,
   Filler,
   Legend,
-  Tooltip,
+  Tooltip
 );
 
 export default {
+  components: "TrainerTags",
   name: "EventSummary",
   data() {
     return {
+      router: useRouter(),
       event: null,
+      organizer: {
+        firstname: "",
+        lastname: "",
+      },
+      location: {
+        street: "",
+        houseNumber: "",
+        postalCode: "",
+        city: "",
+      },
       data: null,
+      tags: [],
       isLoading: true,
       error: null,
       backgroundImageUrl: null,
@@ -240,6 +305,23 @@ export default {
     },
   },
   methods: {
+    goBack() {
+      this.router.push({
+        name: "EventPage",
+        params: { eventId: this.eventId.toString() },
+      });
+    },
+
+    getColorPalette() {
+      return ["#009EE2", "#01172F", "#4CAF50"];
+    },
+
+    getRandomColor() {
+      const palette = this.getColorPalette();
+      const randomIndex = Math.floor(Math.random() * palette.length);
+      return palette[randomIndex];
+    },
+
     /**
      * Fetches event summary data and trainer profile ID.
      */
@@ -250,8 +332,15 @@ export default {
         this.calculateAverages();
         this.setRadarChartLabels();
       } catch (err) {
-        this.error = err.message || "An unknown error occurred";
-        console.error("Error fetching data:", err);
+        showToast(
+          new Toast(
+            "Info",
+            `Noch kein feedback für dieses Event verfügbar.`,
+            "info",
+            faXmark,
+            10
+          )
+        );
       } finally {
         this.isLoading = false;
         this.$nextTick(() => {
@@ -266,52 +355,63 @@ export default {
     async fetchEventSummary() {
       try {
         const response = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/summary`,
+          `${config.apiBaseUrl}/events/${this.eventId}/summary`
         );
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch event summary: ${response.status}`);
-        }
 
         this.data = await response.json();
 
         this.categoryOrder = [
-          { name: "OVERALL", data: this.data.numericalFeedback.OVERALL },
+          { name: "GESAMT", data: this.data.numericalFeedback.OVERALL },
           {
-            name: "CONTENT_AND_STRUCTURE",
+            name: "INHALT UND STRUKTUR",
             data: this.data.numericalFeedback.CONTENT_AND_STRUCTURE,
           },
           {
-            name: "PARTICIPATION",
+            name: "TEILNAME",
             data: this.data.numericalFeedback.PARTICIPATION,
           },
           {
-            name: "IT_AND_ORGANISATION",
+            name: "IT UND ORGANISATION",
             data: this.data.numericalFeedback.IT_AND_ORGANISATION,
           },
           { name: "TRAINER", data: this.data.numericalFeedback.TRAINER },
-          { name: "SIMILARITY", data: this.data.numericalFeedback.SIMILARITY },
+          { name: "ÄHNLICHKEIT", data: this.data.numericalFeedback.SIMILARITY },
         ];
       } catch (err) {
         this.error = err.message || "An error occurred";
-        console.error("Error fetching Summary:", err);
       }
     },
 
-    async fetchEvent() {
+    /**
+     * Fetches the event details from the API.
+     */
+    async fetchEventDetails() {
       try {
         const response = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}`,
+          `${config.apiBaseUrl}/events/${this.eventId}`
         );
-        if (!response.ok) {
-          throw new Error(`Failed to fetch event: ${response.status}`);
-        }
-        this.event = await response.json();
-        console.log("Event fetched successfully:", this.event);
-      } catch (err) {
-        this.error =
-          err.message || "An error occurred while fetching the event.";
-        console.error("Error fetching event:", err);
+        const eventData = await response.json();
+        this.event = eventData;
+
+        const organizerResponse = await fetch(
+          `${config.apiBaseUrl}/events/${this.eventId}/organizer`
+        );
+        this.organizer = await organizerResponse.json();
+
+        const locationResponse = await fetch(
+          `${config.apiBaseUrl}/events/${this.eventId}/location`
+        );
+        this.location = await locationResponse.json();
+      } catch (error) {
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Laden der Eventdaten`,
+            "error",
+            faXmark,
+            10
+          )
+        );
       }
     },
 
@@ -320,22 +420,47 @@ export default {
      */
     async fetchWordCloud() {
       if (!this.eventId) {
-        console.error("Event ID is missing.");
-        this.error = "Event ID is missing.";
+        showToast(
+          new Toast("Error", `Event ID is missing.`, "error", faXmark, 10)
+        );
         return;
       }
       try {
         const response = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/word-cloud`,
+          `${config.apiBaseUrl}/events/${this.eventId}/word-cloud`
         );
         if (!response.ok) {
-          throw new Error(`Failed to fetch word cloud: ${response.status}`);
+          showToast(
+            new Toast(
+              "Error",
+              `Fehler beim Laden der Word Cloud.`,
+              "error",
+              faXmark,
+              10
+            )
+          );
         }
         const blob = await response.blob();
         this.backgroundImageUrl = URL.createObjectURL(blob);
       } catch (err) {
-        this.error = err.message || "An error occurred";
-        console.error("Error fetching word cloud:", err);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Laden der Word Cloud.`,
+            "error",
+            faXmark,
+            10
+          )
+        );
+      }
+    },
+    async fetchEventTags() {
+      try {
+        const tagsResponse = await fetch(`${config.apiBaseUrl}/tags`);
+        if (!tagsResponse.ok)
+          throw new Error("Event Tags konnten nicht geladen werden.");
+        this.tags = await tagsResponse.json();
+      } catch (error) {
       }
     },
 
@@ -361,12 +486,11 @@ export default {
       });
     },
 
+    /**
+     * Creates a radar chart using Chart.js.
+     */
     createRadarChart() {
       const canvas = document.getElementById("radarChart");
-      if (!canvas) {
-        console.error("Canvas element for radar chart not found.");
-        return;
-      }
 
       this.ctx = canvas.getContext("2d");
       new Chart(this.ctx, {
@@ -421,10 +545,41 @@ export default {
      * @returns {string} The formatted key.
      */
     formatKey(key) {
+      const translations = {
+        CONTENT_AND_STRUCTURE: "Inhalt und Struktur",
+        PARTICIPATION: "Teilnahme",
+        IT_AND_ORGANISATION: "IT und Organisation",
+        TRAINER: "Trainer",
+        SIMILARITY: "Ähnlichkeit",
+        Organisational: "Organisatorisch",
+        Overall: "Gesamt",
+        Relevance: "Relevant",
+        Understandability: "Verständlichkeit",
+        Practicality: "Praktikabilität",
+        Reasonability: "Angemessenheit",
+        ContentDepth: "Inhaltstiefe",
+        Participation: "Teilnahme",
+        Atmosphere: "Atmosphäre",
+        Networking: "Vernetzung",
+        Equipment: "Ausstattung",
+        Comfortability: "Komfortabilität",
+        Communication: "Kommunikation",
+        Presentability: "Präsentierbarkeit",
+        TimeManagement: "Zeitmanagement",
+        Competency: "Kompetenz",
+        Interactivity: "Interaktivität",
+        SimilarEventParticipation: "Ähnliche Eventteilnahme",
+        ENJOYMENT: "Vergnügen",
+        PERSONAL_IMPROVEMENT: "Persönliche Verbesserung",
+        RECOMMENDATION: "Empfehlung",
+        REQUEST: "Anfrage",
+        IMPROVEMENT: "Verbesserung",
+      };
       if (!key || typeof key !== "string") return "Unknown";
-      return key
-        .replace(/([A-Z])/g, " $1")
-        .replace(/^./, (str) => str.toUpperCase());
+      return (
+        translations[key] ||
+        key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())
+      );
     },
 
     /**
@@ -435,16 +590,16 @@ export default {
     getCardGradient(sentiment) {
       const colors = {
         positive:
-          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #2ecc71 99%)",
+          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9) 30%, #2ecc71 170%)",
         neutral:
-          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #3498db 99%)",
+          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9) 30%, #3498db 170%)",
         negative:
-          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #e74c3c 99%)",
+          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9) 30%, #e74c3c 170%)",
       };
       return {
         background:
           colors[sentiment] ||
-          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), #7f8c8d 99%)",
+          "linear-gradient(to bottom right, rgba(255, 255, 255, 0.9) 30%, #7f8c8d 170%)",
       };
     },
     showPopup(type, index, value) {
@@ -464,14 +619,25 @@ export default {
       };
       this.hoveredPinValue = null;
     },
+
+    /**
+     * Generates a PDF document with the event summary.
+     */
     async generatePDF() {
       if (!this.backgroundImageUrl) {
-        console.error("Word cloud image is not available.");
+        showToast(
+          new Toast(
+            "Error",
+            `Word Cloud Bild ist nicht verfügbar.`,
+            "error",
+            faXmark,
+            10
+          )
+        );
         return;
       }
 
       const wordCloudImage = await this.blobToDataUrl(this.backgroundImageUrl);
-
       const chartCanvas = document.getElementById("radarChart");
       const chartImage = chartCanvas.toDataURL("image/png");
 
@@ -498,54 +664,102 @@ export default {
               margin: [0, 60],
             },
             {
-              text: "Event Details",
-              alignment: "center",
+              text: "Detaillierte Informationen zum Event",
               style: "subheader",
-              margin: [0, 10],
             },
             {
-              columns: [
-                {
-                  width: "50%",
-                  table: {
-                    body: [
-                      ["Event Name", this.data.eventName || "undefined"],
-                      ["Organizer", this.data.organizerName || "undefined"],
-                      ["Date and Time", this.data.eventDate || "undefined"],
-                      [
-                        "Description",
-                        this.data.description || "No description available",
-                      ],
-                      [
-                        "Tags",
-                        this.data.tags?.join(", ") || "No tags available",
-                      ],
-                    ],
-                  },
-                  layout: "lightHorizontalLines",
-                  margin: [0, 0, 0, 20],
-                },
-                {
-                  image: chartImage,
-                  width: "50%",
-                  height: 700,
-                  alignment: "center",
-                  margin: [0, 0, 0, 5],
-                  fit: [300, 300],
-                },
-              ],
+              table: {
+                widths: ["30%", "70%"],
+                body: [
+                  [
+                    { text: "Event Name", style: "tableHeader" },
+                    {
+                      text: this.event.name || "Nicht verfügbar",
+                      style: "tableContent",
+                    },
+                  ],
+                  [
+                    { text: "Organisator", style: "tableHeader" },
+                    {
+                      text: this.data.organizerName || "Nicht verfügbar",
+                      style: "tableContent",
+                    },
+                  ],
+                  [
+                    { text: "Datum", style: "tableHeader" },
+                    {
+                      text:
+                        new Date(this.event.date).toLocaleDateString("de-DE", {
+                          weekday: "long",
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }) || "Nicht verfügbar",
+                      style: "tableContent",
+                    },
+                  ],
+                  [
+                    { text: "Ort", style: "tableHeader" },
+                    {
+                      text: this.location.city || "Nicht angegeben",
+                      style: "tableContent",
+                    },
+                  ],
+                  [
+                    { text: "Beschreibung", style: "tableHeader" },
+                    {
+                      text:
+                        this.event.description ||
+                        "Keine Beschreibung verfügbar",
+                      style: "tableContent",
+                    },
+                  ],
+                  [
+                    { text: "Tags", style: "tableHeader" },
+                    {
+                      text:
+                        this.tags?.map((tag) => tag.name).join(", ") ||
+                        "Keine Tags",
+                      style: "tableContent",
+                    },
+                  ],
+                ],
+              },
+              layout: "lightHorizontalLines",
+              margin: [0, 10, 0, 20],
             },
             {
               text: "Statistische Analyse",
               style: "subheader",
-              alignment: "center",
             },
-            ...this.categoryOrder.map((category) => {
-              return {
-                text: `${category.name.replace(/_/g, " ")}: Durchschnitt - ${category.data.average.toFixed(2)}`,
-                style: "feedbackCategory",
-              };
-            }),
+            {
+              table: {
+                widths: ["50%", "50%"],
+                body: [
+                  ...this.categoryOrder.map((category) => [
+                    {
+                      text: category.name.replace(/_/g, " "),
+                      style: "analyzeHeader",
+                    },
+                    {
+                      text: `Durchschnitt: ${category.data.average.toFixed(2)}`,
+                      style: "analyzeContent",
+                      alignment: "right",
+                    },
+                  ]),
+                ],
+              },
+              layout: "lightHorizontalLines",
+              margin: [0, 10, 0, 20],
+            },
+            { text: "Radar Chart", style: "subheader", pageBreak: "before" },
+            {
+              image: chartImage,
+              width: 400,
+              height: 400,
+              alignment: "center",
+              margin: [0, 10],
+            },
             {
               text: "Kommentare",
               style: "subheader",
@@ -557,12 +771,11 @@ export default {
                   text: this.formatKey(category),
                   style: "commentCategoryHeader",
                 },
-                ...categoryComments.map((commentObj) => {
-                  return {
-                    text: `${commentObj.author || "Anonymous"}: ${commentObj.comment}`,
-                    style: "commentText",
-                  };
-                }),
+                ...categoryComments.map((commentObj) => ({
+                  text: `${commentObj.author || "Anonym"}: ${commentObj.comment}`,
+                  style: "commentText",
+                  margin: [10, 5, 0, 5],
+                })),
               ];
             }),
           ],
@@ -571,35 +784,85 @@ export default {
               fontSize: 24,
               bold: true,
               alignment: "center",
+              margin: [0, 0, 0, 20],
+              color: "#2c3e50",
             },
             subheader: {
               fontSize: 18,
               bold: true,
               margin: [0, 10, 0, 10],
+              color: "#34495e",
             },
-            feedbackCategory: {
+            tableHeader: {
+              bold: true,
+              fillColor: "#f2f2f2",
+              color: "#2c3e50",
+              fontSize: 12,
+            },
+            tableContent: {
+              fontSize: 11,
+              color: "#333",
+            },
+            analyzeHeader: {
               fontSize: 14,
-              margin: [0, 10, 0, 10],
+              bold: true,
+              color: "#2980b9",
+            },
+            analyzeContent: {
+              fontSize: 12,
+              color: "#7f8c8d",
             },
             commentCategoryHeader: {
               fontSize: 16,
               bold: true,
-              margin: [0, 10, 0, 10],
+              margin: [0, 15, 0, 10],
+              color: "#2c3e50",
             },
             commentText: {
-              fontSize: 12,
-              margin: [0, 5, 0, 5],
+              fontSize: 11,
+              color: "#555",
+              italics: true,
             },
           },
+          defaultStyle: {},
         };
 
         pdfMake
           .createPdf(docDefinition)
           .download(`event-summary-${this.eventId}`);
       } catch (err) {
-        console.error("Error generating PDF:", err);
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler beim Generieren der PDF`,
+            "error",
+            faXmark,
+            10
+          )
+        );
       }
     },
+
+    generateStarRating(average) {
+      const maxStars = 5;
+      const fullStars = Math.round(average);
+      let stars = "";
+
+      for (let i = 0; i < fullStars; i++) {
+        stars += "★";
+      }
+      for (let i = fullStars; i < maxStars; i++) {
+        stars += "☆";
+      }
+
+      return stars;
+    },
+
+    /**
+     * Converts a blob URL to a data URL.
+     * @param {string} blobUrl - The blob URL to convert.
+     * @returns {Promise<string>} The data URL.
+     */
     async blobToDataUrl(blobUrl) {
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -621,12 +884,45 @@ export default {
   mounted() {
     this.fetchData();
     this.fetchWordCloud();
-    this.fetchEvent();
+    this.fetchEventDetails();
+    this.fetchEventTags();
   },
 };
 </script>
 
 <style scoped>
+.back-button {
+  top: 5rem;
+  left: 6rem;
+  background-color: #009ee2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
+}
+
+.pdf-button {
+  bottom: 2rem;
+  left: 20%;
+  background-color: #009ee2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
+}
+
+.back-button:hover {
+  background-color: #007bb5;
+}
+
 .feedback-summary-container {
   width: 100%;
   max-width: 1000px;
@@ -672,6 +968,31 @@ export default {
   z-index: 2;
 }
 
+.trainer-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.chip:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
 h1,
 h2 {
   color: #34495e;
@@ -714,7 +1035,8 @@ h2 {
 
 .general-info-right .chart-container {
   max-width: 500px;
-  height: 400px;
+  height: 470px;
+  align-items: center;
 }
 
 h2 {

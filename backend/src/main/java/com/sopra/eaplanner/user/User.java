@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.participation.EventParticipation;
+import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.forumpost.ForumPost;
 import com.sopra.eaplanner.reward.Reward;
@@ -37,6 +38,8 @@ public class User {
     @Size(max = 50, message = "Lastname cannot exceed 50 characters")
     private String lastname;
 
+    private String description;
+
     public enum Role {
         ADMIN, USER
     }
@@ -68,6 +71,17 @@ public class User {
     @JsonManagedReference
     private Set<EventParticipation> participations = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserTagWeight> tagWeights = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_tag",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> interestTags = new HashSet<>();
+
     public User() {
     }
 
@@ -76,6 +90,7 @@ public class User {
         this.firstname = user.getFirstname();
         this.lastname = user.getLastname();
         this.role = user.getRole();
+        this.description = user.getDescription();
     }
 
     public Long getId() {
@@ -108,6 +123,14 @@ public class User {
 
     public void setLastname(String lastname) {
         this.lastname = lastname;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Role getRole() {
@@ -164,6 +187,22 @@ public class User {
 
     public void setParticipations(Set<EventParticipation> participations) {
         this.participations = participations;
+    }
+
+    public Set<UserTagWeight> getTagWeights() {
+        return tagWeights;
+    }
+
+    public void setTagWeights(Set<UserTagWeight> tagWeights) {
+        this.tagWeights = tagWeights;
+    }
+
+    public Set<Tag> getInterestTags() {
+        return interestTags;
+    }
+
+    public void setInterestTagsTags(Set<Tag> interestTags) {
+        this.interestTags = interestTags;
     }
 
     public void updateInformation(User user) {

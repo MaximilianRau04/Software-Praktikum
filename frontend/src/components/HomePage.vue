@@ -11,7 +11,7 @@
       <HeaderTop
         :dataOpenSideBar="openSidebar"
         :toggleSidebar="toggleSidebar"
-        :notifications="notifications"
+        :notifications="notificationsForHeader"
         @mark-as-read="handleMarkAsRead"
       />
       <!-- Dynamic content area that renders the current component -->
@@ -25,15 +25,16 @@
 <script>
 import { ref } from "vue";
 import MainPage from "@/components/viewExchangeDays/home/MainPage.vue";
-import EventPlanning from "@/components/createNewEvents/EventPlanning.vue";
+import EventPlanning from "@/components/adminPanel/AdminPanel.vue";
 import GiveFeedback from "@/components/feedback/GiveFeedback.vue";
 import Sidebar from "@/components/navigation/Sidebar.vue";
-import HeaderTop from "@/components/navigation/Header.vue";
+import HeaderTop from "@/components/navigation/HeaderTop.vue";
 import EventRegistrations from "@/components/viewEvents/EventRegistrations.vue";
 import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
 import Forum from "./forum/Forum.vue";
 import Cookies from "js-cookie";
 import config from "../config";
+import { showToast } from "@/types/toasts";
 
 export default {
   components: {
@@ -61,6 +62,11 @@ export default {
       notifications: [],
     };
   },
+  computed: {
+    notificationsForHeader() {
+      return this.notifications || [];
+    },
+  },
   methods: {
     /**
      * Updates the currently displayed component.
@@ -70,7 +76,31 @@ export default {
       this.currentComponent = componentName;
       this.toggleSidebar();
     },
-    fetchNotifications() {
+
+    async fetchUnreadNotifications() {
+      const userId = Cookies.get("userId");
+      if (!userId) return;
+      try {
+        const response = await fetch(
+          `${config.apiBaseUrl}/notifications/unread/${userId}`,
+        );
+        const unreadNotifications = await response.json();
+
+        if (response.ok) {
+          this.notifications = unreadNotifications;
+        }
+
+        this.fetchNotifications();
+      } catch (err) {
+        showToast(
+          "Error",
+          "Benachrichtigungen konnten nicht geladen werden",
+          "error",
+        );
+        this.notifications = [];
+      }
+    },
+    async fetchNotifications() {
       const userId = Cookies.get("userId");
       if (!userId) return;
 
@@ -84,18 +114,17 @@ export default {
       });
 
       eventSource.onerror = (event) => {
-        console.error("Error with SSE connection", event);
+        showToast("Error", "Fehler mit der SSE Verbindung", "error");
       };
     },
     handleMarkAsRead(notificationId) {
-      console.log("pressing mark as read");
       this.notifications = this.notifications.filter(
         (notification) => notification.id !== notificationId,
       );
     },
   },
   mounted() {
-    this.fetchNotifications();
+    this.fetchUnreadNotifications();
   },
 };
 </script>
@@ -116,6 +145,7 @@ export default {
 .content-area {
   height: calc(100vh - 60px);
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .header-top {

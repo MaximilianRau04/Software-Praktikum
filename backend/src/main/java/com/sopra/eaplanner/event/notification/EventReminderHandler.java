@@ -23,7 +23,6 @@ public class EventReminderHandler implements NotificationHandler {
     @Override
     public void saveToDatabase(Notification notification) {
         notificationRepository.save(notification);
-        System.out.println("Saved Event Reminder Notification: " + notification.getTitle());
     }
 
     @Override

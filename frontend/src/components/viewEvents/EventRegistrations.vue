@@ -1,159 +1,404 @@
 <template>
-  <div class="exchangeDayDetails">
-    <h1>Meine Registrierten Events</h1>
-
-    <div v-if="isLoading">
-      <p>Events werden geladen...</p>
+  <div class="event-page">
+    <div class="search-bar-container">
+      <input
+        type="text"
+        v-model="searchQuery"
+        placeholder="Nach Events suchen..."
+        class="search-bar"
+      />
     </div>
 
-    <div v-else class="scrollableEvents">
-      <div v-if="registeredEvents.length > 0">
-        <ul>
-          <li
-            v-for="event in registeredEvents"
+    <div class="event-columns">
+      <div class="event-column">
+        <h2>Angemeldete Events</h2>
+        <div v-if="isLoading">
+          <p>Loading...</p>
+        </div>
+        <div
+          v-else-if="filteredRegisteredEvents.length === 0"
+          class="empty-state"
+        >
+          Keine angemeldeten Events gefunden
+        </div>
+        <div v-else class="list-left">
+          <div
+            v-for="event in filteredRegisteredEvents"
             :key="event.id"
             class="event-item"
-            @click="goToEventPage(event.id)"
           >
             <div class="event-details">
               <h3>{{ event.name }}</h3>
               <p>{{ formatDate(event.date) }}</p>
+              <button @click="goToEvent(event.id)" class="register-button">
+                Details
+              </button>
             </div>
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
 
-      <div v-else>
-        <p>Keine registrierten Events gefunden.</p>
+      <div class="event-column">
+        <h2>Empfohlene Events</h2>
+        <div v-if="isLoading">
+          <p>Loading...</p>
+        </div>
+        <div
+          v-else-if="filteredRecommendedEvents.length === 0"
+          class="empty-state"
+        >
+          Keine empfohlenen Events gefunden
+        </div>
+        <div v-else class="list-left">
+          <div
+            v-for="event in filteredRecommendedEvents"
+            :key="event.id"
+            class="event-item"
+          >
+            <div class="event-details">
+              <h3>{{ event.name }}</h3>
+              <p>{{ formatDate(event.date) }}</p>
+              <div class="tag-chips">
+                <span
+                  v-for="(tag, index) in event.tags.slice(0, 5)"
+                  :key="tag.id"
+                  class="chip"
+                >
+                  {{ tag.name }}
+                </span>
+              </div>
+              <button @click="goToEvent(event.id)" class="register-button">
+                Details
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-column">
+        <div class="feedback-section">
+          <h2>Feedback geben</h2>
+          <div v-if="isLoading">
+            <p>Loading...</p>
+          </div>
+          <div
+            v-else-if="filteredFeedbackEvents.length === 0"
+            class="empty-state"
+          >
+            Keine Events für Feedback verfügbar
+          </div>
+          <div v-else class="list-right">
+            <div
+              v-for="event in filteredFeedbackEvents"
+              :key="event.id"
+              class="event-item"
+            >
+              <div class="event-details">
+                <h3>{{ event.name }}</h3>
+                <p>{{ formatDate(event.date) }}</p>
+                <button @click="goToEvent(event.id)" class="register-button">
+                  Feedback
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="past-events-section">
+          <h2>Vergangene Events</h2>
+          <div v-if="isLoading">
+            <p>Loading...</p>
+          </div>
+          <div v-else-if="filteredPastEvents.length === 0" class="empty-state">
+            Keine vergangenen Events
+          </div>
+          <div v-else class="list-right">
+            <div
+              v-for="event in filteredPastEvents"
+              :key="event.id"
+              class="event-item"
+            >
+              <div class="event-details">
+                <h3>{{ event.name }}</h3>
+                <p>{{ formatDate(event.date) }}</p>
+                <button @click="goToEvent(event.id)" class="register-button">
+                  Details
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { Event } from "@/types/Event";
-import config from "@/config";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import config from "@/config";
 import Cookies from "js-cookie";
+import { showToast, Toast } from "@/types/toasts";
+import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
 
 const router = useRouter();
-const registeredEvents = ref<Event[]>([]);
-const organizerStatus = ref<{ [eventId: number]: boolean }>({});
+const registeredEvents = ref([]);
+const recommendedEvents = ref([]);
+const pendingFeedbackEvents = ref([]);
+const pastEvents = ref([]);
 const isLoading = ref(true);
+const today = new Date().toISOString();
+
+const searchQuery = ref("");
 const userId = Cookies.get("userId");
 
-if (!userId) {
-  throw new Error("User ID not found in cookies.");
-}
+const filteredRegisteredEvents = computed(() =>
+  registeredEvents.value
+    .filter((event) => {
+      const eventDate = new Date(event.date);
+      const [hours, minutes] = event.startTime.split(':').map(Number);
+      eventDate.setHours(hours, minutes, 0, 0);
+      return eventDate > new Date();
+    })
+    .filter((event) =>
+      event.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
+);
 
-/**
- * Formats a timestamp into a human-readable date string.
- *
- * @param {string} timestamp - The date in milliseconds.
- * @returns {string} - The formatted date string in 'DD.MM.YYYY' format.
- */
-function formatDate(timestamp: string): string {
-  const date = new Date(timestamp);
-  return date.toLocaleDateString("de-DE");
-}
+const filteredRecommendedEvents = computed(() =>
+  recommendedEvents.value
+    .filter((event) =>
+      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    )
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
+);
 
-/**
- * Fetches all events the user is registered for and checks organizer status for each.
+const filteredFeedbackEvents = computed(() =>
+  pendingFeedbackEvents.value
+    .filter((event) =>
+      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    )
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
+);
+
+const filteredPastEvents = computed(() =>
+  pastEvents.value
+    .filter((event) =>
+      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    )
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
+);
+
+/*
+ * Fetches the tags for a given event
  */
-const fetchRegisteredEvents = async () => {
+const fetchTagsForEvent = async (eventId) => {
   try {
-    const response = await fetch(
-      `${config.apiBaseUrl}/users/${userId}/registeredEvents`,
-    );
-    if (!response.ok) throw new Error("Failed to fetch participations.");
-    const responseData: Event[] = await response.json();
-
-    registeredEvents.value = responseData;
+    const res = await fetch(`${config.apiBaseUrl}/events/${eventId}/tags`);
+    if (!res.ok) throw new Error("Failed to fetch tags");
+    return await res.json();
   } catch (error) {
-    console.error("Error fetching registered events:", error);
-    registeredEvents.value = [];
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler beim Laden der Tags für Event ${eventId}`,
+        "error",
+        faXmark,
+        10
+      )
+    );
+    return [];
+  }
+};
+
+/*
+ * Fetches the events for the user
+ */
+const fetchEvents = async () => {
+  if (!userId) {
+    showToast(
+      new Toast("Error", `Keine Benutzer-ID gefunden`, "error", faXmark, 10)
+    );
+    isLoading.value = false;
+    return;
+  }
+
+  try {
+    isLoading.value = true;
+
+    const [registeredRes, recommendedRes, feedbackRes] = await Promise.all([
+      fetch(`${config.apiBaseUrl}/users/${userId}/registeredEvents`),
+      fetch(`${config.apiBaseUrl}/users/${userId}/recommendedEvents?limit=5`),
+      fetch(`${config.apiBaseUrl}/users/${userId}/pendingFeedbackEvents`),
+    ]);
+
+    if (!registeredRes.ok || !recommendedRes.ok || !feedbackRes.ok) {
+      showToast(
+        new Toast("Error", `Fehler beim Laden der Events`, "error", faXmark, 10)
+      );
+    }
+
+    registeredEvents.value = await registeredRes.json();
+    recommendedEvents.value = await recommendedRes.json();
+    pendingFeedbackEvents.value = await feedbackRes.json();
+
+    for (const event of recommendedEvents.value) {
+      event.tags = await fetchTagsForEvent(event.id);
+    }
+
+    pastEvents.value = registeredEvents.value.filter(
+      (event) => new Date(event.date) <= new Date(today) && event.startTime <= new Date().toLocaleTimeString(),
+    );
+  } catch (error) {
+    showToast(
+      new Toast("Error", `Fehler beim Laden der Events`, "error", faXmark, 10)
+    );
   } finally {
     isLoading.value = false;
   }
 };
 
-/**
- * Updates the event details page with the selected event.
- * @param {number} eventId - The ID of the event.
- */
-const goToEventPage = (eventId: number) => {
-  router.push({
-    name: "EventPage",
-    params: { eventId: eventId.toString() },
-  });
+const goToEvent = (eventId) => {
+  router.push({ name: "EventPage", params: { eventId } });
+};
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("de-DE");
 };
 
 onMounted(() => {
-  fetchRegisteredEvents();
+  fetchEvents();
 });
 </script>
 
 <style scoped>
-h1 {
-  margin-top: 0;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
+.event-page {
+  padding: 20px;
+  background: #f9f9f9;
+  max-height: 90%;
 }
 
-.event-item {
-  background-color: #009ee2;
-  border: 1px solid #ccd;
+.search-bar-container {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.search-bar {
+  width: 80%;
+  max-width: 600px;
+  padding: 12px;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 15px;
-  margin: 5px 0;
-  position: relative;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-size: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition:
-    box-shadow 0.3s ease,
-    transform 0.3s ease;
-  list-style-type: none;
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.event-item:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transform: translateY(-5px);
+.search-bar:focus {
+  border-color: #007bff;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+  outline: none;
+}
+
+.event-columns {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  overflow: auto;
+}
+
+.event-column {
+  flex: 1;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: auto;
 }
 
 .event-details {
-  font-size: 16px;
-  color: #fff;
-  white-space: normal;
-  overflow-wrap: break-word;
+  background-color: #EAEAEA;
+  border: 1px solid #01172F;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.8rem;
+  position: relative;
+  overflow: auto;
+  color: #333;
 }
 
-.event-details p {
-  font-size: 18px;
-  max-width: 80%;
-  white-space: normal;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+h2 h3 p {
+  margin: 0.5rem;
 }
 
-p {
-  color: #000;
-  font-size: 14px;
+.register-button {
+  background-color: #009EE2;
+  color: white;
+  border: none;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
 }
 
-h2 {
-  font-size: 20px;
-  color: #000000;
-  margin-top: 20px;
-  margin-bottom: 5px;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 5px;
+.register-button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.register-button:disabled {
+  background-color: #ccc;
 }
 
 .empty-state {
   text-align: center;
-  color: #888;
-  font-size: 16px;
-  margin-top: 20px;
+  font-size: 1.2rem;
+  color: #777;
+}
+
+.list-right {
+  max-height: 29vh;
+  overflow-y: auto;
+}
+
+.list-left {
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.chip {
+  background-color: #d9f2ff;
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  color: #007bff;
+  font-weight: bold;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.chip:hover {
+  background-color: #007bff;
+  color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 </style>

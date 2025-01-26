@@ -5,6 +5,10 @@ import com.sopra.eaplanner.feedback.FeedbackType;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * DTO for summarizing feedback for an event.
+ * It contains event details, numerical feedback statistics, and comments analysis.
+ */
 public class FeedbackSummaryDTO {
 
     private Long eventId;
@@ -68,6 +72,9 @@ public class FeedbackSummaryDTO {
         return new FeedbackSummaryDTO(eventId, eventName, organizerName);
     }
 
+    /**
+     * Inner static class representing feedback statistics.
+     */
     public static class FeedbackStatistics {
 
         private double average;
@@ -112,6 +119,9 @@ public class FeedbackSummaryDTO {
         public void setSubAverages(Map<String, Double> subAverages) { this.subAverages = subAverages; }
     }
 
+    /**
+     * Inner static class representing comment analysis.
+     */
     public static class CommentAnalysis {
         private String comment;
         private String sentiment;

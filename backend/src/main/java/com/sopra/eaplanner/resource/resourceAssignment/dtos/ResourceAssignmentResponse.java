@@ -1,6 +1,5 @@
 package com.sopra.eaplanner.resource.resourceAssignment.dtos;
 
-import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.resource.ResourceItem;
 import com.sopra.eaplanner.resource.resourceAssignment.ResourceAssignment;
@@ -12,26 +11,23 @@ public class ResourceAssignmentResponse {
     private Long id;
     private ResourceItem resource;
     private EventResponseDTO event;
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private Integer quantity;
 
     public ResourceAssignmentResponse() {
     }
 
-    public ResourceAssignmentResponse(Long id, ResourceItem resource, EventResponseDTO event, LocalTime startTime, LocalTime endTime) {
+    public ResourceAssignmentResponse(Long id, ResourceItem resource, EventResponseDTO event, Integer quantity) {
         this.id = id;
         this.resource = resource;
         this.event = event;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.quantity = quantity;
     }
 
     public ResourceAssignmentResponse(ResourceAssignment resourceAssignment) {
         this.id = resourceAssignment.getId();
         this.resource = resourceAssignment.getResource();
         this.event = new EventResponseDTO(resourceAssignment.getEvent());
-        this.startTime = resourceAssignment.getStartTime();
-        this.endTime = resourceAssignment.getEndTime();
+        this.quantity = resourceAssignment.getQuantity();
     }
 
     public Long getId() {
@@ -58,19 +54,11 @@ public class ResourceAssignmentResponse {
         this.event = event;
     }
 
-    public LocalTime getStartTime() {
-        return startTime;
+    public Integer getQuantity() {
+        return quantity;
     }
 
-    public void setStartTime(LocalTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalTime endTime) {
-        this.endTime = endTime;
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 }

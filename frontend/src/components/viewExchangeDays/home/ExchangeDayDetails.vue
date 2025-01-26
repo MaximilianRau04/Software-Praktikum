@@ -1,13 +1,14 @@
-<!--
- * This Vue component displays detailed information about a selected exchange day,
- * including its name, location, description, date, and associated events.
--->
 <template>
   <div v-if="selectedExchangeDay" class="exchangeDayDetails">
     <!-- Displaying exchange day details -->
     <div class="exchangeDayInfos">
       <h1>{{ selectedExchangeDay.name }}</h1>
-      <p><strong>Ort:</strong> {{ selectedExchangeDay.location }}</p>
+      <p>
+        <strong>Ort:</strong> {{ selectedExchangeDay.location.street }}
+        {{ selectedExchangeDay.location.houseNumber }},
+        {{ selectedExchangeDay.location.city }},
+        {{ selectedExchangeDay.location.country }}
+      </p>
       <p>
         <strong>Beschreibung:</strong> {{ selectedExchangeDay.description }}
       </p>
@@ -16,15 +17,22 @@
         {{ formatDate(selectedExchangeDay.startDate) }} bis
         {{ formatDate(selectedExchangeDay.endDate) }}
       </p>
-      <p>Id: {{ selectedExchangeDay.id }}</p>
-    </div>
+      <p><strong>Id:</strong> {{ selectedExchangeDay.id }}</p>
 
+      <button
+        v-if="getCookie('role') === 'ADMIN'"
+        @click="navigateToManageExchangeDay(selectedExchangeDay.id)"
+        class="edit-button"
+      >
+        Verwalten
+      </button>
+    </div>
     <!-- Displaying associated events -->
     <div class="scrollableEvents">
       <h2>Workshops</h2>
       <div v-for="event in events" :key="event.id" v-if="events.length > 0">
         <!-- show event information -->
-        <EventDetails :event="event" />
+        <EventDetails :event="event"  v-if="!event.inviteOnly"/>
       </div>
       <p v-else>Keine Workshops vorhanden...</p>
     </div>
@@ -36,15 +44,23 @@ import { defineProps, onMounted, ref, watch } from "vue";
 import EventDetails from "@/components/viewExchangeDays/home/EventDetails.vue";
 import config from "@/config";
 import "@/assets/exchange-day-details.css";
-import { ExchangeDay, exchangeDays } from "@/types/ExchangeDay";
-const selectedExchangeDay = ref<ExchangeDay | null>(null);
+import { ExchangeDay } from "@/types/ExchangeDay";
+
 import { Event } from "@/types/Event";
+import { useRouter } from "vue-router";
+import Cookies from "js-cookie";
+import { showToast, Toast } from "@/types/toasts";
+import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
+
+const router = useRouter();
+const selectedExchangeDay = ref<ExchangeDay | null>(null);
 
 const props = defineProps<{
   exchangeDay: ExchangeDay | null;
 }>();
 
 const events = ref<Event[]>([]);
+const isPastExchangeDay = ref(false);
 
 /**
  * Formats a timestamp into a human-readable date string.
@@ -57,6 +73,21 @@ function formatDate(timestamp: number): string {
   return date.toLocaleDateString("de-DE");
 }
 
+function getCookie(name) {
+  return Cookies.get(name);
+}
+
+/**
+ * Checks if the exchange day is in the past.
+ */
+function checkIfPastExchangeDay() {
+  if (selectedExchangeDay.value) {
+    const now = new Date();
+    const endDate = new Date(selectedExchangeDay.value.endDate);
+    isPastExchangeDay.value = endDate < now;
+  }
+}
+
 /**
  * Fetches the details of a selected exchange day from the API.
  *
@@ -65,12 +96,19 @@ function formatDate(timestamp: number): string {
 async function fetchExchangeDayDetails(id: number) {
   try {
     const response = await fetch(`${config.apiBaseUrl}/exchange-days/${id}`);
-    if (!response.ok) throw new Error("Failed to fetch exchange day details.");
+    if (!response.ok)
+      showToast(
+        new Toast(
+          "Error",
+          `Fehler beim Laden der Exchange days`,
+          "error",
+          faXmark,
+          10,
+        ),
+      );
 
     const data = await response.json();
-    console.log("ExchangeDay data loaded:", data);
 
-    // Store the fetched exchange day details in `selectedExchangeDay
     selectedExchangeDay.value = {
       id: data.id,
       name: data.name,
@@ -80,10 +118,18 @@ async function fetchExchangeDayDetails(id: number) {
       location: data.location,
     };
 
-    // Fetch details of associated events, if available
+    checkIfPastExchangeDay();
     await fetchEventDetails();
   } catch (error) {
-    console.error("Error fetching exchange day details:", error);
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler beim Laden der exchange days`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
   }
 }
 
@@ -103,9 +149,21 @@ async function fetchEventDetails() {
     const responseData: Event[] = await response.json();
     events.value = responseData;
   } catch (error) {
-    console.error("Error fetching event:", error);
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler beim Abrufen der Events.`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
   }
 }
+
+const navigateToManageExchangeDay = (exchangeDayId) => {
+  router.push({ name: "manageExchangeDay", params: { exchangeDayId } });
+};
 
 /**
  * Watch for changes to the `exchangeDay` prop and fetch new details when it changes.

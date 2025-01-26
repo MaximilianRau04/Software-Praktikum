@@ -1,22 +1,35 @@
 package com.sopra.eaplanner.exchangeday.dtos;
 
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
+/**
+ * Data Transfer Object (DTO) for the request to create or update an ExchangeDay.
+ * This DTO is used to capture the input data for an ExchangeDay and includes validation annotations.
+ *
+ * <p>It ensures that the data for creating or updating an ExchangeDay is valid and correctly formatted.</p>
+ *
+ * <p>Fields in this class are validated as follows:</p>
+ * <ul>
+ *   <li>{@code startDate} and {@code endDate} must be a valid future or present date (using {@code @FutureOrPresent} annotation).</li>
+ *   <li>{@code name} must be between 3 and 100 characters (using {@code @Size} annotation).</li>
+ *   <li>{@code locationId} cannot be {@code null} (using {@code @NotNull} annotation).</li>
+ *   <li>{@code description} cannot exceed 255 characters (using {@code @Size} annotation).</li>
+ * </ul>
+ *
+ * <p>Instances of this class are typically used as input data for creating or updating ExchangeDay entities in the backend.</p>
+ */
 public class ExchangeDayRequestDTO {
 
     @DateTimeFormat(pattern = "dd.MM.yyyy")
-    @Future(message = "Date must be in the future")
+    @FutureOrPresent(message = "Date must be in the future")
     @NotNull(message = "Date cannot be null")
     private LocalDate startDate;
 
     @DateTimeFormat(pattern = "dd.MM.yyyy")
-    @Future(message = "Date must be in the future")
+    @FutureOrPresent(message = "Date must be in the future")
     @NotNull(message = "Date cannot be null")
     private LocalDate endDate;
 
@@ -24,7 +37,8 @@ public class ExchangeDayRequestDTO {
     @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters")
     private String name;
 
-    private String location;
+    @NotNull(message = "LocationId cannot be null")
+    private Long locationId;
 
     @Size(max = 255, message = "Description cannot exceed 255 characters")
     private String description;
@@ -32,11 +46,11 @@ public class ExchangeDayRequestDTO {
     public ExchangeDayRequestDTO() {
     }
 
-    public @Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getStartDate() {
+    public @FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setDate(@Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate startDate) {
+    public void setDate(@FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate startDate) {
         this.startDate = startDate;
     }
 
@@ -48,12 +62,12 @@ public class ExchangeDayRequestDTO {
         this.name = name;
     }
 
-    public @NotNull @NotEmpty String getLocation() {
-        return location;
+    public @NotNull Long getLocationId() {
+        return locationId;
     }
 
-    public void setLocation(@NotNull @NotEmpty String location) {
-        this.location = location;
+    public void setLocationId(@NotNull Long locationId) {
+        this.locationId = locationId;
     }
 
     public @Size(max = 255, message = "Description cannot exceed 255 characters") String getDescription() {
@@ -64,24 +78,24 @@ public class ExchangeDayRequestDTO {
         this.description = description;
     }
 
-    public @Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getEndDate() {
+    public @FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(@Future(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate endDate) {
+    public void setEndDate(@FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate endDate) {
         this.endDate = endDate;
     }
 
 
-    public static ExchangeDayRequestDTO mockWith(LocalDate startDate, LocalDate endDate, String name, String location, String description) {
-        return new ExchangeDayRequestDTO(startDate, endDate, name, location, description);
+    public static ExchangeDayRequestDTO mockWith(LocalDate startDate, LocalDate endDate, String name, Long locationId, String description) {
+        return new ExchangeDayRequestDTO(startDate, endDate, name, locationId, description);
     }
 
-    private ExchangeDayRequestDTO(LocalDate startDate, LocalDate endDate, String name, String location, String description) {
+    private ExchangeDayRequestDTO(LocalDate startDate, LocalDate endDate, String name, Long locationId, String description) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.name = name;
-        this.location = location;
+        this.locationId = locationId;
         this.description = description;
     }
 }

@@ -5,18 +5,20 @@ public class ResourceRequest {
     private String name;
     private String type;
     private String description;
-    private String location;
+    private Long locationId;
     private Boolean availability;
-    private Integer capacity;
+    private int capacity;
+    private int quantity;
 
     public ResourceRequest(String name, String type, String description,
-                            String location, Boolean availability, Integer capacity) {
+                            Long locationId, Boolean availability, int capacity, int quantity) {
         this.name = name;
         this.type = type;
         this.description = description;
-        this.location = location;
+        this.locationId = locationId;
         this.availability = availability;
         this.capacity = capacity;
+        this.quantity = quantity;
     }
 
     public String getName() {
@@ -43,12 +45,12 @@ public class ResourceRequest {
         this.description = description;
     }
 
-    public String getLocation() {
-        return location;
+    public Long getLocationId() {
+        return locationId;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setLocationId(Long locationId) {
+        this.locationId = locationId;
     }
 
     public Boolean getAvailability() {
@@ -59,11 +61,17 @@ public class ResourceRequest {
         this.availability = availability;
     }
 
-    public Integer getCapacity() {
-        return capacity;
+    public int getCapacity() {return capacity; }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 
-    public void setCapacity(Integer capacity) {
-        this.capacity = capacity;
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

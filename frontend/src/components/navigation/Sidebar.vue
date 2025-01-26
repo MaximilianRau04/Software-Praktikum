@@ -18,7 +18,7 @@
           v-if="getCookie('role') === 'ADMIN'"
         >
           <div class="menu-icon planning-icon"></div>
-          <span class="menu-text">Event Planung</span>
+          <span class="menu-text">Admin Panel</span>
         </div>
         <div
           class="menu-item"

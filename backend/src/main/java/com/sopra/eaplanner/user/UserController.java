@@ -2,9 +2,11 @@ package com.sopra.eaplanner.user;
 
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationDTO;
+import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
-import com.sopra.eaplanner.forumpost.ForumPostResponseDTO;
-import com.sopra.eaplanner.reward.Reward;
+import com.sopra.eaplanner.forumpost.dtos.ForumPostResponseDTO;
+import com.sopra.eaplanner.reward.dtos.RewardResponseDTO;
+import com.sopra.eaplanner.trainerprofile.HostedEventsDTO;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
 import com.sopra.eaplanner.user.dtos.UserRequestDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
@@ -14,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/users")
@@ -21,6 +25,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserTagWeightService userTagWeightService;
 
     @GetMapping("/search")
     public UserResponseDTO getUserByUsername(@RequestParam("username") String username) {
@@ -42,6 +49,17 @@ public class UserController {
         return userService.getRegisteredEvents(id);
     }
 
+    @GetMapping("/{id}/recommendedEvents")
+    public ResponseEntity<List<EventResponseDTO>> getRecommendedEvents(@PathVariable Long id, @RequestParam("limit") Integer limit) {
+        List<EventResponseDTO> recommendedEvents = userTagWeightService.recommendEvents(id, limit);
+        return ResponseEntity.ok().body(recommendedEvents);
+    }
+
+    @GetMapping("/{userId}/hostedEvents")
+    public ResponseEntity<HostedEventsDTO> getHostedEvents(@PathVariable Long userId) {
+        return ResponseEntity.ok().body(userService.getHostedEvents(userId));
+    }
+
     @GetMapping("/{id}/feedback")
     public Iterable<FeedbackResponseDTO> getGivenFeedback(@PathVariable Long id) {
         return userService.getGivenFeedback(id);
@@ -58,13 +76,18 @@ public class UserController {
     }
 
     @GetMapping("/{id}/rewards")
-    public Iterable<Reward> getUserRewards(@PathVariable Long id) {
+    public Iterable<RewardResponseDTO> getUserRewards(@PathVariable Long id) {
         return userService.getUserRewards(id);
     }
 
     @GetMapping("/{id}/participations")
     public Iterable<EventParticipationDTO> getParticipations(@PathVariable Long id) {
         return userService.getParticipations(id);
+    }
+
+    @GetMapping("/{id}/pendingFeedbackEvents")
+    public Iterable<EventResponseDTO> getPendingFeedbacks(@PathVariable Long id) {
+        return userService.getPendingFeedbackEvents(id);
     }
 
     @PostMapping("")
@@ -80,11 +103,23 @@ public class UserController {
         return userService.updateUser(id, requestBody);
     }
 
+    @PutMapping("/{id}/tags")
+    public Set<TagResponseDTO> updateUserInterestTags(@PathVariable Long id, @Valid @RequestBody Set<String> requestBody) {
+        return userService.updateUserInterestTags(id, requestBody);
+    }
+
     @PostMapping("/{userId}/eventRegistration")
     public ResponseEntity<UserResponseDTO> registerUserToEvent(@PathVariable Long userId, @RequestParam Long eventId) {
         User user = userService.registerUserToEvent(userId, eventId);
         URI location = URI.create("/api/users/" + user.getId());
         return ResponseEntity.created(location).body(new UserResponseDTO(user));
+    }
+
+    @GetMapping("/{userId}/tags")
+    public ResponseEntity<Set<TagResponseDTO>> getInterestTags(@PathVariable Long userId) {
+        Set<TagResponseDTO> tags = userService.getInterestTags(userId);
+
+        return ResponseEntity.ok(tags);
     }
 
     @DeleteMapping("/{userId}/eventRegistration")

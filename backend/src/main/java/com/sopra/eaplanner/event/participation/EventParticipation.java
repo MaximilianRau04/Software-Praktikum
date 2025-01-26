@@ -7,6 +7,33 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entity representing the participation of a user in an event.
+ *
+ * <p>This class models the relationship between a {@link User} and an {@link Event}, capturing
+ * details about the user's participation status, confirmation of attendance, and feedback.
+ * It serves as a link table with additional metadata.</p>
+ *
+ * <p>Key fields include:</p>
+ * <ul>
+ *   <li>{@code isParticipationConfirmed} - Indicates whether the user has confirmed their attendance.</li>
+ *   <li>{@code confirmationTime} - Records the timestamp of the attendance confirmation.</li>
+ *   <li>{@code feedbackGiven} - Tracks whether feedback has been submitted by the user.</li>
+ *   <li>{@code feedbackTime} - Records the timestamp of the feedback submission.</li>
+ * </ul>
+ *
+ * <p>The relationships between users and events are defined as {@code @ManyToOne} with
+ * foreign key constraints, ensuring proper linkage between entities. {@code @JsonBackReference}
+ * is used to prevent circular references during JSON serialization.</p>
+ *
+ * <p>Typical usage:</p>
+ * <pre>
+ *   EventParticipation participation = new EventParticipation();
+ *   participation.setUser(user);
+ *   participation.setEvent(event);
+ *   participation.setParticipationConfirmed(true);
+ * </pre>
+ */
 @Entity
 public class EventParticipation {
     @Id
@@ -90,7 +117,7 @@ public class EventParticipation {
         this.confirmationTime = confirmationTime;
     }
 
-    public boolean isFeedbackGiven() {
+    public boolean getFeedbackGiven() {
         return feedbackGiven;
     }
 

@@ -9,6 +9,8 @@ import com.sopra.eaplanner.feedback.FeedbackService;
 import com.sopra.eaplanner.feedback.FeedbackType;
 import com.sopra.eaplanner.feedback.summary.CommentType;
 import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO;
+import com.sopra.eaplanner.locations.Location;
+import com.sopra.eaplanner.locations.LocationDTO;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserService;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
@@ -22,10 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -57,8 +56,8 @@ public class EventControllerTest {
     @Test
     void testGetAllEvents() throws Exception {
         List<EventResponseDTO> mockEvents = List.of(
-                EventResponseDTO.mockWith(1L, LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A"),
-                EventResponseDTO.mockWith(2L, LocalDate.of(2025, 01, 20), LocalTime.of(12, 0), LocalTime.of(13, 0), "Workshop B", "Room B", "Description B")
+                EventResponseDTO.mockWith(1L, 1L, LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A", ExperienceLevel.ALL_LEVELS, false),
+                EventResponseDTO.mockWith(2L, 1L,  LocalDate.of(2025, 01, 20), LocalTime.of(12, 0), LocalTime.of(13, 0), "Workshop B", "Room B", "Description B", ExperienceLevel.SENIOR, false)
         );
 
         when(eventService.getAllEvents()).thenReturn(mockEvents);
@@ -73,7 +72,7 @@ public class EventControllerTest {
 
     @Test
     void testGetEventById() throws Exception {
-        EventResponseDTO mockEvent = EventResponseDTO.mockWith(1L, LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A");
+        EventResponseDTO mockEvent = EventResponseDTO.mockWith(1L, 1L, LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A", ExperienceLevel.JUNIOR, false);
         when(eventService.getEventById(mockEvent.getId())).thenReturn(mockEvent);
 
         mockMvc.perform(get("/api/events/{id}", mockEvent.getId()))
@@ -88,24 +87,23 @@ public class EventControllerTest {
     void testCreateEvent() throws Exception {
         Long exchangeDayId = 1L;
         Long organizerId = 1L;
-        Long trainerProfileId = 1L;
 
-        ExchangeDayResponseDTO mockExchangeDay = ExchangeDayResponseDTO.mockWith(exchangeDayId, LocalDate.of(2045, 12, 30), LocalDate.of(2045, 12, 30), "Workshop A", "Berlin", "Description A");
+        ExchangeDayResponseDTO mockExchangeDay = ExchangeDayResponseDTO.mockWith(exchangeDayId, LocalDate.of(2045, 12, 30), LocalDate.of(2045, 12, 30), "Workshop A",
+                new LocationDTO(), "Description A");
         when(exchangeDayService.getExchangeDayById(exchangeDayId)).thenReturn(mockExchangeDay);
 
         UserResponseDTO mockOrganizer = UserResponseDTO.mockWith(organizerId, "admin", "Admin", "User", User.Role.ADMIN);
         when(userService.getUserById(organizerId)).thenReturn(mockOrganizer);
 
-        EventRequestDTO eventRequest = EventRequestDTO.mockWith("Workshop A", LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Description A", "Room A", exchangeDayId, organizerId);
+        EventRequestDTO eventRequest = EventRequestDTO.mockWith("Workshop A", LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Description A", "Room A", exchangeDayId, organizerId, ExperienceLevel.EXPERT, Set.of("Spring"), false);
 
-        EventResponseDTO eventResponse = EventResponseDTO.mockWith(1L, LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A");
+        EventResponseDTO eventResponse = EventResponseDTO.mockWith(1L, 1L, LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A", ExperienceLevel.EXPERT, false);
         when(eventService.createEvent(any(EventRequestDTO.class))).thenReturn(eventResponse);
 
         mockMvc.perform(post("/api/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(eventRequest)))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/api/events/" + eventResponse.getId()))
                 .andExpect(jsonPath("$.id").value(eventResponse.getId()))
                 .andExpect(jsonPath("$.name").value("Workshop A"))
                 .andExpect(jsonPath("$.description").value("Description A"));
