@@ -479,8 +479,7 @@ onMounted(async () => {
     const levelsResponse = await fetch(
       `${config.apiBaseUrl}/events/experience-levels`,
     );
-    if (!levelsResponse.ok)
-    
+    if (levelsResponse.ok)
     experienceLevels.value = await levelsResponse.json();
   } catch (error) {
     showToast(
