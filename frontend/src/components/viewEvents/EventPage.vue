@@ -393,19 +393,24 @@ const openQRCode = async () => {
 /**
  * Copies the QR code link to the clipboard.
  */
-const copyToClipboard = async () => {
+ const copyToClipboard = async () => {
   if (qrCodeLink.value) {
     try {
       await navigator.clipboard.writeText(qrCodeLink.value);
       copySuccess.value = true;
-      setTimeout(() => {
-        copySuccess.value = false;
-      }, 2000);
     } catch (error) {
-      showToast(
-        new Toast("Error", `Fehler beim Kopieren`, "error", faXmark, 10),
-      );
+      const textArea = document.createElement('textarea');
+      textArea.value = qrCodeLink.value;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      copySuccess.value = true;
     }
+
+    setTimeout(() => {
+      copySuccess.value = false;
+    }, 2000);
   }
 };
 
