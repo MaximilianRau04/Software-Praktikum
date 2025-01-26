@@ -236,7 +236,7 @@ button:disabled {
 }
 
 .download-button {
-  background-color: #28a745;
+  background-color: #009EE2;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -248,11 +248,11 @@ button:disabled {
 }
 
 .download-button:hover {
-  background-color: #218838;
+  background-color: #0072a3;
 }
 
 .download-button:active {
-  background-color: #1e7e34;
+  background-color: #1f6a8a;
   transform: scale(0.98);
 }
 

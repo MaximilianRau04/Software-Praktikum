@@ -100,7 +100,7 @@ async function fetchExchangeDayDetails(id: number) {
       showToast(
         new Toast(
           "Error",
-          `Fehler Fetchen der exchange days`,
+          `Fehler beim Laden der Exchange days`,
           "error",
           faXmark,
           10,
@@ -124,7 +124,7 @@ async function fetchExchangeDayDetails(id: number) {
     showToast(
       new Toast(
         "Error",
-        `Fehler Fetchen der exchange days: ${error.message}`,
+        `Fehler beim Laden der exchange days`,
         "error",
         faXmark,
         10,

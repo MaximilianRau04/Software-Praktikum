@@ -213,7 +213,7 @@ const updateExchangeDay = async () => {
  */
 const deleteExchangeDay = async () => {
   if (!selectedExchangeDay.value) {
-    showToast(new Toast("Error", "Kein ExchangeDay ausgewählt", "error"));
+    showToast(new Toast("Warning", "Kein ExchangeDay ausgewählt", "warning"));
     return;
   }
 

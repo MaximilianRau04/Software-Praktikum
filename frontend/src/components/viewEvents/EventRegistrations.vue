@@ -235,7 +235,7 @@ const fetchEvents = async () => {
 
     if (!registeredRes.ok || !recommendedRes.ok || !feedbackRes.ok) {
       showToast(
-        new Toast("Error", `Fehler der Laden der Events`, "error", faXmark, 10)
+        new Toast("Error", `Fehler beim Laden der Events`, "error", faXmark, 10)
       );
     }
 
@@ -252,7 +252,7 @@ const fetchEvents = async () => {
     );
   } catch (error) {
     showToast(
-      new Toast("Error", `Fehler der Laden der Events`, "error", faXmark, 10)
+      new Toast("Error", `Fehler beim Laden der Events`, "error", faXmark, 10)
     );
   } finally {
     isLoading.value = false;
@@ -321,8 +321,8 @@ onMounted(() => {
 }
 
 .event-details {
-  background-color: #eaf4fb;
-  border: 1px solid #2c94e4;
+  background-color: #EAEAEA;
+  border: 1px solid #01172F;
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1.8rem;
@@ -336,7 +336,7 @@ h2 h3 p {
 }
 
 .register-button {
-  background-color: #003e81;
+  background-color: #009EE2;
   color: white;
   border: none;
   padding: 0.45rem 0.9rem;

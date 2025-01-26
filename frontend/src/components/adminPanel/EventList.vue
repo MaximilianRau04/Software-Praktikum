@@ -191,8 +191,8 @@ const showFeedbackSummary = (eventId) => {
 }
 
 .event-details {
-  background-color: #eaf4fb;
-  border: 1px solid #2c94e4;
+  background-color: #EAEAEA;
+  border: 1px solid #01172F;
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1.8rem;
@@ -206,7 +206,7 @@ h2 h3 p {
 }
 
 .register-button {
-  background-color: #003e81;
+  background-color: #009EE2;
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;

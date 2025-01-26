@@ -11,37 +11,38 @@
         + Neuer Thread
       </button>
 
-      <!-- list of threads -->
       <div class="thread-list">
-        <div
-          v-for="thread in threads"
-          :key="thread.threadId"
-          class="thread-item"
-          @click="selectThread(thread.threadId)"
-        >
-          <h3>{{ thread.title }}</h3>
-          <p class="thread-description">
-            {{ truncate(thread.description, 100) }}
-          </p>
-          <div class="thread-meta">
-            <span>{{ thread.forumPosts?.length || 0 }} Antworten</span>
-          </div>
-          <div v-if="isAdmin" class="post-actions" @click.stop>
-            <button
-              class="btn-secondary edit-btn"
-              @click.stop="prepareEditThread(thread)"
-            >
-              Bearbeiten
-            </button>
-            <button
-              class="btn-secondary delete-btn"
-              @click.stop="deleteThread(thread.threadId)"
-            >
-              Löschen
-            </button>
-          </div>
-        </div>
+  <div
+    v-for="thread in threads"
+    :key="thread.threadId"
+    class="thread-item"
+  >
+    <!-- Thread Inhalt -->
+    <div class="thread-content" @click="selectThread(thread.threadId)">
+      <h3>{{ thread.title }}</h3>
+      <p class="thread-description">{{ truncate(thread.description, 100) }}</p>
+      <div class="thread-meta">
+        <span>{{ thread.forumPosts?.length || 0 }} Antworten</span>
       </div>
+    </div>
+
+    <!-- Buttons für Admin -->
+    <div v-if="isAdmin" class="thread-actions" @click.stop>
+      <button
+        class="btn-secondary edit-btn"
+        @click.stop="prepareEditThread(thread)"
+      >
+        Bearbeiten
+      </button>
+      <button
+        class="btn-secondary delete-btn"
+        @click.stop="deleteThread(thread.threadId)"
+      >
+        Löschen
+      </button>
+    </div>
+  </div>
+</div>
     </div>
 
     <!-- Thread Detail View -->
@@ -558,52 +559,94 @@ export default {
 
 <style scoped>
 .forum-container {
-  max-height: 90%;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0.5rem;
-  padding-left: 2rem;
+  padding: 1.5rem;
   overflow-y: auto;
+  font-family: 'Arial', sans-serif;
 }
 
 .thread-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-}
-
-.thread-item .thread-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9em;
-  color: #000000;
-}
-
-.thread-item .thread-description h3 {
-  margin: 0.5rem;
-}
-
-p.thread-description {
-  padding-bottom: 2%;
-  border-bottom: 2px solid #ddd;
-}
-
-h3 {
-  margin: 0.5rem;
+  gap: 20px;
 }
 
 .thread-item {
-  padding: 0.2rem;
-  background-color: #f9f9f9;
-  border: 1px solid #000000;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #fefefe;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: transform 0.2s;
-  margin: 0.3rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .thread-item:hover {
-  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.thread-content {
+  flex: 1;
+  margin-right: 1.5rem;
+}
+
+.thread-meta {
+  font-size: 0.9em;
+  color: #6c757d;
+}
+
+.thread-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 0.95em;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #565e64;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+}
+
+.delete-btn:hover {
+  background-color: #b02a37;
+}
+
+.edit-btn {
+  background-color: #28a745;
+}
+
+.edit-btn:hover {
+  background-color: #218838;
 }
 
 .modal-overlay {
@@ -612,7 +655,7 @@ h3 {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -620,53 +663,40 @@ h3 {
 }
 
 .modal-content {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  width: 400px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 15px;
   margin-top: 20px;
 }
 
-.cancel-btn {
-  background-color: #0288d1;
-  color: #fff;
-  border: 1px solid #0288d1;
-  padding: 12px 18px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
-}
-
-.cancel-btn:hover {
-  background-color: #006bb3;
-  color: #fff;
+.posts-section {
+  margin-top: 2rem;
 }
 
 .post-item {
-  padding: 0.2rem;
-  margin-bottom: 0.5rem;
-  background-color: #f9f9f9;
-  border: 1px solid #000000;
-  border-radius: 8px;
-  max-height: 300px;
-  overflow-y: auto;
+  padding: 1rem;
+  background-color: #fefefe;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .post-header {
   font-size: 0.9em;
   color: #6c757d;
-  margin-bottom: 5px;
   display: flex;
   justify-content: space-between;
+  margin-bottom: 0.5rem;
 }
 
 .post-content {
@@ -674,119 +704,48 @@ h3 {
   color: #333;
 }
 
-.btn-primary,
-.btn-secondary {
-  background-color: #0288d1;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  font-size: 1em;
-  cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    transform 0.3s ease;
+.post-actions {
+  display: flex;
+  gap: 10px;
   margin-top: 10px;
-  width: auto;
-  display: block;
-}
-
-.btn-primary:hover,
-.btn-secondary:hover {
-  background-color: #6095b1;
-  transform: translateY(-2px);
-}
-
-.post-form {
-  margin-top: 20px;
 }
 
 .input-field {
   width: 100%;
   padding: 10px;
-  border: 1px solid #e1e1e1;
+  border: 1px solid #ccc;
   border-radius: 8px;
+  font-size: 1em;
   margin-bottom: 10px;
   box-sizing: border-box;
-  font-size: 1em;
+  transition: border-color 0.2s ease;
 }
 
 .input-field:focus {
-  border-color: #6095b1;
+  border-color: #007bff;
   outline: none;
 }
 
-.modal-actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.modal-actions button {
-  padding: 12px 20px;
-  font-size: 1em;
-  border-radius: 6px;
-  transition: background-color 0.3s ease;
-}
-
-.modal-actions .btn-primary {
-  background-color: #0288d1;
-  color: white;
-  border: none;
-}
-
-.modal-actions .btn-primary:hover {
-  background-color: #6095b1;
-}
-
-.modal-actions .cancel-btn {
-  background-color: #e0e0e0;
-  color: #333;
-}
-
-.modal-actions .cancel-btn:hover {
-  background-color: #d1d1d1;
-}
-
-.no-resize {
-  resize: none;
-}
-
-p.thread-description {
-  margin: 1rem;
-}
-
 .checkbox-container {
-  display: inline-flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 10px;
-}
-
-.post-actions {
-  margin-top: 10px;
   display: flex;
+  align-items: center;
   gap: 10px;
+  margin-bottom: 1rem;
 }
 
-.edit-post-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  z-index: 2000;
-}
-.delete-btn {
-  background-color: #dc3545;
-  margin-left: auto;
-}
+@media (max-width: 768px) {
+  .thread-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-.edit-btn {
-  background-color: #42b983;
+  .thread-actions {
+    margin-top: 10px;
+  }
+
+  .modal-content {
+    width: 95%;
+  }
 }
 </style>
+

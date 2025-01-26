@@ -376,7 +376,7 @@ const SelectEventToUpdate = () => {
 };
 
 const SelectExchangeDayToUpdate = () => {
-  resetForms(selectEventToUpdate);
+  resetForms(selectExchangeDayToUpdate);
   selectExchangeDayToUpdate.value = !selectExchangeDayToUpdate.value;
 };
 

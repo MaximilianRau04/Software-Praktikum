@@ -480,15 +480,7 @@ onMounted(async () => {
       `${config.apiBaseUrl}/events/experience-levels`,
     );
     if (!levelsResponse.ok)
-      showToast(
-        new Toast(
-          "Error",
-          `Fehler beim Abrufen der Erfahrungslevels.`,
-          "error",
-          faXmark,
-          10,
-        ),
-      );
+    
     experienceLevels.value = await levelsResponse.json();
   } catch (error) {
     showToast(

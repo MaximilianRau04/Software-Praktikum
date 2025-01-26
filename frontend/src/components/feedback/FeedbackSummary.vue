@@ -358,18 +358,6 @@ export default {
           `${config.apiBaseUrl}/events/${this.eventId}/summary`
         );
 
-        if (!response.ok) {
-          showToast(
-            new Toast(
-              "Error",
-              `Fehler beim laden der Daten`,
-              "error",
-              faXmark,
-              10
-            )
-          );
-        }
-
         this.data = await response.json();
 
         this.categoryOrder = [
@@ -391,15 +379,6 @@ export default {
         ];
       } catch (err) {
         this.error = err.message || "An error occurred";
-        showToast(
-          new Toast(
-            "Error",
-            `Fehler beim laden der Daten`,
-            "error",
-            faXmark,
-            10
-          )
-        );
       }
     },
 
@@ -482,9 +461,6 @@ export default {
           throw new Error("Event Tags konnten nicht geladen werden.");
         this.tags = await tagsResponse.json();
       } catch (error) {
-        showToast(
-          new Toast("Error", `Fehler beim Laden der Tags`, "error", faXmark, 10)
-        );
       }
     },
 
@@ -515,18 +491,6 @@ export default {
      */
     createRadarChart() {
       const canvas = document.getElementById("radarChart");
-      if (!canvas) {
-        showToast(
-          new Toast(
-            "Error",
-            `Canvas element für radar chart nicht gefunden.`,
-            "error",
-            faXmark,
-            10
-          )
-        );
-        return;
-      }
 
       this.ctx = canvas.getContext("2d");
       new Chart(this.ctx, {

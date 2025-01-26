@@ -40,21 +40,6 @@
       <button type="submit" class="login-button">Ressource erstellen</button>
     </form>
   </div>
-  <div class="csv-actions">
-        <button class="csv-button" @click="triggerFileUpload">
-          Ressourcen aus CSV importieren
-        </button>
-        <input
-          ref="fileInput"
-          type="file"
-          accept=".csv"
-          @change="handleFileUpload"
-          style="display: none"
-        />
-        <button class="csv-button" @click="downloadCsvOfResources">
-          Ressourcen als CSV downloaden
-        </button>
-      </div>
 </template>
 
 <script setup lang="ts">
@@ -125,73 +110,6 @@ const resetForm = () => {
   location.value = null;
   availability.value = true;
   emit("update:showResourceBox", false);
-};
-
-/**
- * download CSV file of todos
- */
- async function downloadCsvOfResources() {
-  try {
-    const response = await fetch(
-      `${config.apiBaseUrl}/resources/csv-downloads`
-    );
-    if (!response.ok) throw new Error("Download fehlgeschlagen!");
-
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "resources.csv";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  } catch (error) {
-    showToast(
-      new Toast("Error", "CSV Download fehlgeschlagen!", "error", faXmark, 10)
-    );
-  }
-}
-
-/**
- * Trigger file input click
- */
-const triggerFileUpload = () => {
-  fileInput.value?.click();
-};
-
-/**
- * Handles the file upload event and sends the CSV to the backend
- */
-const handleFileUpload = async (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  if (!target.files || target.files.length === 0) {
-    showToast(new Toast("Error", "Keine Datei ausgewählt!", "error"));
-    return;
-  }
-
-  const file = target.files[0];
-  const formData = new FormData();
-  formData.append("file", file);
-
-  try {
-    const response = await fetch(`${config.apiBaseUrl}/resources/csv-import`, {
-      method: "POST",
-      body: formData,
-    });
-
-    const responseText = await response.text();
-
-    if (!response.ok) {
-      throw new Error(responseText || "Import fehlgeschlagen!");
-    }
-
-    showToast(new Toast("Success", "CSV erfolgreich importiert!", "success"));
-  } catch (error) {
-    showToast(new Toast("Error", "Import fehlgeschlagen", "error"));
-  } finally {
-    target.value = "";
-  }
 };
 
 /**

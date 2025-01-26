@@ -46,27 +46,34 @@
     </div>
 
     <!-- Modal für Benutzerauswahl -->
-    <div v-if="isModalOpen" class="modal">
-      <div class="modal-content">
-        <h3>Benutzer auswählen</h3>
-        <ul>
-          <li
-            v-for="user in filteredUsers"
-            :key="user.id"
-            @click="toggleUserSelection(user)"
-            :class="{ selected: selectedUsers.includes(user) }"
-          >
-            {{ user.username }}
-          </li>
-        </ul>
+<div v-if="isModalOpen" class="modal">
+  <div class="modal-content">
+    <button
+      @click="closeModal"
+      class="close-modal-icon"
+      aria-label="Close User Selection Modal"
+    >
+      ✕
+    </button>
 
-        <button @click="addUsersToEvent" class="confirm-button">
-          Benutzer hinzufügen
-        </button>
-        <button @click="closeModal" class="cancel-button">Abbrechen</button>
-      </div>
-    </div>
+    <h3>Benutzer auswählen</h3>
+    <ul>
+      <li
+        v-for="user in filteredUsers"
+        :key="user.id"
+        @click="toggleUserSelection(user)"
+        :class="{ selected: selectedUsers.includes(user) }"
+      >
+        {{ user.username }}
+      </li>
+    </ul>
+
+    <button @click="addUsersToEvent" class="confirm-button">
+      Benutzer hinzufügen
+    </button>
   </div>
+</div>
+</div>
 </template>
 
 <script setup lang="ts">
@@ -82,7 +89,7 @@ const searchTerm = ref("");
 const isModalOpen = ref(false);
 const eventIdForUserSelection = ref(null);
 const router = useRouter();
-const registeredUsers = ref([]); // Für die registrierten Benutzer
+const registeredUsers = ref([]);
 const filteredUsers = computed(() => {
   return users.value.filter(
     (user) => !registeredUsers.value.some(regUser => regUser.id === user.id)
@@ -147,7 +154,7 @@ const fetchUserRegistrations = async (eventId) => {
           `${config.apiBaseUrl}/users/${user.id}/registeredEvents`
         );
         if (!response.ok) {
-          throw new Error(`Fehler bei der Überprüfung der Registrierungen für ${user.username}`);
+          throw new Error(`Fehler bei der Überprüfung der Registrierung für ${user.username}`);
         }
         const userEvents = await response.json();
         return userEvents.some((event) => event.id === eventId);
@@ -164,7 +171,7 @@ const openUserModal = async (eventId) => {
   eventIdForUserSelection.value = eventId;
   isModalOpen.value = true;
   await fetchUsers();
-  await fetchUserRegistrations(eventId); // Überprüfe die Registrierungen
+  await fetchUserRegistrations(eventId);
 };
 
 const closeModal = () => {
@@ -267,6 +274,36 @@ const showDetails = (eventId) => {
   outline: none;
 }
 
+.event-page {
+  padding: 20px;
+  background: #f9f9f9;
+  max-height: 90%;
+}
+
+.search-bar-container {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.search-bar {
+  width: 80%;
+  max-width: 600px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.search-bar:focus {
+  border-color: #007bff;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+  outline: none;
+}
+
 .event-columns {
   display: flex;
   justify-content: space-between;
@@ -284,8 +321,8 @@ const showDetails = (eventId) => {
 }
 
 .event-details {
-  background-color: #eaf4fb;
-  border: 1px solid #2c94e4;
+  background-color: #EAEAEA;
+  border: 1px solid #01172F;
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1.8rem;
@@ -299,7 +336,7 @@ h2 h3 p {
 }
 
 .register-button {
-  background-color: #003e81;
+  background-color: #009EE2;
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;
@@ -368,14 +405,6 @@ h2 h3 p {
   z-index: 1000;
 }
 
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 400px;
-  width: 100%;
-}
-
 .modal-content h3 {
   margin-bottom: 10px;
 }
@@ -404,6 +433,10 @@ h2 h3 p {
   padding: 10px 20px;
   margin-top: 10px;
   cursor: pointer;
+  background-color: #009EE2;
+  color: white;
+  border: none;
+  border-radius: 8px;
 }
 
 .add-users-button {
@@ -413,9 +446,35 @@ h2 h3 p {
   color: white;
   border: none;
   cursor: pointer;
+  border-radius: 8px;
 }
 
 .add-users-button:hover {
   background-color: #007bb5;
 }
+
+.modal-content {
+  position: relative;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 100%;
+}
+
+.close-modal-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: black;
+}
+
+.close-modal-icon:hover {
+  color: #ff0000;
+}
+
 </style>

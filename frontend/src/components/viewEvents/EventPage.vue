@@ -552,7 +552,7 @@ const unregisterFromEvent = async () => {
     showToast(
       new Toast(
         "Error",
-        `Fehler Fetchen der exchange days: ${error.message}`,
+        `Fehler Fetchen der exchange days`,
         "error",
         faXmark,
         10,

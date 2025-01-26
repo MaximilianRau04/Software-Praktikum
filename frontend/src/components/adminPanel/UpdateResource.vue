@@ -200,7 +200,7 @@ const fetchResourceDetails = async () => {
  */
 const updateResource = async () => {
   if (!selectedResource.value) {
-    showToast(new Toast("Error", "Keine Ressource ausgewählt.", "error"));
+    showToast(new Toast("Warning", "Keine Ressource ausgewählt.", "warning"));
     return;
   }
 

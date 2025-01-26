@@ -132,7 +132,6 @@ watch(startDate, (newStartDate) => {
   }
 });
 
-// Fetch locations from the backend
 onMounted(async () => {
   setStartDateToToday();
   try {

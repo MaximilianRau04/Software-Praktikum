@@ -895,9 +895,6 @@ export default {
     }
 
     if (this.userId) {
-      showToast(
-        new Toast("Info", `Benutzer ist eingeloggt`, "info", faCheck, 10),
-      );
     } else {
       showToast(
         new Toast("Info", `benutzer ist nicht eingeloggt`, "info", faXmark, 10),

@@ -277,15 +277,9 @@ const fetchOrganizerId = async () => {
     if (response.ok) {
       const data = await response.json();
       organizerId.value = data.id;
-    } else {
-      showToast(
-        new Toast("Error", "Fehler beim Abrufen der Organizer ID.", "error"),
-      );
-    }
+    } 
   } catch (error) {
-    showToast(
-      new Toast("Error", "Fehler beim Abrufen der Organizer ID.", "error"),
-    );
+    
   }
 };
 
@@ -344,16 +338,7 @@ const updateFilteredRooms = async () => {
       if (response.ok) {
         const rooms = await response.json();
         filteredRooms.value = rooms;
-      } else {
-        showToast(
-          new Toast(
-            "Error",
-            "Fehler beim Laden der Ressourcen für die Location.",
-            "error",
-          ),
-        );
-        filteredRooms.value = [];
-      }
+      } 
     } catch (error) {
       showToast(
         new Toast(
@@ -378,19 +363,9 @@ const fetchExperienceLevels = async () => {
     if (response.ok) {
       const data = await response.json();
       experienceLevels.value = data;
-    } else {
-      showToast(
-        new Toast(
-          "Error",
-          "Fehler beim Abrufen der Erfahrungslevels.",
-          "error",
-        ),
-      );
-    }
+    } 
   } catch (error) {
-    showToast(
-      new Toast("Error", "Fehler beim Abrufen der Erfahrungslevels.", "error"),
-    );
+    
   }
 };
 
@@ -399,7 +374,7 @@ const fetchExperienceLevels = async () => {
  */
 const updateEvent = async () => {
   if (!selectedEvent.value) {
-    showToast(new Toast("Error", "Kein Event ausgewählt.", "error"));
+    showToast(new Toast("Warning", "Kein Event ausgewählt.", "warning"));
     return;
   }
 
@@ -490,10 +465,8 @@ const fetchTags = async () => {
       allTags.value = data.map((tag: any) => String(tag.name));
       filterTags();
     } else {
-      showToast(new Toast("Error", "Fehler beim Abrufen der Tags.", "error"));
     }
   } catch (error) {
-    showToast(new Toast("Error", "Fehler beim Abrufen der Tags.", "error"));
   }
 };
 
@@ -510,14 +483,8 @@ const fetchEventTags = async () => {
       selectedTags.value = data.map((tag: any) => tag.name);
       filterTags();
     } else {
-      showToast(
-        new Toast("Error", "Fehler beim Abrufen der Tags des Events.", "error"),
-      );
     }
   } catch (error) {
-    showToast(
-      new Toast("Error", "Fehler beim Abrufen der Tags des Events.", "error"),
-    );
   }
 };
 
