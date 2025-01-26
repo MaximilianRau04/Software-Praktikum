@@ -81,7 +81,9 @@
               </td>
             </tr>
           </table>
-          <button @click="generatePDF">Als PDF exportieren</button>
+          <button class="pdf-button" @click="generatePDF">
+            Als PDF exportieren
+          </button>
         </div>
 
         <div class="general-info-right">
@@ -127,7 +129,7 @@
                       "
                       class="popup"
                     >
-                      Average: {{ category.data.average.toFixed(2) }}
+                      Durchschnitt: {{ category.data.average.toFixed(2) }}
                     </div>
                   </div>
                 </div>
@@ -142,15 +144,15 @@
             <div class="small-scales">
               <div
                 v-for="(subScore, subIndex) in getOrderedSubScores(
-                  category.data.subAverages,
+                  category.data.subAverages
                 )"
                 :key="subIndex"
                 class="small-scale"
               >
                 <h4>
                   {{
-                    subScore.name.charAt(0).toUpperCase() +
-                    subScore.name.slice(1)
+                    formatKey(subScore.name.charAt(0).toUpperCase() +
+                    subScore.name.slice(1))
                   }}
                 </h4>
                 <div class="scale">
@@ -170,7 +172,7 @@
                         "
                         class="popup"
                       >
-                        Sub-score: {{ subScore.value.toFixed(2) }}
+                        Unterpunktzahl: {{ subScore.value.toFixed(2) }}
                       </div>
                     </div>
                   </div>
@@ -247,7 +249,7 @@ Chart.register(
   PointElement,
   Filler,
   Legend,
-  Tooltip,
+  Tooltip
 );
 
 export default {
@@ -326,15 +328,14 @@ export default {
         this.calculateAverages();
         this.setRadarChartLabels();
       } catch (err) {
-        this.error = err.message || "An unknown error occurred";
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Laden der Daten`,
-            "error",
+            "Info",
+            `Noch kein feedback für dieses Event verfügbar.`,
+            "info",
             faXmark,
-            10,
-          ),
+            10
+          )
         );
       } finally {
         this.isLoading = false;
@@ -350,7 +351,7 @@ export default {
     async fetchEventSummary() {
       try {
         const response = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/summary`,
+          `${config.apiBaseUrl}/events/${this.eventId}/summary`
         );
 
         if (!response.ok) {
@@ -360,29 +361,29 @@ export default {
               `Fehler beim laden der Daten`,
               "error",
               faXmark,
-              10,
-            ),
+              10
+            )
           );
         }
 
         this.data = await response.json();
 
         this.categoryOrder = [
-          { name: "OVERALL", data: this.data.numericalFeedback.OVERALL },
+          { name: "GESAMT", data: this.data.numericalFeedback.OVERALL },
           {
-            name: "CONTENT_AND_STRUCTURE",
+            name: "INHALT UND STRUKTUR",
             data: this.data.numericalFeedback.CONTENT_AND_STRUCTURE,
           },
           {
-            name: "PARTICIPATION",
+            name: "TEILNAME",
             data: this.data.numericalFeedback.PARTICIPATION,
           },
           {
-            name: "IT_AND_ORGANISATION",
+            name: "IT  UND ORGANISATION",
             data: this.data.numericalFeedback.IT_AND_ORGANISATION,
           },
           { name: "TRAINER", data: this.data.numericalFeedback.TRAINER },
-          { name: "SIMILARITY", data: this.data.numericalFeedback.SIMILARITY },
+          { name: "ÄHNLICHKEIT", data: this.data.numericalFeedback.SIMILARITY },
         ];
       } catch (err) {
         this.error = err.message || "An error occurred";
@@ -392,8 +393,8 @@ export default {
             `Fehler beim laden der Daten`,
             "error",
             faXmark,
-            10,
-          ),
+            10
+          )
         );
       }
     },
@@ -404,18 +405,18 @@ export default {
     async fetchEventDetails() {
       try {
         const response = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}`,
+          `${config.apiBaseUrl}/events/${this.eventId}`
         );
         const eventData = await response.json();
         this.event = eventData;
 
         const organizerResponse = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/organizer`,
+          `${config.apiBaseUrl}/events/${this.eventId}/organizer`
         );
         this.organizer = await organizerResponse.json();
 
         const locationResponse = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/location`,
+          `${config.apiBaseUrl}/events/${this.eventId}/location`
         );
         this.location = await locationResponse.json();
       } catch (error) {
@@ -425,8 +426,8 @@ export default {
             `Fehler beim Laden der Eventdaten`,
             "error",
             faXmark,
-            10,
-          ),
+            10
+          )
         );
       }
     },
@@ -437,13 +438,13 @@ export default {
     async fetchWordCloud() {
       if (!this.eventId) {
         showToast(
-          new Toast("Error", `Event ID is missing.`, "error", faXmark, 10),
+          new Toast("Error", `Event ID is missing.`, "error", faXmark, 10)
         );
         return;
       }
       try {
         const response = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/word-cloud`,
+          `${config.apiBaseUrl}/events/${this.eventId}/word-cloud`
         );
         if (!response.ok) {
           showToast(
@@ -452,8 +453,8 @@ export default {
               `Fehler beim Laden der Word Cloud.`,
               "error",
               faXmark,
-              10,
-            ),
+              10
+            )
           );
         }
         const blob = await response.blob();
@@ -465,8 +466,8 @@ export default {
             `Fehler beim Laden der Word Cloud.`,
             "error",
             faXmark,
-            10,
-          ),
+            10
+          )
         );
       }
     },
@@ -478,13 +479,7 @@ export default {
         this.tags = await tagsResponse.json();
       } catch (error) {
         showToast(
-          new Toast(
-            "Error",
-            `Fehler beim Laden der Tags`,
-            "error",
-            faXmark,
-            10,
-          ),
+          new Toast("Error", `Fehler beim Laden der Tags`, "error", faXmark, 10)
         );
       }
     },
@@ -523,8 +518,8 @@ export default {
             `Canvas element für radar chart nicht gefunden.`,
             "error",
             faXmark,
-            10,
-          ),
+            10
+          )
         );
         return;
       }
@@ -582,10 +577,41 @@ export default {
      * @returns {string} The formatted key.
      */
     formatKey(key) {
+      const translations = {
+        CONTENT_AND_STRUCTURE: "Inhalt und Struktur",
+        PARTICIPATION: "Teilnahme",
+        IT_AND_ORGANISATION: "IT und Organisation",
+        TRAINER: "Trainer",
+        SIMILARITY: "Ähnlichkeit",
+        Organisational: "Organisatorisch",
+        Overall: "Gesamt",
+        Relevance: "Relevant",
+        Understandability: "Verständlichkeit",
+        Practicality: "Praktikabilität",
+        Reasonability: "Angemessenheit",
+        ContentDepth: "Inhaltstiefe",
+        Participation: "Teilnahme",
+        Atmosphere: "Atmosphäre",
+        Networking: "Vernetzung",
+        Equipment: "Ausstattung",
+        Comfortability: "Komfortabilität",
+        Communication: "Kommunikation",
+        Presentability: "Präsentierbarkeit",
+        TimeManagement: "Zeitmanagement",
+        Competency: "Kompetenz",
+        Interactivity: "Interaktivität",
+        SimilarEventParticipation: "Ähnliche Eventteilnahme",
+        ENJOYMENT: "Vergnügen",
+        PERSONAL_IMPROVEMENT: "Persönliche Verbesserung",
+        RECOMMENDATION: "Empfehlung",
+        REQUEST: "Anfrage",
+        IMPROVEMENT: "Verbesserung",
+      };
       if (!key || typeof key !== "string") return "Unknown";
-      return key
-        .replace(/([A-Z])/g, " $1")
-        .replace(/^./, (str) => str.toUpperCase());
+      return (
+        translations[key] ||
+        key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())
+      );
     },
 
     /**
@@ -637,8 +663,8 @@ export default {
             `Word Cloud Bild ist nicht verfügbar.`,
             "error",
             faXmark,
-            10,
-          ),
+            10
+          )
         );
         return;
       }
@@ -776,8 +802,8 @@ export default {
             `Fehler beim Generieren der PDF`,
             "error",
             faXmark,
-            10,
-          ),
+            10
+          )
         );
       }
     },
@@ -815,9 +841,22 @@ export default {
 
 <style scoped>
 .back-button {
-  position: fixed;
   top: 5rem;
-  left: 5rem;
+  left: 6rem;
+  background-color: #009ee2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
+}
+
+.pdf-button {
+  bottom: 2rem;
+  left: 20%;
   background-color: #009ee2;
   color: white;
   border: none;

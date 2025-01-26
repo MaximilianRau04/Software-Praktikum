@@ -310,3 +310,29 @@ button:disabled {
 a:hover{
   background-color: hsl(198, 100%, 84%);
 }
+
+.tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.chip {
+  background-color: #d9f2ff;
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  color: #007bff;
+  font-weight: bold;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.chip:hover {
+  background-color: #02448a;
+  color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}

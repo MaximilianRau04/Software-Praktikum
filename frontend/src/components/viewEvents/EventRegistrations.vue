@@ -336,7 +336,6 @@ h2 h3 p {
   margin: 0.5rem;
 }
 
-/* Buttons */
 .register-button {
   background-color: #003e81;
   color: white;

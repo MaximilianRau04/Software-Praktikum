@@ -105,6 +105,19 @@
             />
             ExchangeDay bearbeiten
           </button>
+          <button
+            @click="toggleEventListBox"
+            class="action-button"
+            type="button"
+          >
+            <img 
+            src="@/images/plus.png"
+            alt="List" 
+            class="plus-icon" 
+            width="35" 
+            height="35" />
+            Event Feedbacks
+          </button>
         </div>
       </div>
 
@@ -169,23 +182,30 @@
             v-if="selectExchangeDayToUpdate"
           />
         </transition>
+
+        <!-- event feedbacks -->
+        <transition name="roll">
+          <EventList
+            v-model:showEventListBox="showEventListBox"
+            v-if="showEventListBox"
+          />
+        </transition>
       </div>
       <div class="csv-actions">
-          <button class="csv-button" @click="triggerFileUpload">
-            Ressourcen aus CSV importieren
-          </button>
-          <input
-            ref="fileInput"
-            type="file"
-            accept=".csv"
-            @change="handleFileUpload"
-            style="display: none"
-          />
-          <button class="csv-button" @click="downloadCsvOfResources">
-            Ressourcen als CSV downloaden
-          </button>
-        </div>
-      
+        <button  class="csv-button" @click="triggerFileUpload" v-if="areAllBoxesHidden()">
+          Ressourcen aus CSV importieren
+        </button>
+        <input
+          ref="fileInput"
+          type="file"
+          accept=".csv"a
+          @change="handleFileUpload"
+          style="display: none"
+        />
+        <button class="csv-button" @click="downloadCsvOfResources"  v-if="areAllBoxesHidden()">
+          Ressourcen als CSV downloaden
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -201,6 +221,7 @@ import LocationForm from "@/components/adminPanel/LocationForm.vue";
 import UpdateResource from "./UpdateResource.vue";
 import UpdateEvent from "./UpdateEvent.vue";
 import UpdateExchangeDay from "./UpdateExchangeDay.vue";
+import EventList from "./EventList.vue";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
@@ -209,6 +230,7 @@ const showExchangeDayBox = ref(false);
 const showResourceBox = ref(false);
 const showLocationBox = ref(false);
 const showUpdateResourceBox = ref(false);
+const showEventListBox = ref(false);
 const selectEventToUpdate = ref(false);
 const selectExchangeDayToUpdate = ref(false);
 
@@ -218,7 +240,16 @@ const experienceLevels = ref([]);
 const allTags = ref([]);
 const filteredTags = ref([]);
 const fileInput = ref<HTMLInputElement | null>(null);
-const allForms = {showExchangeDayBox, showWorkshopBox, showResourceBox, showLocationBox, showUpdateResourceBox, selectEventToUpdate, selectExchangeDayToUpdate};
+const allForms = {
+  showExchangeDayBox,
+  showWorkshopBox,
+  showResourceBox,
+  showLocationBox,
+  showUpdateResourceBox,
+  selectEventToUpdate,
+  selectExchangeDayToUpdate,
+  showEventListBox,
+};
 
 onMounted(async () => {
   await fetchData();
@@ -301,6 +332,11 @@ const toggleUpdateResourceBox = () => {
   showUpdateResourceBox.value = !showUpdateResourceBox.value;
 };
 
+const toggleEventListBox = () => {
+  resetForms(showEventListBox);
+  showEventListBox.value = !showEventListBox.value;
+};
+
 const SelectEventToUpdate = () => {
   resetForms(selectEventToUpdate);
   selectEventToUpdate.value = !selectEventToUpdate.value;
@@ -311,11 +347,16 @@ const SelectExchangeDayToUpdate = () => {
   selectExchangeDayToUpdate.value = !selectExchangeDayToUpdate.value;
 };
 
+const areAllBoxesHidden = () => {
+  return Object.values(allForms).every((box) => !box.value);
+};
+
+
 /**
  * Resets all forms
  */
 const resetForms = (currentForm) => {
-  for(const form in allForms) {
+  for (const form in allForms) {
     if (allForms[form] === currentForm) continue;
     allForms[form].value = false;
   }
@@ -350,14 +391,14 @@ async function downloadCsvOfResources() {
 /**
  * Trigger file input click
  */
- const triggerFileUpload = () => {
+const triggerFileUpload = () => {
   fileInput.value?.click();
 };
 
 /**
  * Handles the file upload event and sends the CSV to the backend
  */
- const handleFileUpload = async (event: Event) => {
+const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (!target.files || target.files.length === 0) {
     showToast(new Toast("Error", "Keine Datei ausgewählt!", "error"));
@@ -381,39 +422,22 @@ async function downloadCsvOfResources() {
     }
 
     showToast(new Toast("Success", "CSV erfolgreich importiert!", "success"));
-    await fetchData(); 
+    await fetchData();
   } catch (error) {
-    showToast(
-      new Toast("Error","Import fehlgeschlagen", "error")
-    );
+    showToast(new Toast("Error", "Import fehlgeschlagen", "error"));
   } finally {
-    target.value = ""; 
+    target.value = "";
   }
 };
-
 </script>
 
 <style scoped>
-.create-buttons-group {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  margin: 0px;
-}
-
-.update-buttons-group {
-  background-color: #e0e0e0;
-  padding: 10px;
-  border-radius: 5px;
-  margin-top: 10px;
-}
-
 .action-button {
   margin: 5px;
 }
 
 .create-buttons-group {
-  background-color: #f0f0f0;
+  background-color: #e0e0e0;
   padding: 10px;
   border-radius: 5px;
   margin: 0px;
@@ -425,7 +449,6 @@ async function downloadCsvOfResources() {
   border-radius: 5px;
   margin-top: 10px;
 }
-
 
 .csv-actions {
   display: flex;
@@ -435,7 +458,7 @@ async function downloadCsvOfResources() {
 }
 
 .csv-button {
-  background-color: #003E81;
+  background-color: #003e81;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -448,5 +471,4 @@ async function downloadCsvOfResources() {
 .csv-button:hover {
   background-color: #013368;
 }
-
 </style>
