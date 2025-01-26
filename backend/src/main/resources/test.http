@@ -10,7 +10,8 @@ Content-Type: application/json
   "exchangeDayId": 6,
   "organizerId": 1,
   "startTime": "13:00:00",
-  "endTime": "14:00:00"
+  "endTime": "14:00:00",
+  "inviteOnly": true
 }
 
 
@@ -202,7 +203,7 @@ Content-Type: application/json
   "description": "A day dedicated to learning Spring Boot"
 }
 ###
-GET http://localhost:8080/api/events/1/summary
+GET http://localhost:8080/api/events
 ###
 GET http://localhost:8080/api/events/1/resources
 ###

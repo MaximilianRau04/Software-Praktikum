@@ -16,6 +16,7 @@ public class EventResponseDTO {
     private String room;
     private String description;
     private ExperienceLevel recommendedExperience;
+    private Boolean inviteOnly;
 
     public EventResponseDTO() {
     }
@@ -30,6 +31,7 @@ public class EventResponseDTO {
         this.room = event.getRoom();
         this.description = event.getDescription();
         this.recommendedExperience = event.getRecommendedExperience();
+        this.inviteOnly = event.getInviteOnly();
     }
 
     public EventResponseDTO(Event event) {
@@ -42,6 +44,7 @@ public class EventResponseDTO {
         this.room = event.getRoom();
         this.description = event.getDescription();
         this.recommendedExperience = event.getRecommendedExperience();
+        this.inviteOnly = event.getInviteOnly();
     }
 
     public Long getId() {
@@ -112,11 +115,19 @@ public class EventResponseDTO {
         this.recommendedExperience = recommendedExperience;
     }
 
-    public static EventResponseDTO mockWith(Long id, Long exchangeDayId, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience) {
-        return new EventResponseDTO(id, exchangeDayId, date, startTime, endTime, name, room, description, recommendedExperience);
+    public Boolean getInviteOnly() {
+        return inviteOnly;
     }
 
-    private EventResponseDTO(Long id, Long exchangeDayId, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience) {
+    public void setInviteOnly(Boolean inviteOnly) {
+        this.inviteOnly = inviteOnly;
+    }
+
+    public static EventResponseDTO mockWith(Long id, Long exchangeDayId, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience, Boolean inviteOnly) {
+        return new EventResponseDTO(id, exchangeDayId, date, startTime, endTime, name, room, description, recommendedExperience, inviteOnly);
+    }
+
+    private EventResponseDTO(Long id, Long exchangeDayId, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience, Boolean inviteOnly) {
         this.id = id;
         this.exchangeDayId = exchangeDayId;
         this.date = date;
@@ -126,6 +137,7 @@ public class EventResponseDTO {
         this.room = room;
         this.description = description;
         this.recommendedExperience = recommendedExperience;
+        this.inviteOnly = inviteOnly;
     }
 }
 

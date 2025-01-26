@@ -56,8 +56,8 @@ public class EventControllerTest {
     @Test
     void testGetAllEvents() throws Exception {
         List<EventResponseDTO> mockEvents = List.of(
-                EventResponseDTO.mockWith(1L, 1L, LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A", ExperienceLevel.ALL_LEVELS),
-                EventResponseDTO.mockWith(2L, 1L,  LocalDate.of(2025, 01, 20), LocalTime.of(12, 0), LocalTime.of(13, 0), "Workshop B", "Room B", "Description B", ExperienceLevel.SENIOR)
+                EventResponseDTO.mockWith(1L, 1L, LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A", ExperienceLevel.ALL_LEVELS, false),
+                EventResponseDTO.mockWith(2L, 1L,  LocalDate.of(2025, 01, 20), LocalTime.of(12, 0), LocalTime.of(13, 0), "Workshop B", "Room B", "Description B", ExperienceLevel.SENIOR, false)
         );
 
         when(eventService.getAllEvents()).thenReturn(mockEvents);
@@ -72,7 +72,7 @@ public class EventControllerTest {
 
     @Test
     void testGetEventById() throws Exception {
-        EventResponseDTO mockEvent = EventResponseDTO.mockWith(1L, 1L, LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A", ExperienceLevel.JUNIOR);
+        EventResponseDTO mockEvent = EventResponseDTO.mockWith(1L, 1L, LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A", ExperienceLevel.JUNIOR, false);
         when(eventService.getEventById(mockEvent.getId())).thenReturn(mockEvent);
 
         mockMvc.perform(get("/api/events/{id}", mockEvent.getId()))
@@ -95,9 +95,9 @@ public class EventControllerTest {
         UserResponseDTO mockOrganizer = UserResponseDTO.mockWith(organizerId, "admin", "Admin", "User", User.Role.ADMIN);
         when(userService.getUserById(organizerId)).thenReturn(mockOrganizer);
 
-        EventRequestDTO eventRequest = EventRequestDTO.mockWith("Workshop A", LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Description A", "Room A", exchangeDayId, organizerId, ExperienceLevel.EXPERT, Set.of("Spring"));
+        EventRequestDTO eventRequest = EventRequestDTO.mockWith("Workshop A", LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Description A", "Room A", exchangeDayId, organizerId, ExperienceLevel.EXPERT, Set.of("Spring"), false);
 
-        EventResponseDTO eventResponse = EventResponseDTO.mockWith(1L, 1L, LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A", ExperienceLevel.EXPERT);
+        EventResponseDTO eventResponse = EventResponseDTO.mockWith(1L, 1L, LocalDate.of(2025, 01, 20), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A", ExperienceLevel.EXPERT, false);
         when(eventService.createEvent(any(EventRequestDTO.class))).thenReturn(eventResponse);
 
         mockMvc.perform(post("/api/events")

@@ -45,6 +45,8 @@ public class EventRequestDTO {
 
     private Set<String> tags = new HashSet<>();
 
+    private Boolean inviteOnly;
+
     public EventRequestDTO() {
     }
 
@@ -128,11 +130,19 @@ public class EventRequestDTO {
         this.tags = tags;
     }
 
-    public static EventRequestDTO mockWith(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String description, String room, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags) {
-        return new EventRequestDTO(name, date, startTime, endTime, room, description, exchangeDayId, organizerId, recommendedExperience, tags);
+    public Boolean getInviteOnly() {
+        return inviteOnly;
     }
 
-    private EventRequestDTO(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room, String description, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags) {
+    public void setInviteOnly(Boolean inviteOnly) {
+        this.inviteOnly = inviteOnly;
+    }
+
+    public static EventRequestDTO mockWith(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String description, String room, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags, Boolean inviteOnly) {
+        return new EventRequestDTO(name, date, startTime, endTime, room, description, exchangeDayId, organizerId, recommendedExperience, tags, inviteOnly);
+    }
+
+    private EventRequestDTO(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room, String description, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags, Boolean inviteOnly) {
         this.name = name;
         this.date = date;
         this.startTime = startTime;
@@ -143,5 +153,6 @@ public class EventRequestDTO {
         this.organizerId = organizerId;
         this.recommendedExperience = recommendedExperience;
         this.tags = tags;
+        this.inviteOnly = inviteOnly;
     }
 }

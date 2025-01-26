@@ -118,6 +118,21 @@
             height="35" />
             Event Feedbacks
           </button>
+
+          <button
+            @click="toggleEventInviteOnlyListBox"
+            class="action-button"
+            type="button"
+          >
+            <img 
+            src="@/images/plus.png"
+            alt="List" 
+            class="plus-icon" 
+            width="35" 
+            height="35" />
+            Events nur auf Einladung
+          </button>
+
         </div>
       </div>
 
@@ -190,6 +205,15 @@
             v-if="showEventListBox"
           />
         </transition>
+
+        <!-- events invite ony -->
+        <transition name="roll">
+          <EventInviteOnlyList
+            v-model:showEventInvityOnlyListBox="showEventInviteOnlyListBox"
+            v-if="showEventInviteOnlyListBox"
+          />
+        </transition>
+
       </div>
       <div class="csv-actions">
         <button  class="csv-button" @click="triggerFileUpload" v-if="areAllBoxesHidden()">
@@ -206,6 +230,7 @@
           Ressourcen als CSV downloaden
         </button>
       </div>
+  
     </div>
   </div>
 </template>
@@ -221,6 +246,7 @@ import LocationForm from "@/components/adminPanel/LocationForm.vue";
 import UpdateResource from "./UpdateResource.vue";
 import UpdateEvent from "./UpdateEvent.vue";
 import UpdateExchangeDay from "./UpdateExchangeDay.vue";
+import EventInviteOnlyList from "./EventInviteOnlyList.vue";
 import EventList from "./EventList.vue";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -230,6 +256,7 @@ const showExchangeDayBox = ref(false);
 const showResourceBox = ref(false);
 const showLocationBox = ref(false);
 const showUpdateResourceBox = ref(false);
+const showEventInviteOnlyListBox = ref(false);
 const showEventListBox = ref(false);
 const selectEventToUpdate = ref(false);
 const selectExchangeDayToUpdate = ref(false);
@@ -249,6 +276,7 @@ const allForms = {
   selectEventToUpdate,
   selectExchangeDayToUpdate,
   showEventListBox,
+  showEventInviteOnlyListBox,
 };
 
 onMounted(async () => {
@@ -335,6 +363,11 @@ const toggleUpdateResourceBox = () => {
 const toggleEventListBox = () => {
   resetForms(showEventListBox);
   showEventListBox.value = !showEventListBox.value;
+};
+
+const toggleEventInviteOnlyListBox = () => {
+  resetForms(showEventInviteOnlyListBox);
+  showEventInviteOnlyListBox.value = !showEventInviteOnlyListBox.value;
 };
 
 const SelectEventToUpdate = () => {

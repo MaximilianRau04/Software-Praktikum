@@ -58,7 +58,6 @@
             <div class="event-details">
               <h3>{{ event.name }}</h3>
               <p>{{ formatDate(event.date) }}</p>
-              <!-- Tags anzeigen als Chips -->
               <div class="tag-chips">
                 <span
                   v-for="(tag, index) in event.tags.slice(0, 5)"
@@ -340,8 +339,8 @@ h2 h3 p {
   background-color: #003e81;
   color: white;
   border: none;
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.9rem;
   border-radius: 8px;
   cursor: pointer;
   transition:

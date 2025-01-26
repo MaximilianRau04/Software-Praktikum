@@ -32,7 +32,7 @@
       <h2>Workshops</h2>
       <div v-for="event in events" :key="event.id" v-if="events.length > 0">
         <!-- show event information -->
-        <EventDetails :event="event" />
+        <EventDetails :event="event"  v-if="!event.inviteOnly"/>
       </div>
       <p v-else>Keine Workshops vorhanden...</p>
     </div>

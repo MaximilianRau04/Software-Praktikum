@@ -216,7 +216,8 @@ const event = ref<Event>({
   room: "",
   description: "",
   date: "",
-  forumThreads: []
+  forumThreads: [],
+  inviteOnly: false,
 });
 
 const organizer = ref({ username: "", id: 0, firstname: "", lastname: "" });
