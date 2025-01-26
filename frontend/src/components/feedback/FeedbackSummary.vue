@@ -77,7 +77,9 @@
             <tr>
               <td><strong>Tags:</strong></td>
               <td>
-                <TrainerTags :tags="data.tags || []" />
+                <li v-for="(tag, index) in tags" :key="index">
+                  {{ tag.name }}
+                </li>
               </td>
             </tr>
           </table>
@@ -151,8 +153,10 @@
               >
                 <h4>
                   {{
-                    formatKey(subScore.name.charAt(0).toUpperCase() +
-                    subScore.name.slice(1))
+                    formatKey(
+                      subScore.name.charAt(0).toUpperCase() +
+                        subScore.name.slice(1)
+                    )
                   }}
                 </h4>
                 <div class="scale">
@@ -270,7 +274,7 @@ export default {
         city: "",
       },
       data: null,
-      tags: null,
+      tags: [],
       isLoading: true,
       error: null,
       backgroundImageUrl: null,
@@ -379,7 +383,7 @@ export default {
             data: this.data.numericalFeedback.PARTICIPATION,
           },
           {
-            name: "IT  UND ORGANISATION",
+            name: "IT UND ORGANISATION",
             data: this.data.numericalFeedback.IT_AND_ORGANISATION,
           },
           { name: "TRAINER", data: this.data.numericalFeedback.TRAINER },
@@ -670,7 +674,6 @@ export default {
       }
 
       const wordCloudImage = await this.blobToDataUrl(this.backgroundImageUrl);
-
       const chartCanvas = document.getElementById("radarChart");
       const chartImage = chartCanvas.toDataURL("image/png");
 
@@ -697,54 +700,102 @@ export default {
               margin: [0, 60],
             },
             {
-              text: "Event Details",
-              alignment: "center",
+              text: "Detaillierte Informationen zum Event",
               style: "subheader",
-              margin: [0, 10],
             },
             {
-              columns: [
-                {
-                  width: "50%",
-                  table: {
-                    body: [
-                      ["Event Name", this.data.eventName || "undefined"],
-                      ["Organizer", this.data.organizerName || "undefined"],
-                      ["Date and Time", this.data.eventDate || "undefined"],
-                      [
-                        "Description",
-                        this.data.description || "No description available",
-                      ],
-                      [
-                        "Tags",
-                        this.data.tags?.join(", ") || "No tags available",
-                      ],
-                    ],
-                  },
-                  layout: "lightHorizontalLines",
-                  margin: [0, 0, 0, 20],
-                },
-                {
-                  image: chartImage,
-                  width: "50%",
-                  height: 700,
-                  alignment: "center",
-                  margin: [0, 0, 0, 5],
-                  fit: [300, 300],
-                },
-              ],
+              table: {
+                widths: ["30%", "70%"],
+                body: [
+                  [
+                    { text: "Event Name", style: "tableHeader" },
+                    {
+                      text: this.event.name || "Nicht verfügbar",
+                      style: "tableContent",
+                    },
+                  ],
+                  [
+                    { text: "Organisator", style: "tableHeader" },
+                    {
+                      text: this.data.organizerName || "Nicht verfügbar",
+                      style: "tableContent",
+                    },
+                  ],
+                  [
+                    { text: "Datum", style: "tableHeader" },
+                    {
+                      text:
+                        new Date(this.event.date).toLocaleDateString("de-DE", {
+                          weekday: "long",
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }) || "Nicht verfügbar",
+                      style: "tableContent",
+                    },
+                  ],
+                  [
+                    { text: "Ort", style: "tableHeader" },
+                    {
+                      text: this.location.city || "Nicht angegeben",
+                      style: "tableContent",
+                    },
+                  ],
+                  [
+                    { text: "Beschreibung", style: "tableHeader" },
+                    {
+                      text:
+                        this.event.description ||
+                        "Keine Beschreibung verfügbar",
+                      style: "tableContent",
+                    },
+                  ],
+                  [
+                    { text: "Tags", style: "tableHeader" },
+                    {
+                      text:
+                        this.tags?.map((tag) => tag.name).join(", ") ||
+                        "Keine Tags",
+                      style: "tableContent",
+                    },
+                  ],
+                ],
+              },
+              layout: "lightHorizontalLines",
+              margin: [0, 10, 0, 20],
             },
             {
               text: "Statistische Analyse",
               style: "subheader",
-              alignment: "center",
             },
-            ...this.categoryOrder.map((category) => {
-              return {
-                text: `${category.name.replace(/_/g, " ")}: Durchschnitt - ${category.data.average.toFixed(2)}`,
-                style: "feedbackCategory",
-              };
-            }),
+            {
+              table: {
+                widths: ["50%", "50%"],
+                body: [
+                  ...this.categoryOrder.map((category) => [
+                    {
+                      text: category.name.replace(/_/g, " "),
+                      style: "analyzeHeader",
+                    },
+                    {
+                      text: `Durchschnitt: ${category.data.average.toFixed(2)}`,
+                      style: "analyzeContent",
+                      alignment: "right",
+                    },
+                  ]),
+                ],
+              },
+              layout: "lightHorizontalLines",
+              margin: [0, 10, 0, 20],
+            },
+            { text: "Radar Chart", style: "subheader", pageBreak: "before" },
+            {
+              image: chartImage,
+              width: 400,
+              height: 400,
+              alignment: "center",
+              margin: [0, 10],
+            },
             {
               text: "Kommentare",
               style: "subheader",
@@ -756,12 +807,11 @@ export default {
                   text: this.formatKey(category),
                   style: "commentCategoryHeader",
                 },
-                ...categoryComments.map((commentObj) => {
-                  return {
-                    text: `${commentObj.author || "Anonymous"}: ${commentObj.comment}`,
-                    style: "commentText",
-                  };
-                }),
+                ...categoryComments.map((commentObj) => ({
+                  text: `${commentObj.author || "Anonym"}: ${commentObj.comment}`,
+                  style: "commentText",
+                  margin: [10, 5, 0, 5],
+                })),
               ];
             }),
           ],
@@ -770,26 +820,47 @@ export default {
               fontSize: 24,
               bold: true,
               alignment: "center",
+              margin: [0, 0, 0, 20],
+              color: "#2c3e50",
             },
             subheader: {
               fontSize: 18,
               bold: true,
               margin: [0, 10, 0, 10],
+              color: "#34495e",
             },
-            feedbackCategory: {
+            tableHeader: {
+              bold: true,
+              fillColor: "#f2f2f2",
+              color: "#2c3e50",
+              fontSize: 12,
+            },
+            tableContent: {
+              fontSize: 11,
+              color: "#333",
+            },
+            analyzeHeader: {
               fontSize: 14,
-              margin: [0, 10, 0, 10],
+              bold: true,
+              color: "#2980b9",
+            },
+            analyzeContent: {
+              fontSize: 12,
+              color: "#7f8c8d",
             },
             commentCategoryHeader: {
               fontSize: 16,
               bold: true,
-              margin: [0, 10, 0, 10],
+              margin: [0, 15, 0, 10],
+              color: "#2c3e50",
             },
             commentText: {
-              fontSize: 12,
-              margin: [0, 5, 0, 5],
+              fontSize: 11,
+              color: "#555",
+              italics: true,
             },
           },
+          defaultStyle: {},
         };
 
         pdfMake
@@ -807,6 +878,22 @@ export default {
         );
       }
     },
+
+    generateStarRating(average) {
+      const maxStars = 5;
+      const fullStars = Math.round(average);
+      let stars = "";
+
+      for (let i = 0; i < fullStars; i++) {
+        stars += "★";
+      }
+      for (let i = fullStars; i < maxStars; i++) {
+        stars += "☆";
+      }
+
+      return stars;
+    },
+
     /**
      * Converts a blob URL to a data URL.
      * @param {string} blobUrl - The blob URL to convert.
