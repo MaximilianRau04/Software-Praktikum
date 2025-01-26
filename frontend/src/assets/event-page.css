@@ -75,10 +75,25 @@
 }
 
 .header-title {
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 20px;
   text-align: center;
-  margin-bottom: 20px;
+  text-transform: uppercase;
+  font-family: 'Roboto', sans-serif;
+  position: relative;
+  padding: 0px;
+  margin-top: 10px;
+}
+
+.header-title::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -5px;
+  height: 3px;
+  width: 70%;
+  background-color: black;
+  box-shadow: 0 5px 4px rgba(87, 86, 86, 0.2);
 }
 
 .tabs {
@@ -96,6 +111,7 @@
 }
 
 .tab.active {
+  max-height: 10px;
   font-weight: bold;
   border-bottom: 2px solid black;
 }
@@ -260,4 +276,25 @@ button:disabled {
 .organizer-username {
   color: #000000;
   font-size: 14px;
+}
+
+.registration{
+  border-left: 2px solid black;
+  padding-left: 10px;
+  text-decoration: none;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  border-radius: 8px;
+  width: fit-content;
+  margin: 0 auto;
+  border: 2px solid black;
+  padding-left: 10px;
+  text-decoration: none;
+}
+
+a:hover{
+  background-color: hsl(198, 100%, 84%);
 }

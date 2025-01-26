@@ -9,15 +9,6 @@
         />
       </div>
 
-      <div class="search-container">
-        <input
-          type="text"
-          v-model="value"
-          class="search-input"
-          placeholder="Suche..."
-        />
-      </div>
-
       <div class="notification-container" @click="toggleNotificationMenu">
         <div class="notification-icon">
           <img src="@/images/bell.png" alt="Notifications" class="bell-icon" />
@@ -68,14 +59,12 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
 import { globalState } from "@/types/User";
 import Cookies from "js-cookie";
 import "@/assets/header.css";
 import NotificationCard from "@/components/notification/NotificationCardBase.vue";
 import EventNotificationCard from "../notification/EventNotificationCard.vue";
 import ForumNotificationCard from "../notification/ForumNotificationCard.vue";
-import config from "@/config";
 
 export default {
   components: {

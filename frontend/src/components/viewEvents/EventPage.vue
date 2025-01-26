@@ -16,6 +16,7 @@
         Details anzeigen
       </a>
       <a
+        v-if="isAlreadyRegistered || isAdmin"
         href="#"
         class="tab"
         :class="{ active: view === 'forum' }"
@@ -32,7 +33,7 @@
         Angemeldete User
       </a>
       <a
-        v-if="isOrganizer"
+        v-if="isAdmin"
         href="#"
         class="tab"
         :class="{ active: view === 'feedback' }"
@@ -41,7 +42,7 @@
         Feedback
       </a>
       <a
-        v-if="isOrganizer"
+        v-if="isAdmin"
         href="#"
         class="tab"
         :class="{ active: view === 'qr' }"
@@ -50,19 +51,27 @@
         QR-Code
       </a>
       <a
+        v-if="isAlreadyRegistered"
         href="#"
-        class="tab"
+        class="tab registration"
         :class="{ active: view === 'unregister' }"
         @click.prevent="unregisterFromEvent"
       >
         Abmelden
+      </a>
+      <a 
+        v-else
+        href="#"
+        class="tab registation"
+        :class="{ active: view === 'register' }"
+        @click.prevent="registerForEvent"
+      > Registrieren
       </a>
     </nav>
 
     <!-- Details des Events -->
     <div class="event-details-card" v-if="view === 'details'">
       <div class="event-header">
-        <h1 class="event-title">{{ event.name }}</h1>
         <p class="event-date">
           <i class="icon-calendar"></i
           ><strong> {{ formatDate(event.date) }}</strong>
@@ -104,6 +113,15 @@
           <div class="info-item">
             <i class="icon-location"></i>
             <span><strong>Raum:</strong> {{ event.room }}</span>
+          </div>
+          <div class="tag-chips">
+                <span
+                  v-for="(tag, index) in eventTags.slice(0, 5)"
+                  :key="tag.id"
+                  class="chip"
+                >
+                  {{ tag.name }}
+                </span>
           </div>
         </div>
       </div>
@@ -192,7 +210,7 @@ const event = ref<Event>({
   room: "",
   description: "",
   date: "",
-  forumThreads: [],
+  forumThreads: []
 });
 
 const organizer = ref({ username: "", id: 0, firstname: "", lastname: "" });
@@ -205,11 +223,13 @@ const route = useRoute();
 const router = useRouter();
 const eventId = Number(route.params?.eventId);
 const showQRCodeModal = ref(false);
+const eventTags = ref([]);
 const qrCodeUrl = ref("");
 const qrCodeLink = ref("");
 const copySuccess = ref(false);
 
 const focusedThreadId = ref<number | null>(null);
+const isAlreadyRegistered = ref(false);
 
 const goToUser = (username: string) => {
   router.push({ name: "Profile", params: { username } });
@@ -220,8 +240,8 @@ const showForum = () => {
   focusedThreadId.value = null;
 };
 
-const isOrganizer = computed(() => {
-  return organizer.value.id === Number(userId);
+const isAdmin = computed(() => {
+  return userRole === "ADMIN";
 });
 
 /**
@@ -277,6 +297,28 @@ const fetchRegisteredUsers = async () => {
         10,
       ),
     );
+  }
+};
+
+/*
+ * Fetches the tags for a given event
+ */
+ const fetchTagsForEvent = async () => {
+  try {
+    const res = await fetch(`${config.apiBaseUrl}/events/${eventId}/tags`);
+    if (!res.ok) throw new Error("Failed to fetch tags");
+    eventTags.value = await res.json();
+  } catch (error) {
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler beim Laden der Tags für Event ${eventId}`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
+    eventTags.value = [];
   }
 };
 
@@ -418,6 +460,100 @@ const unregisterFromEvent = async () => {
   }
 };
 
+/**
+ * Checks if the user is already registered for the event.
+ */
+ const checkRegistrationStatus = async () => {
+  if (!userId) {
+    return;
+  }
+  try {
+    const response = await fetch(
+      `${config.apiBaseUrl}/users/${userId}/registeredEvents`,
+    );
+    if (!response.ok) throw new Error("Failed to fetch user data.");
+
+    const registeredEvents = await response.json();
+
+    isAlreadyRegistered.value = registeredEvents.some(
+      (event: { id: number }) => event.id === eventId,
+    );
+  } catch (error) {
+    showToast(
+      new Toast("Error", `Fehler bei der Registreirung`, "error", faXmark, 10),
+    );
+    isAlreadyRegistered.value = false;
+  }
+};
+
+/**
+ * Registers the user for the event.
+ * @param eventId The ID of the event to register for.
+ */
+ const registerForEvent = async () => {
+  try {
+    if (!userId) {
+      showToast(
+        new Toast(
+          "Warning",
+          `Bitte melden sie sich zuvor an.`,
+          "warning",
+          faXmark,
+          10,
+        ),
+      );
+      return;
+    }
+
+    const response = await fetch(
+      `${config.apiBaseUrl}/users/${userId}/eventRegistration?eventId=${eventId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (response.status === 404) {
+      showToast(
+        new Toast(
+          "Error",
+          `Registrierung fehlgeschlagen. Bitte versuchen sie es erneut`,
+          "error",
+          faXmark,
+          10,
+        ),
+      );
+    } else if (response.status === 409) {
+      showToast(
+        new Toast("Error", `Sie sin bereits registriert`, "error", faXmark, 10),
+      );
+    } else if (response.ok) {
+      showToast(
+        new Toast(
+          "Success",
+          `Sie wurden erfolgreich zu ${event.value.name} angemeldet!`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
+      isAlreadyRegistered.value = true;
+    }
+  } catch (error) {
+    showToast(
+      new Toast(
+        "Error",
+        `Fehler Fetchen der exchange days: ${error.message}`,
+        "error",
+        faXmark,
+        10,
+      ),
+    );
+  }
+};
+
 const showDetails = () => {
   view.value = "details";
 };
@@ -441,7 +577,8 @@ const setFocusedThread = (threadId) => {
 };
 
 onMounted(() => {
+  checkRegistrationStatus();
   fetchEventDetails();
-  handleThreadNavigation();
+  fetchTagsForEvent();
 });
 </script>

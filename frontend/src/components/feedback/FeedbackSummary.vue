@@ -330,7 +330,7 @@ export default {
         showToast(
           new Toast(
             "Error",
-            `Fehler beim laden der Daten`,
+            `Fehler beim Laden der Daten`,
             "error",
             faXmark,
             10,
