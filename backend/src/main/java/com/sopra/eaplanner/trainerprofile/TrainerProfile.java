@@ -2,8 +2,10 @@ package com.sopra.eaplanner.trainerprofile;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.trainerprofile.comments.PinnedComment;
+import com.sopra.eaplanner.trainerprofile.comments.dtos.CommentDTO;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

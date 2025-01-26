@@ -11,6 +11,9 @@ import java.util.List;
 @Repository
 public interface PinnedCommentRepository extends JpaRepository<PinnedComment, Long> {
 
+    @Query("SELECT COUNT(pc) FROM PinnedComment pc WHERE pc.trainer.id = :trainerId")
+    long countByTrainerId(@Param("trainerId") Long trainerId);
+
     @Query("SELECT pc FROM PinnedComment pc WHERE pc.trainer.id = :trainerId ORDER BY pc.pinnedAt DESC")
     List<PinnedComment> findByTrainerId(@Param("trainerId") Long trainerId);
 }

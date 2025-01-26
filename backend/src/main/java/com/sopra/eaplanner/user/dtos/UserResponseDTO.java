@@ -9,7 +9,6 @@ UserResponseDTO {
     private String username;
     private String firstname;
     private String lastname;
-    private String description;
     private User.Role role;
 
     public UserResponseDTO(User user) {
@@ -17,7 +16,6 @@ UserResponseDTO {
         this.username = user.getUsername();
         this.firstname = user.getFirstname();
         this.lastname = user.getLastname();
-        this.description = user.getDescription();
         this.role = user.getRole();
     }
 
@@ -51,13 +49,6 @@ UserResponseDTO {
 
     public void setLastname(String lastname) {
         this.lastname = lastname;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public User.Role getRole() {

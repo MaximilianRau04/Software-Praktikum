@@ -9,17 +9,6 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
-/**
- * Represents a forum post within a specific forum thread. A forum post is associated with a particular user (author)
- * and can either be anonymous or not. The post includes content, a creation timestamp, and a reference to the thread
- * in which it is posted.
- *
- * <p>Forum posts are stored in the database with a unique identifier, the content of the post, a timestamp indicating
- * when the post was created, and the relationship to the forum thread and the author of the post.</p>
- *
- * <p>This entity is used to manage posts within a forum system, allowing users to participate in discussions by
- * creating posts that belong to specific threads.</p>
- */
 @Entity
 public class ForumPost {
 

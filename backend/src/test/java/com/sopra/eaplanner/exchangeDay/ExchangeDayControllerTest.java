@@ -124,8 +124,8 @@ public class ExchangeDayControllerTest {
     void testGetExchangeDayEvents() throws Exception {
         // Arrange
         Long exchangeDayId = 1L;
-        EventResponseDTO eventDTO1 = EventResponseDTO.mockWith(1L, exchangeDayId, LocalDate.of(2045, 12, 30), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A", ExperienceLevel.JUNIOR);
-        EventResponseDTO eventDTO2 = EventResponseDTO.mockWith(2L, exchangeDayId, LocalDate.of(2045, 12, 30), LocalTime.of(12, 0), LocalTime.of(13, 0), "Workshop B", "Room B", "Description B", ExperienceLevel.JUNIOR);
+        EventResponseDTO eventDTO1 = EventResponseDTO.mockWith(1L, exchangeDayId, LocalDate.of(2045, 12, 30), LocalTime.of(11, 0), LocalTime.of(12, 0), "Workshop A", "Room A", "Description A", ExperienceLevel.JUNIOR, false);
+        EventResponseDTO eventDTO2 = EventResponseDTO.mockWith(2L, exchangeDayId, LocalDate.of(2045, 12, 30), LocalTime.of(12, 0), LocalTime.of(13, 0), "Workshop B", "Room B", "Description B", ExperienceLevel.JUNIOR, false);
         when(exchangeDayService.getExchangeDayEvents(exchangeDayId)).thenReturn(Arrays.asList(eventDTO1, eventDTO2));
 
         // Act & Assert

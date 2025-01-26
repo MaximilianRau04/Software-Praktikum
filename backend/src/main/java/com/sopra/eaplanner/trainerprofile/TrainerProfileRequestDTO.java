@@ -1,15 +1,25 @@
 package com.sopra.eaplanner.trainerprofile;
 
+import jakarta.validation.constraints.NotNull;
+
+import java.util.HashSet;
+import java.util.Set;
+
 public class TrainerProfileRequestDTO {
 
-    private Long userId;
     private String bio;
+
+    private Set<String> expertiseTagNames = new HashSet<>();
+
+    @NotNull(message = "User must be specified")
+    private Long userId;
 
     public TrainerProfileRequestDTO() {
     }
 
-    public TrainerProfileRequestDTO(String bio, Long userId) {
+    public TrainerProfileRequestDTO(String bio, Set<String> expertiseTagNames, Long userId) {
         this.bio = bio;
+        this.expertiseTagNames = expertiseTagNames;
         this.userId = userId;
     }
 
@@ -29,7 +39,15 @@ public class TrainerProfileRequestDTO {
         this.userId = userId;
     }
 
-    public static TrainerProfileRequestDTO mockWith(String bio, Long userId) {
-        return new TrainerProfileRequestDTO(bio, userId);
+    public Set<String> getExpertiseTagNames() {
+        return expertiseTagNames;
+    }
+
+    public void setExpertiseTagNames(Set<String> expertiseTagNames) {
+        this.expertiseTagNames = expertiseTagNames;
+    }
+
+    public static TrainerProfileRequestDTO mockWith(String bio, Set<String> expertiseTagNames, Long userId) {
+        return new TrainerProfileRequestDTO(bio, expertiseTagNames, userId);
     }
 }

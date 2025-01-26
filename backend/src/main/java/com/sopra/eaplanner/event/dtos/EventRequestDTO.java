@@ -11,24 +11,6 @@ import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Data Transfer Object (DTO) for creating or updating an event.
- *
- * <p>This class is used to encapsulate the data required for an event request, ensuring
- * validation rules are applied before processing. It includes information about the event's
- * name, timing, date, location, organizer, and additional metadata.</p>
- *
- * <p>Validation annotations are used to enforce constraints, such as ensuring non-null
- * fields, length limits for strings, and a future date for the event.</p>
- *
- * <p>Typical usage:</p>
- * <pre>
- *   EventRequestDTO request = new EventRequestDTO();
- *   request.setName("Workshop");
- *   request.setDate(LocalDate.of(2025, 1, 1));
- *   ...
- * </pre>
- */
 public class EventRequestDTO {
 
     @NotNull(message = "Name cannot be null")
@@ -62,6 +44,8 @@ public class EventRequestDTO {
     private ExperienceLevel recommendedExperience;
 
     private Set<String> tags = new HashSet<>();
+
+    private Boolean inviteOnly;
 
     public EventRequestDTO() {
     }
@@ -146,11 +130,19 @@ public class EventRequestDTO {
         this.tags = tags;
     }
 
-    public static EventRequestDTO mockWith(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String description, String room, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags) {
-        return new EventRequestDTO(name, date, startTime, endTime, room, description, exchangeDayId, organizerId, recommendedExperience, tags);
+    public Boolean getInviteOnly() {
+        return inviteOnly;
     }
 
-    private EventRequestDTO(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room, String description, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags) {
+    public void setInviteOnly(Boolean inviteOnly) {
+        this.inviteOnly = inviteOnly;
+    }
+
+    public static EventRequestDTO mockWith(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String description, String room, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags, Boolean inviteOnly) {
+        return new EventRequestDTO(name, date, startTime, endTime, room, description, exchangeDayId, organizerId, recommendedExperience, tags, inviteOnly);
+    }
+
+    private EventRequestDTO(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room, String description, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags, Boolean inviteOnly) {
         this.name = name;
         this.date = date;
         this.startTime = startTime;
@@ -161,5 +153,6 @@ public class EventRequestDTO {
         this.organizerId = organizerId;
         this.recommendedExperience = recommendedExperience;
         this.tags = tags;
+        this.inviteOnly = inviteOnly;
     }
 }

@@ -24,15 +24,6 @@ import java.util.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.springframework.format.annotation.DateTimeFormat;
 
-/**
- * Entity class representing an event in the system.
- *
- * <p>An event has details such as name, date, time, room, description, associated exchange day, organizer, and participants. It also supports feedback, reminders, forum threads, resources, and tags.</p>
- *
- * <p>Each event is related to a specific {@link ExchangeDay} and {@link User} (organizer). It can have multiple {@link User}s as registered participants, as well as associated {@link Tag}s for categorization.</p>
- *
- * <p>Additional features include managing participation, feedback, attendance, QR codes, and reminders.</p>
- */
 @Entity
 @Table(name = "events")
 public class Event {
@@ -111,6 +102,8 @@ public class Event {
 
     private ExperienceLevel recommendedExperience;
 
+    private Boolean inviteOnly = false;
+
     @ManyToMany
     @JoinTable(
             name = "event_tag",
@@ -124,7 +117,7 @@ public class Event {
 
     public Event(Long id, String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room,
                  String description, ExchangeDay exchangeDay, User organizer,
-                 String qrCodeFilePath, Set<ForumThread> forumthreads, ExperienceLevel recommendedExperience) {
+                 String qrCodeFilePath, Set<ForumThread> forumthreads, ExperienceLevel recommendedExperience, Boolean inviteOnly) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -138,6 +131,7 @@ public class Event {
         this.forumThreads = forumthreads;
         this.date = date;
         this.recommendedExperience = recommendedExperience;
+        this.inviteOnly= inviteOnly;
     }
 
     public Event(EventRequestDTO eventDTO, ExchangeDay exchangeDay, User organizer, Set<Tag> tags) {
@@ -152,6 +146,7 @@ public class Event {
         this.attendanceToken = generateAttendanceToken();
         this.recommendedExperience = eventDTO.getRecommendedExperience();
         this.tags = tags;
+        this.inviteOnly = eventDTO.getInviteOnly();
     }
 
     public Long getId() {
@@ -345,5 +340,13 @@ public class Event {
 
     public void setResourceAssignments(List<ResourceAssignment> resourceAssignments) {
         this.resourceAssignments = resourceAssignments;
+    }
+
+    public Boolean getInviteOnly() {
+        return inviteOnly;
+    }
+
+    public void setInviteOnly(Boolean inviteOnly) {
+        this.inviteOnly = inviteOnly;
     }
 }

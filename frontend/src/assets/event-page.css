@@ -78,14 +78,14 @@
   font-size: 20px;
   text-align: center;
   text-transform: uppercase;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   position: relative;
   padding: 0px;
   margin-top: 10px;
 }
 
 .header-title::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -191,7 +191,7 @@ h4 {
   font-size: 20px;
   margin-top: 30px;
   border-bottom: 2px solid black;
-  padding-bottom: 5px;
+  padding-bottom: 5px; 
 }
 
 .qr-modal {
@@ -290,7 +290,7 @@ button:disabled {
   font-size: 14px;
 }
 
-.registration {
+.registration{
   border-left: 2px solid black;
   padding-left: 10px;
   text-decoration: none;
@@ -307,7 +307,7 @@ button:disabled {
   text-decoration: none;
 }
 
-a:hover {
+a:hover{
   background-color: hsl(198, 100%, 84%);
 }
 

@@ -10,9 +10,12 @@
     <p><strong>Endzeit:</strong> {{ event.endTime || "No Endtime" }}</p>
     <p><strong>Raum:</strong> {{ event.room || "No Room" }}</p>
 
-    <button @click="goToEvent(event.id)" class="register-button">
-      Details
+    <button
+      @click="goToEvent(event.id)"
+      class="register-button"
+    >Details
     </button>
+
   </div>
 </template>
 
@@ -48,10 +51,7 @@ function checkIfPastEvent() {
   const eventDate = new Date(props.event.date);
   const now = new Date();
   const currentTime = now.getTime();
-  isPastEvent.value =
-    eventDate <= now &&
-    new Date(`${props.event.date}T${props.event.startTime}`).getTime() <=
-      currentTime;
+  isPastEvent.value = eventDate <= now && new Date(`${props.event.date}T${props.event.startTime}`).getTime() <= currentTime;
 }
 
 onMounted(() => {

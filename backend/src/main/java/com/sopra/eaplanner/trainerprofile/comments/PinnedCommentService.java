@@ -3,12 +3,10 @@ package com.sopra.eaplanner.trainerprofile.comments;
 import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.feedback.FeedbackRepository;
 import com.sopra.eaplanner.feedback.FeedbackService;
-import com.sopra.eaplanner.feedback.FeedbackUtil;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileRepository;
 import com.sopra.eaplanner.trainerprofile.comments.dtos.CommentDTO;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,59 +24,47 @@ public class PinnedCommentService {
     @Autowired
     private TrainerProfileRepository trainerRepository;
 
+    @Autowired
+    private FeedbackService feedbackService;
+
     public List<CommentDTO> getPinnedComments(Long trainerId) {
         List<PinnedComment> comments = pinnedCommentRepository.findByTrainerId(trainerId);
         return comments.stream().map(pinnedComment -> new CommentDTO(
                 pinnedComment.getFeedback().getId(),
-                pinnedComment.getFeedback().getEvent().getId(),
                 pinnedComment.getFeedback().getEnjoymentComment(),
                 pinnedComment.getFeedback().getUser().getFirstname() + " " + pinnedComment.getFeedback().getUser().getLastname(),
                 pinnedComment.getFeedback().getEvent().getName(),
-                FeedbackUtil.getFeedbackRating(pinnedComment.getFeedback()))).toList();
+                feedbackService.getFeedbackRating(pinnedComment.getFeedback()))).toList();
     }
 
-    @Transactional
-    public String updatePinnedComments(Long trainerId, List<Long> newFeedbackIds) {
-        TrainerProfile trainer = trainerRepository.findById(trainerId)
-                .orElseThrow(() -> new EntityNotFoundException("Trainer not found."));
+    public String pinComments(Long trainerId, List<Long> feedbackIds) {
 
-        if (newFeedbackIds.size() > 6) {
+        if (feedbackIds.isEmpty()) {
+            return "";
+        }
+
+        if (pinnedCommentRepository.countByTrainerId(trainerId) >= 6) {
             throw new IllegalArgumentException("A trainer can only pin up to 6 comments.");
         }
 
-        List<PinnedComment> currentPinnedComments = pinnedCommentRepository.findByTrainerId(trainerId);
-
-        List<PinnedComment> commentsToUnpin = currentPinnedComments.stream()
-                .filter(pinnedComment -> !newFeedbackIds.contains(pinnedComment.getFeedback().getId()))
-                .toList();
-
-        List<Long> currentPinnedFeedbackIds = currentPinnedComments.stream()
-                .map(pinnedComment -> pinnedComment.getFeedback().getId())
-                .toList();
-
-        List<Long> feedbackIdsToPin = newFeedbackIds.stream()
-                .filter(id -> !currentPinnedFeedbackIds.contains(id))
-                .toList();
-
-        pinnedCommentRepository.deleteAll(commentsToUnpin);
-
-        List<Feedback> feedbackToPin = feedbackIdsToPin.stream()
+        List<Feedback> commentsFromFeedback = feedbackIds.stream()
                 .map(id -> feedbackRepository.findById(id)
-                        .orElseThrow(() -> new EntityNotFoundException("Feedback not found: ID " + id)))
+                        .orElseThrow(() -> new EntityNotFoundException("Feedback not found.")))
                 .toList();
 
-        List<PinnedComment> newPinnedComments = feedbackToPin.stream()
-                .map(feedback -> {
-                    PinnedComment pinnedComment = new PinnedComment();
-                    pinnedComment.setTrainer(trainer);
-                    pinnedComment.setFeedback(feedback);
-                    pinnedComment.setPinnedAt(LocalDateTime.now());
-                    return pinnedComment;
-                })
+        List<PinnedComment> pinnedComments = commentsFromFeedback.stream()
+                .map(f -> new PinnedComment(
+                        trainerRepository.findById(trainerId)
+                                .orElseThrow(() -> new EntityNotFoundException("Trainer not found.")),
+                        f))
                 .toList();
 
-        pinnedCommentRepository.saveAll(newPinnedComments);
+        pinnedCommentRepository.saveAll(pinnedComments);
 
-        return "Pinned comments have been updated.";
+        return "Saved PinnedComments";
+    }
+
+    public void unpinComment(Long pinnedCommentId) {
+        pinnedCommentRepository.deleteById(pinnedCommentId);
     }
 }

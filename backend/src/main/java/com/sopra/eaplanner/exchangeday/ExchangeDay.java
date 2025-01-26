@@ -15,27 +15,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.format.annotation.DateTimeFormat;
 
-/**
- * Represents an ExchangeDay entity in the system.
- * An ExchangeDay is a scheduled period that includes a name, start and end date,
- * a location, and an optional description. Each ExchangeDay may be associated with
- * one or more events.
- *
- * <p>This entity maps to the {@code exchange_days} table in the database.</p>
- *
- * <p>The main attributes of an ExchangeDay include:</p>
- * <ul>
- *   <li>{@code id} - The unique identifier of the ExchangeDay.</li>
- *   <li>{@code startDate} - The start date of the ExchangeDay, which must be in the present or future.</li>
- *   <li>{@code endDate} - The end date of the ExchangeDay, which must be in the present or future.</li>
- *   <li>{@code name} - The name of the ExchangeDay, which must be between 3 and 100 characters.</li>
- *   <li>{@code location} - The location of the ExchangeDay, referenced by a {@link Location} entity.</li>
- *   <li>{@code description} - A brief description of the ExchangeDay, which must not exceed 255 characters.</li>
- *   <li>{@code events} - A list of events associated with this ExchangeDay, mapped by the {@code exchangeDay} field in the {@link Event} entity.</li>
- * </ul>
- *
- * <p>Instance of this class are used to represent and persist ExchangeDay data.</p>
- */
 @Entity
 @Table(name = "exchange_days")
 public class ExchangeDay {

@@ -117,6 +117,15 @@
         </div>
       </div>
 
+      <div class="checkbox-container">
+        <label for="inviteOnly">Nur über Einladungen?</label>
+        <input
+          type="checkbox"
+          id="inviteOnly"
+          v-model="inviteOnly"
+        />
+      </div>
+
       <button type="submit" class="login-button" @click="createWorkshop">
         Workshop erstellen
       </button>
@@ -149,6 +158,7 @@ const selectedResources = ref([]);
 const allTags = ref([]);
 const availableRooms = ref([]);
 const filteredRooms = ref([]);
+const inviteOnly = ref(false);
 
 defineProps({
   exchangeDays: {
@@ -220,6 +230,7 @@ const createWorkshop = async () => {
         recommendedExperience: selectedExperienceLevel.value,
         tags: selectedTags.value,
         resources: selectedResources.value,
+        inviteOnly: inviteOnly.value,
       }),
     });
 
@@ -395,6 +406,7 @@ const onSubmit = () => {
     experienceLevel: selectedExperienceLevel.value,
     tags: selectedTags.value,
     selectedResources: selectedResources.value,
+    inviteOnly: inviteOnly.value,
   };
 };
 
@@ -414,6 +426,7 @@ const resetWorkshopForm = () => {
   selectedTags.value = [];
   filteredTags.value = [...allTags.value];
   selectedResources.value = [];
+  inviteOnly.value = false;
   emit("update:showWorkshopBox", false);
 };
 
@@ -529,5 +542,24 @@ watch(startTime, (newStartTime) => {
 
 .tag-list {
   margin-bottom: 20px;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-container label {
+  margin-right: 10px;
+}
+
+.checkbox-container input[type="checkbox"] {
+  transform: scale(1.5);
+  margin-left: 10px;
+  accent-color: #009EE2;
+}
+
+button.login-button {
+  margin-top: 20px; 
 }
 </style>

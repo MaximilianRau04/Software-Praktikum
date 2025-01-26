@@ -2,7 +2,6 @@ package com.sopra.eaplanner.user;
 
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationDTO;
-import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.forumpost.dtos.ForumPostResponseDTO;
 import com.sopra.eaplanner.reward.dtos.RewardResponseDTO;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/users")
@@ -103,23 +101,11 @@ public class UserController {
         return userService.updateUser(id, requestBody);
     }
 
-    @PutMapping("/{id}/tags")
-    public Set<TagResponseDTO> updateUserInterestTags(@PathVariable Long id, @Valid @RequestBody Set<String> requestBody) {
-        return userService.updateUserInterestTags(id, requestBody);
-    }
-
     @PostMapping("/{userId}/eventRegistration")
     public ResponseEntity<UserResponseDTO> registerUserToEvent(@PathVariable Long userId, @RequestParam Long eventId) {
         User user = userService.registerUserToEvent(userId, eventId);
         URI location = URI.create("/api/users/" + user.getId());
         return ResponseEntity.created(location).body(new UserResponseDTO(user));
-    }
-
-    @GetMapping("/{userId}/tags")
-    public ResponseEntity<Set<TagResponseDTO>> getInterestTags(@PathVariable Long userId) {
-        Set<TagResponseDTO> tags = userService.getInterestTags(userId);
-
-        return ResponseEntity.ok(tags);
     }
 
     @DeleteMapping("/{userId}/eventRegistration")

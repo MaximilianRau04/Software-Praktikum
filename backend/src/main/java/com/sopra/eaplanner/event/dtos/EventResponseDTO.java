@@ -6,23 +6,6 @@ import com.sopra.eaplanner.event.ExperienceLevel;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-/**
- * Data Transfer Object (DTO) for representing the details of an event in responses.
- *
- * <p>This class is used to encapsulate and transfer event data from the backend to the
- * frontend or client, ensuring a clear and consistent structure for responses. It includes
- * key details about the event, such as its ID, associated exchange day, timing, name, location,
- * and recommended experience level.</p>
- *
- * <p>Typical usage:</p>
- * <pre>
- *   EventResponseDTO response = new EventResponseDTO();
- *   response.setId(1L);
- *   response.setName("Workshop");
- *   response.setDate(LocalDate.of(2025, 1, 1));
- *   ...
- * </pre>
- */
 public class EventResponseDTO {
     private Long id;
     private Long exchangeDayId;
@@ -33,6 +16,7 @@ public class EventResponseDTO {
     private String room;
     private String description;
     private ExperienceLevel recommendedExperience;
+    private Boolean inviteOnly;
 
     public EventResponseDTO() {
     }
@@ -47,6 +31,7 @@ public class EventResponseDTO {
         this.room = event.getRoom();
         this.description = event.getDescription();
         this.recommendedExperience = event.getRecommendedExperience();
+        this.inviteOnly = event.getInviteOnly();
     }
 
     public EventResponseDTO(Event event) {
@@ -59,6 +44,7 @@ public class EventResponseDTO {
         this.room = event.getRoom();
         this.description = event.getDescription();
         this.recommendedExperience = event.getRecommendedExperience();
+        this.inviteOnly = event.getInviteOnly();
     }
 
     public Long getId() {
@@ -129,11 +115,19 @@ public class EventResponseDTO {
         this.recommendedExperience = recommendedExperience;
     }
 
-    public static EventResponseDTO mockWith(Long id, Long exchangeDayId, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience) {
-        return new EventResponseDTO(id, exchangeDayId, date, startTime, endTime, name, room, description, recommendedExperience);
+    public Boolean getInviteOnly() {
+        return inviteOnly;
     }
 
-    private EventResponseDTO(Long id, Long exchangeDayId, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience) {
+    public void setInviteOnly(Boolean inviteOnly) {
+        this.inviteOnly = inviteOnly;
+    }
+
+    public static EventResponseDTO mockWith(Long id, Long exchangeDayId, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience, Boolean inviteOnly) {
+        return new EventResponseDTO(id, exchangeDayId, date, startTime, endTime, name, room, description, recommendedExperience, inviteOnly);
+    }
+
+    private EventResponseDTO(Long id, Long exchangeDayId, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience, Boolean inviteOnly) {
         this.id = id;
         this.exchangeDayId = exchangeDayId;
         this.date = date;
@@ -143,6 +137,7 @@ public class EventResponseDTO {
         this.room = room;
         this.description = description;
         this.recommendedExperience = recommendedExperience;
+        this.inviteOnly = inviteOnly;
     }
 }
 

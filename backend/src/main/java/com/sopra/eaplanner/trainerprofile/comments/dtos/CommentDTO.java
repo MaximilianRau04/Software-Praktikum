@@ -1,8 +1,7 @@
 package com.sopra.eaplanner.trainerprofile.comments.dtos;
 
 public record CommentDTO(
-        Long id,
-        Long eventId,
+        Long feedbackId,
         String comment,
         String author,
         String eventName,

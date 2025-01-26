@@ -5,7 +5,6 @@
       :user="userData"
       :trainer="trainerProfileData"
     />
-    <UserProfile v-else :user="userData" />
   </div>
 </template>
 
@@ -16,6 +15,7 @@ import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
+// <UserProfile v-else :user="userData" />
 export default {
   name: "Profile",
   components: { TrainerProfile, UserProfile },
@@ -45,6 +45,7 @@ export default {
           throw new Error("User data fetch failed");
         }
         this.userData = await userResponse.json();
+
         if (this.isTrainer) {
           const trainerResponse = await fetch(
             `/api/trainerProfiles/${this.userData.id}`,

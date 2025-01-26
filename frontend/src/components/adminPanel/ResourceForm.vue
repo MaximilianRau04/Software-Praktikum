@@ -41,20 +41,20 @@
     </form>
   </div>
   <div class="csv-actions">
-    <button class="csv-button" @click="triggerFileUpload">
-      Ressourcen aus CSV importieren
-    </button>
-    <input
-      ref="fileInput"
-      type="file"
-      accept=".csv"
-      @change="handleFileUpload"
-      style="display: none"
-    />
-    <button class="csv-button" @click="downloadCsvOfResources">
-      Ressourcen als CSV downloaden
-    </button>
-  </div>
+        <button class="csv-button" @click="triggerFileUpload">
+          Ressourcen aus CSV importieren
+        </button>
+        <input
+          ref="fileInput"
+          type="file"
+          accept=".csv"
+          @change="handleFileUpload"
+          style="display: none"
+        />
+        <button class="csv-button" @click="downloadCsvOfResources">
+          Ressourcen als CSV downloaden
+        </button>
+      </div>
 </template>
 
 <script setup lang="ts">
@@ -130,10 +130,10 @@ const resetForm = () => {
 /**
  * download CSV file of todos
  */
-async function downloadCsvOfResources() {
+ async function downloadCsvOfResources() {
   try {
     const response = await fetch(
-      `${config.apiBaseUrl}/resources/csv-downloads`,
+      `${config.apiBaseUrl}/resources/csv-downloads`
     );
     if (!response.ok) throw new Error("Download fehlgeschlagen!");
 
@@ -148,7 +148,7 @@ async function downloadCsvOfResources() {
     window.URL.revokeObjectURL(url);
   } catch (error) {
     showToast(
-      new Toast("Error", "CSV Download fehlgeschlagen!", "error", faXmark, 10),
+      new Toast("Error", "CSV Download fehlgeschlagen!", "error", faXmark, 10)
     );
   }
 }
@@ -213,3 +213,4 @@ onMounted(async () => {
   }
 });
 </script>
+

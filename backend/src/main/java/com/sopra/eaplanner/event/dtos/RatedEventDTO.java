@@ -8,23 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Set;
 
-/**
- * Data Transfer Object (DTO) for representing detailed information about an event,
- * including its average rating and associated tags.
- *
- * <p>This class is used to provide an enriched view of an event, combining event details
- * with additional metadata such as the average rating and a set of tags. It is designed
- * for scenarios where events are displayed with ratings and categorized information.</p>
- *
- * <p>The class includes a constructor to initialize the DTO using an {@link Event} entity,
- * along with the average rating and tags, ensuring a seamless conversion from entity to DTO.</p>
- *
- * <p>Typical usage:</p>
- * <pre>
- *   RatedEventDTO ratedEvent = new RatedEventDTO(event, 4.5, tags);
- *   System.out.println(ratedEvent.getAverageRating()); // Outputs: 4.5
- * </pre>
- */
 public class RatedEventDTO {
     private Long id;
     private Long exchangeDayId;

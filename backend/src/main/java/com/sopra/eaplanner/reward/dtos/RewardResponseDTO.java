@@ -5,23 +5,21 @@ import com.sopra.eaplanner.reward.Reward;
 public class RewardResponseDTO {
 
     private Long id;
+
     private Reward.Type type;
+
     private Integer points;
-    private String description;
-    private Integer currentLevel;
-    private Integer pointsToNextLevel;
-    private Boolean levelBased;
+
+    private Long userId;
+
+    private Integer threshold;
 
     public RewardResponseDTO(Reward reward) {
         this.id = reward.getId();
         this.type = reward.getType();
         this.points = reward.getPoints();
-        this.description = reward.getDescription();
-        this.levelBased = reward.isLevelBased();
-        if(reward.isLevelBased()){
-            this.currentLevel = reward.getCurrentLevel();
-            this.pointsToNextLevel = reward.getPointsToNextLevel(reward.getType());
-        }
+        this.userId = reward.getUser().getId();
+        this.threshold = reward.getLastThreshold();
     }
 
     public Long getId() {
@@ -43,30 +41,16 @@ public class RewardResponseDTO {
     public void setPoints(Integer points) {
         this.points = points;
     }
-
-    public String getDescription() {
-        return description;
+    public Long getUserId() {
+        return userId;
     }
-    public void setDescription(String description) {
-        this.description = description;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
-    public Integer getCurrentLevel() {
-        return currentLevel;
+    public Integer getThreshold() {
+        return threshold;
     }
-    public void setCurrentLevel(Integer currentLevel) {
-        this.currentLevel = currentLevel;
-    }
-    public Integer getPointsToNextLevel() {
-        return pointsToNextLevel;
-    }
-    public void setPointsToNextLevel(Integer pointsToNextLevel) {
-        this.pointsToNextLevel = pointsToNextLevel;
-    }
-
-    public Boolean getLevelBased() {
-        return levelBased;
-    }
-    public void setLevelBased(Boolean levelBased) {
-        this.levelBased = levelBased;
+    public void setThreshold(Integer threshold) {
+        this.threshold = threshold;
     }
 }

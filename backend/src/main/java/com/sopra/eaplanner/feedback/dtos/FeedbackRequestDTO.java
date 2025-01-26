@@ -3,14 +3,6 @@ package com.sopra.eaplanner.feedback.dtos;
 import com.sopra.eaplanner.feedback.FeedbackScore;
 import jakarta.validation.constraints.*;
 
-/**
- * Data Transfer Object (DTO) for collecting feedback on an event. This class represents the feedback scores
- * for various categories such as overall experience, content, trainer performance, participation, IT organization,
- * and general comments. The scores and comments are validated to ensure they are within acceptable ranges and not null
- * where specified.
- *
- * <p>Implements the {@link FeedbackScore} interface to enforce a common contract for feedback-related data.</p>
- */
 public class FeedbackRequestDTO implements FeedbackScore {
 
     //Overall

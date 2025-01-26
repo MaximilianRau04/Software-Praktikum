@@ -146,7 +146,7 @@
             <div class="small-scales">
               <div
                 v-for="(subScore, subIndex) in getOrderedSubScores(
-                  category.data.subAverages,
+                  category.data.subAverages
                 )"
                 :key="subIndex"
                 class="small-scale"
@@ -155,7 +155,7 @@
                   {{
                     formatKey(
                       subScore.name.charAt(0).toUpperCase() +
-                        subScore.name.slice(1),
+                        subScore.name.slice(1)
                     )
                   }}
                 </h4>
@@ -253,7 +253,7 @@ Chart.register(
   PointElement,
   Filler,
   Legend,
-  Tooltip,
+  Tooltip
 );
 
 export default {
@@ -338,8 +338,8 @@ export default {
             `Noch kein feedback für dieses Event verfügbar.`,
             "info",
             faXmark,
-            10,
-          ),
+            10
+          )
         );
       } finally {
         this.isLoading = false;
@@ -355,7 +355,7 @@ export default {
     async fetchEventSummary() {
       try {
         const response = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/summary`,
+          `${config.apiBaseUrl}/events/${this.eventId}/summary`
         );
 
         if (!response.ok) {
@@ -365,8 +365,8 @@ export default {
               `Fehler beim laden der Daten`,
               "error",
               faXmark,
-              10,
-            ),
+              10
+            )
           );
         }
 
@@ -397,8 +397,8 @@ export default {
             `Fehler beim laden der Daten`,
             "error",
             faXmark,
-            10,
-          ),
+            10
+          )
         );
       }
     },
@@ -409,18 +409,18 @@ export default {
     async fetchEventDetails() {
       try {
         const response = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}`,
+          `${config.apiBaseUrl}/events/${this.eventId}`
         );
         const eventData = await response.json();
         this.event = eventData;
 
         const organizerResponse = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/organizer`,
+          `${config.apiBaseUrl}/events/${this.eventId}/organizer`
         );
         this.organizer = await organizerResponse.json();
 
         const locationResponse = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/location`,
+          `${config.apiBaseUrl}/events/${this.eventId}/location`
         );
         this.location = await locationResponse.json();
       } catch (error) {
@@ -430,8 +430,8 @@ export default {
             `Fehler beim Laden der Eventdaten`,
             "error",
             faXmark,
-            10,
-          ),
+            10
+          )
         );
       }
     },
@@ -442,13 +442,13 @@ export default {
     async fetchWordCloud() {
       if (!this.eventId) {
         showToast(
-          new Toast("Error", `Event ID is missing.`, "error", faXmark, 10),
+          new Toast("Error", `Event ID is missing.`, "error", faXmark, 10)
         );
         return;
       }
       try {
         const response = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/word-cloud`,
+          `${config.apiBaseUrl}/events/${this.eventId}/word-cloud`
         );
         if (!response.ok) {
           showToast(
@@ -457,8 +457,8 @@ export default {
               `Fehler beim Laden der Word Cloud.`,
               "error",
               faXmark,
-              10,
-            ),
+              10
+            )
           );
         }
         const blob = await response.blob();
@@ -470,8 +470,8 @@ export default {
             `Fehler beim Laden der Word Cloud.`,
             "error",
             faXmark,
-            10,
-          ),
+            10
+          )
         );
       }
     },
@@ -483,13 +483,7 @@ export default {
         this.tags = await tagsResponse.json();
       } catch (error) {
         showToast(
-          new Toast(
-            "Error",
-            `Fehler beim Laden der Tags`,
-            "error",
-            faXmark,
-            10,
-          ),
+          new Toast("Error", `Fehler beim Laden der Tags`, "error", faXmark, 10)
         );
       }
     },
@@ -528,8 +522,8 @@ export default {
             `Canvas element für radar chart nicht gefunden.`,
             "error",
             faXmark,
-            10,
-          ),
+            10
+          )
         );
         return;
       }
@@ -673,8 +667,8 @@ export default {
             `Word Cloud Bild ist nicht verfügbar.`,
             "error",
             faXmark,
-            10,
-          ),
+            10
+          )
         );
         return;
       }
@@ -879,8 +873,8 @@ export default {
             `Fehler beim Generieren der PDF`,
             "error",
             faXmark,
-            10,
-          ),
+            10
+          )
         );
       }
     },

@@ -26,8 +26,8 @@
             <p>{{ event.description }}</p>
             <p>{{ formatDate(event.date) }}</p>
             <div class="tag-chips">
-              <span
-                v-for="(tag, index) in event.tags.slice(0, 5)"
+                <span
+                v-for="(tag, index) in (event.tags || []).slice(0, 5)"
                 :key="tag.id"
                 class="chip"
               >
@@ -68,6 +68,9 @@ onMounted(async () => {
   await fetchEvents();
 });
 
+/**
+ * Fetches all events from the API
+ */
 const fetchEvents = async () => {
   try {
     const response = await fetch(`${config.apiBaseUrl}/events`);
@@ -84,6 +87,10 @@ const fetchEvents = async () => {
   }
 };
 
+/**
+ * Fetches all tags for a specific event
+ * @param {number} eventId The ID of the event
+ */
 const fetchTagsForEvent = async (eventId) => {
   try {
     const res = await fetch(`${config.apiBaseUrl}/events/${eventId}/tags`);
@@ -96,13 +103,18 @@ const fetchTagsForEvent = async (eventId) => {
         `Fehler beim Laden der Tags für Event ${eventId}`,
         "error",
         faXmark,
-        10,
-      ),
+        10
+      )
     );
     return [];
   }
 };
 
+/**
+ * Formats a date string into a human-readable format
+ * @param {string} dateString The date string to format
+ * @returns {string} The formatted date string
+ */
 const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString("de-DE", {
     day: "2-digit",
@@ -111,6 +123,9 @@ const formatDate = (dateString) => {
   });
 };
 
+/**
+ * Filters events based on the search term
+ */
 const filteredEvents = computed(() => {
   return events.value.filter(
     (event) =>
@@ -119,7 +134,7 @@ const filteredEvents = computed(() => {
       (event.description &&
         event.description
           .toLowerCase()
-          .includes(searchTerm.value.toLowerCase())),
+          .includes(searchTerm.value.toLowerCase()))
   );
 });
 

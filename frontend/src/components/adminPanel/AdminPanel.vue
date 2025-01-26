@@ -110,15 +110,29 @@
             class="action-button"
             type="button"
           >
-            <img
-              src="@/images/plus.png"
-              alt="List"
-              class="plus-icon"
-              width="35"
-              height="35"
-            />
+            <img 
+            src="@/images/plus.png"
+            alt="List" 
+            class="plus-icon" 
+            width="35" 
+            height="35" />
             Event Feedbacks
           </button>
+
+          <button
+            @click="toggleEventInviteOnlyListBox"
+            class="action-button"
+            type="button"
+          >
+            <img 
+            src="@/images/plus.png"
+            alt="List" 
+            class="plus-icon" 
+            width="35" 
+            height="35" />
+            Events nur auf Einladung
+          </button>
+
         </div>
       </div>
 
@@ -191,31 +205,32 @@
             v-if="showEventListBox"
           />
         </transition>
+
+        <!-- events invite ony -->
+        <transition name="roll">
+          <EventInviteOnlyList
+            v-model:showEventInvityOnlyListBox="showEventInviteOnlyListBox"
+            v-if="showEventInviteOnlyListBox"
+          />
+        </transition>
+
       </div>
       <div class="csv-actions">
-        <button
-          class="csv-button"
-          @click="triggerFileUpload"
-          v-if="areAllBoxesHidden()"
-        >
+        <button  class="csv-button" @click="triggerFileUpload" v-if="areAllBoxesHidden()">
           Ressourcen aus CSV importieren
         </button>
         <input
           ref="fileInput"
           type="file"
-          accept=".csv"
-          a
+          accept=".csv"a
           @change="handleFileUpload"
           style="display: none"
         />
-        <button
-          class="csv-button"
-          @click="downloadCsvOfResources"
-          v-if="areAllBoxesHidden()"
-        >
+        <button class="csv-button" @click="downloadCsvOfResources"  v-if="areAllBoxesHidden()">
           Ressourcen als CSV downloaden
         </button>
       </div>
+  
     </div>
   </div>
 </template>
@@ -231,6 +246,7 @@ import LocationForm from "@/components/adminPanel/LocationForm.vue";
 import UpdateResource from "./UpdateResource.vue";
 import UpdateEvent from "./UpdateEvent.vue";
 import UpdateExchangeDay from "./UpdateExchangeDay.vue";
+import EventInviteOnlyList from "./EventInviteOnlyList.vue";
 import EventList from "./EventList.vue";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -240,6 +256,7 @@ const showExchangeDayBox = ref(false);
 const showResourceBox = ref(false);
 const showLocationBox = ref(false);
 const showUpdateResourceBox = ref(false);
+const showEventInviteOnlyListBox = ref(false);
 const showEventListBox = ref(false);
 const selectEventToUpdate = ref(false);
 const selectExchangeDayToUpdate = ref(false);
@@ -259,6 +276,7 @@ const allForms = {
   selectEventToUpdate,
   selectExchangeDayToUpdate,
   showEventListBox,
+  showEventInviteOnlyListBox,
 };
 
 onMounted(async () => {
@@ -278,7 +296,7 @@ const fetchData = async () => {
       ]);
     if (!exchangeDaysResponse.ok) {
       showToast(
-        new Toast("Error", "Fehler beim Laden der Exchange Days", "error"),
+        new Toast("Error", "Fehler beim Laden der Exchange Days", "error")
       );
     }
     if (!usersResponse.ok) {
@@ -286,7 +304,7 @@ const fetchData = async () => {
     }
     if (!levelsResponse.ok) {
       showToast(
-        new Toast("Error", "Fehler beim Laden der Erfahrungslevel", "error"),
+        new Toast("Error", "Fehler beim Laden der Erfahrungslevel", "error")
       );
     }
     fetchTags();
@@ -347,6 +365,11 @@ const toggleEventListBox = () => {
   showEventListBox.value = !showEventListBox.value;
 };
 
+const toggleEventInviteOnlyListBox = () => {
+  resetForms(showEventInviteOnlyListBox);
+  showEventInviteOnlyListBox.value = !showEventInviteOnlyListBox.value;
+};
+
 const SelectEventToUpdate = () => {
   resetForms(selectEventToUpdate);
   selectEventToUpdate.value = !selectEventToUpdate.value;
@@ -360,6 +383,7 @@ const SelectExchangeDayToUpdate = () => {
 const areAllBoxesHidden = () => {
   return Object.values(allForms).every((box) => !box.value);
 };
+
 
 /**
  * Resets all forms
@@ -377,7 +401,7 @@ const resetForms = (currentForm) => {
 async function downloadCsvOfResources() {
   try {
     const response = await fetch(
-      `${config.apiBaseUrl}/resources/csv-downloads`,
+      `${config.apiBaseUrl}/resources/csv-downloads`
     );
     if (!response.ok) throw new Error("Download fehlgeschlagen!");
 
@@ -392,7 +416,7 @@ async function downloadCsvOfResources() {
     window.URL.revokeObjectURL(url);
   } catch (error) {
     showToast(
-      new Toast("Error", "CSV Download fehlgeschlagen!", "error", faXmark, 10),
+      new Toast("Error", "CSV Download fehlgeschlagen!", "error", faXmark, 10)
     );
   }
 }
