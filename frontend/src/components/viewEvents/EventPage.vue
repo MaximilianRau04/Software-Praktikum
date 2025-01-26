@@ -164,30 +164,36 @@
     </div>
 
     <!-- QR-Code Modal -->
-    <div v-if="showQRCodeModal" class="qr-modal-overlay">
-      <div class="qr-modal">
-        <h2>QR-Code für Event Nr.{{ eventId }}</h2>
-        <img :src="qrCodeUrl" alt="QR Code" />
-        <div>
-          <button
-            class="download-button"
-            @click="copyToClipboard"
-            :disabled="!qrCodeLink"
-          >
-            QR-Link kopieren
-          </button>
-          <p v-if="copySuccess" class="qr-success-message">
-            QR-Link wurde in die Zwischenablage kopiert!
-          </p>
-        </div>
-        <a :href="qrCodeUrl" :download="'event-' + eventId + '-qr-code.png'">
-          <button class="download-button">QR-Code herunterladen</button>
-        </a>
-        <button @click="closeQRCodeModal" class="close-modal-button">
-          Schließen
-        </button>
-      </div>
+<div v-if="showQRCodeModal" class="qr-modal-overlay">
+  <div class="qr-modal">
+    <button
+      @click="closeQRCodeModal"
+      class="close-modal-icon"
+      aria-label="Close QR Code Modal"
+    >
+      ✕
+    </button>
+
+    <h4>QR-Code für die Anwesenheit</h4>
+    <img :src="qrCodeUrl" alt="QR Code" />
+    <div>
+      <button
+        class="download-button"
+        @click="copyToClipboard"
+        :disabled="!qrCodeLink"
+      >
+        QR-Link kopieren
+      </button>
+      <p v-if="copySuccess" class="qr-success-message">
+        QR-Link wurde in die Zwischenablage kopiert!
+      </p>
     </div>
+    <a :href="qrCodeUrl" :download="'event-' + eventId + '-qr-code.png'">
+      <button class="download-button">QR-Code herunterladen</button>
+    </a>
+  </div>
+</div>
+
   </div>
 </template>
 

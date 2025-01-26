@@ -187,13 +187,39 @@
   align-items: center;
 }
 
+h4 {
+  font-size: 20px;
+  margin-top: 30px;
+  border-bottom: 2px solid black;
+  padding-bottom: 5px; 
+}
+
 .qr-modal {
-  background-color: white;
+  position: relative;
   padding: 20px;
+  background-color: white;
   border-radius: 8px;
-  text-align: center;
-  width: 300px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.close-modal-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 30px;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.3s ease-in-out;
+}
+
+.close-modal-icon:hover {
+  color: #000000;
+}
+
+.close-modal-icon:focus {
+  outline: none;
 }
 
 .qr-modal img {
@@ -207,20 +233,6 @@
 }
 button:disabled {
   background-color: #ccc;
-}
-
-.close-modal-button {
-  background-color: #009ee2;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 20px;
-}
-
-.close-modal-button:hover {
-  background-color: #007db8;
 }
 
 .download-button {
