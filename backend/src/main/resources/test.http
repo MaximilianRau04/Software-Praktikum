@@ -195,8 +195,8 @@ POST http://localhost:8080/api/exchange-days
 Content-Type: application/json
 
 {
-  "startDate": "2025-12-30",
-  "endDate": "2025-12-31",
+  "startDate": "2025-10-29",
+  "endDate": "2025-10-30",
   "name": "Fresh",
   "locationId": 1,
   "description": "A day dedicated to learning Spring Boot"

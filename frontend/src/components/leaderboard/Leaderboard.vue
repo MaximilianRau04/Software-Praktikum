@@ -12,7 +12,9 @@
       <tbody>
         <tr v-for="(entry, index) in leaderboard" :key="entry.userId">
           <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
-          <td>{{ entry.username }}</td>
+          <td @click="goToProfile(entry.username)" class="clickable-username">
+            {{ entry.username }}
+          </td>
           <td>{{ entry.totalPoints }}</td>
         </tr>
       </tbody>
@@ -48,6 +50,10 @@ export default {
     };
   },
   methods: {
+    goToProfile(username) {
+      this.$router.push(`/profile/${username}`);
+    },
+
     /**
      * Fetches the leaderboard from the API.
      * @param {number} page The page number to fetch.
@@ -126,5 +132,10 @@ button {
 button:disabled {
   background-color: #e0e0e0;
   cursor: not-allowed;
+}
+
+.clickable-username {
+  cursor: pointer;
+  color: #12a8ee;
 }
 </style>
