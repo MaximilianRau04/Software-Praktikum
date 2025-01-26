@@ -17,8 +17,7 @@ public class Reward {
     private Long id;
 
     public enum Type {
-        ATTENDER, FEEDBACK_GIVER
-        // find more reward types
+        ATTENDER, FEEDBACK_GIVER,CLEAN_SUBMITTER, ALLROUNDER, SOCIAL_BUTTERFLY
     }
 
     private Type type;

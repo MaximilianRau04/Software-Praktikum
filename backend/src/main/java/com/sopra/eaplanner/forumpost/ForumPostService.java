@@ -5,6 +5,7 @@ import com.sopra.eaplanner.forumpost.dtos.ForumPostResponseDTO;
 import com.sopra.eaplanner.forumthread.ForumThread;
 import com.sopra.eaplanner.forumthread.ForumThreadRepository;
 import com.sopra.eaplanner.forumthread.notification.ForumResponseService;
+import com.sopra.eaplanner.reward.RewardService;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -38,6 +39,9 @@ public class ForumPostService {
 
     @Autowired
     private ForumResponseService forumResponseService;
+
+    @Autowired
+    private RewardService rewardService;
 
     /**
      * Retrieves all forum posts.
@@ -81,6 +85,15 @@ public class ForumPostService {
 
         if (forumPost.getCreatedAt() == null) {
             forumPost.setCreatedAt(LocalDateTime.now());
+        }
+
+        forumPostRepository.findByAuthor(author).stream().map(ForumPost::getForumThread);
+
+        long participatedDiscussions = forumPostRepository.findByAuthor(author).stream().map(fp -> fp.getForumThread()).count();
+        long postedComments = forumPostRepository.findByAuthor(author).size();
+
+        if(participatedDiscussions >= 10 && postedComments >= 30) {
+            rewardService.grantSocialButterflyReward(author);
         }
 
         forumResponseService.sendResponseNotification(forumThread.getEvent().getId(),forumThread.getId(),author, forumPost.isAnonymous());

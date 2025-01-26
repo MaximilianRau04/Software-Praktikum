@@ -40,7 +40,7 @@ export default {
   },
   created() {
     axios
-      .get(`${config.apiBaseUrl}/pinned-comments/${this.trainerId}`)
+      .get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/pinned-comments`)
       .then((response) => (this.pinnedComments = response.data))
       .catch((error) =>
         showToast(

@@ -99,6 +99,10 @@ public class EventParticipationService {
         addTagWeightForAttendance(user, event);
 
         rewardService.grantAttendancePoints(user);
+
+        if(user.getTagWeights().stream().filter(w -> w.getVisitedEventsWithTag() >= 3).toList().size() >= 5){
+            rewardService.grantAllrounderReward(user);
+        }
     }
 
     /**
@@ -120,6 +124,12 @@ public class EventParticipationService {
         eventParticipationRepository.save(eventParticipation);
 
         rewardService.grantFeedbackGiverPoints(user);
+
+        long feedbackCount = eventParticipationRepository.countByUserAndFeedbackGivenTrue(user);
+
+        if(feedbackCount >= 20){
+            rewardService.grantCleanSubmitterReward(user);
+        }
     }
 
     /**

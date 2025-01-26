@@ -252,9 +252,7 @@ export default {
       const translations = {
         ATTENDER: "Teilnehmender",
         FEEDBACK_GIVER: "Feedbackgeber",
-        INNOVATOR: "Innovator",
-        COLLABORATOR: "Kooperateur",
-        MENTOR: "Mentor",
+        CLEAN_SUBMITTER: "Keine Halben Sachen",
       };
       return translations[type] || type;
     },
