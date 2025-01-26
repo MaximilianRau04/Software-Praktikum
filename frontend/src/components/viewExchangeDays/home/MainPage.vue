@@ -72,7 +72,7 @@ function fetchAllExchangeDays() {
 /**
  * Categorizes Exchange Days into upcoming and past based on today's date.
  */
-function categorizeExchangeDays() {
+ function categorizeExchangeDays() {
   upcomingExchangeDaysList.value = exchangeDays.value.filter((day) => {
     const startDate = new Date(day.startDate).setHours(0, 0, 0, 0);
     const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
@@ -83,6 +83,10 @@ function categorizeExchangeDays() {
     const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
     return endDate < today;
   });
+
+  if (upcomingExchangeDaysList.value.length > 0) {
+    selectExchangeDay(upcomingExchangeDaysList.value[0]);
+  }
 }
 
 /**

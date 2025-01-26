@@ -206,8 +206,8 @@ const fetchTagsForEvent = async (eventId) => {
         `Fehler beim Laden der Tags für Event ${eventId}`,
         "error",
         faXmark,
-        10,
-      ),
+        10
+      )
     );
     return [];
   }
@@ -219,7 +219,7 @@ const fetchTagsForEvent = async (eventId) => {
 const fetchEvents = async () => {
   if (!userId) {
     showToast(
-      new Toast("Error", `Keine Benutzer-ID gefunden`, "error", faXmark, 10),
+      new Toast("Error", `Keine Benutzer-ID gefunden`, "error", faXmark, 10)
     );
     isLoading.value = false;
     return;
@@ -236,7 +236,7 @@ const fetchEvents = async () => {
 
     if (!registeredRes.ok || !recommendedRes.ok || !feedbackRes.ok) {
       showToast(
-        new Toast("Error", `Fehler der Laden der Events`, "error", faXmark, 10),
+        new Toast("Error", `Fehler der Laden der Events`, "error", faXmark, 10)
       );
     }
 
@@ -253,7 +253,7 @@ const fetchEvents = async () => {
     );
   } catch (error) {
     showToast(
-      new Toast("Error", `Fehler der Laden der Events`, "error", faXmark, 10),
+      new Toast("Error", `Fehler der Laden der Events`, "error", faXmark, 10)
     );
   } finally {
     isLoading.value = false;

@@ -170,6 +170,22 @@
           />
         </transition>
       </div>
+      <div class="csv-actions">
+          <button class="csv-button" @click="triggerFileUpload">
+            Ressourcen aus CSV importieren
+          </button>
+          <input
+            ref="fileInput"
+            type="file"
+            accept=".csv"
+            @change="handleFileUpload"
+            style="display: none"
+          />
+          <button class="csv-button" @click="downloadCsvOfResources">
+            Ressourcen als CSV downloaden
+          </button>
+        </div>
+      
     </div>
   </div>
 </template>
@@ -186,6 +202,7 @@ import UpdateResource from "./UpdateResource.vue";
 import UpdateEvent from "./UpdateEvent.vue";
 import UpdateExchangeDay from "./UpdateExchangeDay.vue";
 import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const showWorkshopBox = ref(false);
 const showExchangeDayBox = ref(false);
@@ -200,6 +217,7 @@ const users = ref([]);
 const experienceLevels = ref([]);
 const allTags = ref([]);
 const filteredTags = ref([]);
+const fileInput = ref<HTMLInputElement | null>(null);
 const allForms = {showExchangeDayBox, showWorkshopBox, showResourceBox, showLocationBox, showUpdateResourceBox, selectEventToUpdate, selectExchangeDayToUpdate};
 
 onMounted(async () => {
@@ -219,7 +237,7 @@ const fetchData = async () => {
       ]);
     if (!exchangeDaysResponse.ok) {
       showToast(
-        new Toast("Error", "Fehler beim Laden der Exchange Days", "error"),
+        new Toast("Error", "Fehler beim Laden der Exchange Days", "error")
       );
     }
     if (!usersResponse.ok) {
@@ -227,7 +245,7 @@ const fetchData = async () => {
     }
     if (!levelsResponse.ok) {
       showToast(
-        new Toast("Error", "Fehler beim Laden der Erfahrungslevel", "error"),
+        new Toast("Error", "Fehler beim Laden der Erfahrungslevel", "error")
       );
     }
     fetchTags();
@@ -302,6 +320,77 @@ const resetForms = (currentForm) => {
     allForms[form].value = false;
   }
 };
+
+/**
+ * download CSV file of todos
+ */
+async function downloadCsvOfResources() {
+  try {
+    const response = await fetch(
+      `${config.apiBaseUrl}/resources/csv-downloads`
+    );
+    if (!response.ok) throw new Error("Download fehlgeschlagen!");
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "resources.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    showToast(
+      new Toast("Error", "CSV Download fehlgeschlagen!", "error", faXmark, 10)
+    );
+  }
+}
+
+/**
+ * Trigger file input click
+ */
+ const triggerFileUpload = () => {
+  fileInput.value?.click();
+};
+
+/**
+ * Handles the file upload event and sends the CSV to the backend
+ */
+ const handleFileUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (!target.files || target.files.length === 0) {
+    showToast(new Toast("Error", "Keine Datei ausgewählt!", "error"));
+    return;
+  }
+
+  const file = target.files[0];
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/resources/csv-import`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const responseText = await response.text();
+
+    if (!response.ok) {
+      throw new Error(responseText || "Import fehlgeschlagen!");
+    }
+
+    showToast(new Toast("Success", "CSV erfolgreich importiert!", "success"));
+    await fetchData(); 
+  } catch (error) {
+    showToast(
+      new Toast("Error","Import fehlgeschlagen", "error")
+    );
+  } finally {
+    target.value = ""; 
+  }
+};
+
 </script>
 
 <style scoped>
@@ -322,4 +411,42 @@ const resetForms = (currentForm) => {
 .action-button {
   margin: 5px;
 }
+
+.create-buttons-group {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 0px;
+}
+
+.update-buttons-group {
+  background-color: #e0e0e0;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+
+.csv-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 20px;
+}
+
+.csv-button {
+  background-color: #003E81;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.csv-button:hover {
+  background-color: #013368;
+}
+
 </style>

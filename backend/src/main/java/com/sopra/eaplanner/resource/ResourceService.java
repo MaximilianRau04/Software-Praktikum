@@ -7,7 +7,9 @@ import com.sopra.eaplanner.resource.dtos.ResourceResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.multipart.MultipartFile;
+import com.opencsv.CSVReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,6 +80,104 @@ public class ResourceService {
                 .filter(resource -> resource.getLocation().getId().equals(locationId) && resource.getType().equals(ResourceType.ROOM))
                 .map(ResourceResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    public String generateCSV() {
+        StringBuilder csvContent = new StringBuilder("Id,Name,Art,Beschreibung,Kapazität,Land, Postleitzahl, Stadt, Straße, Hausnummer, Verfügbarkeit\n");
+        for (ResourceItem resource : (List<ResourceItem>) resourceRepository.findAll()) {
+            csvContent.append(formatResourceToCSV(resource));
+        }
+        return csvContent.toString();
+    }
+
+    private String formatResourceToCSV(ResourceItem resource) {
+        String location = String.join(",",
+                escapeCSV(resource.getLocation().getCountry()),
+                escapeCSV(resource.getLocation().getPostalCode()),
+                escapeCSV(resource.getLocation().getCity()),
+                escapeCSV(resource.getLocation().getStreet()),
+                escapeCSV(resource.getLocation().getHouseNumber())
+        );
+
+        return String.join(",",
+                String.valueOf(resource.getId()),
+                escapeCSV(resource.getName()),
+                String.valueOf(resource.getType()),
+                escapeCSV(resource.getDescription()),
+                String.valueOf(resource.getCapacity()),
+                location,
+                String.valueOf(resource.getAvailability())
+        ) + "\n";
+    }
+
+    /**
+     * Escapes special characters for CSV formatting.
+     *
+     * @param field the field to escape.
+     * @return the escaped field.
+     */
+    private String escapeCSV(String field) {
+        if (field == null) return "";
+        if (field.contains(",") || field.contains("\"")) {
+            return "\"" + field.replace("\"", "\"\"") + "\"";
+        }
+        return field;
+    }
+
+    public void importResourcesFromCsv(MultipartFile file) throws Exception {
+        try (CSVReader csvReader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
+            String[] headers = csvReader.readNext();
+
+            if (headers == null || headers.length == 0) {
+                throw new Exception("Leere oder ungültige CSV-Datei!");
+            }
+
+            List<ResourceItem> resources = new ArrayList<>();
+            String[] line;
+
+            while ((line = csvReader.readNext()) != null) {
+                if (line.length < 9) {
+                    throw new Exception("Ungültige CSV-Zeile: Zu wenig Daten");
+                }
+                ResourceItem resource = new ResourceItem();
+
+                resource.setName(line[0]);
+                String typeStr = line[1];
+                ResourceType type;
+                try {
+                    type = ResourceType.valueOf(typeStr.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    throw new Exception("Ungültiger Ressourcentyp: " + typeStr);
+                }
+                resource.setType(type);
+
+                resource.setDescription(line[2]);
+
+                try {
+                    resource.setCapacity(Integer.parseInt(line[3]));
+                } catch (NumberFormatException e) {
+                    throw new Exception("Ungültiger Wert für Kapazität: " + line[3]);
+                }
+
+                Location location = new Location();
+                location.setCountry(line[4]);
+                location.setPostalCode(line[5]);
+                location.setCity(line[6]);
+                location.setStreet(line[7]);
+                location.setHouseNumber(line[8]);
+
+                Location savedLocation = locationRepository.save(location);
+
+                resource.setLocation(savedLocation);
+
+                resources.add(resource);
+            }
+
+            resourceRepository.saveAll(resources);
+
+        } catch (Exception e) {
+            throw new Exception("Fehler beim Verarbeiten der CSV-Datei: " + e.getMessage(), e);
+        }
     }
 
 }
