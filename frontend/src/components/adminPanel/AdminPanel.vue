@@ -200,6 +200,7 @@ const users = ref([]);
 const experienceLevels = ref([]);
 const allTags = ref([]);
 const filteredTags = ref([]);
+const allForms = {showExchangeDayBox, showWorkshopBox, showResourceBox, showLocationBox, showUpdateResourceBox, selectEventToUpdate, selectExchangeDayToUpdate};
 
 onMounted(async () => {
   await fetchData();
@@ -258,51 +259,48 @@ const fetchTags = async () => {
 };
 
 const toggleWorkshopBox = () => {
-  resetForms();
+  resetForms(showWorkshopBox);
   showWorkshopBox.value = !showWorkshopBox.value;
 };
 
 const toggleExchangeDayBox = () => {
-  resetForms();
+  resetForms(showExchangeDayBox);
   showExchangeDayBox.value = !showExchangeDayBox.value;
 };
 
 const toggleResourceBox = () => {
-  resetForms();
+  resetForms(showResourceBox);
   showResourceBox.value = !showResourceBox.value;
 };
 
 const toggleLocationBox = () => {
-  resetForms();
+  resetForms(showLocationBox);
   showLocationBox.value = !showLocationBox.value;
 };
 
 const toggleUpdateResourceBox = () => {
-  resetForms();
+  resetForms(showUpdateResourceBox);
   showUpdateResourceBox.value = !showUpdateResourceBox.value;
 };
 
 const SelectEventToUpdate = () => {
-  resetForms();
+  resetForms(selectEventToUpdate);
   selectEventToUpdate.value = !selectEventToUpdate.value;
 };
 
 const SelectExchangeDayToUpdate = () => {
-  resetForms();
+  resetForms(selectEventToUpdate);
   selectExchangeDayToUpdate.value = !selectExchangeDayToUpdate.value;
 };
 
 /**
  * Resets all forms
  */
-const resetForms = () => {
-  showWorkshopBox.value = false;
-  showExchangeDayBox.value = false;
-  showResourceBox.value = false;
-  showLocationBox.value = false;
-  showUpdateResourceBox.value = false;
-  selectEventToUpdate.value = false;
-  selectExchangeDayToUpdate.value = false;
+const resetForms = (currentForm) => {
+  for(const form in allForms) {
+    if (allForms[form] === currentForm) continue;
+    allForms[form].value = false;
+  }
 };
 </script>
 

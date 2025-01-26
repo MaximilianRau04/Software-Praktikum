@@ -155,9 +155,14 @@ const userId = Cookies.get("userId");
 
 const filteredRegisteredEvents = computed(() =>
   registeredEvents.value
-    .filter((event) => new Date(event.date) >= new Date(today))
+    .filter((event) => {
+      const eventDate = new Date(event.date);
+      const [hours, minutes] = event.startTime.split(':').map(Number);
+      eventDate.setHours(hours, minutes, 0, 0);
+      return eventDate > new Date();
+    })
     .filter((event) =>
-      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+      event.name.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
 );
@@ -244,7 +249,7 @@ const fetchEvents = async () => {
     }
 
     pastEvents.value = registeredEvents.value.filter(
-      (event) => new Date(event.date) < new Date(today),
+      (event) => new Date(event.date) <= new Date(today) && event.startTime <= new Date().toLocaleTimeString(),
     );
   } catch (error) {
     showToast(
