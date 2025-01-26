@@ -61,7 +61,7 @@ public class TrainerProfileController {
     public ResponseEntity<?> pinComments(
             @PathVariable Long trainerId,
             @RequestBody ArrayList<Long> feedbackIds) {
-        return ResponseEntity.ok(pinnedCommentService.pinComments(trainerId, feedbackIds));
+        return ResponseEntity.ok(pinnedCommentService.updatePinnedComments(trainerId, feedbackIds));
     }
 
     @PostMapping("")

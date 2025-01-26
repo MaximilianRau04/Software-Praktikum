@@ -12,6 +12,11 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Represents a feedback entity for an event, storing scores and comments for various categories,
+ * including event-related aspects, trainer performance, participant experience, and IT/organizational factors.
+ * The feedback is linked to an event, a user, and optionally a trainer profile.
+ */
 @Entity
 public class Feedback implements FeedbackScore {
 

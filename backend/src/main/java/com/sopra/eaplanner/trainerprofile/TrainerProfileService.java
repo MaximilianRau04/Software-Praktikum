@@ -8,6 +8,7 @@ import com.sopra.eaplanner.event.tags.TagService;
 import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.feedback.FeedbackRepository;
 import com.sopra.eaplanner.feedback.FeedbackService;
+import com.sopra.eaplanner.feedback.FeedbackUtil;
 import com.sopra.eaplanner.trainerprofile.comments.dtos.CommentDTO;
 import com.sopra.eaplanner.trainerprofile.comments.dtos.EventWithCommentsDTO;
 import com.sopra.eaplanner.trainerprofile.comments.dtos.TrainerCommentResponseDTO;
@@ -51,9 +52,12 @@ public class TrainerProfileService {
     }
 
     public TrainerProfileResponseDTO getTrainerProfileById(Long id) {
-        TrainerProfile profile = trainerProfileRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Trainer Profile not found"));
-        return new TrainerProfileResponseDTO(profile);
+        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        if(user.getTrainerProfile() == null){
+            throw new EntityNotFoundException("Trainer profile not set for this user");
+        }
+        return new TrainerProfileResponseDTO(user.getTrainerProfile());
     }
 
     public User getUserOfTrainerProfile(Long id) {
@@ -73,10 +77,11 @@ public class TrainerProfileService {
                                 // Mapping feedback to the CommentDTO and collecting a CommentDTO to be sent off
                                 .map(feedback -> new CommentDTO(
                                         feedback.getId(),
+                                        feedback.getEvent().getId(),
                                         feedback.getEnjoymentComment(),
                                         feedback.isAnonymousFeedback() ? "Anonym" : feedback.getUser().getFirstname() + " " + feedback.getUser().getLastname(),
                                         feedback.getEvent().getName(),
-                                        feedbackService.getFeedbackRating(feedback)
+                                        FeedbackUtil.getFeedbackRating(feedback)
                                 ))
                                 .toList()))
                 .toList();
@@ -125,8 +130,6 @@ public class TrainerProfileService {
         }
 
         existingProfile.setBio(request.getBio());
-        existingProfile.setExpertiseTags(tagService.mergeAndGetTagsFromRequest(request.getExpertiseTagNames()));
-        existingProfile.setUser(user);
 
         TrainerProfile updatedProfile = trainerProfileRepository.save(existingProfile);
         return new TrainerProfileResponseDTO(updatedProfile);

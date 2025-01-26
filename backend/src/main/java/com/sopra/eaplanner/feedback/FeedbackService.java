@@ -44,6 +44,11 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Service class for handling feedback-related operations.
+ * This class provides methods for generating feedback summaries, managing feedback creation and deletion,
+ * generating word clouds from feedback comments, and retrieving feedback authors.
+ */
 @Service
 public class FeedbackService {
 
@@ -62,12 +67,6 @@ public class FeedbackService {
     @Autowired
     private EventParticipationService eventParticipationService;
 
-    // Comment Mappers
-    private final Function<FeedbackResponseDTO, CommentAnalysis> ENJOYMENT_MAPPER = (FeedbackResponseDTO f) -> new CommentAnalysis(f.getEnjoymentComment(), analyzeSentiment(f.getEnjoymentComment()), f.getId(), f.getAuthor());
-    private final Function<FeedbackResponseDTO, CommentAnalysis> IMPROVEMENT_MAPPER = (FeedbackResponseDTO f) -> new CommentAnalysis(f.getImprovementComment(), analyzeSentiment(f.getImprovementComment()), f.getId(), f.getAuthor());
-    private final Function<FeedbackResponseDTO, CommentAnalysis> REQUEST_MAPPER = (FeedbackResponseDTO f) -> new CommentAnalysis(f.getRequestComment(), analyzeSentiment(f.getRequestComment()), f.getId(), f.getAuthor());
-    private final Function<FeedbackResponseDTO, CommentAnalysis> PERSONAL_MAPPER = (FeedbackResponseDTO f) -> new CommentAnalysis(f.getPersonalImprovementComment(), analyzeSentiment(f.getPersonalImprovementComment()), f.getId(), f.getAuthor());
-    private final Function<FeedbackResponseDTO, CommentAnalysis> RECOMMENDATION_MAPPER = (FeedbackResponseDTO f) -> new CommentAnalysis(f.getRecommendationComment(), analyzeSentiment(f.getRecommendationComment()), f.getId(), f.getAuthor());
 
     /**
      * Set of stopWords for use in the word cloud generation as a preprocessing step after tokenization
@@ -92,6 +91,11 @@ public class FeedbackService {
     @Autowired
     private TrainerProfileRepository trainerProfileRepository;
 
+    /**
+     * Retrieves all feedback entries from the repository and converts them into DTOs.
+     *
+     * @return An iterable list of {@link FeedbackResponseDTO} containing all feedback entries.
+     */
     public Iterable<FeedbackResponseDTO> getAllFeedbacks() {
         Iterable<Feedback> feedbacks = feedbackRepository.findAll();
         List<FeedbackResponseDTO> dtos = new ArrayList<>();
@@ -101,20 +105,40 @@ public class FeedbackService {
         return dtos;
     }
 
+    /**
+     * Retrieves feedback entries associated with a specific event ID.
+     *
+     * @param eventId The ID of the event for which feedbacks are to be retrieved.
+     * @return A list of {@link FeedbackResponseDTO} containing the feedbacks for the specified event.
+     */
     public List<FeedbackResponseDTO> getFeedbacksFromEventId(Long eventId) {
         return feedbackRepository.findByEventId(eventId).stream()
                 .map(FeedbackResponseDTO::new)
                 .toList();
     }
 
+    /**
+     * Retrieves a specific feedback by its ID.
+     *
+     * @param id The ID of the feedback to be retrieved.
+     * @return A {@link FeedbackResponseDTO} containing the feedback details.
+     * @throws EntityNotFoundException if the feedback with the specified ID is not found.
+     */
     public FeedbackResponseDTO getFeedbackById(Long id) {
         Feedback feedback = feedbackRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Feedback not found."));
         return new FeedbackResponseDTO(feedback);
     }
 
-
-
+    /**
+     * Generates a summary of feedback for a specific event.
+     * The summary includes numerical feedback for different categories and grouped comments by type.
+     *
+     * @param eventId The ID of the event for which the feedback summary is to be generated.
+     * @return A {@link FeedbackSummaryDTO} containing the feedback summary for the event.
+     * @throws EntityNotFoundException if the event with the specified ID is not found.
+     * @throws ResponseStatusException if no feedback exists for the event.
+     */
     public FeedbackSummaryDTO generateFeedbackSummary(Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Event not found."));
@@ -132,24 +156,25 @@ public class FeedbackService {
 
         Map<FeedbackType, FeedbackStatistics> numericalStats = new HashMap<>();
 
-        List<Integer> allOverallScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getOverallScore);
-        List<Integer> allOrganisationalScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getOrganisationalScore);
-        List<Integer> allRelevanceScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getRelevanceScore);
-        List<Integer> allUnderstandabilityScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getUnderstandabilityScore);
-        List<Integer> allContentDepthScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getContentDepthScore);
-        List<Integer> allPracticalityScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getPracticalityScore);
-        List<Integer> allReasonabilityScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getReasonabilityScore);
-        List<Integer> allCompetencyScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getCompetencyScore);
-        List<Integer> allPresentabilityScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getPresentabilityScore);
-        List<Integer> allInteractivityScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getInteractivityScore);
-        List<Integer> allTimeManagementScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getTimeManagementScore);
-        List<Integer> allParticipationScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getParticipationScore);
-        List<Integer> allAtmosphereScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getAtmosphereScore);
-        List<Integer> allNetworkingScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getNetworkingScore);
-        List<Integer> allEquipmentScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getEquipmentScore);
-        List<Integer> allComfortabilityScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getComfortabilityScore);
-        List<Integer> allCommunicationScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getCommunicationScore);
-        List<Integer> allSimilarEventParticipationScores = extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getSimilarEventParticipationScore);
+        // Extract feedback scores for each category
+        List<Integer> allOverallScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getOverallScore);
+        List<Integer> allOrganisationalScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getOrganisationalScore);
+        List<Integer> allRelevanceScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getRelevanceScore);
+        List<Integer> allUnderstandabilityScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getUnderstandabilityScore);
+        List<Integer> allContentDepthScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getContentDepthScore);
+        List<Integer> allPracticalityScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getPracticalityScore);
+        List<Integer> allReasonabilityScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getReasonabilityScore);
+        List<Integer> allCompetencyScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getCompetencyScore);
+        List<Integer> allPresentabilityScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getPresentabilityScore);
+        List<Integer> allInteractivityScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getInteractivityScore);
+        List<Integer> allTimeManagementScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getTimeManagementScore);
+        List<Integer> allParticipationScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getParticipationScore);
+        List<Integer> allAtmosphereScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getAtmosphereScore);
+        List<Integer> allNetworkingScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getNetworkingScore);
+        List<Integer> allEquipmentScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getEquipmentScore);
+        List<Integer> allComfortabilityScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getComfortabilityScore);
+        List<Integer> allCommunicationScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getCommunicationScore);
+        List<Integer> allSimilarEventParticipationScores = FeedbackUtil.extractFeedbackScoresFromFeedback(feedback, FeedbackResponseDTO::getSimilarEventParticipationScore);
 
         List<List<Integer>> overallCategoryScores = List.of(allOverallScores, allOrganisationalScores, allRelevanceScores);
         List<List<Integer>> contentAndStructureScores = List.of(allUnderstandabilityScores, allContentDepthScores, allPracticalityScores, allReasonabilityScores);
@@ -158,12 +183,13 @@ public class FeedbackService {
         List<List<Integer>> itAndOrganisationScores = List.of(allEquipmentScores, allComfortabilityScores, allCommunicationScores);
         List<List<Integer>> similarityScores = List.of(allSimilarEventParticipationScores);
 
-        FeedbackStatistics overall = createFeedbackStatistics(FeedbackType.OVERALL, overallCategoryScores);
-        FeedbackStatistics contentAndStructure = createFeedbackStatistics(FeedbackType.CONTENT_AND_STRUCTURE, contentAndStructureScores);
-        FeedbackStatistics trainer = createFeedbackStatistics(FeedbackType.TRAINER, trainerScores);
-        FeedbackStatistics participation = createFeedbackStatistics(FeedbackType.PARTICIPATION, participationScores);
-        FeedbackStatistics itAndOrganisation = createFeedbackStatistics(FeedbackType.IT_AND_ORGANISATION, itAndOrganisationScores);
-        FeedbackStatistics similarity = createFeedbackStatistics(FeedbackType.SIMILARITY, similarityScores);
+        // Create statistics for each category
+        FeedbackStatistics overall = FeedbackUtil.createFeedbackStatistics(FeedbackType.OVERALL, overallCategoryScores);
+        FeedbackStatistics contentAndStructure = FeedbackUtil.createFeedbackStatistics(FeedbackType.CONTENT_AND_STRUCTURE, contentAndStructureScores);
+        FeedbackStatistics trainer = FeedbackUtil.createFeedbackStatistics(FeedbackType.TRAINER, trainerScores);
+        FeedbackStatistics participation = FeedbackUtil.createFeedbackStatistics(FeedbackType.PARTICIPATION, participationScores);
+        FeedbackStatistics itAndOrganisation = FeedbackUtil.createFeedbackStatistics(FeedbackType.IT_AND_ORGANISATION, itAndOrganisationScores);
+        FeedbackStatistics similarity = FeedbackUtil.createFeedbackStatistics(FeedbackType.SIMILARITY, similarityScores);
 
         numericalStats.put(FeedbackType.OVERALL, overall);
         numericalStats.put(FeedbackType.CONTENT_AND_STRUCTURE, contentAndStructure);
@@ -174,12 +200,21 @@ public class FeedbackService {
 
         summary.setNumericalFeedback(numericalStats);
 
-        Map<CommentType, List<CommentAnalysis>> comments = groupFeedbackCommentsByType(feedback);
+        // Group comments by type
+        Map<CommentType, List<CommentAnalysis>> comments = FeedbackUtil.groupFeedbackCommentsByType(feedback);
         summary.setComments(comments);
 
         return summary;
     }
 
+    /**
+     * Generates a word cloud based on feedback comments for a specific event.
+     * The word cloud is returned as a {@link Resource} containing a PNG image of the word cloud.
+     *
+     * @param eventId The ID of the event for which the word cloud is to be generated.
+     * @return A {@link Resource} containing the generated word cloud image.
+     * @throws IOException if there is an error while generating the word cloud image.
+     */
     public Resource getWordCloud(Long eventId) throws IOException {
         List<FeedbackResponseDTO> feedback = getFeedbacksFromEventId(eventId);
         BufferedImage wordCloudImage = generateWordCloud(feedback);
@@ -189,6 +224,14 @@ public class FeedbackService {
         return new InputStreamResource(inputStream);
     }
 
+    /**
+     * Retrieves the author of a specific feedback by its ID.
+     * If the feedback is anonymous, an exception is thrown.
+     *
+     * @param id The ID of the feedback whose author is to be retrieved.
+     * @return A {@link UserResponseDTO} containing the details of the feedback author.
+     * @throws EntityNotFoundException if the feedback is anonymous or not found.
+     */
     public UserResponseDTO getFeedbackAuthor(Long id) {
         Feedback feedback = feedbackRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Feedback not found"));
@@ -200,6 +243,14 @@ public class FeedbackService {
         return new UserResponseDTO(feedback.getUser());
     }
 
+    /**
+     * Creates and saves a new feedback entry based on the provided request data.
+     * The method also updates the feedback statistics for the trainer and event.
+     *
+     * @param requestBody The request data for creating the feedback.
+     * @return A {@link FeedbackResponseDTO} containing the details of the created feedback.
+     * @throws EntityNotFoundException if the event or user related to the feedback is not found.
+     */
     public FeedbackResponseDTO createFeedback(FeedbackRequestDTO requestBody) {
         Event eventForFeedback = eventRepository.findById(requestBody.getEventId())
                 .orElseThrow(() -> new EntityNotFoundException("Event not found"));
@@ -209,11 +260,8 @@ public class FeedbackService {
 
         Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback, feedbackAuthor);
 
-
-        eventParticipationService.confirmFeedback(feedbackAuthor, eventForFeedback);
-
-        double sentimentScore = getSentimentScoreFromPersonalFeedback(requestBody);
-        double ratingScore = getFeedbackRating(requestBody);
+        double sentimentScore = FeedbackUtil.getSentimentScoreFromPersonalFeedback(requestBody);
+        double ratingScore = FeedbackUtil.getFeedbackRating(requestBody);
 
         addTagWeightForFeedback(feedbackAuthor, eventForFeedback, sentimentScore, ratingScore);
 
@@ -226,6 +274,9 @@ public class FeedbackService {
         profile.setAverageRating(newRating);
 
         feedbackToSave.setSentiment(sentimentScore);
+
+        eventParticipationService.confirmFeedback(feedbackAuthor, eventForFeedback);
+
         feedbackToSave = feedbackRepository.save(feedbackToSave);
         trainerProfileRepository.save(profile);
         eventRepository.save(eventForFeedback);
@@ -234,6 +285,28 @@ public class FeedbackService {
         return new FeedbackResponseDTO(feedbackToSave);
     }
 
+    /**
+     * Deletes a feedback entry by its ID.
+     *
+     * @param id The ID of the feedback to be deleted.
+     * @throws EntityNotFoundException if the feedback with the specified ID does not exist.
+     */
+    public void deleteFeedback(Long id) {
+        if (!feedbackRepository.existsById(id)) {
+            throw new EntityNotFoundException("Feedback with id " + id + " not found");
+        }
+        feedbackRepository.deleteById(id);
+    }
+
+    /**
+     * Updates the tag weights for a user based on their feedback.
+     * This method adjusts sentiment and rating for each tag associated with the event.
+     *
+     * @param user      The user providing the feedback.
+     * @param event     The event for which the feedback is provided.
+     * @param sentiment The sentiment score associated with the feedback.
+     * @param rating    The rating score associated with the feedback.
+     */
     private void addTagWeightForFeedback(User user, Event event, Double sentiment, Double rating) {
         for (Tag tag : event.getTags()) {
             UserTagWeight tagWeight = userTagWeightRepository.findByUserAndTag(user, tag)
@@ -254,138 +327,15 @@ public class FeedbackService {
         }
     }
 
-    public void deleteFeedback(Long id) {
-        if (!feedbackRepository.existsById(id)) {
-            throw new EntityNotFoundException("Feedback with id " + id + " not found");
-        }
-        feedbackRepository.deleteById(id);
-    }
-
-    private Map<String, Double> getSubAveragesByType(FeedbackType type, List<List<Integer>> scores) {
-        switch (type) {
-            case OVERALL -> {
-                Map<String, Double> overall = new HashMap<>();
-                overall.put("overall", calculateAverage(scores.get(0)));
-                overall.put("organisational", calculateAverage(scores.get(1)));
-                overall.put("relevance", calculateAverage(scores.get(2)));
-                return overall;
-            }
-            case CONTENT_AND_STRUCTURE -> {
-                Map<String, Double> contentAndStructure = new HashMap<>();
-                contentAndStructure.put("understandability", calculateAverage(scores.get(0)));
-                contentAndStructure.put("contentDepth", calculateAverage(scores.get(1)));
-                contentAndStructure.put("practicality", calculateAverage(scores.get(2)));
-                contentAndStructure.put("reasonability", calculateAverage(scores.get(3)));
-                return contentAndStructure;
-            }
-            case TRAINER -> {
-                Map<String, Double> trainer = new HashMap<>();
-                trainer.put("competency", calculateAverage(scores.get(0)));
-                trainer.put("presentability", calculateAverage(scores.get(1)));
-                trainer.put("interactivity", calculateAverage(scores.get(2)));
-                trainer.put("timeManagement", calculateAverage(scores.get(3)));
-                return trainer;
-            }
-            case PARTICIPATION -> {
-                Map<String, Double> participation = new HashMap<>();
-                participation.put("participation", calculateAverage(scores.get(0)));
-                participation.put("atmosphere", calculateAverage(scores.get(1)));
-                participation.put("networking", calculateAverage(scores.get(2)));
-                return participation;
-            }
-            case IT_AND_ORGANISATION -> {
-                Map<String, Double> itAndOrganisation = new HashMap<>();
-                itAndOrganisation.put("equipment", calculateAverage(scores.get(0)));
-                itAndOrganisation.put("comfortability", calculateAverage(scores.get(1)));
-                itAndOrganisation.put("communication", calculateAverage(scores.get(2)));
-                return itAndOrganisation;
-            }
-            case SIMILARITY -> {
-                Map<String, Double> similarity = new HashMap<>();
-                similarity.put("similarEventParticipation", calculateMedian(scores.get(0)));
-                return similarity;
-            }
-            default -> throw new IllegalArgumentException("Unsupported feedback type: " + type);
-        }
-    }
-
-    private FeedbackStatistics createFeedbackStatistics(FeedbackType type, List<List<Integer>> scores) {
-        double average = calculateAveragesOfAverages(scores);
-        double median = calculateMedianOfMedians(scores);
-        int responseCount = scores.getFirst() != null ? scores.getFirst().size() : 0;
-        Map<String, Double> subMedians = getSubAveragesByType(type, scores);
-
-        return new FeedbackStatistics(average, median, responseCount, subMedians);
-    }
-
-    private double calculateAverage(List<Integer> scores) {
-        return scores.stream().mapToInt(Integer::intValue).average().orElse(0);
-    }
-
-    private double calculateAveragesOfAverages(List<List<Integer>> scores) {
-        if (scores == null || scores.isEmpty()) {
-            return 0.0;
-        }
-        double average = 0;
-
-        for (List<Integer> categoryScores : scores) {
-            average += categoryScores.stream().mapToInt(Integer::intValue).average().orElse(0);
-        }
-        return average / scores.size();
-    }
-
-    private double calculateMedian(List<Integer> scores) {
-        if (scores == null || scores.isEmpty()) {
-            return 0.0;
-        }
-        if (scores.size() == 1) {
-            return scores.getFirst().doubleValue();
-        }
-
-        List<Integer> mediansScoreList = new ArrayList<>(scores);
-        Collections.sort(mediansScoreList);
-
-        int size = mediansScoreList.size();
-        if (size % 2 == 0) {
-            return (mediansScoreList.get(size / 2 - 1) + mediansScoreList.get(size / 2)) / 2.0;
-        } else {
-            return mediansScoreList.get(size / 2);
-        }
-    }
-
-    private double calculateMedianOfMedians(List<List<Integer>> scores) {
-        List<Double> categoryMedians = new ArrayList<>();
-        for (List<Integer> categoryScores : scores) {
-            if (categoryScores == null || categoryScores.isEmpty()) {
-                categoryMedians.add(0.0);
-                continue;
-            }
-            if (categoryScores.size() == 1) {
-                categoryMedians.add(categoryScores.getFirst().doubleValue());
-                continue;
-            }
-
-            List<Integer> scoreList = new ArrayList<>(categoryScores);
-            Collections.sort(scoreList);
-
-            int size = scoreList.size();
-            if (size % 2 == 0) {
-                categoryMedians.add((scoreList.get(size / 2 - 1) + scoreList.get(size / 2)) / 2.0);
-            } else {
-                categoryMedians.add((double) scoreList.get(size / 2));
-            }
-        }
-        List<Double> mediansScoreList = new ArrayList<>(categoryMedians);
-        Collections.sort(mediansScoreList);
-
-        int size = mediansScoreList.size();
-        if (size % 2 == 0) {
-            return (mediansScoreList.get(size / 2 - 1) + mediansScoreList.get(size / 2)) / 2.0;
-        } else {
-            return mediansScoreList.get(size / 2);
-        }
-    }
-
+    /**
+     * Generates a word cloud image based on the feedback comments.
+     * The comments are tokenized, filtered to remove stopwords, and then used to build a frequency analysis of the words.
+     * The word frequencies are then used to create a word cloud image.
+     *
+     * @param feedback The list of feedback entries from which to extract comments for the word cloud.
+     * @return A {@link BufferedImage} representing the generated word cloud.
+     * @throws IOException if an error occurs while reading the background mask image or generating the word cloud.
+     */
     private BufferedImage generateWordCloud(List<FeedbackResponseDTO> feedback) throws IOException {
         List<String> comments = new ArrayList<>();
 
@@ -398,7 +348,7 @@ public class FeedbackService {
 
         List<String> filteredTokens = Arrays.stream(tokens)
                 .map(word -> word.replaceAll("[^a-zA-Z1-9]", ""))
-                .filter(word -> !stopWords.contains(word) && word.length() > 2 && word.length() <= 15)
+                .filter(word -> !FeedbackUtil.stopWords.contains(word) && word.length() > 2 && word.length() <= 15)
                 .toList();
 
         final FrequencyAnalyzer frequencyAnalyzer = new FrequencyAnalyzer();
@@ -409,6 +359,13 @@ public class FeedbackService {
         return wordCloud.getBufferedImage();
     }
 
+    /**
+     * Sets up the base configuration for the word cloud generation, including dimensions, background, color palette, and font scaling.
+     * The method uses a mask image for the word cloud's background.
+     *
+     * @return A {@link WordCloud} object with the configured settings for building a word cloud.
+     * @throws IOException if the mask image cannot be found or loaded from the resources.
+     */
     private WordCloud setupWordCloudBase() throws IOException {
         final Dimension dimension = new Dimension(900, 150);
         final WordCloud wordCloud = new WordCloud(dimension, CollisionMode.RECTANGLE);
@@ -423,140 +380,5 @@ public class FeedbackService {
         wordCloud.setColorPalette(new ColorPalette(new Color(0x4055F1), new Color(0x408DF1), new Color(0x40AAF1), new Color(0x40C5F1), new Color(0x40D3F1), new Color(0xFFFFFF)));
         wordCloud.setFontScalar(new LinearFontScalar(12, 25));
         return wordCloud;
-    }
-
-    private Map<CommentType, List<CommentAnalysis>> groupFeedbackCommentsByType(List<FeedbackResponseDTO> feedback) {
-        Map<CommentType, List<CommentAnalysis>> comments = new HashMap<>();
-
-        comments.put(CommentType.ENJOYMENT, extractCommentsByType(feedback, ENJOYMENT_MAPPER));
-        comments.put(CommentType.IMPROVEMENT, extractCommentsByType(feedback, IMPROVEMENT_MAPPER));
-        comments.put(CommentType.REQUEST, extractCommentsByType(feedback, REQUEST_MAPPER));
-        comments.put(CommentType.PERSONAL_IMPROVEMENT, extractCommentsByType(feedback, PERSONAL_MAPPER));
-        comments.put(CommentType.RECOMMENDATION, extractCommentsByType(feedback, RECOMMENDATION_MAPPER));
-        return comments;
-    }
-
-    private List<CommentAnalysis> extractCommentsByType(List<FeedbackResponseDTO> feedback, Function<FeedbackResponseDTO, CommentAnalysis> mapper) {
-        return feedback.stream()
-                .map(mapper)
-                .filter(commentAnalysis -> !commentAnalysis.getComment().isEmpty())
-                .toList();
-    }
-
-    /**
-     * Provides a sentiment categorization of the passed in text to be used in feedback display for the workshops
-     *
-     * <a href="https://github.com/apanimesh061/VaderSentimentJava">VADERSentimentJava Tool</a> used for Sentiment analysis
-     * under MIT License
-     *
-     * @param text The comment to be analyzed for sentiment
-     * @return Returns Strings "positive", "neutral" or "negative" based on the result of the
-     * sentimentPolarities produced from the SentimentAnalyzer
-     */
-    private String analyzeSentiment(String text) {
-        final SentimentPolarities sentimentPolarities = SentimentAnalyzer.getScoresFor(text);
-        return assignSentimentToComment(sentimentPolarities);
-    }
-
-    private String assignSentimentToComment(SentimentPolarities sentimentPolarities) {
-        if (sentimentPolarities.getCompoundPolarity() >= 0.2f) {
-            return "positive";
-        } else if (sentimentPolarities.getCompoundPolarity() < 0.2f && sentimentPolarities.getCompoundPolarity() >= -0.2f) {
-            return "neutral";
-        } else if (sentimentPolarities.getCompoundPolarity() < -0.2f) {
-            return "negative";
-        } else {
-            return "neutral";
-        }
-    }
-
-    private <T> List<Integer> extractFeedbackScoresFromFeedback(List<FeedbackResponseDTO> feedback,
-                                                                Function<FeedbackResponseDTO, T> extractor) {
-        return feedback.stream()
-                .map(extractor)
-                .filter(Objects::nonNull)
-                .map(val -> (Integer) val)
-                .collect(Collectors.toList());
-    }
-
-    private Double getSentimentScoreFromPersonalFeedback(FeedbackRequestDTO f) {
-        double sentiment = 0.0;
-
-        final double enjoymentWeight = 0.4;
-        final double improvementWeight = 0.1;
-        final double requestWeight = 0.05;
-        final double personalImprovementWeight = 0.1;
-        final double recommendationWeight = 0.4;
-
-        sentiment += enjoymentWeight * SentimentAnalyzer.getScoresFor(f.getEnjoymentComment()).getCompoundPolarity();
-        sentiment += improvementWeight * SentimentAnalyzer.getScoresFor(f.getImprovementComment()).getCompoundPolarity();
-        sentiment += requestWeight * SentimentAnalyzer.getScoresFor(f.getRequestComment()).getCompoundPolarity();
-        sentiment += personalImprovementWeight * SentimentAnalyzer.getScoresFor(f.getPersonalImprovementComment()).getCompoundPolarity();
-        sentiment += recommendationWeight * SentimentAnalyzer.getScoresFor(f.getRecommendationComment()).getCompoundPolarity();
-
-        return sentiment;
-    }
-
-    public Double getFeedbackRating(Feedback f) {
-        return getFeedbackRating((FeedbackScore) f);
-    }
-
-    private Double getFeedbackRating(FeedbackRequestDTO f) {
-        return getFeedbackRating((FeedbackScore) f);
-    }
-
-    private Double getFeedbackRating(FeedbackScore f) {
-        double rating = 0.0;
-
-        //Overall
-        final double overallWeight = 0.4;
-        final double organisationalWeight = 0.2;
-        final double relevanceWeight = 0.4;
-
-        // Content and structure
-        final double understandabilityWeight = 0.3;
-        final double contentDepthWeight = 0.4;
-        final double practicalityWeight = 0.2;
-        final double reasonabilityWeight = 0.1;
-
-        // Trainer
-        final double competencyWeight = 0.25;
-        final double presentabilityWeight = 0.25;
-        final double interactivityWeight = 0.25;
-        final double timeManagementWeight = 0.25;
-
-        // Participation
-        final double participationWeight = 0.5;
-        final double atmosphereSWeight = 0.15;
-        final double networkingWeight = 0.35;
-
-        // IT and Organisation
-        final double equipmentWeight = 0.33;
-        final double comfortabilityWeight = 0.33;
-        final double communicationWeight = 0.33;
-
-        rating += overallWeight * f.getOverallScore()
-                + organisationalWeight * f.getOrganisationalScore()
-                + relevanceWeight * f.getRelevanceScore();
-        rating += understandabilityWeight * f.getUnderstandabilityScore()
-                + contentDepthWeight * f.getContentDepthScore()
-                + practicalityWeight * f.getPracticalityScore()
-                + reasonabilityWeight * f.getReasonabilityScore();
-        rating += competencyWeight * f.getCompetencyScore()
-                + presentabilityWeight * f.getPresentabilityScore()
-                + interactivityWeight * f.getInteractivityScore()
-                + timeManagementWeight * f.getTimeManagementScore();
-        rating += participationWeight * f.getParticipationScore()
-                + atmosphereSWeight * f.getAtmosphereScore()
-                + networkingWeight * f.getNetworkingScore();
-        rating += equipmentWeight * f.getEquipmentScore()
-                + communicationWeight * f.getCommunicationScore()
-                + comfortabilityWeight * f.getComfortabilityScore();
-
-        rating += f.getIsEventRecommended() ? 2.5 : -5;
-
-        double normalizedRating = rating / 6.0;
-
-        return Math.min(5.0, Math.max(1.0, normalizedRating));
     }
 }

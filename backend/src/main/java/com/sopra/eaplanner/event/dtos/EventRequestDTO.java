@@ -11,6 +11,24 @@ import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Data Transfer Object (DTO) for creating or updating an event.
+ *
+ * <p>This class is used to encapsulate the data required for an event request, ensuring
+ * validation rules are applied before processing. It includes information about the event's
+ * name, timing, date, location, organizer, and additional metadata.</p>
+ *
+ * <p>Validation annotations are used to enforce constraints, such as ensuring non-null
+ * fields, length limits for strings, and a future date for the event.</p>
+ *
+ * <p>Typical usage:</p>
+ * <pre>
+ *   EventRequestDTO request = new EventRequestDTO();
+ *   request.setName("Workshop");
+ *   request.setDate(LocalDate.of(2025, 1, 1));
+ *   ...
+ * </pre>
+ */
 public class EventRequestDTO {
 
     @NotNull(message = "Name cannot be null")

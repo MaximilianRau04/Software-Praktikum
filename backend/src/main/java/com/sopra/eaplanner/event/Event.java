@@ -12,6 +12,7 @@ import com.sopra.eaplanner.resource.ResourceItem;
 import com.sopra.eaplanner.resource.resourceAssignment.ResourceAssignment;
 import com.sopra.eaplanner.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -24,6 +25,15 @@ import java.util.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.springframework.format.annotation.DateTimeFormat;
 
+/**
+ * Entity class representing an event in the system.
+ *
+ * <p>An event has details such as name, date, time, room, description, associated exchange day, organizer, and participants. It also supports feedback, reminders, forum threads, resources, and tags.</p>
+ *
+ * <p>Each event is related to a specific {@link ExchangeDay} and {@link User} (organizer). It can have multiple {@link User}s as registered participants, as well as associated {@link Tag}s for categorization.</p>
+ *
+ * <p>Additional features include managing participation, feedback, attendance, QR codes, and reminders.</p>
+ */
 @Entity
 @Table(name = "events")
 public class Event {
@@ -329,7 +339,6 @@ public class Event {
     public void setForumThreads(Set<ForumThread> forumThreads) {
         this.forumThreads = forumThreads;
     }
-
     public void setResources(List<ResourceItem> resources) {
         this.resources = resources;
     }

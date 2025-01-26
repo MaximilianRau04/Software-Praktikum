@@ -1,11 +1,26 @@
 package com.sopra.eaplanner.exchangeday.dtos;
 
-import com.sopra.eaplanner.locations.Location;
 import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
+/**
+ * Data Transfer Object (DTO) for the request to create or update an ExchangeDay.
+ * This DTO is used to capture the input data for an ExchangeDay and includes validation annotations.
+ *
+ * <p>It ensures that the data for creating or updating an ExchangeDay is valid and correctly formatted.</p>
+ *
+ * <p>Fields in this class are validated as follows:</p>
+ * <ul>
+ *   <li>{@code startDate} and {@code endDate} must be a valid future or present date (using {@code @FutureOrPresent} annotation).</li>
+ *   <li>{@code name} must be between 3 and 100 characters (using {@code @Size} annotation).</li>
+ *   <li>{@code locationId} cannot be {@code null} (using {@code @NotNull} annotation).</li>
+ *   <li>{@code description} cannot exceed 255 characters (using {@code @Size} annotation).</li>
+ * </ul>
+ *
+ * <p>Instances of this class are typically used as input data for creating or updating ExchangeDay entities in the backend.</p>
+ */
 public class ExchangeDayRequestDTO {
 
     @DateTimeFormat(pattern = "dd.MM.yyyy")

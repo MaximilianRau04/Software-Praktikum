@@ -6,9 +6,12 @@ import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.dtos.RatedEventDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationService;
+import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.event.tags.TagResponseDTO;
+import com.sopra.eaplanner.event.tags.TagService;
 import com.sopra.eaplanner.feedback.FeedbackRepository;
 import com.sopra.eaplanner.feedback.FeedbackService;
+import com.sopra.eaplanner.feedback.FeedbackUtil;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.forumpost.dtos.ForumPostResponseDTO;
 import com.sopra.eaplanner.reward.dtos.RewardResponseDTO;
@@ -18,7 +21,6 @@ import com.sopra.eaplanner.trainerprofile.TrainerProfileRepository;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
 import com.sopra.eaplanner.user.dtos.UserRequestDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,6 +53,9 @@ public class UserService {
 
     @Autowired
     private FeedbackRepository feedbackRepository;
+
+    @Autowired
+    private TagService tagService;
 
     public UserResponseDTO getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
@@ -104,7 +109,7 @@ public class UserService {
 
             if (eventEndDateTime.isBefore(now)) {
                 Double averageRating = event.getFeedbacks().stream()
-                        .mapToDouble(f -> feedbackService.getFeedbackRating(f))
+                        .mapToDouble(FeedbackUtil::getFeedbackRating)
                         .sum() / event.getFeedbacks().size();
                 pastEvents.add(new RatedEventDTO(event, averageRating, tags));
             } else if (eventStartDateTime.isAfter(now)) {
@@ -198,29 +203,41 @@ public class UserService {
         return new UserResponseDTO(userToSave);
     }
 
-
     public UserResponseDTO updateUser(Long id, UserRequestDTO user) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new EntityExistsException("Username already in use.");
-        }
-
-        if (!user.getUsername().isBlank()) {
+        if (user.getUsername() != null && !user.getUsername().isBlank()) {
             existingUser.setUsername(user.getUsername());
         }
-        if (!user.getFirstname().isBlank()) {
+        if (user.getFirstname() != null && !user.getFirstname().isBlank()) {
             existingUser.setFirstname(user.getFirstname());
         }
-        if (!user.getLastname().isBlank()) {
+        if (user.getLastname() != null && !user.getLastname().isBlank()) {
             existingUser.setLastname(user.getLastname());
         }
         if (user.getRole() != null) {
             existingUser.setRole(user.getRole());
         }
 
+        if (existingUser.getDescription() == null) {
+            existingUser.setDescription(user.getDescription());
+        } else if (!existingUser.getDescription().equals(user.getDescription())) {
+            existingUser.setDescription(user.getDescription());
+        }
+
         return new UserResponseDTO(userRepository.save(existingUser));
+    }
+
+    public Set<TagResponseDTO> updateUserInterestTags(Long userId, Set<String> requestBody) {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        Set<Tag> freshTags = tagService.mergeAndGetTagsFromRequest(requestBody);
+        existingUser.setInterestTagsTags(freshTags);
+
+        userRepository.save(existingUser);
+
+        return freshTags.stream().map(TagResponseDTO::new).collect(Collectors.toSet());
     }
 
     public User registerUserToEvent(Long userId, Long eventId) {
@@ -236,6 +253,12 @@ public class UserService {
         eventParticipationService.createAttendance(userToRegister, eventForRegistration);
         eventRepository.save(eventForRegistration);
         return userToRegister;
+    }
+
+    public Set<TagResponseDTO> getInterestTags(Long eventId) {
+        User user = userRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event not found."));
+
+        return user.getInterestTags().stream().map(TagResponseDTO::new).collect(Collectors.toSet());
     }
 
     public void removeUserFromEvent(Long userId, Long eventId) {

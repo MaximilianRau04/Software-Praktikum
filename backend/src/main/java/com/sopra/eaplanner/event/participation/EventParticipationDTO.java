@@ -5,6 +5,29 @@ import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 
 import java.time.LocalDateTime;
 
+/**
+ * Data Transfer Object (DTO) for representing the details of a user's participation in an event.
+ *
+ * <p>This class is used to transfer data related to an {@link EventParticipation} entity,
+ * including the user, the event, and metadata about participation status, confirmation time,
+ * and feedback.</p>
+ *
+ * <p>The DTO is constructed directly from an {@link EventParticipation} entity, ensuring a
+ * streamlined conversion of entity data to a client-facing format. It encapsulates details
+ * about:</p>
+ * <ul>
+ *   <li>The user's identity via a {@link UserResponseDTO}.</li>
+ *   <li>The associated event's details via a {@link EventResponseDTO}.</li>
+ *   <li>The user's confirmation status and the timestamp of the confirmation.</li>
+ *   <li>Whether feedback has been provided and the timestamp of the feedback submission.</li>
+ * </ul>
+ *
+ * <p>Typical usage:</p>
+ * <pre>
+ *   EventParticipationDTO dto = new EventParticipationDTO(eventParticipation);
+ *   System.out.println(dto.isParticipationConfirmed()); // Outputs: true or false
+ * </pre>
+ */
 public class EventParticipationDTO {
 
     private Long id;

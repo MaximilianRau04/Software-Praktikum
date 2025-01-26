@@ -17,9 +17,4 @@ public class PinnedCommentController {
     public List<CommentDTO> getPinnedComments(@PathVariable Long trainerId) {
         return pinnedCommentService.getPinnedComments(trainerId);
     }
-
-    @DeleteMapping("/{id}")
-    public void unpinComment(@PathVariable Long id) {
-        pinnedCommentService.unpinComment(id);
-    }
 }
