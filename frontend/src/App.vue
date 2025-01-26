@@ -22,7 +22,7 @@
         <div class="flex-fill flex flex-column">
           <div class="flex">
             <h3 class="flex-fill">{{ toast.title }}</h3>
-            <Close @click="toast.close()"/>
+            <Close @click="toast.close()" />
           </div>
           <div class="flex">
             <font-awesome-icon

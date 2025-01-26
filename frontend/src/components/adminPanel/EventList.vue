@@ -1,88 +1,90 @@
 <template>
-    <div class="event-page">
-      <div class="search-bar-container">
-        <input 
-          type="text" 
-          v-model="searchTerm" 
-          placeholder="Suche nach Events..." 
-          class="search-bar"
-        />
-      </div>
-      <div class="event-columns">
-        <div class="event-column list-left">
-          <h2>Event Liste</h2>
-          <div v-if="filteredEvents.length === 0" class="empty-state">
-            Keine Events gefunden
-          </div>
-          <div v-else>
-            <div 
-              v-for="event in filteredEvents" 
-              :key="event.id" 
-              class="event-details"
-            >
-              <h3><strong>{{ event.name }}</strong></h3>
-              <p>{{ event.description }}</p>
-              <p>{{ formatDate(event.date) }}</p>
-              <div class="tag-chips">
-                <span
-                  v-for="(tag, index) in event.tags.slice(0, 5)"
-                  :key="tag.id"
-                  class="chip"
-                >
-                  {{ tag.name }}
-                </span>
-              </div>
-              <button 
-                @click="showFeedbackSummary(event.id)" 
-                class="register-button"
+  <div class="event-page">
+    <div class="search-bar-container">
+      <input
+        type="text"
+        v-model="searchTerm"
+        placeholder="Suche nach Events..."
+        class="search-bar"
+      />
+    </div>
+    <div class="event-columns">
+      <div class="event-column list-left">
+        <h2>Event Liste</h2>
+        <div v-if="filteredEvents.length === 0" class="empty-state">
+          Keine Events gefunden
+        </div>
+        <div v-else>
+          <div
+            v-for="event in filteredEvents"
+            :key="event.id"
+            class="event-details"
+          >
+            <h3>
+              <strong>{{ event.name }}</strong>
+            </h3>
+            <p>{{ event.description }}</p>
+            <p>{{ formatDate(event.date) }}</p>
+            <div class="tag-chips">
+              <span
+                v-for="(tag, index) in event.tags.slice(0, 5)"
+                :key="tag.id"
+                class="chip"
               >
-                Feedback anzeigen
-              </button>
+                {{ tag.name }}
+              </span>
             </div>
+            <button
+              @click="showFeedbackSummary(event.id)"
+              class="register-button"
+            >
+              Feedback anzeigen
+            </button>
           </div>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script setup lang="ts">
-  import { ref, onMounted, computed } from 'vue';
-  import config from '@/config';
-  import { showToast, Toast } from '@/types/toasts';
-  import { useRouter } from "vue-router";
-import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
-  
-  const props = defineProps({
-    showEventListBox: Boolean
-  });
-  
-  const emit = defineEmits(['update:showEventListBox']);
-  
-  const events = ref([]);
-  const searchTerm = ref('');
-  const router = useRouter();
-  
-  onMounted(async () => {
-    await fetchEvents();
-  });
-  
-  const fetchEvents = async () => {
-    try {
-      const response = await fetch(`${config.apiBaseUrl}/events`);
-      if (!response.ok) {
-        throw new Error('Fehler beim Laden der Events');
-      }
-      events.value = await response.json();
+  </div>
+</template>
 
-      for (const event of events.value) {
+<script setup lang="ts">
+import { ref, onMounted, computed } from "vue";
+import config from "@/config";
+import { showToast, Toast } from "@/types/toasts";
+import { useRouter } from "vue-router";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+
+const props = defineProps({
+  showEventListBox: Boolean,
+});
+
+const emit = defineEmits(["update:showEventListBox"]);
+
+const events = ref([]);
+const searchTerm = ref("");
+const router = useRouter();
+
+onMounted(async () => {
+  await fetchEvents();
+});
+
+const fetchEvents = async () => {
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/events`);
+    if (!response.ok) {
+      throw new Error("Fehler beim Laden der Events");
+    }
+    events.value = await response.json();
+
+    for (const event of events.value) {
       event.tags = await fetchTagsForEvent(event.id);
     }
-    } catch (error) {
-      showToast(new Toast("Error", "Fehler beim Laden der Events", "error"));
-    }
-  };
+  } catch (error) {
+    showToast(new Toast("Error", "Fehler beim Laden der Events", "error"));
+  }
+};
 
-  const fetchTagsForEvent = async (eventId) => {
+const fetchTagsForEvent = async (eventId) => {
   try {
     const res = await fetch(`${config.apiBaseUrl}/events/${eventId}/tags`);
     if (!res.ok) throw new Error("Failed to fetch tags");
@@ -94,33 +96,38 @@ import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
         `Fehler beim Laden der Tags für Event ${eventId}`,
         "error",
         faXmark,
-        10
-      )
+        10,
+      ),
     );
     return [];
   }
 };
-  
-  const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('de-DE', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
+
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
   });
 };
 
 const filteredEvents = computed(() => {
-  return events.value.filter(event => 
-    (event.name && event.name.toLowerCase().includes(searchTerm.value.toLowerCase())) ||
-    (event.description && event.description.toLowerCase().includes(searchTerm.value.toLowerCase()))
+  return events.value.filter(
+    (event) =>
+      (event.name &&
+        event.name.toLowerCase().includes(searchTerm.value.toLowerCase())) ||
+      (event.description &&
+        event.description
+          .toLowerCase()
+          .includes(searchTerm.value.toLowerCase())),
   );
 });
-  
+
 const showFeedbackSummary = (eventId) => {
-    router.push(`/feedback/${eventId}`);
+  router.push(`/feedback/${eventId}`);
 };
-  </script>
-  
+</script>
+
 <style scoped>
 .event-page {
   padding: 20px;
@@ -239,4 +246,4 @@ h2 h3 p {
   color: white;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
-  </style>
+</style>

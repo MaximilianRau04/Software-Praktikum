@@ -157,12 +157,12 @@ const filteredRegisteredEvents = computed(() =>
   registeredEvents.value
     .filter((event) => {
       const eventDate = new Date(event.date);
-      const [hours, minutes] = event.startTime.split(':').map(Number);
+      const [hours, minutes] = event.startTime.split(":").map(Number);
       eventDate.setHours(hours, minutes, 0, 0);
       return eventDate > new Date();
     })
     .filter((event) =>
-      event.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
     )
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
 );
@@ -206,8 +206,8 @@ const fetchTagsForEvent = async (eventId) => {
         `Fehler beim Laden der Tags für Event ${eventId}`,
         "error",
         faXmark,
-        10
-      )
+        10,
+      ),
     );
     return [];
   }
@@ -219,7 +219,7 @@ const fetchTagsForEvent = async (eventId) => {
 const fetchEvents = async () => {
   if (!userId) {
     showToast(
-      new Toast("Error", `Keine Benutzer-ID gefunden`, "error", faXmark, 10)
+      new Toast("Error", `Keine Benutzer-ID gefunden`, "error", faXmark, 10),
     );
     isLoading.value = false;
     return;
@@ -236,7 +236,7 @@ const fetchEvents = async () => {
 
     if (!registeredRes.ok || !recommendedRes.ok || !feedbackRes.ok) {
       showToast(
-        new Toast("Error", `Fehler der Laden der Events`, "error", faXmark, 10)
+        new Toast("Error", `Fehler der Laden der Events`, "error", faXmark, 10),
       );
     }
 
@@ -249,11 +249,13 @@ const fetchEvents = async () => {
     }
 
     pastEvents.value = registeredEvents.value.filter(
-      (event) => new Date(event.date) <= new Date(today) && event.startTime <= new Date().toLocaleTimeString(),
+      (event) =>
+        new Date(event.date) <= new Date(today) &&
+        event.startTime <= new Date().toLocaleTimeString(),
     );
   } catch (error) {
     showToast(
-      new Toast("Error", `Fehler der Laden der Events`, "error", faXmark, 10)
+      new Toast("Error", `Fehler der Laden der Events`, "error", faXmark, 10),
     );
   } finally {
     isLoading.value = false;

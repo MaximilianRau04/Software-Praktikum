@@ -247,18 +247,18 @@ export default {
 
 <style scoped>
 .back-button {
-    position: fixed;
-    top: 6rem;
-    left: 6rem;
-    background-color: #009ee2;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s;
+  position: fixed;
+  top: 6rem;
+  left: 6rem;
+  background-color: #009ee2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
 }
 
 .back-button:hover {
@@ -266,62 +266,62 @@ export default {
 }
 
 .page-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0 auto;
-    max-width: 800px;
-    padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 2rem;
 }
 
 .page-header {
-    text-align: center;
-    font-size: 2rem;
-    font-weight: bold;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 .section-header {
-    text-align: center;
-    margin-bottom: 0.5rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
 }
 
 .section-description {
-    text-align: justify;
-    font-size: 1rem;
-    color: #555;
-    margin-bottom: 1.5rem;
+  text-align: justify;
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 1.5rem;
 }
 
 textarea {
-    width: 70%;
-    max-width: 600px;
-    min-height: 50px;
-    max-height: 50px;
-    padding: 10px;
-    margin: 0 auto;
-    display: block;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    line-height: 1.5;
+  width: 70%;
+  max-width: 600px;
+  min-height: 50px;
+  max-height: 50px;
+  padding: 10px;
+  margin: 0 auto;
+  display: block;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 textarea:focus {
-    border-color: #009EE2;
-    outline: none;
+  border-color: #009ee2;
+  outline: none;
 }
 
 .manage-page {
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .manage-section {
-    border: 1px solid #ddd;
-    padding: 1.5rem;
-    border-radius: 10px;
-    background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 1.5rem;
+  border-radius: 10px;
+  background-color: #f9f9f9;
 }
 
 .event-section {
@@ -368,17 +368,17 @@ textarea:focus {
 }
 
 .card-body {
-    position: relative;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  position: relative;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .card-body p {
-    flex-grow: 1;
-    margin-bottom: 2rem;
-    overflow-wrap: break-word;
+  flex-grow: 1;
+  margin-bottom: 2rem;
+  overflow-wrap: break-word;
 }
 
 .save-button {
@@ -411,12 +411,12 @@ textarea:focus {
 }
 
 .chip {
-    background-color: #009ee2;
-    color: white;
-    padding-top: 0.3rem;
-    padding-left: 0.7rem;
-    border-radius: 20px;
-    margin-right: 0.5rem;
+  background-color: #009ee2;
+  color: white;
+  padding-top: 0.3rem;
+  padding-left: 0.7rem;
+  border-radius: 20px;
+  margin-right: 0.5rem;
 }
 
 .remove-tag {
@@ -443,58 +443,58 @@ textarea:focus {
 }
 
 .pinned-comments-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
 }
 
 .pinned-comment-card {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .pin-button {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    background-color: #009ee2;
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background-color: #009ee2;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .pin-button:hover {
-    background-color: #007bb5;
+  background-color: #007bb5;
 }
 
 .pin-button.disabled {
-    background-color: #e0e0e0;
-    color: #b0b0b0;
-    cursor: not-allowed;
+  background-color: #e0e0e0;
+  color: #b0b0b0;
+  cursor: not-allowed;
 }
 
 .pin-button.disabled:hover {
-    background-color: #e0e0e0;
+  background-color: #e0e0e0;
 }
 
 .unpin-button {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    background-color: #ff4d4d;
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background-color: #ff4d4d;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .unpin-button:hover {
-    background-color: #e63e3e;
+  background-color: #e63e3e;
 }
 </style>

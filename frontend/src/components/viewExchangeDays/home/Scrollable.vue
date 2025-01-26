@@ -54,7 +54,6 @@ export default {
   },
   emits: ["select-exchange-day"],
   setup(props, { emit }) {
-    
     /**
      * sort exchangeDays by startDate
      */

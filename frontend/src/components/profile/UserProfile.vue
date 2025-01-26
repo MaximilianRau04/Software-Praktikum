@@ -4,7 +4,6 @@
       <!-- Left Side: User Info and Tags -->
       <div class="profile-left">
         <div v-if="user" class="profile-header">
-
           <!-- User Name and Bio -->
           <div class="profile-info">
             <div class="profile-name">
@@ -17,19 +16,35 @@
             <p v-else>Noch keine Biografie hinzugefügt.</p>
 
             <!-- Edit Bio Button -->
-            <button v-if="isOwnProfile" class="edit-bio-btn" @click="openEditBioModal">Bio bearbeiten</button>
+            <button
+              v-if="isOwnProfile"
+              class="edit-bio-btn"
+              @click="openEditBioModal"
+            >
+              Bio bearbeiten
+            </button>
           </div>
 
           <!-- Display User Tags -->
           <div>
             <div class="tag-chips" v-if="selectedTags.length > 0">
-              <span v-for="(tag, index) in selectedTags" :key="index" class="chip">
+              <span
+                v-for="(tag, index) in selectedTags"
+                :key="index"
+                class="chip"
+              >
                 {{ tag }}
               </span>
             </div>
 
             <!-- Edit Tags Button -->
-            <button v-if="isOwnProfile" class="edit-tags-btn" @click="openEditTagsModal">Tags bearbeiten</button>
+            <button
+              v-if="isOwnProfile"
+              class="edit-tags-btn"
+              @click="openEditTagsModal"
+            >
+              Tags bearbeiten
+            </button>
           </div>
 
           <!-- Edit Tags Modal -->
@@ -40,20 +55,32 @@
 
               <!-- Tags Display (No input, only selection and removal) -->
               <div class="tag-chips">
-                <span v-for="(tag, index) in selectedTags" :key="index" class="chip">
+                <span
+                  v-for="(tag, index) in selectedTags"
+                  :key="index"
+                  class="chip"
+                >
                   {{ tag }}
                   <button type="button" @click="removeTag(index)">×</button>
                 </span>
               </div>
 
               <div class="tag-list">
-                <button v-for="tag in allTags" :key="tag"
-                  :disabled="selectedTags.includes(tag) || selectedTags.length >= 5" @click="addTag(tag)">
+                <button
+                  v-for="tag in allTags"
+                  :key="tag"
+                  :disabled="
+                    selectedTags.includes(tag) || selectedTags.length >= 5
+                  "
+                  @click="addTag(tag)"
+                >
                   {{ tag }}
                 </button>
               </div>
 
-              <button @click="updateTags" :disabled="selectedTags.length === 0">Speichern</button>
+              <button @click="updateTags" :disabled="selectedTags.length === 0">
+                Speichern
+              </button>
             </div>
           </div>
         </div>
@@ -62,14 +89,22 @@
       <!-- Right Side: Badges Section -->
       <div class="profile-right">
         <div v-if="badges.length > 0" class="badges-list">
-          <div v-for="badge in badges" :key="badge.id" class="badge-item" @mouseover="showTooltip(badge.id)"
-            @mouseleave="hideTooltip">
+          <div
+            v-for="badge in badges"
+            :key="badge.id"
+            class="badge-item"
+            @mouseover="showTooltip(badge.id)"
+            @mouseleave="hideTooltip"
+          >
             <img :src="badge.imageUrl" :alt="badge.type" class="badge-icon" />
             <!-- Tooltip -->
             <div v-if="tooltipBadgeId === badge.id" class="badge-tooltip">
               <h3>{{ translateBadgeType(badge.type) }}</h3>
               <p>Level: {{ badge.currentLevel }}</p>
-              <p>{{ badge.points }} / {{ badge.points + badge.pointsToNextLevel }}</p>
+              <p>
+                {{ badge.points }} /
+                {{ badge.points + badge.pointsToNextLevel }}
+              </p>
               <p class="badge-description">{{ badge.description }}</p>
             </div>
           </div>
@@ -84,7 +119,10 @@
     <div v-if="showEditBioModal" class="modal">
       <div class="modal-content">
         <h2>Biografie bearbeiten</h2>
-        <textarea v-model="newBio" placeholder="Geben Sie Ihre neue Bio ein..."></textarea>
+        <textarea
+          v-model="newBio"
+          placeholder="Geben Sie Ihre neue Bio ein..."
+        ></textarea>
         <div class="modal-actions">
           <button @click="updateBio">Absenden</button>
           <button @click="closeEditBioModal">Abbrechen</button>
@@ -119,14 +157,15 @@ export default {
   },
   computed: {
     isOwnProfile() {
-      console.log(Number(this.user.id) === Number(Cookies.get("userId")))
       return Number(this.user.id) === Number(Cookies.get("userId"));
-    }
+    },
   },
   methods: {
     async fetchProfile() {
       try {
-        const badgesResponse = await fetch(`${config.apiBaseUrl}/users/${this.user.id}/rewards`);
+        const badgesResponse = await fetch(
+          `${config.apiBaseUrl}/users/${this.user.id}/rewards`,
+        );
         if (!badgesResponse.ok) {
           throw new Error("Badges data fetch failed");
         }
@@ -135,7 +174,7 @@ export default {
         this.badges = await Promise.all(
           badgeData.map(async (badge) => {
             const badgeImageResponse = await fetch(
-              `${config.apiBaseUrl}/rewards/badge?type=${badge.type}&currentLevel=${badge.currentLevel}`
+              `${config.apiBaseUrl}/rewards/badge?type=${badge.type}&currentLevel=${badge.currentLevel}`,
             );
             if (!badgeImageResponse.ok) {
               throw new Error("Badge image fetch failed");
@@ -147,7 +186,7 @@ export default {
               ...badge,
               imageUrl: imageUrl,
             };
-          })
+          }),
         );
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -158,13 +197,15 @@ export default {
       try {
         const allTagsResponse = await fetch(`${config.apiBaseUrl}/tags`);
         const tagData = await allTagsResponse.json();
-        this.allTags = tagData.map(tag => tag.name);
+        this.allTags = tagData.map((tag) => tag.name);
 
-        const response = await fetch(`${config.apiBaseUrl}/users/${this.user.id}/tags`);
+        const response = await fetch(
+          `${config.apiBaseUrl}/users/${this.user.id}/tags`,
+        );
         const data = await response.json();
-        this.selectedTags = data.map(tag => tag.name);
+        this.selectedTags = data.map((tag) => tag.name);
       } catch (error) {
-        console.error('Fehler beim Laden der Tags:', error);
+        console.error("Fehler beim Laden der Tags:", error);
       }
     },
     async openEditTagsModal() {
@@ -188,30 +229,32 @@ export default {
 
     async updateTags() {
       try {
-        const response = await fetch(`${config.apiBaseUrl}/users/${this.user.id}/tags`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
+        const response = await fetch(
+          `${config.apiBaseUrl}/users/${this.user.id}/tags`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(this.selectedTags),
           },
-          body: JSON.stringify(this.selectedTags),
-        });
+        );
         if (!response.ok) {
-          throw new Error('Fehler beim Aktualisieren der Tags');
+          throw new Error("Fehler beim Aktualisieren der Tags");
         }
         this.closeEditTagsModal();
-        console.log('Tags erfolgreich aktualisiert');
       } catch (error) {
-        console.error('Fehler beim Aktualisieren der Tags:', error);
+        console.error("Fehler beim Aktualisieren der Tags:", error);
       }
     },
 
     translateBadgeType(type) {
       const translations = {
-        "ATTENDER": "Teilnehmender",
-        "FEEDBACK_GIVER": "Feedbackgeber",
-        "INNOVATOR": "Innovator",
-        "COLLABORATOR": "Kooperateur",
-        "MENTOR": "Mentor",
+        ATTENDER: "Teilnehmender",
+        FEEDBACK_GIVER: "Feedbackgeber",
+        INNOVATOR: "Innovator",
+        COLLABORATOR: "Kooperateur",
+        MENTOR: "Mentor",
       };
       return translations[type] || type;
     },
@@ -223,7 +266,7 @@ export default {
     },
 
     openEditBioModal() {
-      this.newBio = this.user.description || '';
+      this.newBio = this.user.description || "";
       this.showEditBioModal = true;
     },
 
@@ -241,13 +284,16 @@ export default {
           description: this.newBio,
         };
 
-        const response = await fetch(`${config.apiBaseUrl}/users/${this.user.id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
+        const response = await fetch(
+          `${config.apiBaseUrl}/users/${this.user.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userBio),
           },
-          body: JSON.stringify(userBio),
-        });
+        );
 
         if (!response.ok) {
           throw new Error("Biographie konnte nicht gesendet werden.");
@@ -320,7 +366,7 @@ export default {
 .edit-tags-btn {
   margin-left: 1rem;
   padding: 0.5rem 1rem;
-  background-color: #007BFF;
+  background-color: #007bff;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -464,7 +510,7 @@ textarea {
 .modal-actions button {
   padding: 0.5rem 1rem;
   margin-right: 0.5rem;
-  background-color: #007BFF;
+  background-color: #007bff;
   color: #fff;
   border: none;
   border-radius: 5px;

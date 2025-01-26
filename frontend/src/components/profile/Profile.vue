@@ -5,6 +5,7 @@
       :user="userData"
       :trainer="trainerProfileData"
     />
+    <UserProfile v-else :user="userData" />
   </div>
 </template>
 
@@ -43,7 +44,6 @@ export default {
           throw new Error("User data fetch failed");
         }
         this.userData = await userResponse.json();
-
         if (this.isTrainer) {
           const trainerResponse = await fetch(
             `/api/trainerProfiles/${this.userData.id}`,
