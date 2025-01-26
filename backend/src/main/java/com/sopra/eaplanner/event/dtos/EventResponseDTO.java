@@ -6,6 +6,23 @@ import com.sopra.eaplanner.event.ExperienceLevel;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * Data Transfer Object (DTO) for representing the details of an event in responses.
+ *
+ * <p>This class is used to encapsulate and transfer event data from the backend to the
+ * frontend or client, ensuring a clear and consistent structure for responses. It includes
+ * key details about the event, such as its ID, associated exchange day, timing, name, location,
+ * and recommended experience level.</p>
+ *
+ * <p>Typical usage:</p>
+ * <pre>
+ *   EventResponseDTO response = new EventResponseDTO();
+ *   response.setId(1L);
+ *   response.setName("Workshop");
+ *   response.setDate(LocalDate.of(2025, 1, 1));
+ *   ...
+ * </pre>
+ */
 public class EventResponseDTO {
     private Long id;
     private Long exchangeDayId;

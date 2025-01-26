@@ -5,21 +5,23 @@ import com.sopra.eaplanner.reward.Reward;
 public class RewardResponseDTO {
 
     private Long id;
-
     private Reward.Type type;
-
     private Integer points;
-
-    private Long userId;
-
-    private Integer threshold;
+    private String description;
+    private Integer currentLevel;
+    private Integer pointsToNextLevel;
+    private Boolean levelBased;
 
     public RewardResponseDTO(Reward reward) {
         this.id = reward.getId();
         this.type = reward.getType();
         this.points = reward.getPoints();
-        this.userId = reward.getUser().getId();
-        this.threshold = reward.getLastThreshold();
+        this.description = reward.getDescription();
+        this.levelBased = reward.isLevelBased();
+        if(reward.isLevelBased()){
+            this.currentLevel = reward.getCurrentLevel();
+            this.pointsToNextLevel = reward.getPointsToNextLevel(reward.getType());
+        }
     }
 
     public Long getId() {
@@ -41,16 +43,30 @@ public class RewardResponseDTO {
     public void setPoints(Integer points) {
         this.points = points;
     }
-    public Long getUserId() {
-        return userId;
+
+    public String getDescription() {
+        return description;
     }
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setDescription(String description) {
+        this.description = description;
     }
-    public Integer getThreshold() {
-        return threshold;
+    public Integer getCurrentLevel() {
+        return currentLevel;
     }
-    public void setThreshold(Integer threshold) {
-        this.threshold = threshold;
+    public void setCurrentLevel(Integer currentLevel) {
+        this.currentLevel = currentLevel;
+    }
+    public Integer getPointsToNextLevel() {
+        return pointsToNextLevel;
+    }
+    public void setPointsToNextLevel(Integer pointsToNextLevel) {
+        this.pointsToNextLevel = pointsToNextLevel;
+    }
+
+    public Boolean getLevelBased() {
+        return levelBased;
+    }
+    public void setLevelBased(Boolean levelBased) {
+        this.levelBased = levelBased;
     }
 }

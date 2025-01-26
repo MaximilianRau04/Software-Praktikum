@@ -24,6 +24,15 @@ import java.util.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.springframework.format.annotation.DateTimeFormat;
 
+/**
+ * Entity class representing an event in the system.
+ *
+ * <p>An event has details such as name, date, time, room, description, associated exchange day, organizer, and participants. It also supports feedback, reminders, forum threads, resources, and tags.</p>
+ *
+ * <p>Each event is related to a specific {@link ExchangeDay} and {@link User} (organizer). It can have multiple {@link User}s as registered participants, as well as associated {@link Tag}s for categorization.</p>
+ *
+ * <p>Additional features include managing participation, feedback, attendance, QR codes, and reminders.</p>
+ */
 @Entity
 @Table(name = "events")
 public class Event {

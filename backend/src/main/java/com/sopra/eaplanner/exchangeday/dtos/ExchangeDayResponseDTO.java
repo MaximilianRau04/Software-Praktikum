@@ -5,6 +5,24 @@ import com.sopra.eaplanner.locations.LocationDTO;
 
 import java.time.LocalDate;
 
+/**
+ * Data Transfer Object (DTO) for representing an ExchangeDay in the response.
+ * This class is used to structure the data sent back to the client when an ExchangeDay is retrieved.
+ *
+ * <p>The fields in this DTO correspond to the properties of the ExchangeDay entity, but may not contain all the entity fields.</p>
+ *
+ * <p>The response will include:</p>
+ * <ul>
+ *   <li>{@code id} - The unique identifier of the ExchangeDay.</li>
+ *   <li>{@code startDate} - The start date of the ExchangeDay.</li>
+ *   <li>{@code endDate} - The end date of the ExchangeDay.</li>
+ *   <li>{@code name} - The name of the ExchangeDay.</li>
+ *   <li>{@code location} - The location of the ExchangeDay, represented as a {@link LocationDTO}.</li>
+ *   <li>{@code description} - A brief description of the ExchangeDay.</li>
+ * </ul>
+ *
+ * <p>Instances of this class are typically used for sending data to the frontend in response to ExchangeDay retrieval requests.</p>
+ */
 public class ExchangeDayResponseDTO {
 
     private Long id;

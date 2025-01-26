@@ -1,5 +1,6 @@
-package com.sopra.eaplanner.forumpost;
+package com.sopra.eaplanner.forumpost.dtos;
 
+import com.sopra.eaplanner.forumpost.ForumPost;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
 
 import java.time.LocalDateTime;

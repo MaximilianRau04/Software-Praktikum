@@ -14,8 +14,8 @@ public class RewardController {
     private RewardService rewardService;
 
     @GetMapping("/badge")
-    public ResponseEntity<Resource> getRewardBadge(@RequestParam("type") Reward.Type type, @RequestParam("threshold") Integer threshold) {
-        Resource file = rewardService.getBadgePNG(type, threshold);
+    public ResponseEntity<Resource> getRewardBadge(@RequestParam("type") Reward.Type type, @RequestParam("currentLevel") Integer currentLevel) {
+        Resource file = rewardService.getBadgePNG(type, currentLevel);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)

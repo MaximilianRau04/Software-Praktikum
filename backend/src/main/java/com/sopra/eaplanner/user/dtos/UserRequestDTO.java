@@ -7,6 +7,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class UserRequestDTO {
 
     @NotNull(message = "Username cannot be null")
@@ -20,9 +23,13 @@ public class UserRequestDTO {
     @Size(max = 50, message = "Lastname cannot exceed 50 characters")
     private String lastname;
 
+    private String description;
+
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Role must be specified")
     private User.Role role;
+
+    private Set<String> interestTags = new HashSet<>();
 
     public UserRequestDTO() {
     }
@@ -38,9 +45,16 @@ public class UserRequestDTO {
     public String getLastname() {
         return lastname;
     }
+    public String getDescription() {
+        return description;
+    }
 
     public User.Role getRole() {
         return role;
+    }
+
+    private Set<String> getInterestTags() {
+        return interestTags;
     }
 
     public static UserRequestDTO mockWith(String username, String firstname, String lastname, User.Role role) {

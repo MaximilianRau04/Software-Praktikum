@@ -1,6 +1,7 @@
 <template>
     <div class="profile-container">
         <TrainerProfile v-if="isTrainer && trainerProfileData" :user="userData" :trainer="trainerProfileData" />
+        <UserProfile v-else :user="userData" />
     </div>
 </template>
 
@@ -10,7 +11,6 @@ import TrainerProfile from "@/components/profile/TrainerProfile.vue";
 import UserProfile from "@/components/profile/UserProfile.vue";
 import config from "@/config";
 
-// <UserProfile v-else :user="userData" />
 export default {
     name: "Profile",
     components: { TrainerProfile, UserProfile },
@@ -41,7 +41,6 @@ export default {
                         throw new Error("Trainer data fetch failed");
                     }
                     this.trainerProfileData = await trainerResponse.json();
-                    console.log(this.trainerProfileData.bio)
                 }
             } catch (error) {
                 console.error("Error fetching profile:", error);

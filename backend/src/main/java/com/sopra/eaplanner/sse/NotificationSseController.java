@@ -14,6 +14,17 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Controller responsible for handling Server-Sent Events (SSE) notifications for users.
+ * <p>
+ * This controller provides a mechanism to stream real-time notifications to a client using SSE,
+ * where the client can subscribe to receive notifications for a specific user identified by their ID.
+ * The notifications are sent through an {@link SseEmitter}, which keeps the connection open for the client to receive events.
+ * </p>
+ * <p>
+ * The controller also supports sending notifications to a specific user through the {@link #sendNotification(Long, Notification)} method.
+ * </p>
+ */
 @RestController
 @RequestMapping("/sse")
 public class NotificationSseController {
@@ -23,6 +34,17 @@ public class NotificationSseController {
 
     private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
 
+    /**
+     * Streams notifications for a specific user identified by their user ID.
+     * <p>
+     * This method creates a new {@link SseEmitter} for the given user ID, which keeps the connection open
+     * so that notifications can be sent to the client in real time.
+     * The emitter is stored in a map, and it is removed when the connection is completed, timed out, or encounters an error.
+     * </p>
+     *
+     * @param userId the ID of the user for whom the notifications are to be streamed.
+     * @return an {@link SseEmitter} that the client can use to receive notifications.
+     */
     @GetMapping("/notifications/{userId}")
     public SseEmitter streamNotifications(@PathVariable Long userId) {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
@@ -35,6 +57,16 @@ public class NotificationSseController {
         return emitter;
     }
 
+    /**
+     * Sends a notification to the specified user via SSE.
+     * <p>
+     * This method retrieves the {@link SseEmitter} associated with the given user ID and sends the notification.
+     * If the emitter is not available or the connection encounters an error, the emitter is removed from the map.
+     * </p>
+     *
+     * @param userId the ID of the user to send the notification to.
+     * @param notification the notification to send.
+     */
     public void sendNotification(Long userId, Notification notification) {
         SseEmitter emitter = emitters.get(userId);
         if (emitter != null) {
