@@ -32,7 +32,7 @@ public class TagService {
         Iterable<Tag> tags = tagRepository.findAll();
         List<TagResponseDTO> dtos = new ArrayList<>();
         for (Tag tag : tags) {
-            dtos.add(new TagResponseDTO(tag));
+            dtos.add(new TagResponseDTO(tag, false));
         }
         return dtos;
     }

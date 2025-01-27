@@ -24,7 +24,6 @@ public class RewardNotification extends Notification {
 
     }
 
-
     public static RewardNotification create(String title, Long userId, Reward.Type rewardType, Integer points, Integer threshold) {
         return new RewardNotification(title, NotificationType.REWARD, userId, rewardType, points, threshold);
     }

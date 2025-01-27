@@ -7,9 +7,8 @@
         <!-- Header Section -->
         <div class="header-container">
             <div class="header-content">
-                <h1>{{ user.firstname + " " + user.lastname }}</h1>
-                <p class="username">@{{ user.username }}</p>
-                <p class="bio">{{ trainer.bio }}</p>
+                <!-- Use TrainerHeader and pass user & bio -->
+                <TrainerHeader :user="user" :bio="trainer.bio" />
                 <!-- Expertise Tags -->
                 <div class="tags-container">
                     <hr />
@@ -36,6 +35,7 @@
 </template>
 
 <script>
+import TrainerHeader from "./TrainerHeader.vue";
 import TrainerTags from "@/components/profile/TrainerTags.vue";
 import TrainerStarRating from "@/components/profile/TrainerStarRating.vue";
 import TrainerComments from "@/components/profile/TrainerComments.vue";
@@ -49,6 +49,7 @@ import Cookies from "js-cookie";
 export default {
     name: "TrainerProfile",
     components: {
+        TrainerHeader,
         TrainerTags,
         TrainerStarRating,
         TrainerComments,

@@ -1,4 +1,4 @@
-.container {
+.admin-container {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
@@ -68,7 +68,7 @@
 }
 
 .create-box {
-  width: 100%;
+  width: 80%;
   margin: 12px auto;
   padding: 20px;
   border-radius: 8px;

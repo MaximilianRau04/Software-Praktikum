@@ -24,8 +24,6 @@ import com.sopra.eaplanner.user.UserRepository;
 import com.sopra.eaplanner.user.UserTagWeight;
 import com.sopra.eaplanner.user.UserTagWeightRepository;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
-import com.vader.sentiment.analyzer.SentimentAnalyzer;
-import com.vader.sentiment.analyzer.SentimentPolarities;
 import jakarta.persistence.EntityNotFoundException;
 import opennlp.tools.tokenize.SimpleTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +39,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Service class for handling feedback-related operations.

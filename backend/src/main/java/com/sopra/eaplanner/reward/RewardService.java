@@ -108,16 +108,32 @@ public class RewardService {
     }
 
     public Resource getBadgePNG(Reward.Type type, Integer currentLevel) {
-        if(currentLevel == 0){
-            ClassPathResource resource = new ClassPathResource("rewardBadges/hold.png");
+        if(type == Reward.Type.CLEAN_SUBMITTER){
+            ClassPathResource resource = new ClassPathResource("rewardBadges/clean.png");
             if (!resource.exists()) {
                 throw new IllegalArgumentException("Badge placeholder file not found");
             }
             return resource;
         }
 
-        if(type == Reward.Type.CLEAN_SUBMITTER){
-            ClassPathResource resource = new ClassPathResource("rewardBadges/clean.png");
+        if(type == Reward.Type.ALLROUNDER){
+            ClassPathResource resource = new ClassPathResource("rewardBadges/allrounder.png");
+            if (!resource.exists()) {
+                throw new IllegalArgumentException("Badge placeholder file not found");
+            }
+            return resource;
+        }
+
+        if(type == Reward.Type.SOCIAL_BUTTERFLY){
+            ClassPathResource resource = new ClassPathResource("rewardBadges/social.png");
+            if (!resource.exists()) {
+                throw new IllegalArgumentException("Badge placeholder file not found");
+            }
+            return resource;
+        }
+
+        if(currentLevel == 0){
+            ClassPathResource resource = new ClassPathResource("rewardBadges/hold.png");
             if (!resource.exists()) {
                 throw new IllegalArgumentException("Badge placeholder file not found");
             }

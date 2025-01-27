@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="admin-container">
     <div class="box">
       <div class="action-buttons">
         <!-- Create Buttons -->

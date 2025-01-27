@@ -50,7 +50,6 @@ export default {
           const trainerResponse = await fetch(
             `/api/trainerProfiles/${this.userData.id}`,
           );
-          console.log("hallo")
           if (!trainerResponse.ok) {
             showToast(
               new Toast(

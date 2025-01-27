@@ -93,7 +93,7 @@ public class TrainerProfileService {
         TrainerProfile profile = trainerProfileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Trainer Profile not found"));
 
         return profile.getExpertiseTags().stream()
-                .map(TagResponseDTO::new)
+                .map(tag -> new TagResponseDTO(tag, true))
                 .collect(Collectors.toSet());
     }
 
