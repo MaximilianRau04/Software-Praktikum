@@ -162,6 +162,9 @@ export default {
   },
   methods: {
     async fetchProfile() {
+      if(this.user.role === 'ADMIN'){
+        return;
+      }
       try {
         const badgesResponse = await fetch(
           `${config.apiBaseUrl}/users/${this.user.id}/rewards`,

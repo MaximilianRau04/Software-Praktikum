@@ -56,7 +56,7 @@ export default {
 .trainer-star-rating {
   display: flex;
   align-items: center;
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   color: #ffc107;
 }
 
@@ -66,17 +66,17 @@ export default {
 }
 
 .star.filled {
-  color: #ffc107;
+  color: #ffa807;
 }
 
 .star.half-filled {
-  color: #ffc107;
+  color: #ffa807;
   background: linear-gradient(90deg, #ffc107 50%, #e0e0e0 50%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .star.empty {
-  color: #e0e0e0;
+  color: #d3d0d0;
 }
 </style>

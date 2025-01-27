@@ -1,71 +1,62 @@
 <template>
-  <div class="event-card">
-    <div class="date-time">
-      <span class="date">{{
-        new Date(event.date).toLocaleDateString("de-DE")
-      }}</span>
-      <span class="time">
-        {{
-          new Date(event.date + "T" + event.startTime).toLocaleTimeString(
-            "de-DE",
-            {
-              hour: "2-digit",
-              minute: "2-digit",
-            },
-          )
-        }}
-        -
-        {{
-          new Date(event.date + "T" + event.endTime).toLocaleTimeString(
-            "de-DE",
-            {
-              hour: "2-digit",
-              minute: "2-digit",
-            },
-          )
-        }}
-      </span>
+    <div class="event-card">
+      <div class="header">
+        <h4 class="event-title">{{ event.name }}</h4>
+      </div>
+      <div class="date-time">
+        <span class="date">
+          {{ new Date(event.date).toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) }}
+        </span>
+        <span class="time">
+          {{
+            new Date(event.date + "T" + event.startTime).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })
+          }}
+          -
+          {{
+            new Date(event.date + "T" + event.endTime).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })
+          }}
+        </span>
+      </div>
+      <div class="event-description">
+        <p>{{ event.description }}</p>
+      </div>
+      <button v-if="showRegisterButton" class="details-btn" @click="showDetails">Details anzeigen</button>
+      <div v-if="showRating" class="rating">
+        <div
+          class="star"
+          v-for="n in Math.round(event.averageRating)"
+          :key="n"
+        ></div>
+      </div>
     </div>
-    <h4>{{ event.name }}</h4>
-    <p>{{ event.description }}</p>
-    <div class="rating">
-      <div
-        class="star"
-        v-for="n in Math.round(event.averageRating)"
-        :key="n"
-      ></div>
-    </div>
-    <button v-if="showRegisterButton" class="register-btn">Register</button>
-  </div>
-</template>
-
-<script>
-export default {
-  name: "EventCard",
-  props: {
-    event: {
-      type: Object,
-      required: true,
+  </template>
+  
+  <script>
+  export default {
+    name: "EventCard",
+    props: {
+      event: {
+        type: Object,
+        required: true,
+      },
+      showRating: {
+        type: Boolean,
+        default: false,
+      },
+      showRegisterButton: {
+        type: Boolean,
+        default: false,
+      },
     },
-    showRating: {
-      type: Boolean,
-      default: false,
+    methods: {
+      showDetails() {
+        this.$router.push({ name: "EventPage", params: { eventId: this.event.id } });
+      },
     },
-    showRegisterButton: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  methods: {
-    formatDate(date) {
-      const options = { year: "numeric", month: "long", day: "numeric" };
-      return new Date(date).toLocaleDateString(undefined, options);
-    },
-  },
-};
-</script>
-
-<style scoped>
+  };
+  </script>
+  
+  <style scoped>
 .event-card {
   padding: 1rem;
   background-color: #f9f9f9;
@@ -105,5 +96,56 @@ export default {
 
 .register-button:hover {
   background-color: #0056b3;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+}
+
+.event-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+hr {
+  border: 1px solid #ddd;
+  margin: 0.5rem 0;
+}
+
+.event-description {
+  font-size: 1rem;
+  color: #333;
+}
+
+.details-btn {
+  padding: 0.75rem 1.25rem;
+  background-color: #009ee2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background-color 0.3s;
+}
+
+.details-btn:hover {
+  background-color: #01172f;
+}
+
+.date-time {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.date-time .date {
+  font-weight: bold;
+}
+
+.date-time .time {
+  color: #777;
 }
 </style>
