@@ -587,5 +587,6 @@ onMounted(() => {
   checkRegistrationStatus();
   fetchEventDetails();
   fetchTagsForEvent();
+  handleThreadNavigation();
 });
 </script>

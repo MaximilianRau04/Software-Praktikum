@@ -32,8 +32,8 @@ public class RewardNotificationHandler implements NotificationHandler {
         RewardNotification rewardNotification = (RewardNotification) notification;
 
         context.put("rewardType", rewardNotification.getRewardType());
-        context.put("points", rewardNotification.getPoints());
-        context.put("threshold", rewardNotification.getThreshold());
+        context.put("currentLevel", rewardNotification.getCurrentLevel());
+        context.put("levelBased", rewardNotification.getLevelBased());
         return context;
     }
 }

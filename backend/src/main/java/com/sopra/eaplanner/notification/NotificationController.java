@@ -1,5 +1,6 @@
 package com.sopra.eaplanner.notification;
 
+import com.sopra.eaplanner.reward.Reward;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,5 +59,12 @@ public class NotificationController {
         String title = "Test Notification";
         LocalDateTime eventDateTime = LocalDateTime.now().plusMinutes(1);
         notificationService.createAndSendEventReminder(title, eventDateTime, userId, 15L);
+    }
+
+    @PostMapping("/test-reward")
+    public ResponseEntity<Void> testReward() {
+        notificationService.createAndSendRewardNotification("Keine Halben Sachen", 1L, Reward.Type.CLEAN_SUBMITTER, 0, true);
+        return ResponseEntity.noContent().build();
+
     }
 }

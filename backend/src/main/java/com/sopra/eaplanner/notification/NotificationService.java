@@ -104,8 +104,8 @@ public class NotificationService {
         notificationSseController.sendNotification(userId, forumNotification);
     }
 
-    public void createAndSendRewardNotification(String title, Long userId, Reward.Type rewardType, Integer points, Integer threshold){
-        RewardNotification rewardNotification = RewardNotification.create(title, userId, rewardType, points, threshold);
+    public void createAndSendRewardNotification(String title, Long userId, Reward.Type rewardType, Integer currentLevel, Boolean levelBased){
+        RewardNotification rewardNotification = RewardNotification.create(title, userId, rewardType, currentLevel, levelBased);
 
         NotificationHandler handler = notificationHandlerFactory.getNotificationHandler(rewardNotification.getType());
         rewardNotification.setHandler(handler);

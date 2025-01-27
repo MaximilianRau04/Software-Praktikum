@@ -176,6 +176,8 @@ Content-Type: application/json
   "quantity": 1
 }
 ###
+POST http://localhost:8080/api/notifications/test-reward
+###
 
 GET http://localhost:8080/api/locations
 

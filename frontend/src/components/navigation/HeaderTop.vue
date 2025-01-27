@@ -29,6 +29,7 @@
               is="EventNotificationCard"
               :notification="notification"
               @mark-as-read="markAsRead"
+              @closeNoti="handleNavigate"
             />
           </div>
 
@@ -41,8 +42,23 @@
               is="ForumNotificationCard"
               :notification="notification"
               @mark-as-read="markAsRead"
+              @closeNoti="handleNavigate"
             />
           </div>
+
+          <!-- REWARD Section -->
+          <div v-if="groupedNotifications.REWARD?.length">
+            <h3>Errungenschaften</h3>
+            <component
+              v-for="(notification, index) in groupedNotifications.REWARD"
+              :key="index"
+              is="RewardNotificationCard"
+              :notification="notification"
+              @mark-as-read="markAsRead"
+              @closeNoti="handleNavigate"
+            />
+          </div>
+
           <div v-if="!hasNotifications" class="no-notifications">
             Keine Benachrichtigungen
           </div>
@@ -65,12 +81,14 @@ import "@/assets/header.css";
 import NotificationCard from "@/components/notification/NotificationCardBase.vue";
 import EventNotificationCard from "../notification/EventNotificationCard.vue";
 import ForumNotificationCard from "../notification/ForumNotificationCard.vue";
+import RewardNotificationCard from "../notification/RewardNotificationCard.vue";
 
 export default {
   components: {
     NotificationCard,
     EventNotificationCard,
     ForumNotificationCard,
+    RewardNotificationCard,
   },
   props: {
     dataOpenSideBar: Boolean,
@@ -146,6 +164,23 @@ export default {
     markAsRead(notificationId) {
       this.$emit("mark-as-read", notificationId);
     },
+    handleNavigate(notification) {
+      if (!notification) return;
+
+      if (notification.type === "FORUM_POST") {
+        this.$router.push({
+          name: "EventPage",
+          params: { eventId: notification.context.eventId },
+          query: { threadId: notification.context.threadId },
+        });
+      } else if (notification.type === "EVENT_REMINDER") {
+        this.$router.push({ name: "EventDetails", params: { eventId: notification.context.eventId } });
+      } else if (notification.type === "REWARD") {
+        this.$router.push(`/profile/${this.currentUser.username}`);
+      }
+
+      this.showNotifications = false; // Close menu
+    },
   },
 
   /**
@@ -177,6 +212,7 @@ h3 {
   cursor: pointer;
   margin-left: auto;
   margin-right: 5%;
+  z-index: 500;
 }
 
 .notification-icon {

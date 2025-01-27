@@ -9,32 +9,33 @@ import jakarta.persistence.Entity;
 public class RewardNotification extends Notification {
 
     private Reward.Type rewardType;
-    private Integer points;
-    private Integer threshold;
+    private Integer currentLevel;
+    private Boolean levelBased;
 
-
-    public RewardNotification(String title, NotificationType notificationType, Long userId, Reward.Type rewardType, Integer points, Integer threshold) {
+    public RewardNotification(String title, NotificationType notificationType, Long userId, Reward.Type rewardType, Integer currentLevel, Boolean levelBased) {
         super(title, notificationType, userId);
         this.rewardType = rewardType;
-        this.points = points;
-        this.threshold = threshold;
+        this.currentLevel = currentLevel;
+        this.levelBased = levelBased;
     }
 
     public RewardNotification() {
 
     }
 
-    public static RewardNotification create(String title, Long userId, Reward.Type rewardType, Integer points, Integer threshold) {
-        return new RewardNotification(title, NotificationType.REWARD, userId, rewardType, points, threshold);
+    public static RewardNotification create(String title, Long userId, Reward.Type rewardType, Integer currentLevel, Boolean levelBased) {
+        return new RewardNotification(title, NotificationType.REWARD, userId, rewardType, currentLevel, levelBased);
     }
 
     public Reward.Type getRewardType() {
         return rewardType;
     }
-    public Integer getPoints() {
-        return points;
+
+    public Integer getCurrentLevel() {
+        return currentLevel;
     }
-    public Integer getThreshold() {
-        return threshold;
+
+    public Boolean getLevelBased() {
+        return levelBased;
     }
 }
