@@ -1,7 +1,7 @@
 <template>
   <div class="profile-container">
     <TrainerProfile
-      v-if="isTrainer && trainerProfileData"
+      v-if="trainerProfileData"
       :user="userData"
       :trainer="trainerProfileData"
     />
@@ -28,7 +28,7 @@ export default {
   },
   computed: {
     isTrainer() {
-        console.log(this.userData?.role)
+        console.log("this.userData?.role")
       return this.userData?.role === "ADMIN";
     },
   },
@@ -55,7 +55,7 @@ export default {
             showToast(
               new Toast(
                 "Error",
-                `Fehler der Laden der Trainer Profils`,
+                `Fehler beim Laden des Trainer Profils`,
                 "error",
                 faXmark,
                 10,
@@ -68,7 +68,7 @@ export default {
         showToast(
           new Toast(
             "Error",
-            `Fehler der Laden der Trainer Profils`,
+            `Fehler beim Laden des Trainer Profils`,
             "error",
             faXmark,
             10,

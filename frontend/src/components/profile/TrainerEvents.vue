@@ -80,8 +80,7 @@ export default {
 .trainer-events {
   display: flex;
   justify-content: space-between;
-  gap: 2rem;
-  margin-top: 2rem;
+  gap: 1rem;
 }
 
 .events-column {

@@ -162,7 +162,6 @@ export default {
                 this.filteredTags = this.allTags.filter(tag =>
                     !this.selectedTags.some(selectedTag => selectedTag === tag)
                 );
-                console.log(this.filteredTags);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -190,8 +189,6 @@ export default {
                 alert("You can only pin up to 6 comments.");
                 return;
             }
-            console.log(comment.id + " comment Id")
-            console.log(eventId)
             const event = this.events.find(e => e.id === eventId);
             if (event) {
                 event.comments = event.comments.filter(c => c.id !== comment.id);
@@ -211,7 +208,6 @@ export default {
 
         async saveChanges() {
             try {
-                console.log(Number(this.trainer.userId))
                 const response = await axios.put(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}`, {
                     bio: this.trainer.bio,
                     userId: this.trainer.userId,
