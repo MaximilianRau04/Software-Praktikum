@@ -13,6 +13,7 @@ export interface Location {
   id: number;
   street: string;
   houseNumber: string;
+  postalCode: number;
   city: string;
   country: string;
 }

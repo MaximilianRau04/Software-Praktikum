@@ -1,40 +1,24 @@
 <template>
-  <div v-if="selectedExchangeDay" class="exchangeDayDetails">
-    <!-- Displaying exchange day details -->
-    <div class="exchangeDayInfos">
-      <h1>{{ selectedExchangeDay.name }}</h1>
-      <p>
-        <strong>Ort:</strong> {{ selectedExchangeDay.location.street }}
-        {{ selectedExchangeDay.location.houseNumber }},
-        {{ selectedExchangeDay.location.city }},
-        {{ selectedExchangeDay.location.country }}
-      </p>
-      <p>
-        <strong>Beschreibung:</strong> {{ selectedExchangeDay.description }}
-      </p>
-      <p>
-        <strong>Datum:</strong>
-        {{ formatDate(selectedExchangeDay.startDate) }} bis
-        {{ formatDate(selectedExchangeDay.endDate) }}
-      </p>
-      <p><strong>Id:</strong> {{ selectedExchangeDay.id }}</p>
-
-      <button
-        v-if="getCookie('role') === 'ADMIN'"
-        @click="navigateToManageExchangeDay(selectedExchangeDay.id)"
-        class="edit-button"
-      >
-        Verwalten
-      </button>
+  <div class="exchangeDayDetails">
+    <div class="exchangeDayHeader">
+      <h1>{{ selectedExchangeDay?.name }}</h1>
     </div>
-    <!-- Displaying associated events -->
-    <div class="scrollableEvents">
-      <h2>Workshops</h2>
-      <div v-for="event in events" :key="event.id" v-if="events.length > 0">
-        <!-- show event information -->
-        <EventDetails :event="event"  v-if="!event.inviteOnly"/>
+    <div class="exchangeDayContent">
+      <div class="description">
+        <p>{{ selectedExchangeDay?.description }}</p>
       </div>
-      <p v-else>Keine Workshops vorhanden...</p>
+      <div class="exchangeDayInfo">
+        <p> {{ formatDateLong(selectedExchangeDay?.startDate) }} bis {{ formatDateLong(selectedExchangeDay?.endDate) }}</p>
+        <p> {{ selectedExchangeDay?.location.street }} {{ selectedExchangeDay?.location.houseNumber }}</p>
+        <p> {{ selectedExchangeDay?.location.postalCode }} {{ selectedExchangeDay?.location.city }}, {{ selectedExchangeDay?.location.country }} </p>
+      </div>
+    </div>
+    <div class="scrollableEvents">
+      <h2>Events</h2>
+      <div v-for="event in events" :key="event.id" class="event-item">
+        <h3>{{ event.name }}</h3>
+        <p>{{ event.description }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -45,19 +29,16 @@ import EventDetails from "@/components/viewExchangeDays/home/EventDetails.vue";
 import config from "@/config";
 import "@/assets/exchange-day-details.css";
 import { ExchangeDay } from "@/types/ExchangeDay";
-
 import { Event } from "@/types/Event";
 import { useRouter } from "vue-router";
 import Cookies from "js-cookie";
 import { showToast, Toast } from "@/types/toasts";
-import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const router = useRouter();
 const selectedExchangeDay = ref<ExchangeDay | null>(null);
 
-const props = defineProps<{
-  exchangeDay: ExchangeDay | null;
-}>();
+const props = defineProps<{ exchangeDay: ExchangeDay | null }>();
 
 const events = ref<Event[]>([]);
 const isPastExchangeDay = ref(false);
@@ -71,6 +52,22 @@ const isPastExchangeDay = ref(false);
 function formatDate(timestamp: number): string {
   const date = new Date(timestamp);
   return date.toLocaleDateString("de-DE");
+}
+
+/**
+ * Formats a timestamp into a long date format with weekday.
+ *
+ * @param {number} timestamp - The date in milliseconds.
+ * @returns {string} - The formatted date string like 'Mittwoch, 31.03.2025'.
+ */
+function formatDateLong(timestamp: number): string {
+  const date = new Date(timestamp);
+  return date.toLocaleDateString("de-DE", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 }
 
 function getCookie(name) {
@@ -103,8 +100,8 @@ async function fetchExchangeDayDetails(id: number) {
           `Fehler beim Laden der Exchange days`,
           "error",
           faXmark,
-          10,
-        ),
+          10
+        )
       );
 
     const data = await response.json();
@@ -127,8 +124,8 @@ async function fetchExchangeDayDetails(id: number) {
         `Fehler beim Laden der exchange days`,
         "error",
         faXmark,
-        10,
-      ),
+        10
+      )
     );
   }
 }
@@ -139,24 +136,18 @@ async function fetchExchangeDayDetails(id: number) {
 async function fetchEventDetails() {
   try {
     const response = await fetch(
-      `${config.apiBaseUrl}/exchange-days/${selectedExchangeDay.value.id}/events`,
+      `${config.apiBaseUrl}/exchange-days/${selectedExchangeDay.value.id}/events`
     );
     if (!response.ok) {
       throw new Error(
-        `Failed to fetch events from exchange day ${selectedExchangeDay.value.id}`,
+        `Failed to fetch events from exchange day ${selectedExchangeDay.value.id}`
       );
     }
     const responseData: Event[] = await response.json();
     events.value = responseData;
   } catch (error) {
     showToast(
-      new Toast(
-        "Error",
-        `Fehler beim Abrufen der Events.`,
-        "error",
-        faXmark,
-        10,
-      ),
+      new Toast("Error", `Fehler beim Abrufen der Events.`, "error", faXmark, 10)
     );
   }
 }
@@ -174,7 +165,7 @@ watch(
     if (newId !== oldId && newId != null) {
       fetchExchangeDayDetails(newId);
     }
-  },
+  }
 );
 
 /**
