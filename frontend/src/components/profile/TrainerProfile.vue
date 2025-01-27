@@ -76,7 +76,7 @@ export default {
     },
     methods: {
         getUserIdFromCookie() {
-            return Cookies.get("userId");
+            return Number(Cookies.get("userId"));
         },
 
         /**
@@ -127,8 +127,8 @@ export default {
 <style scoped>
 .manage-button {
     position: fixed;
-    top: 7rem;
-    right: 20rem;
+    top: 10%;
+    right: 20%;
     background-color: #009ee2;
     color: white;
     border: none;
