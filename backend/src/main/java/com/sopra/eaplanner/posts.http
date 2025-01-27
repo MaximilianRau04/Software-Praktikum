@@ -1,4 +1,4 @@
-POST http://localhost:8080/api/locations
+POST http://193.196.54.172:8000/api/locations
 Content-Type: application/json
 
 {
@@ -9,41 +9,41 @@ Content-Type: application/json
   "street": "Frankenstraße"
 }
 ###
-POST http://localhost:8080/api/locations
+POST http://193.196.54.172:8000/api/locations
 Content-Type: application/json
 
 {
-"city": "Berlin",
-"country": "Deutschland",
-"postalCode": "10405",
-"houseNumber": "226",
-"street": "Greifswalder Straße "
+  "city": "Berlin",
+  "country": "Deutschland",
+  "postalCode": "10405",
+  "houseNumber": "226",
+  "street": "Greifswalder Straße "
 }
 ###
-POST http://localhost:8080/api/locations
+POST http://193.196.54.172:8000/api/locations
 Content-Type: application/json
 
 {
-"city": "Hannover",
-"country": "Deutschland",
-"postalCode": "30159",
-"houseNumber": "1",
-"street": "Bahnhofsstraße"
+  "city": "Hannover",
+  "country": "Deutschland",
+  "postalCode": "30159",
+  "houseNumber": "1",
+  "street": "Bahnhofsstraße"
 }
 
 ###
-POST http://localhost:8080/api/locations
+POST http://193.196.54.172:8000/api/locations
 Content-Type: application/json
 
 {
-"city": "München",
-"country": "Deutschland",
-"postalCode": "80796",
-"houseNumber": "68",
-"street": "Destouchesstraße"
+  "city": "München",
+  "country": "Deutschland",
+  "postalCode": "80796",
+  "houseNumber": "68",
+  "street": "Destouchesstraße"
 }
 ###
-POST http://localhost:8080/api/locations
+POST http://193.196.54.172:8000/api/locations
 Content-Type: application/json
 
 {
@@ -54,7 +54,7 @@ Content-Type: application/json
   "street": "Heßbrühlstraße"
 }
 ###
-POST http://localhost:8080/api/locations
+POST http://193.196.54.172:8000/api/locations
 Content-Type: application/json
 
 {
@@ -65,7 +65,7 @@ Content-Type: application/json
   "street": "Hansaring"
 }
 ###
-POST http://localhost:8080/api/locations
+POST http://193.196.54.172:8000/api/locations
 Content-Type: application/json
 
 {
@@ -76,7 +76,7 @@ Content-Type: application/json
   "street": "Bobinethöfe"
 }
 ###
-POST http://localhost:8080/api/locations
+POST http://193.196.54.172:8000/api/locations
 Content-Type: application/json
 
 {
@@ -87,7 +87,7 @@ Content-Type: application/json
   "street": "Nikolastraße"
 }
 ###
-POST http://localhost:8080/api/locations
+POST http://193.196.54.172:8000/api/locations
 Content-Type: application/json
 
 {
@@ -99,7 +99,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/locations
+POST http://193.196.54.172:8000/api/locations
 Content-Type: application/json
 
 {
@@ -110,7 +110,7 @@ Content-Type: application/json
   "street": "Oppenhoffallee"
 }
 ###
-POST http://localhost:8080/api/locations
+POST http://193.196.54.172:80000/api/locations
 Content-Type: application/json
 
 {
@@ -121,7 +121,7 @@ Content-Type: application/json
   "street": "Calle de Méndez Álvaro"
 }
 ###
-POST http://localhost:8080/api/locations
+POST http://193.196.54.172:8000/api/locations
 Content-Type: application/json
 
 {
@@ -132,7 +132,7 @@ Content-Type: application/json
   "street": "Vääna"
 }
 ###
-POST http://localhost:8080/api/locations
+POST http://193.196.54.172:8000/api/locations
 Content-Type: application/json
 
 {
@@ -143,7 +143,7 @@ Content-Type: application/json
   "street": "Gustav III:s Boulevard"
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -155,7 +155,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -167,7 +167,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -179,7 +179,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -191,7 +191,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -203,7 +203,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -215,7 +215,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -227,7 +227,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -239,7 +239,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -251,7 +251,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -263,7 +263,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -275,7 +275,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -287,7 +287,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -299,7 +299,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/users
+POST http://193.196.54.172:8000/api/users
 Content-Type: application/json
 
 {
@@ -310,7 +310,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/users
+POST http://193.196.54.172:8000/api/users
 Content-Type: application/json
 
 {
@@ -321,7 +321,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/users
+POST http://193.196.54.172:8000/api/users
 Content-Type: application/json
 
 {
@@ -332,7 +332,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/users
+POST http://193.196.54.172:8000/api/users
 Content-Type: application/json
 
 {
@@ -342,20 +342,20 @@ Content-Type: application/json
   "role": "USER"
 }
 ###
-POST http://localhost:8080/api/exchange-days
+POST http://193.196.54.172:8000/api/exchange-days
 Content-Type: application/json
 
 {
-"startDate": "2025-01-28",
-"endDate": "2025-01-29",
-"name": "Introduction to GitHub",
-"locationId": 1,
-"description": "A day dedicated to learning GitHub with multiple sessions."
+  "startDate": "2025-01-28",
+  "endDate": "2025-01-29",
+  "name": "Introduction to GitHub",
+  "locationId": 1,
+  "description": "A day dedicated to learning GitHub with multiple sessions."
 }
 ###
 
 ###
-POST http://localhost:8080/api/exchange-days
+POST http://193.196.54.172:8000/api/exchange-days
 Content-Type: application/json
 
 {
@@ -367,7 +367,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/exchange-days
+POST http://193.196.54.172:8000/api/exchange-days
 Content-Type: application/json
 
 {
@@ -379,7 +379,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/exchange-days
+POST http://193.196.54.172:8000/api/exchange-days
 Content-Type: application/json
 
 {
@@ -391,7 +391,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/exchange-days
+POST http://193.196.54.172:8000/api/exchange-days
 Content-Type: application/json
 
 {
@@ -402,7 +402,7 @@ Content-Type: application/json
   "description": "Learning cloud-native architectures and best practices."
 }
 ###
-POST http://localhost:8080/api/events
+POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
@@ -417,7 +417,7 @@ Content-Type: application/json
   "endTime": "12:00:00"
 }
 ###
-POST http://localhost:8080/api/events
+POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
@@ -434,7 +434,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/events
+POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
@@ -451,7 +451,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/events
+POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
@@ -468,7 +468,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/events
+POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
@@ -485,7 +485,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/events
+POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
@@ -501,7 +501,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/events
+POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
@@ -517,7 +517,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/events
+POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
@@ -533,7 +533,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/events
+POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
@@ -549,7 +549,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/events
+POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
@@ -565,7 +565,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/events
+POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
@@ -581,7 +581,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/events
+POST http://193.196.54.172:8000/api/events
 Content-Type: application/json
 
 {
@@ -596,7 +596,7 @@ Content-Type: application/json
   "endTime": "12:00:00"
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -608,7 +608,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/feedback
+POST http://193.196.54.172:8000/api/feedback
 Content-Type: application/json
 
 {
@@ -641,7 +641,7 @@ Content-Type: application/json
   "userId": 1
 }
 ###
-POST http://localhost:8080/api/feedback
+POST http://193.196.54.172:8000/api/feedback
 Content-Type: application/json
 
 {
@@ -674,7 +674,7 @@ Content-Type: application/json
   "userId": 4
 }
 ###
-POST http://localhost:8080/api/feedback
+POST http://193.196.54.172:8000/api/feedback
 Content-Type: application/json
 
 {
@@ -707,7 +707,7 @@ Content-Type: application/json
   "userId": 3
 }
 ###
-POST http://localhost:8080/api/feedback
+POST http://193.196.54.172:8000/api/feedback
 Content-Type: application/json
 
 {
@@ -740,7 +740,7 @@ Content-Type: application/json
   "userId": 3
 }
 ###
-POST http://localhost:8080/api/feedback
+POST http://193.196.54.172:8000/api/feedback
 Content-Type: application/json
 
 {
@@ -773,7 +773,7 @@ Content-Type: application/json
   "userId": 1
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -785,7 +785,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -797,7 +797,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -809,7 +809,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -821,7 +821,7 @@ Content-Type: application/json
   "availability": true
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {
@@ -833,7 +833,7 @@ Content-Type: application/json
   "availability": false
 }
 ###
-POST http://localhost:8080/api/resources
+POST http://193.196.54.172:8000/api/resources
 Content-Type: application/json
 
 {

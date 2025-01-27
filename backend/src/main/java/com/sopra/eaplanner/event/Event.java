@@ -57,8 +57,9 @@ public class Event {
     @NotNull(message = "End time must be set")
     private LocalTime endTime;
 
-    @Size(max = 50, message = "Room name cannot exceed 50 characters")
-    private String room;
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    private ResourceItem room;
 
     @Size(max = 255, message = "Description cannot exceed 255 characters")
     private String description;
@@ -125,7 +126,7 @@ public class Event {
     public Event() {
     }
 
-    public Event(Long id, String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room,
+    public Event(Long id, String name, LocalDate date, LocalTime startTime, LocalTime endTime, ResourceItem room,
                  String description, ExchangeDay exchangeDay, User organizer,
                  String qrCodeFilePath, Set<ForumThread> forumthreads, ExperienceLevel recommendedExperience, Boolean inviteOnly) {
         this.id = id;
@@ -144,12 +145,12 @@ public class Event {
         this.inviteOnly= inviteOnly;
     }
 
-    public Event(EventRequestDTO eventDTO, ExchangeDay exchangeDay, User organizer, Set<Tag> tags) {
+    public Event(EventRequestDTO eventDTO, ExchangeDay exchangeDay, User organizer, Set<Tag> tags, ResourceItem room) {
         this.name = eventDTO.getName();
         this.startTime = eventDTO.getStartTime();
         this.endTime = eventDTO.getEndTime();
         this.date = eventDTO.getDate();
-        this.room = eventDTO.getRoom();
+        this.room = room;
         this.description = eventDTO.getDescription();
         this.exchangeDay = exchangeDay;
         this.organizer = organizer;
@@ -199,11 +200,11 @@ public class Event {
         this.endTime = endTime;
     }
 
-    public String getRoom() {
+    public ResourceItem getRoom() {
         return room;
     }
 
-    public void setRoom(String room) {
+    public void setRoom(ResourceItem room) {
         this.room = room;
     }
 

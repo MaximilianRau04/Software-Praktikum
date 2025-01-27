@@ -110,7 +110,7 @@ const exchangeDaySelect = ref("");
 const date = ref("");
 const startTime = ref("00:00");
 const endTime = ref("01:00");
-const room = ref("");
+const room= ref<any>(null);
 const description = ref("");
 const selectedExperienceLevel = ref("");
 const selectedTags = ref([]);
@@ -120,8 +120,8 @@ const exchangeDays = ref([]);
 
 const selectedResources = ref([]);
 const allTags = ref([]);
-const availableRooms = ref([]);
-const filteredRooms = ref([]);
+const availableRooms = ref<any[]>([]);
+const filteredRooms = ref<any[]>([]);
 const inviteOnly = ref(false);
 
 defineProps({
@@ -187,7 +187,7 @@ const createWorkshop = async () => {
         date: date.value,
         startTime: startTime.value,
         endTime: endTime.value,
-        room: room.value,
+        roomId: room.value,
         description: description.value,
         exchangeDayId: exchangeDaySelect.value,
         organizerId: userId,
@@ -197,7 +197,7 @@ const createWorkshop = async () => {
         inviteOnly: inviteOnly.value,
       }),
     });
-
+   console.log(room.value);
     if (response.ok) {
       const data = await response.json();
       showToast(
@@ -382,7 +382,7 @@ const resetWorkshopForm = () => {
   date.value = "";
   startTime.value = "";
   endTime.value = "";
-  room.value = "";
+  room.value = null;
   description.value = "";
   exchangeDaySelect.value = "";
   selectedExperienceLevel.value = "";

@@ -51,7 +51,7 @@
   flex-shrink: 0;
   width: 35px;
   height: 35px;
-  background-color: currentColor; /* Match text color */
+  background-color: currentColor; 
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-position: center;

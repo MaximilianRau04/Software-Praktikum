@@ -42,7 +42,7 @@
   color: black;
 }
 
-.scrollableEvents {
+.workshopEvents {
   overflow-y: auto;
   flex-grow: 1;
   padding-right: 10px;

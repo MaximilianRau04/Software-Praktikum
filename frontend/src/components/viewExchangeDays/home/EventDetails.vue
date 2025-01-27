@@ -8,8 +8,7 @@
     <p><strong>Datum:</strong> {{ formatDate(event.date) }}</p>
     <p><strong>Startzeit:</strong> {{ event.startTime || "No Starttime" }}</p>
     <p><strong>Endzeit:</strong> {{ event.endTime || "No Endtime" }}</p>
-    <p><strong>Raum:</strong> {{ event.room || "No Room" }}</p>
-
+    <p><strong>Raum:</strong> {{ event.room.name || "No Room" }}</p>
     <button
       @click="goToEvent(event.id)"
       class="register-button"
@@ -32,6 +31,8 @@ const isPastEvent = ref(false);
 const goToEvent = (eventId) => {
   router.push({ name: "EventPage", params: { eventId } });
 };
+
+
 
 /**
  * Formats a timestamp into a human-readable date string.
@@ -56,5 +57,6 @@ function checkIfPastEvent() {
 
 onMounted(() => {
   checkIfPastEvent();
+  console.log(props.event);
 });
 </script>

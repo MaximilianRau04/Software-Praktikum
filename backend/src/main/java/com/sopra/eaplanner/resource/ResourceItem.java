@@ -1,6 +1,7 @@
 package com.sopra.eaplanner.resource;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.locations.Location;
 import com.sopra.eaplanner.resource.dtos.ResourceRequest;
 import com.sopra.eaplanner.resource.resourceAssignment.ResourceAssignment;
@@ -38,7 +39,6 @@ public class ResourceItem {
     @JsonBackReference
     @OneToMany(mappedBy = "resource")
     private List<ResourceAssignment> assignments;
-
 
     public ResourceItem(Long id, String name, ResourceType type, String description, int capacity, Location location, Boolean availability) {
         this.id = id;

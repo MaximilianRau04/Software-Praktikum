@@ -145,6 +145,7 @@ async function fetchEventDetails() {
     }
     const responseData: Event[] = await response.json();
     events.value = responseData;
+    console.log(events.value);
   } catch (error) {
     showToast(
       new Toast("Error", `Fehler beim Abrufen der Events.`, "error", faXmark, 10)

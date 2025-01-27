@@ -362,7 +362,6 @@ export default {
 
 <style scoped>
 .back-button {
-    position: fixed;
     top: 6rem;
     left: 6rem;
     background-color: #009ee2;

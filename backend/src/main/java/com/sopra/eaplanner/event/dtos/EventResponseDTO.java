@@ -2,6 +2,7 @@ package com.sopra.eaplanner.event.dtos;
 
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.ExperienceLevel;
+import com.sopra.eaplanner.resource.ResourceItem;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,7 +14,7 @@ public class EventResponseDTO {
     private LocalTime startTime;
     private LocalTime endTime;
     private String name;
-    private String room;
+    private ResourceItem room;
     private String description;
     private ExperienceLevel recommendedExperience;
     private Boolean inviteOnly;
@@ -73,7 +74,7 @@ public class EventResponseDTO {
         return name;
     }
 
-    public String getRoom() {
+    public ResourceItem getRoom() {
         return room;
     }
 
@@ -103,7 +104,7 @@ public class EventResponseDTO {
         this.name = name;
     }
 
-    public void setRoom(String room) {
+    public void setRoom(ResourceItem room) {
         this.room = room;
     }
 
@@ -123,11 +124,11 @@ public class EventResponseDTO {
         this.inviteOnly = inviteOnly;
     }
 
-    public static EventResponseDTO mockWith(Long id, Long exchangeDayId, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience, Boolean inviteOnly) {
+    public static EventResponseDTO mockWith(Long id, Long exchangeDayId, LocalDate date, LocalTime startTime, LocalTime endTime, String name, ResourceItem room, String description, ExperienceLevel recommendedExperience, Boolean inviteOnly) {
         return new EventResponseDTO(id, exchangeDayId, date, startTime, endTime, name, room, description, recommendedExperience, inviteOnly);
     }
 
-    private EventResponseDTO(Long id, Long exchangeDayId, LocalDate date, LocalTime startTime, LocalTime endTime, String name, String room, String description, ExperienceLevel recommendedExperience, Boolean inviteOnly) {
+    private EventResponseDTO(Long id, Long exchangeDayId, LocalDate date, LocalTime startTime, LocalTime endTime, String name, ResourceItem room, String description, ExperienceLevel recommendedExperience, Boolean inviteOnly) {
         this.id = id;
         this.exchangeDayId = exchangeDayId;
         this.date = date;
