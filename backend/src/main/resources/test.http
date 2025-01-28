@@ -4,14 +4,14 @@ Content-Type: application/json
 {
   "name": "Fresh Try ResponseEntities",
   "description": "Bla Bla",
-  "date": "2025-12-30",
+  "date": "2025-12-31",
   "recommendedExperience": "ALL_LEVELS",
-  "room": "0.108",
-  "exchangeDayId": 6,
+  "roomId": 1,
+  "exchangeDayId": 1,
   "organizerId": 1,
   "startTime": "13:00:00",
   "endTime": "14:00:00",
-  "inviteOnly": true
+  "inviteOnly": false
 }
 
 
@@ -33,7 +33,7 @@ Content-Type: application/json
   "startDate": "2025-12-30",
   "endDate": "2025-12-31",
   "name": "Fresh",
-  "locationId": 1,
+  "locationId": 2,
   "description": "A day dedicated to learning Spring Boot with multiple sessions."
 }
 ###
@@ -85,7 +85,7 @@ Content-Type: application/json
 DELETE http://localhost:8080/api/feedback/3
 
 ###
-GET http://localhost:8080/api/feedback
+GET http://localhost:8080/api/events
 
 ###
 POST http://localhost:8080/api/events/11/attendance
@@ -134,7 +134,7 @@ GET http://localhost:8080/api/events/1/feedback
 ###
 POST http://localhost:8080/api/notifications/send-test-notification?userId=1
 ###
-GET http://localhost:8080/api/events
+GET http://localhost:8080/api/resources
 ###
 GET http://localhost:8080/api/users/2/trainerProfile
 ###
@@ -158,9 +158,9 @@ POST http://localhost:8080/api/resources
 Content-Type: application/json
 
 {
-  "name": "Beamer",
-  "type": "EQUIPMENT",
-  "description": "Stuhl",
+  "name": "38.01",
+  "type": "ROOM",
+  "description": "38.01",
   "capacity": 200,
   "locationId": 1,
   "availability": true
@@ -175,6 +175,8 @@ Content-Type: application/json
   "eventId": 1,
   "quantity": 1
 }
+###
+POST http://localhost:8080/api/notifications/test-reward
 ###
 
 GET http://localhost:8080/api/locations
@@ -203,9 +205,9 @@ Content-Type: application/json
   "description": "A day dedicated to learning Spring Boot"
 }
 ###
-GET http://localhost:8080/api/events
+GET http://localhost:8080/api/locations
 ###
-GET http://localhost:8080/api/events/1/resources
+GET http://localhost:8080/api/resources/type/ROOM
 ###
 GET http://localhost:8080/api/resources/csv-downloads
 ###

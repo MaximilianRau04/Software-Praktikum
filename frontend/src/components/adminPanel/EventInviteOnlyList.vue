@@ -139,8 +139,7 @@ const fetchUsers = async () => {
     if (!response.ok) {
       throw new Error('Fehler beim Laden der Benutzer');
     }
-    users.value = await response.json();
-    console.log(users.value);  
+    users.value = await response.json(); 
   } catch (error) {
     showToast(new Toast("Error", "Fehler beim Laden der Benutzer", "error"));
   }

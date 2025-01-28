@@ -84,9 +84,9 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        return user.getRegisteredEvents()
-                .stream()
-                .map(EventResponseDTO::new)
+        return user.getParticipations().stream()
+                .filter(part -> !part.getIsParticipationConfirmed() && !part.getFeedbackGiven())
+                .map(part -> new EventResponseDTO(part.getEvent()))
                 .collect(Collectors.toSet());
     }
 
@@ -182,10 +182,9 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        return user.getRegisteredEvents().stream()
-                .filter(event -> feedbackRepository.findByEventId(event.getId()).stream()
-                            .noneMatch(feedback -> feedback.getUser().getId().equals(id)))
-                .map(EventResponseDTO::new)
+        return user.getParticipations().stream()
+                .filter(part -> part.getIsParticipationConfirmed() && !part.getFeedbackGiven())
+                .map(part -> new EventResponseDTO(part.getEvent()))
                 .collect(Collectors.toSet());
     }
 

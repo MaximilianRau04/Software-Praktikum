@@ -1,5 +1,11 @@
 <template>
   <div class="event-header">
+    <!-- Back Button -->
+    <div class="back-button-container">
+      <button class="back-button" @click="goToEventRegistrations">
+        Zurück zur Eventregistrierung
+      </button>
+    </div>
     <!-- Titel -->
     <div class="header-title">
       <h1>{{ event.name || "Eventname wird geladen..." }}</h1>
@@ -213,7 +219,21 @@ const event = ref<Event>({
   name: "",
   startTime: "",
   endTime: "",
-  room: "",
+  room: {
+    name: "",
+    id: 0,
+    type: "",
+    location: {
+     id: 0,
+     street: "",
+     houseNumber: 0,
+     city: "",
+     country: "",
+    },
+    capacity: 0,
+    description: "",
+    availability: 0,
+  },
   description: "",
   date: "",
   forumThreads: [],
@@ -250,6 +270,10 @@ const showForum = () => {
 const isAdmin = computed(() => {
   return userRole === "ADMIN";
 });
+
+const goToEventRegistrations = () => {
+      router.push({ name: "eventRegistrations" });
+    };
 
 /**
  * Fetch Event Details
@@ -592,5 +616,6 @@ onMounted(() => {
   checkRegistrationStatus();
   fetchEventDetails();
   fetchTagsForEvent();
+  handleThreadNavigation();
 });
 </script>

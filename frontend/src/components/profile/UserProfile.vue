@@ -256,6 +256,8 @@ export default {
         ATTENDER: "Teilnehmender",
         FEEDBACK_GIVER: "Feedbackgeber",
         CLEAN_SUBMITTER: "Keine Halben Sachen",
+        ALLROUNDER: "Vielseitig",
+        SOCIAL_BUTTERFLY: "Schmetterling",
       };
       return translations[type] || type;
     },

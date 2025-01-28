@@ -28,7 +28,6 @@ export default {
   },
   computed: {
     isTrainer() {
-        console.log("this.userData?.role")
       return this.userData?.role === "ADMIN";
     },
   },
@@ -50,7 +49,6 @@ export default {
           const trainerResponse = await fetch(
             `/api/trainerProfiles/${this.userData.id}`,
           );
-          console.log("hallo")
           if (!trainerResponse.ok) {
             showToast(
               new Toast(

@@ -1,6 +1,7 @@
 package com.sopra.eaplanner.event.dtos;
 
 import com.sopra.eaplanner.event.ExperienceLevel;
+import com.sopra.eaplanner.resource.ResourceItem;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -46,8 +47,7 @@ public class EventRequestDTO {
     @NotNull(message = "Date cannot be null")
     private LocalDate date;
 
-    @Size(max = 50, message = "Room name cannot exceed 50 characters")
-    private String room;
+    private Long roomId;
 
     @Size(max = 255, message = "Description cannot exceed 255 characters")
     private String description;
@@ -88,12 +88,12 @@ public class EventRequestDTO {
         this.description = description;
     }
 
-    public @Size(max = 50, message = "Room name cannot exceed 50 characters") String getRoom() {
-        return room;
+    public Long getRoomId() {
+        return roomId;
     }
 
-    public void setRoom(@Size(max = 50, message = "Room name cannot exceed 50 characters") String room) {
-        this.room = room;
+    public void setRoomId( Long roomId) {
+        this.roomId = roomId;
     }
 
     public @NotNull(message = "End time must be set") LocalTime getEndTime() {
@@ -156,16 +156,16 @@ public class EventRequestDTO {
         this.inviteOnly = inviteOnly;
     }
 
-    public static EventRequestDTO mockWith(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String description, String room, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags, Boolean inviteOnly) {
-        return new EventRequestDTO(name, date, startTime, endTime, room, description, exchangeDayId, organizerId, recommendedExperience, tags, inviteOnly);
+    public static EventRequestDTO mockWith(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String description, Long roomId, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags, Boolean inviteOnly) {
+        return new EventRequestDTO(name, date, startTime, endTime, roomId, description, exchangeDayId, organizerId, recommendedExperience, tags, inviteOnly);
     }
 
-    private EventRequestDTO(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String room, String description, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags, Boolean inviteOnly) {
+    private EventRequestDTO(String name, LocalDate date, LocalTime startTime, LocalTime endTime, Long roomId, String description, Long exchangeDayId, Long organizerId, ExperienceLevel recommendedExperience, Set<String> tags, Boolean inviteOnly) {
         this.name = name;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.room = room;
+        this.roomId = roomId;
         this.description = description;
         this.exchangeDayId = exchangeDayId;
         this.organizerId = organizerId;

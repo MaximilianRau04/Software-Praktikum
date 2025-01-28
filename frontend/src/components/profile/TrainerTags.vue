@@ -1,11 +1,6 @@
 <template>
   <div class="trainer-tags" v-if="tags">
-    <span
-      v-for="(tag, index) in tags"
-      :key="index"
-      class="chip"
-      :style="{ backgroundColor: getRandomColor() }"
-    >
+    <span v-for="(tag, index) in tags" :key="index" class="chip" :style="{ backgroundColor: getRandomColor() }">
       {{ tag.name }}
     </span>
   </div>
@@ -28,7 +23,7 @@ export default {
   },
   methods: {
     getColorPalette() {
-      return ["#009EE2", "#01172F", "#4CAF50"];
+      return ["#01172F", "#003C5E", "#526760", "#009EE2", "#1A73E8", "#354F52"];
     },
     getRandomColor() {
       const palette = this.getColorPalette();
@@ -41,6 +36,7 @@ export default {
 
 <style scoped>
 .trainer-tags {
+  margin-top: 15px;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;

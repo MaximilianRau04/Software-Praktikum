@@ -37,7 +37,7 @@
           <span class="menu-text">Rangliste</span>
         </div>
 
-        <div class="separator"></div>
+        <div class="separator-side"></div>
 
         <div
           class="menu-item"

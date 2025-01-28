@@ -65,7 +65,7 @@ public class RewardService {
     public void grantCleanSubmitterReward(User user){
         if(user.getRewards().stream().noneMatch(reward -> reward.getType() == Reward.Type.CLEAN_SUBMITTER)) {
             Reward cleanSubmitter = new Reward(Reward.Type.CLEAN_SUBMITTER, 0, "Belohnung für das Besuchen und Bewerten von 20 Events und Workshops.", user , false);
-            rewardRepository.save(cleanSubmitter);
+            rewardNotificationService.sendRewardNotification(rewardRepository.save(cleanSubmitter));
             user.getRewards().add(cleanSubmitter);
             userRepository.save(user);
         }
@@ -73,8 +73,8 @@ public class RewardService {
 
     public void grantAllrounderReward(User user){
         if(user.getRewards().stream().noneMatch(reward -> reward.getType() == Reward.Type.ALLROUNDER)) {
-            Reward allrounder = new Reward(Reward.Type.CLEAN_SUBMITTER, 0, "Belohnung für den Besuch von Workshops unterschiedlichen Themenbereichen.", user , false);
-            rewardRepository.save(allrounder);
+            Reward allrounder = new Reward(Reward.Type.CLEAN_SUBMITTER, 0, "Belohnung für den Besuch von Workshops in unterschiedlichen Themenbereichen.", user , false);
+            rewardNotificationService.sendRewardNotification(rewardRepository.save(allrounder));
             user.getRewards().add(allrounder);
             userRepository.save(user);
         }
@@ -83,7 +83,7 @@ public class RewardService {
     public void grantSocialButterflyReward(User user){
         if(user.getRewards().stream().noneMatch(reward -> reward.getType() == Reward.Type.ALLROUNDER)) {
             Reward socialButterfly = new Reward(Reward.Type.CLEAN_SUBMITTER, 0, "Belohnung für die aktive Teilnahme an Forumdiskussionen in unterschiedlichen Workshops.", user , false);
-            rewardRepository.save(socialButterfly);
+            rewardNotificationService.sendRewardNotification(rewardRepository.save(socialButterfly));
             user.getRewards().add(socialButterfly);
             userRepository.save(user);
         }
@@ -108,16 +108,32 @@ public class RewardService {
     }
 
     public Resource getBadgePNG(Reward.Type type, Integer currentLevel) {
-        if(currentLevel == 0){
-            ClassPathResource resource = new ClassPathResource("rewardBadges/hold.png");
+        if(type == Reward.Type.CLEAN_SUBMITTER){
+            ClassPathResource resource = new ClassPathResource("rewardBadges/clean.png");
             if (!resource.exists()) {
                 throw new IllegalArgumentException("Badge placeholder file not found");
             }
             return resource;
         }
 
-        if(type == Reward.Type.CLEAN_SUBMITTER){
-            ClassPathResource resource = new ClassPathResource("rewardBadges/clean.png");
+        if(type == Reward.Type.ALLROUNDER){
+            ClassPathResource resource = new ClassPathResource("rewardBadges/allrounder.png");
+            if (!resource.exists()) {
+                throw new IllegalArgumentException("Badge placeholder file not found");
+            }
+            return resource;
+        }
+
+        if(type == Reward.Type.SOCIAL_BUTTERFLY){
+            ClassPathResource resource = new ClassPathResource("rewardBadges/social.png");
+            if (!resource.exists()) {
+                throw new IllegalArgumentException("Badge placeholder file not found");
+            }
+            return resource;
+        }
+
+        if(currentLevel == 0){
+            ClassPathResource resource = new ClassPathResource("rewardBadges/hold.png");
             if (!resource.exists()) {
                 throw new IllegalArgumentException("Badge placeholder file not found");
             }

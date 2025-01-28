@@ -9,20 +9,11 @@
 
       <div class="input-group">
         <label for="exchangeDaySelect">Exchange Day</label>
-        <select
-          id="exchangeDaySelect"
-          v-model="exchangeDaySelect"
-          @change="updateSelectedExchangeDay"
-          required
-        >
+        <select id="exchangeDaySelect" v-model="exchangeDaySelect" @change="updateSelectedExchangeDay" required>
           <option value="" disabled>
             Bitte wählen Sie einen Exchange Day aus
           </option>
-          <option
-            v-for="exchangeDay in exchangeDays"
-            :key="exchangeDay.id"
-            :value="exchangeDay.id"
-          >
+          <option v-for="exchangeDay in exchangeDays" :key="exchangeDay.id" :value="exchangeDay.id">
             {{ exchangeDay.name }}
           </option>
         </select>
@@ -30,15 +21,8 @@
 
       <div class="input-group">
         <label for="date">Datum</label>
-        <input
-          type="date"
-          id="date"
-          v-model="date"
-          :min="selectedExchangeDay?.startDate || ''"
-          :max="selectedExchangeDay?.endDate || ''"
-          :disabled="!exchangeDaySelect"
-          required
-        />
+        <input type="date" id="date" v-model="date" :min="selectedExchangeDay?.startDate || ''"
+          :max="selectedExchangeDay?.endDate || ''" :disabled="!exchangeDaySelect" required />
       </div>
 
       <div class="input-group">
@@ -54,11 +38,7 @@
         <label for="room">Raum</label>
         <select id="room" v-model="room" :disabled="!filteredRooms.length">
           <option value="" disabled>Bitte wählen Sie einen Raum</option>
-          <option
-            v-for="availableRoom in filteredRooms"
-            :key="availableRoom.id"
-            :value="availableRoom.id"
-          >
+          <option v-for="availableRoom in filteredRooms" :key="availableRoom.id" :value="availableRoom.id">
             {{ availableRoom.name }}
           </option>
         </select>
@@ -85,15 +65,8 @@
         <label for="tags">Event Tags</label>
         <p>Bitte wählen Sie bis zu 5 Event Tags für Ihr Event aus:</p>
 
-        <input
-          type="text"
-          id="tags"
-          v-model="tagInput"
-          placeholder="Tags eingeben und durch Komma trennen"
-          @input="filterTags"
-          @keyup="handleKeyup"
-          :disabled="selectedTags.length >= 5"
-        />
+        <input type="text" id="tags" v-model="tagInput" placeholder="Tags eingeben und durch Komma trennen"
+          @input="filterTags" @keyup="handleKeyup" :disabled="selectedTags.length >= 5" />
 
         <div class="tag-chips">
           <span v-for="(tag, index) in selectedTags" :key="index" class="chip">
@@ -105,13 +78,8 @@
         </div>
 
         <div class="tag-list">
-          <button
-            v-for="tag in filteredTags"
-            :key="tag"
-            type="button"
-            @click="addTag(tag.name)"
-            :disabled="selectedTags.includes(tag)"
-          >
+          <button v-for="tag in filteredTags" :key="tag" type="button" @click="addTag(tag.name)"
+            :disabled="selectedTags.includes(tag)">
             {{ tag.name }}
           </button>
         </div>
@@ -119,11 +87,7 @@
 
       <div class="checkbox-container">
         <label for="inviteOnly">Nur über Einladungen?</label>
-        <input
-          type="checkbox"
-          id="inviteOnly"
-          v-model="inviteOnly"
-        />
+        <input type="checkbox" id="inviteOnly" v-model="inviteOnly" />
       </div>
 
       <button type="submit" class="login-button" @click="createWorkshop">
@@ -146,7 +110,7 @@ const exchangeDaySelect = ref("");
 const date = ref("");
 const startTime = ref("00:00");
 const endTime = ref("01:00");
-const room = ref("");
+const room= ref<any>(null);
 const description = ref("");
 const selectedExperienceLevel = ref("");
 const selectedTags = ref([]);
@@ -156,8 +120,8 @@ const exchangeDays = ref([]);
 
 const selectedResources = ref([]);
 const allTags = ref([]);
-const availableRooms = ref([]);
-const filteredRooms = ref([]);
+const availableRooms = ref<any[]>([]);
+const filteredRooms = ref<any[]>([]);
 const inviteOnly = ref(false);
 
 defineProps({
@@ -176,7 +140,7 @@ const apiUrl = `${config.apiBaseUrl}/events`;
 
 const experienceLevels = ref([]);
 const germanExperienceLevels = {
-  ALL_LEVELS: "Alle Ebenen",
+  ALL_LEVELS: "Für alle geeignet",
   JUNIOR: "Junior",
   SENIOR: "Senior",
   EXPERT: "Experte",
@@ -223,7 +187,7 @@ const createWorkshop = async () => {
         date: date.value,
         startTime: startTime.value,
         endTime: endTime.value,
-        room: room.value,
+        roomId: room.value,
         description: description.value,
         exchangeDayId: exchangeDaySelect.value,
         organizerId: userId,
@@ -233,7 +197,7 @@ const createWorkshop = async () => {
         inviteOnly: inviteOnly.value,
       }),
     });
-
+   console.log(room.value);
     if (response.ok) {
       const data = await response.json();
       showToast(
@@ -418,7 +382,7 @@ const resetWorkshopForm = () => {
   date.value = "";
   startTime.value = "";
   endTime.value = "";
-  room.value = "";
+  room.value = null;
   description.value = "";
   exchangeDaySelect.value = "";
   selectedExperienceLevel.value = "";
@@ -433,7 +397,7 @@ const resetWorkshopForm = () => {
 /**
  * Fetches the available rooms and exchange days when the component is mounted.
  */
-onMounted(async () => {
+ onMounted(async () => {
   try {
     const daysResponse = await fetch(`${config.apiBaseUrl}/exchange-days`);
     const roomsResponse = await fetch(
@@ -551,6 +515,6 @@ watch(startTime, (newStartTime) => {
 }
 
 button.login-button {
-  margin-top: 20px; 
+  margin-top: 20px;
 }
 </style>

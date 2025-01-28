@@ -11,6 +11,7 @@ import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.EventRepository;
 import com.sopra.eaplanner.event.participation.EventParticipationService;
 import com.sopra.eaplanner.event.tags.Tag;
+import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.feedback.dtos.FeedbackRequestDTO;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.feedback.summary.CommentType;
@@ -24,8 +25,6 @@ import com.sopra.eaplanner.user.UserRepository;
 import com.sopra.eaplanner.user.UserTagWeight;
 import com.sopra.eaplanner.user.UserTagWeightRepository;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
-import com.vader.sentiment.analyzer.SentimentAnalyzer;
-import com.vader.sentiment.analyzer.SentimentPolarities;
 import jakarta.persistence.EntityNotFoundException;
 import opennlp.tools.tokenize.SimpleTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -204,7 +202,52 @@ public class FeedbackService {
         Map<CommentType, List<CommentAnalysis>> comments = FeedbackUtil.groupFeedbackCommentsByType(feedback);
         summary.setComments(comments);
 
+        Set<User> attendees = event.getRegisteredUsers();
+        Set<Tag> eventTags = event.getTags();
+
+        Map<String, FeedbackSummaryDTO.TagStatistic> tagStatisticsMap = new HashMap<>();
+
+        if (!eventTags.isEmpty() && !attendees.isEmpty()) {
+            List<UserTagWeight> userTagWeights = userTagWeightRepository.findByUsersAndTags(attendees, eventTags);
+            Map<Tag, List<UserTagWeight>> tagWeightsMap = userTagWeights.stream()
+                    .collect(Collectors.groupingBy(UserTagWeight::getTag));
+
+            for (Tag tag : eventTags) {
+                List<UserTagWeight> weightsForTag = tagWeightsMap.getOrDefault(tag, Collections.emptyList());
+                FeedbackSummaryDTO.TagStatistic stats = calculateTagStatistics(tag, weightsForTag);
+                tagStatisticsMap.put(tag.getName(), stats);
+            }
+        } else {
+            for (Tag tag : eventTags) {
+                tagStatisticsMap.put(tag.getName(), new FeedbackSummaryDTO.TagStatistic(new TagResponseDTO(tag), 0, 0, 0.0, 0.0, 0.0));
+            }
+        }
+
+        summary.setTagStatistics(tagStatisticsMap);
+
         return summary;
+    }
+
+    private FeedbackSummaryDTO.TagStatistic calculateTagStatistics(Tag tag, List<UserTagWeight> userTagWeights) {
+        int totalVisits = userTagWeights.stream().mapToInt(UserTagWeight::getVisitedEventsWithTag).sum();
+        int totalFeedback = userTagWeights.stream().mapToInt(UserTagWeight::getGivenFeedbackWithTag).sum();
+
+        double totalSentiment = 0.0;
+        double totalRating = 0.0;
+        for (UserTagWeight utw : userTagWeights) {
+            totalSentiment += utw.getGivenFeedbackResponseSentiment() * utw.getGivenFeedbackWithTag();
+            totalRating += utw.getGivenFeedbackRating() * utw.getGivenFeedbackWithTag();
+        }
+
+        double averageSentiment = totalFeedback > 0 ? totalSentiment / totalFeedback : 0.0;
+        double averageRating = totalFeedback > 0 ? totalRating / totalFeedback : 0.0;
+
+        double averageWeight = userTagWeights.stream()
+                .mapToDouble(UserTagWeight::getTagWeight)
+                .average()
+                .orElse(0.0);
+
+        return new FeedbackSummaryDTO.TagStatistic(new TagResponseDTO(tag), totalVisits, totalFeedback, averageSentiment, averageRating, averageWeight);
     }
 
     /**

@@ -171,7 +171,7 @@ const exchangeDays = ref<any[]>([]);
 const events = ref<any[]>([]);
 const filteredRooms = ref<any[]>([]);
 const experienceLevels = ref<string[]>([]);
-const room = ref<any | null>(null);
+const room= ref<any>(null);
 const selectedTags = ref<string[]>([]);
 const exchangeDayId = ref<number | null>(null);
 const tagInput = ref("");
@@ -247,7 +247,7 @@ const fetchEventDetails = async () => {
       date.value = data.date;
       startTime.value = data.startTime;
       endTime.value = data.endTime;
-      room.value = data.room;
+      room.value = data.room.id;
       recommendedExperience.value = data.recommendedExperience;
       exchangeDayId.value = data.exchangeDayId;
 
@@ -311,10 +311,7 @@ const fetchRoomsForEvent = async () => {
     );
     if (response.ok) {
       const data = await response.json();
-      filteredRooms.value = data.filter(
-        (room: any) => room.eventId === selectedEvent.value,
-      );
-      updateFilteredRooms();
+      filteredRooms.value = data;
     } else {
       showToast(new Toast("Error", "Fehler beim Abrufen der Räume.", "error"));
     }
@@ -384,7 +381,7 @@ const updateEvent = async () => {
     date: date.value,
     startTime: startTime.value,
     endTime: endTime.value,
-    room: room.value,
+    roomId: room.value,
     recommendedExperience: recommendedExperience.value,
     tags: selectedTags.value,
     organizerId: organizerId.value,

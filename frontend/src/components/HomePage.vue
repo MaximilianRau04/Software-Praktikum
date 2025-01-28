@@ -34,7 +34,8 @@ import Leaderboard from "@/components/leaderboard/Leaderboard.vue";
 import Forum from "./forum/Forum.vue";
 import Cookies from "js-cookie";
 import config from "../config";
-import { showToast } from "@/types/toasts";
+import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default {
   components: {
@@ -117,7 +118,41 @@ export default {
         showToast("Error", "Fehler mit der SSE Verbindung", "error");
       };
     },
-    handleMarkAsRead(notificationId) {
+    async handleMarkAsRead(notificationId) {
+      try {
+        const response = await fetch(
+          `${config.apiBaseUrl}/notifications/${notificationId}/read`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        if (!response.ok) {
+          showToast(
+            new Toast(
+              "Error",
+              `Fehler beim Setzen auf gelesen`,
+              "error",
+              faXmark,
+              10,
+            ),
+          );
+        }
+      } catch (error) {
+        showToast(
+          new Toast(
+            "Error",
+            `Fehler Fetchen der exchange days`,
+            "error",
+            faXmark,
+            10,
+          ),
+        );
+      }
+
       this.notifications = this.notifications.filter(
         (notification) => notification.id !== notificationId,
       );

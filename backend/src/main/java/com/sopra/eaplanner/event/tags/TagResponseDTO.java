@@ -12,6 +12,8 @@ public class TagResponseDTO {
 
     private String name;
 
+    private boolean selected;
+
     public TagResponseDTO(Long id, String name) {
         this.id = id;
         this.name = name;
@@ -22,16 +24,33 @@ public class TagResponseDTO {
         this.name = tag.getName();
     }
 
+    public TagResponseDTO(Tag tag, boolean selected) {
+        this.id = tag.getId();
+        this.name = tag.getName();
+        this.selected = selected;
+    }
+
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

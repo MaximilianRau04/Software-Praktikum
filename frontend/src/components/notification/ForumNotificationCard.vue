@@ -19,15 +19,12 @@ import { useRouter } from "vue-router";
 export default {
   components: { NotificationCardBase },
   props: { notification: { type: Object, required: true } },
-  setup(props) {
+  setup(props, { emit }) {
     const router = useRouter();
 
     const navigateToForumPost = () => {
-      router.push({
-        name: "EventPage",
-        params: { eventId: props.notification.context.eventId },
-        query: { threadId: props.notification.context.threadId },
-      });
+      emit('closeNoti', props.notification);
+      emit('mark-as-read', props.notification.id);
     };
 
     return { navigateToForumPost };

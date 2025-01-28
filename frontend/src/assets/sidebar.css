@@ -51,7 +51,7 @@
   flex-shrink: 0;
   width: 35px;
   height: 35px;
-  background-color: currentColor; /* Match text color */
+  background-color: currentColor;
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-position: center;
@@ -107,7 +107,7 @@
   visibility: visible;
 }
 
-.separator {
+.separator-side {
   border-top: 1px solid #009ee2;
   margin: 1rem 0.5rem;
 }

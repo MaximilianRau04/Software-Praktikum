@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 @Entity
 public class UserTagWeight {
 
+    private static final Double MAX_VISITS = 10.0;
+    private static final Double MAX_FEEDBACKS = 5.0;
+
     private static final Double VISITED_EVENT_WEIGHT = 0.2;
     private static final Double GIVEN_FEEDBACK_WEIGHT = 0.3;
     private static final Double FEEDBACK_SENTIMENT_WEIGHT = 0.4;
@@ -74,10 +77,15 @@ public class UserTagWeight {
      * by defining a weight and using the tracked data of the user.
      */
     public void setTagWeight() {
-        this.tagWeight = VISITED_EVENT_WEIGHT * visitedEventsWithTag
-                + GIVEN_FEEDBACK_WEIGHT * givenFeedbackWithTag
-                + FEEDBACK_SENTIMENT_WEIGHT * givenFeedbackResponseSentiment
-                + FEEDBACK_RATING_WEIGHT * givenFeedbackRating;
+        double normalizedVisits = Math.min(visitedEventsWithTag / MAX_VISITS, 1.0);
+        double normalizedFeedbackCount = Math.min(givenFeedbackWithTag / MAX_FEEDBACKS, 1.0);
+        double normalizedSentiment = (givenFeedbackResponseSentiment + 1) / 2;
+        double normalizedRating = givenFeedbackRating / 5.0;
+
+        this.tagWeight = (VISITED_EVENT_WEIGHT * normalizedVisits) +
+                (GIVEN_FEEDBACK_WEIGHT * normalizedFeedbackCount) +
+                (FEEDBACK_SENTIMENT_WEIGHT * normalizedSentiment) +
+                (FEEDBACK_RATING_WEIGHT * normalizedRating);
     }
 
     public Integer getVisitedEventsWithTag() {

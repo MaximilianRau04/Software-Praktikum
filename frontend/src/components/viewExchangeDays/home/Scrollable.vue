@@ -1,14 +1,5 @@
 <template>
-  <div class="date-filter">
-    <input
-      type="date"
-      id="date-picker"
-      v-model="selectedDate"
-      @change="filterExchangeDays"
-    />
-  </div>
   <div class="scroll-container">
-    <!-- list of exchange days-->
     <div class="exchangeDay-list">
       <div
         v-for="(exchangeDay, index) in sortedExchangeDays"
@@ -16,24 +7,16 @@
         @click="selectExchangeDay(exchangeDay)"
         class="list-item"
       >
-        <div class="heading">
-          <div class="date-box">
-            <div>
-              <p>{{ formatDate(exchangeDay.startDate) }}</p>
-              <p>bis</p>
-              <p>{{ formatDate(exchangeDay.endDate) }}</p>
-            </div>
-          </div>
-          <!-- details of the exchange days -->
-          <div class="infos">
-            <h2>{{ exchangeDay.name }}</h2>
-            <p>
-              {{ exchangeDay.location.street }}
-              {{ exchangeDay.location.houseNumber }},
-              {{ exchangeDay.location.city }},
-              {{ exchangeDay.location.country }}
-            </p>
-          </div>
+        <h2 class="heading">{{ exchangeDay.name }}</h2>
+        <hr class=".separator-exchange" />
+        <div class="details">
+          <p class="date">
+            {{ formatDate(exchangeDay.startDate) }} bis {{ formatDate(exchangeDay.endDate) }}
+          </p>
+          <p class="location">
+            {{ exchangeDay.location.street }} {{ exchangeDay.location.houseNumber }},<br />
+            {{ exchangeDay.location.city }}, {{ exchangeDay.location.country }}
+          </p>
         </div>
       </div>
     </div>
@@ -54,7 +37,6 @@ export default {
   },
   emits: ["select-exchange-day"],
   setup(props, { emit }) {
-    
     /**
      * sort exchangeDays by startDate
      */

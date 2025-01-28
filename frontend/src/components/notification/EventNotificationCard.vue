@@ -22,7 +22,7 @@ import { de } from "date-fns/locale";
 export default {
   components: { NotificationCardBase },
   props: { notification: { type: Object, required: true } },
-  setup(props) {
+  setup(props, { emit }) {
     const router = useRouter();
 
     const timeUntilEvent = computed(() =>
@@ -32,10 +32,8 @@ export default {
       }),
     );
     const navigateToEvent = () => {
-      router.push({
-        name: "EventPage",
-        params: { eventId: props.notification.context.eventId },
-      });
+      emit('closeNoti', props.notification);
+      emit('mark-as-read', props.notification.id);
     };
 
     return { timeUntilEvent, navigateToEvent };

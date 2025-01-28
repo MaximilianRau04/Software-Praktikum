@@ -25,27 +25,32 @@
                         einfügen wollen, das Sie noch nicht in der Auflistung sehen, so schreiben Sie dieses direkt in
                         die Leiste rein und bestätigen es mit einem Komma.</p>
                     <div>
+                        <div class="tag-container">
+                            <div class="tag-wrapper">
+                                <!-- Display selected tags -->
+                                <div class="tag-chips">
+                                    <span v-for="(tag, index) in selectedTags" :key="tag.id" class="chip">
+                                        {{ tag.name }}
+                                        <button type="button" class="remove-tag" @click="removeTag(tag.id)">
+                                            &times;
+                                        </button>
+                                    </span>
+                                </div>
 
-                        <!-- Input field for tags -->
-                        <input type="text" v-model="tagInput" placeholder="Tags eingeben und durch Komma trennen"
-                            @input="filterTags" @keyup="handleKeyup" :disabled="selectedTags.length >= 5" />
+                                <!-- Input field for tags -->
+                                <input type="text" v-model="tagInput"
+                                    placeholder="Tags eingeben und durch Komma trennen" @input="filterTags"
+                                    @keyup.enter="addTagFromInput" :disabled="selectedTags.length >= 5"
+                                    class="tag-input" />
 
-                        <!-- Display selected tags -->
-                        <div class="tag-chips">
-                            <span v-for="(tag, index) in selectedTags" :key="index" class="chip">
-                                {{ tag }}
-                                <button type="button" class="remove-tag" @click="removeTag(index)">
-                                    &times;
-                                </button>
-                            </span>
-                        </div>
-
-                        <!-- Display filtered tags to choose from -->
-                        <div class="tag-list">
-                            <button v-for="tag in filteredTags" :key="tag" type="button" @click="addTag(tag)"
-                                :disabled="selectedTags.includes(tag)">
-                                {{ tag }}
-                            </button>
+                                <!-- Display filtered tags to choose from -->
+                                <div class="tag-list">
+                                    <button v-for="tag in filteredTags" :key="tag.id" type="button" @click="addTag(tag)"
+                                        :disabled="tag.selected || selectedTags.length >= 5">
+                                        {{ tag.name }}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -76,10 +81,15 @@
                     Ihren Veranstaltungen.
                     Klicken Sie dazu auf einen Eventnamen und wählen Sie Kommentare aus, die Sie gerne auf Ihrem
                     Trainerprofil präsentieren möchten.</p>
+
                 <div v-for="event in events" :key="event.id" class="event-section">
-                    <button @click="toggleDropdown(event.id)" class="event-toggle" :ref="'eventButton-' + event.id">
+                    <!-- Event Button -->
+                    <button @click="toggleDropdown(event.id)" class="event-toggle"
+                        :class="{ 'active': activeEvent === event.id }" :ref="'eventButton-' + event.id">
                         {{ event.name }}
                     </button>
+
+                    <!-- Dropdown for Comments (Visible when event is selected) -->
                     <div v-if="activeEvent === event.id" class="dropdown" :ref="'dropdown-' + event.id">
                         <div class="comments-grid">
                             <div v-for="comment in event.comments" :key="comment.id" class="comment-card">
@@ -91,7 +101,9 @@
                                     <p>{{ comment.comment }}</p>
                                     <button @click="pinComment(comment, event.id)" class="pin-button"
                                         :class="{ 'disabled': pinnedComments.length >= 6 }"
-                                        :disabled="pinnedComments.length >= 6">Pin</button>
+                                        :disabled="pinnedComments.length >= 6">
+                                        Pin
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -110,6 +122,8 @@ import axios from "axios";
 import config from "@/config";
 import Cookies from "js-cookie";
 import { useRoute, useRouter } from "vue-router";
+import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default {
     props: {
@@ -143,7 +157,7 @@ export default {
                 this.trainer = trainerResponse.data;
 
                 const trainerTagsResponse = await axios.get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/expertiseTags`);
-                this.selectedTags = trainerTagsResponse.data.map(tag => tag.name);
+                this.selectedTags = trainerTagsResponse.data
 
                 const eventsResponse = await axios.get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/comments-by-event`);
                 this.events = eventsResponse.data.events;
@@ -158,10 +172,10 @@ export default {
                 });
 
                 const tagsResponse = await axios.get(`${config.apiBaseUrl}/tags`);
-                this.allTags = tagsResponse.data.map(tag => tag.name);
-                this.filteredTags = this.allTags.filter(tag =>
-                    !this.selectedTags.some(selectedTag => selectedTag === tag)
-                );
+                this.allTags = tagsResponse.data
+
+                this.updateTagStates();
+
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -186,7 +200,15 @@ export default {
 
         pinComment(comment, eventId) {
             if (this.pinnedComments.length >= 6) {
-                alert("You can only pin up to 6 comments.");
+                showToast(
+                    new Toast(
+                        "info",
+                        `Sie dürfen nur bis zu 6 Kommentare auf ihrem Trainerprofil anzeigen.`,
+                        "info",
+                        faXmark,
+                        10
+                    )
+                );
                 return;
             }
             const event = this.events.find(e => e.id === eventId);
@@ -212,13 +234,55 @@ export default {
                     bio: this.trainer.bio,
                     userId: this.trainer.userId,
                 });
-                if (response.status === 200) {
-                    console.log("Änderungen wurden erfolgreich gespeichert.");
+                if (!response.status === 200) {
+                    showToast(
+                        new Toast(
+                            "Fehler",
+                            `Die Biographie konnte nicht gespeichert werden.`,
+                            "error",
+                            faXmark,
+                            5
+                        )
+                    );
+                }
+
+                const responseTags = await axios.post(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/expertiseTags`, this.selectedTags.map(tag => tag.name));
+                if (!responseTags.status === 200) {
+                    showToast(
+                        new Toast(
+                            "Fehler",
+                            `Die ExpertiseTags konnten nicht gespeichert werden`,
+                            "error",
+                            faXmark,
+                            5
+                        )
+                    );
                 }
 
                 const pinnedIds = this.pinnedComments.map(comment => comment.id);
                 await axios.post(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/pinned-comments`, pinnedIds);
-                alert("Changes saved successfully!");
+
+                if (!pinnedIds.status === 200) {
+                    showToast(
+                        new Toast(
+                            "Fehler",
+                            `Die gewählten Kommentare konnten nicht angepinnt werden.`,
+                            "error",
+                            faXmark,
+                            5
+                        )
+                    );
+                }
+
+                showToast(
+                    new Toast(
+                        "Geschafft!",
+                        `Ihr Trainerprofil wurde erfolgreich aktualisiert.`,
+                        "success",
+                        faXmark,
+                        5
+                    )
+                );
             } catch (error) {
                 console.error("Error saving changes:", error);
                 alert("Failed to save changes.");
@@ -230,6 +294,21 @@ export default {
             });
         },
 
+        updateTagStates() {
+            this.filteredTags = this.allTags.map(tag => ({
+                ...tag,
+                selected: this.selectedTags.some(selected => selected.id === tag.id)
+            }));
+        },
+
+        filterTags() {
+            const search = this.tagInput.toLowerCase();
+            this.filteredTags = this.allTags.filter(tag =>
+                tag.name.toLowerCase().includes(search) &&
+                !this.selectedTags.some(selected => selected.id === tag.id)
+            );
+        },
+
         handleKeyup(event) {
             if (event.key === ",") {
                 this.addTagFromInput();
@@ -237,39 +316,34 @@ export default {
         },
 
         addTagFromInput() {
-            const trimmedInput = this.tagInput.trim().slice(0, -1);
-
+            const trimmedInput = this.tagInput.trim();
             if (!trimmedInput) return;
 
-            if (
-                trimmedInput &&
-                !this.selectedTags.includes(trimmedInput) &&
-                this.selectedTags.length < 5
-            ) {
-                this.selectedTags.push(trimmedInput);
+            let tag = this.allTags.find(tag => tag.name.toLowerCase() === trimmedInput.toLowerCase());
+            if (!tag) {
+                tag = { id: Date.now(), name: trimmedInput, selected: false };
+                this.allTags.push(tag);
             }
 
+            if (!this.selectedTags.some(selected => selected.id === tag.id) && this.selectedTags.length < 5) {
+                this.selectedTags.push(tag);
+                this.updateTagStates();
+            }
             this.tagInput = "";
-            this.filteredTags = [...this.allTags];
+            this.filterTags();
         },
 
         addTag(tag) {
-            if (!this.selectedTags.includes(tag) && this.selectedTags.length < 5) {
+            if (!this.selectedTags.some(selected => selected.id === tag.id) && this.selectedTags.length < 5) {
                 this.selectedTags.push(tag);
+                this.updateTagStates();
             }
+            this.tagInput = "";
         },
 
-        removeTag(index) {
-            this.selectedTags.splice(index, 1);
-            this.filteredTags = this.allTags.filter((tag) =>
-                !this.selectedTags.some(selectedTag => selectedTag.id === tag.id)
-            );
-        },
-
-        filterTags() {
-            const query = this.tagInput.toLowerCase();
-            this.filteredTags = this.allTags
-                .filter((tagName) => tagName.toLowerCase().includes(query));
+        removeTag(tagId) {
+            this.selectedTags = this.selectedTags.filter(tag => tag.id !== tagId);
+            this.updateTagStates();
         },
 
         goBack() {
@@ -288,7 +362,6 @@ export default {
 
 <style scoped>
 .back-button {
-    position: fixed;
     top: 6rem;
     left: 6rem;
     background-color: #009ee2;
@@ -322,15 +395,25 @@ export default {
 }
 
 .section-header {
-    text-align: center;
-    margin-bottom: 0.5rem;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #01172F;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.8rem;
 }
 
 .section-description {
-    text-align: justify;
-    font-size: 1rem;
-    color: #555;
-    margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: #354F52;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.section-description strong {
+  font-weight: 600;
+  color: #009EE2;
 }
 
 textarea {
@@ -367,6 +450,8 @@ textarea:focus {
 
 .event-section {
     margin-bottom: 1rem;
+    display: inline-block;
+    margin-right: 1rem;
 }
 
 .event-toggle {
@@ -377,21 +462,29 @@ textarea:focus {
     border-radius: 5px;
     cursor: pointer;
     margin-bottom: 0.5rem;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
 }
 
 .event-toggle:hover {
     background-color: #007bb8;
 }
 
+.event-toggle.active {
+    background-color: #005b8d;
+}
+
 .dropdown {
-    margin-top: 0.5rem;
+    margin-top: 1rem;
     padding-left: 1rem;
     border-left: 2px solid #ddd;
+    padding-bottom: 1rem;
+    display: block;
 }
 
 .comments-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1rem;
 }
 
@@ -445,6 +538,24 @@ textarea:focus {
     margin-right: 1rem;
 }
 
+.tag-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 750px;
+    margin: 0 auto;
+}
+
+.tag-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
 .tag-chips {
     display: flex;
     flex-wrap: wrap;
@@ -469,18 +580,50 @@ textarea:focus {
     margin-left: 0.5rem;
 }
 
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
 .tag-list button {
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    padding: 0.5rem;
-    border-radius: 5px;
-    margin-right: 0.5rem;
+    background-color: white;
+    color: #009ee2;
+    padding: 0.3rem 0.7rem;
+    border: 2px solid #009ee2;
+    border-radius: 20px;
     cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tag-list button:hover {
+    background-color: #009ee2;
+    color: white;
 }
 
 .tag-list button:disabled {
-    background-color: #e0e0e0;
-    cursor: not-allowed;
+    background-color: #f0f0f0;
+    color: #d3d3d3;
+    border: 2px solid #d3d3d3;
+}
+
+.tag-input {
+    width: 70%;
+    max-width: 600px;
+    min-height: 50px;
+    max-height: 50px;
+    padding: 10px;
+    border-radius: 20px;
+    border: 2px solid #009ee2;
+    font-size: 16px;
+    line-height: 1.5;
+    transition: border-color 0.3s;
+}
+
+.tag-input:focus {
+    border-color: #007bb5;
+    outline: none;
 }
 
 .pinned-comments-grid {
@@ -496,8 +639,6 @@ textarea:focus {
     padding: 1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
-
 
 .pin-button {
     position: absolute;

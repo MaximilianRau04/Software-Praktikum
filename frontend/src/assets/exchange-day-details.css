@@ -1,77 +1,182 @@
 .exchangeDayDetails {
   display: flex;
   flex-direction: column;
-  padding: 15px;
-  background-color: #eaeaea;
-  border: 1px solid black;
-  border-radius: 8px;
-  margin: 0px auto;
-  font-family: Arial, sans-serif;
-  box-sizing: border-box;
-  height: 85vh;
-  overflow: hidden;
+  height: 100%;
+  padding: 20px;
 }
 
-h1 {
-  margin-top: 0px;
+.exchangeDayHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #009ee2;
+  padding: 0 1rem 15px;
+  margin-bottom: 0.5rem;
 }
 
-.scrollableEvents {
-  overflow-y: auto;
+.exchangeDayHeader h1 {
+  color: #005f8c;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
   flex-grow: 1;
+  text-align: center;
+}
+
+.manage-button {
+  background: #009ee2;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.manage-button:hover {
+  background: #007eb3;
+}
+
+.exchangeDayContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.right-column {
+  height: 100%;
+  position: sticky;
+  top: 1rem;
+}
+
+.description {
+  background: #f8f9fa;
+  padding-left: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #444;
+}
+
+.info-container {
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.2rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.info-box {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative; 
+}
+
+.info-box:first-child::after {
+  content: '';
+  position: absolute;
+  right: -8px;
+  top: 15%;
+  height: 70%;
+  width: 1px;
+  background: #e0e0e0;
+}
+
+.info-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.info-header h4 {
+  margin: 0;
+  font-size: 15px;
+  color: #009ee2;
+}
+
+.info-content {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #666;
+}
+
+.separator {
+  width: 1px;
+  background: #e0e0e0;
+  margin: 0 0.5rem;
+}
+
+.icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  color: #009ee2;
+  margin-top: 0.3rem;
+}
+
+.event-title {
+  margin: 0 1rem;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
   padding-right: 10px;
+  margin-top: 15px;
 }
 
-.exchangeDayInfos h1 {
-  font-size: 30px;
-  color: black;
-  font-weight: bold;
-  margin-bottom: 0px;
-}
-
-.exchangeDayInfos p {
-  font-size: 20px;
-  color: black;
-  margin: 2px 0;
-}
-
-h2 {
-  font-size: 20px;
-  color: #000000;
-  margin-top: 20px;
-  margin-bottom: 5px;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 5px;
-}
-
-.event-item {
+.event-details {
+  position: relative;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 15px;
-  margin: 5px 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  min-height: 200px;
 }
 
-.event-item h3 {
+.event-details h2 {
+  color: #009ee2;
   font-size: 18px;
-  color: black;
-  margin: 0 0 8px;
+  margin-bottom: 10px;
 }
 
-.event-item p {
+.event-details p {
+  margin: 5px 0;
   font-size: 14px;
-  color: #000000;
-  margin: 4px 0;
 }
 
-.edit-button {
-  background-color: #333;
-  margin-right: 10px;
+.register-button {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  background-color: #009ee2;
   color: white;
+  padding: 8px 20px;
   border: none;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.9rem;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.register-button:hover {
+  background-color: #007eb3;
 }
