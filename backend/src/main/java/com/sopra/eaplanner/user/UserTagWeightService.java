@@ -9,7 +9,9 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,14 +27,25 @@ public class UserTagWeightService {
     private EventRepository eventRepository;
 
     public List<EventResponseDTO> recommendEvents(Long userId, Integer limit) {
-        User userForRecommendations = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        User userForRecommendations = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         List<Tag> topTags = userTagWeightRepository.findTopTagsForUser(userForRecommendations)
-                .stream().limit(limit).collect(Collectors.toList());
-        List<Event> recommendedEvents = eventRepository.findEventsByTags(topTags);
-        List<Event> userParticipatedEvents = userForRecommendations.getParticipations().stream()
-                .map(EventParticipation::getEvent)
+                .stream()
+                .limit(limit)
                 .toList();
+
+        if (topTags.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Event> recommendedEvents = eventRepository.findEventsByTags(topTags);
+
+        Set<Event> userParticipatedEvents = userForRecommendations.getParticipations()
+                .stream()
+                .map(EventParticipation::getEvent)
+                .collect(Collectors.toSet());
+
         List<Event> filteredRecommendedEvents = recommendedEvents.stream()
                 .filter(event -> !userParticipatedEvents.contains(event))
                 .toList();
