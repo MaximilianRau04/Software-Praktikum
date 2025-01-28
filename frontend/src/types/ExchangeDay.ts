@@ -12,7 +12,7 @@ export interface ExchangeDay {
 export interface Location {
   id: number;
   street: string;
-  houseNumber: string;
+  houseNumber: number;
   postalCode: number;
   city: string;
   country: string;

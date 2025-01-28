@@ -3,7 +3,7 @@
     <!-- Back Button -->
     <div class="back-button-container">
       <button class="back-button" @click="goToEventRegistrations">
-        Zurück zur Eventregistrierung
+        Zurück zu Events
       </button>
     </div>
     <!-- Titel -->
@@ -118,7 +118,7 @@
           </div>
           <div class="info-item">
             <i class="icon-location"></i>
-            <span><strong>Raum:</strong> {{ event.room }}</span>
+            <span><strong>Raum:</strong> {{ event.room.name }}</span>
           </div>
           <div class="tag-chips">
                 <span
@@ -224,6 +224,7 @@ const event = ref<Event>({
     id: 0,
     type: "",
     location: {
+    postalCode: 0,
      id: 0,
      street: "",
      houseNumber: 0,
