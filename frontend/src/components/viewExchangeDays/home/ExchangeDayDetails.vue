@@ -155,6 +155,11 @@ async function fetchExchangeDayDetails(id: number) {
 
     checkIfPastExchangeDay();
     await fetchEventDetails();
+
+    if(selectedExchangeDay.value?.location){
+      await geocodeAddress();
+    }
+
   } catch (error) {
     showToast(
       new Toast(
@@ -238,11 +243,10 @@ onMounted(async () => {
     }
 
     if (selectedExchangeDay.value?.location) {
-      await geocodeAddress();
+      //await geocodeAddress();
     }
   } catch (error) {
     console.error('Mount error:', error);
-    // Add error state handling here
   }
 });
 </script>
