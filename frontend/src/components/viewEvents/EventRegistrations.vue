@@ -1,81 +1,80 @@
 <template>
-  <div class="event-page">
-    <div class="search-bar-container">
+  <div class="event-dashboard">
+    <div class="event-search-container">
       <input
         type="text"
         v-model="searchQuery"
         placeholder="Nach Events suchen..."
-        class="search-bar"
+        class="event-search-input"
       />
     </div>
 
-    <div class="event-columns">
-      <div class="event-column">
+    <div class="events-columns-container">
+      <!-- Left Column -->
+      <div class="events-column registered-events-column">
         <h2>Angemeldete Events</h2>
         <div v-if="isLoading">
           <p>Loading...</p>
         </div>
         <div
           v-else-if="filteredRegisteredEvents.length === 0"
-          class="empty-state"
+          class="empty-state-message"
         >
           Keine angemeldeten Events gefunden
         </div>
-        <div v-else class="list-left">
+        <div v-else class="events-list">
           <div
             v-for="event in filteredRegisteredEvents"
             :key="event.id"
-            class="event-item"
+            class="event-card"
           >
-            <div class="event-details">
-              <h3>{{ event.name }}</h3>
-              <p>{{ formatDate(event.date) }}</p>
-              <button @click="goToEvent(event.id)" class="register-button">
-                Details
-              </button>
-            </div>
+            <h3 class="event-title">{{ event.name }}</h3>
+            <p class="event-date">{{ formatDate(event.date) }}</p>
+            <button @click="goToEvent(event.id)" class="event-action-button">
+              Details
+            </button>
           </div>
         </div>
       </div>
 
-      <div class="event-column">
+      <!-- Center Column -->
+      <div class="events-column recommended-events-column">
         <h2>Empfohlene Events</h2>
         <div v-if="isLoading">
           <p>Loading...</p>
         </div>
         <div
           v-else-if="filteredRecommendedEvents.length === 0"
-          class="empty-state"
+          class="empty-state-message"
         >
-          Keine empfohlenen Events gefunden
+          Nehmen Sie an Workshops teil und geben Sie Feedback, damit wir Ihnen Vorschläge für interessante Workshops machen können.
         </div>
-        <div v-else class="list-left">
+        <div v-else class="events-list">
           <div
             v-for="event in filteredRecommendedEvents"
             :key="event.id"
-            class="event-item"
+            class="event-card"
           >
-            <div class="event-details">
-              <h3>{{ event.name }}</h3>
-              <p>{{ formatDate(event.date) }}</p>
-              <div class="tag-chips">
-                <span
-                  v-for="(tag, index) in event.tags.slice(0, 5)"
-                  :key="tag.id"
-                  class="chip"
-                >
-                  {{ tag.name }}
-                </span>
-              </div>
-              <button @click="goToEvent(event.id)" class="register-button">
-                Details
-              </button>
+            <h3 class="event-title">{{ event.name }}</h3>
+            <p class="event-date">{{ formatDate(event.date) }}</p>
+            <div class="event-tags-container">
+              <span
+                v-for="(tag, index) in event.tags.slice(0, 5)"
+                :key="tag.id"
+                class="event-tag"
+              >
+                {{ tag.name }}
+              </span>
             </div>
+            <button @click="goToEvent(event.id)" class="event-action-button">
+              Details
+            </button>
           </div>
         </div>
       </div>
 
-      <div class="event-column">
+      <!-- Right Column -->
+      <div class="events-column feedback-past-column">
         <div class="feedback-section">
           <h2>Feedback geben</h2>
           <div v-if="isLoading">
@@ -83,23 +82,21 @@
           </div>
           <div
             v-else-if="filteredFeedbackEvents.length === 0"
-            class="empty-state"
+            class="empty-state-message"
           >
             Keine Events für Feedback verfügbar
           </div>
-          <div v-else class="list-right">
+          <div v-else class="events-list">
             <div
               v-for="event in filteredFeedbackEvents"
               :key="event.id"
-              class="event-item"
+              class="event-card"
             >
-              <div class="event-details">
-                <h3>{{ event.name }}</h3>
-                <p>{{ formatDate(event.date) }}</p>
-                <button @click="goToEvent(event.id)" class="register-button">
-                  Feedback
-                </button>
-              </div>
+              <h3 class="event-title">{{ event.name }}</h3>
+              <p class="event-date">{{ formatDate(event.date) }}</p>
+              <button @click="goToFeedback(event.id)" class="event-action-button">
+                Feedback
+              </button>
             </div>
           </div>
         </div>
@@ -109,22 +106,20 @@
           <div v-if="isLoading">
             <p>Loading...</p>
           </div>
-          <div v-else-if="filteredPastEvents.length === 0" class="empty-state">
+          <div v-else-if="filteredPastEvents.length === 0" class="empty-state-message">
             Keine vergangenen Events
           </div>
-          <div v-else class="list-right">
+          <div v-else class="events-list">
             <div
               v-for="event in filteredPastEvents"
               :key="event.id"
-              class="event-item"
+              class="event-card"
             >
-              <div class="event-details">
-                <h3>{{ event.name }}</h3>
-                <p>{{ formatDate(event.date) }}</p>
-                <button @click="goToEvent(event.id)" class="register-button">
-                  Details
-                </button>
-              </div>
+              <h3 class="event-title">{{ event.name }}</h3>
+              <p class="event-date">{{ formatDate(event.date) }}</p>
+              <button @click="goToEvent(event.id)" class="event-action-button">
+                Details
+              </button>
             </div>
           </div>
         </div>
@@ -263,6 +258,36 @@ const goToEvent = (eventId) => {
   router.push({ name: "EventPage", params: { eventId } });
 };
 
+const goToFeedback = async (eventId) => {
+  const token = await fetchAttendanceToken(eventId);
+  if (token) {
+    router.push({
+      name: "feedback",
+      params: { eventId },
+      query: { token }
+    });
+  } else {
+    showToast(
+      new Toast("Error", "Fehler beim Laden des Teilnahme-Tokens", "error", faXmark, 10)
+    );
+  }
+};
+
+const fetchAttendanceToken = async (eventId) => {
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/events/${eventId}/attendance-token`);
+    if (!response.ok) throw new Error("Failed to fetch attendance token");
+    const data = await response.json();
+    return data.attendanceToken;
+  } catch (error) {
+    console.error("Error fetching attendance token:", error);
+    showToast(
+      new Toast("Error", "Fehler beim Laden des Teilnahme-Tokens", "error", faXmark, 10)
+    );
+    return null;
+  }
+};
+
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleDateString("de-DE");
@@ -274,131 +299,157 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.event-page {
-  padding: 20px;
-  background: #f9f9f9;
-  max-height: 90%;
+.event-dashboard {
+  padding: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  height: calc(100vh - 4rem);
+  display: flex;
+  flex-direction: column;
 }
 
-.search-bar-container {
-  margin-bottom: 20px;
-  text-align: center;
+.events-columns-container {
+  flex: 1;
+  display: flex;
+  gap: 2rem;
+  min-height: 0;
 }
 
-.search-bar {
-  width: 80%;
-  max-width: 600px;
-  padding: 12px;
-  border: 1px solid #ddd;
+.event-search-input {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: all 0.3s ease;
 }
 
-.search-bar:focus {
-  border-color: #007bff;
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+.event-search-input:focus {
   outline: none;
+  border-color: #2196F3;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
 }
 
-.event-columns {
+.events-columns-container {
   display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  overflow: auto;
+  gap: 2rem;
+  min-height: 70vh;
 }
 
-.event-column {
+.events-column {
   flex: 1;
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 
-.event-details {
-  background-color: #EAEAEA;
-  border: 1px solid #01172F;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1.8rem;
+.registered-events-column,
+.recommended-events-column {
+  padding: 1.5rem;
+}
+
+.feedback-past-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  height: 100%;
+}
+
+.feedback-section,
+.past-events-section {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin: 0 1rem;
+}
+
+.events-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  margin-top: 1rem;
+  min-height: 0;
+}
+
+.event-card {
   position: relative;
-  overflow: auto;
-  color: #333;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
 }
 
-h2 h3 p {
-  margin: 0.5rem;
+.event-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.register-button {
-  background-color: #009EE2;
+.event-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.event-date {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0 0 auto 0;
+}
+
+.event-action-button {
+  align-self: flex-end;
+  margin-top: 1rem;
+  padding: 0.5rem 1.25rem;
+  background: #2196F3;
   color: white;
   border: none;
-  padding: 0.45rem 0.9rem;
-  font-size: 0.9rem;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
-  position: absolute;
-  bottom: 0.5rem;
-  right: 0.5rem;
+  transition: 0.2s ease;
 }
 
-.register-button:hover {
-  background-color: #0056b3;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+.event-action-button:hover {
+  background: #1976D2;
 }
 
-.register-button:disabled {
-  background-color: #ccc;
-}
-
-.empty-state {
+.empty-state-message {
+  color: #888;
   text-align: center;
-  font-size: 1.2rem;
-  color: #777;
+  padding: 2rem;
+  border: 2px dashed #eee;
+  border-radius: 8px;
+  margin-top: 1rem;
 }
 
-.list-right {
-  max-height: 29vh;
-  overflow-y: auto;
+.event-tags-container {
+  margin: 0.5rem 0 1rem 0;
 }
 
-.list-left {
-  max-height: 65vh;
-  overflow-y: auto;
+.event-tag {
+  display: inline-block;
+  background: #e3f2fd;
+  color: #1976D2;
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  margin-right: 0.5rem;
 }
 
-.tag-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 5px;
-}
-
-.chip {
-  background-color: #d9f2ff;
-  padding: 6px 12px;
-  border-radius: 50px;
-  font-size: 0.9rem;
-  color: #007bff;
-  font-weight: bold;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition:
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.chip:hover {
-  background-color: #007bff;
-  color: white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+@media (max-width: 1200px) {
+  .events-columns-container {
+    flex-direction: column;
+  }
+  
+  .events-column {
+    min-height: 400px;
+  }
 }
 </style>

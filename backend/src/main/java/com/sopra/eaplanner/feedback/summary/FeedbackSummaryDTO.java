@@ -1,5 +1,6 @@
 package com.sopra.eaplanner.feedback.summary;
 
+import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.feedback.FeedbackType;
 
 import java.util.List;
@@ -18,6 +19,8 @@ public class FeedbackSummaryDTO {
     private Map<FeedbackType, FeedbackStatistics> numericalFeedback;
 
     private Map<CommentType, List<CommentAnalysis>> comments;
+
+    private Map<String, TagStatistic> tagStatistics;
 
     public FeedbackSummaryDTO() {
     }
@@ -68,6 +71,14 @@ public class FeedbackSummaryDTO {
         this.comments = comments;
     }
 
+    public Map<String, TagStatistic> getTagStatistics() {
+        return tagStatistics;
+    }
+
+    public void setTagStatistics(Map<String, TagStatistic> tagStatistics) {
+        this.tagStatistics = tagStatistics;
+    }
+
     public static FeedbackSummaryDTO mockWith(Long eventId, String eventName, String organizerName) {
         return new FeedbackSummaryDTO(eventId, eventName, organizerName);
     }
@@ -114,9 +125,13 @@ public class FeedbackSummaryDTO {
             this.responseCount = responseCount;
         }
 
-        public Map<String, Double> getSubAverages() { return subAverages; }
+        public Map<String, Double> getSubAverages() {
+            return subAverages;
+        }
 
-        public void setSubAverages(Map<String, Double> subAverages) { this.subAverages = subAverages; }
+        public void setSubAverages(Map<String, Double> subAverages) {
+            this.subAverages = subAverages;
+        }
     }
 
     /**
@@ -159,12 +174,78 @@ public class FeedbackSummaryDTO {
             this.feedbackId = feedbackId;
         }
 
-        public String getAuthor(){
+        public String getAuthor() {
             return author;
         }
 
-        public void setAuthor(String author){
+        public void setAuthor(String author) {
             this.author = author;
+        }
+    }
+
+    public static class TagStatistic {
+        private TagResponseDTO tag;
+        private int totalVisits;
+        private int totalFeedback;
+        private double averageSentiment;
+        private double averageRating;
+        private double averageWeight;
+
+        public TagStatistic(TagResponseDTO tag, int totalVisits, int totalFeedback, double averageSentiment, double averageRating, double averageWeight) {
+            this.tag = tag;
+            this.totalVisits = totalVisits;
+            this.totalFeedback = totalFeedback;
+            this.averageSentiment = averageSentiment;
+            this.averageRating = averageRating;
+            this.averageWeight = averageWeight;
+        }
+
+        public TagResponseDTO getTag() {
+            return tag;
+        }
+
+        public void setTag(TagResponseDTO tag) {
+            this.tag = tag;
+        }
+
+        public int getTotalVisits() {
+            return totalVisits;
+        }
+
+        public void setTotalVisits(int totalVisits) {
+            this.totalVisits = totalVisits;
+        }
+
+        public int getTotalFeedback() {
+            return totalFeedback;
+        }
+
+        public void setTotalFeedback(int totalFeedback) {
+            this.totalFeedback = totalFeedback;
+        }
+
+        public double getAverageSentiment() {
+            return averageSentiment;
+        }
+
+        public void setAverageSentiment(double averageSentiment) {
+            this.averageSentiment = averageSentiment;
+        }
+
+        public double getAverageRating() {
+            return averageRating;
+        }
+
+        public void setAverageRating(double averageRating) {
+            this.averageRating = averageRating;
+        }
+
+        public double getAverageWeight() {
+            return averageWeight;
+        }
+
+        public void setAverageWeight(double averageWeight) {
+            this.averageWeight = averageWeight;
         }
     }
 }

@@ -1,5 +1,11 @@
 <template>
   <div class="event-header">
+    <!-- Back Button -->
+    <div class="back-button-container">
+      <button class="back-button" @click="goToEventRegistrations">
+        Zurück zur Eventregistrierung
+      </button>
+    </div>
     <!-- Titel -->
     <div class="header-title">
       <h1>{{ event.name || "Eventname wird geladen..." }}</h1>
@@ -250,6 +256,10 @@ const showForum = () => {
 const isAdmin = computed(() => {
   return userRole === "ADMIN";
 });
+
+const goToEventRegistrations = () => {
+      router.push({ name: "eventRegistrations" });
+    };
 
 /**
  * Fetch Event Details

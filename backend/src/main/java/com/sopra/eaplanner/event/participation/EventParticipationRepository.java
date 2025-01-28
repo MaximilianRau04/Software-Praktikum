@@ -3,6 +3,8 @@ package com.sopra.eaplanner.event.participation;
 import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -61,4 +63,14 @@ public interface EventParticipationRepository extends JpaRepository<EventPartici
      * @return the count of {@link EventParticipation} where feedbackGiven is true.
      */
     long countByUserAndFeedbackGivenTrue(User user);
+
+    @Query("SELECT ep FROM EventParticipation ep WHERE " +
+            "ep.user.id = :userId AND " +
+            "ep.isParticipationConfirmed = true AND " +
+            "ep.feedbackGiven = true AND " +
+            "ep.event.date < CURRENT_DATE")
+    List<EventParticipation> findCompletedParticipations(@Param("userId") Long userId);
+
+    List<EventParticipation> findByUserAndIsParticipationConfirmedAndFeedbackGiven(
+            User user, boolean isConfirmed, boolean feedbackGiven);
 }

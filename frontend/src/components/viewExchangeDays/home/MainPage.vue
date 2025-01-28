@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="home-container">
     <!-- left side for details -->
     <div class="leftSide">
       <ExchangeDayDetails v-if="selectedExchangeDay" :exchangeDay="selectedExchangeDay" />
@@ -85,11 +85,10 @@ function fetchAllExchangeDays() {
 /**
  * Categorizes Exchange Days into upcoming and past based on today's date.
  */
-function categorizeExchangeDays() {
+ function categorizeExchangeDays() {
   upcomingExchangeDaysList.value = exchangeDays.value.filter((day) => {
     const startDate = new Date(day.startDate).setHours(0, 0, 0, 0);
-    const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
-    return startDate > today || (startDate <= today && endDate >= today);
+    return startDate > today;
   });
 
   pastExchangeDaysList.value = exchangeDays.value.filter((day) => {
@@ -110,25 +109,30 @@ function filterExchangeDays() {
 
   const startTimestamp = selectedDateFrom.value
     ? new Date(selectedDateFrom.value).setHours(0, 0, 0, 0)
-    : today;
+    : -Infinity;
   const endTimestamp = selectedDateTo.value
     ? new Date(selectedDateTo.value).setHours(0, 0, 0, 0)
     : Infinity;
 
+  // Filter upcoming events
   upcomingExchangeDaysList.value = exchangeDays.value.filter((day) => {
     const startDate = new Date(day.startDate).setHours(0, 0, 0, 0);
     const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
-
     return (
-      startDate >= today &&
-      startDate >= startTimestamp && startDate <= endTimestamp
+      startDate > today &&
+      startDate >= startTimestamp &&
+      startDate <= endTimestamp
     );
   });
 
+  // Filter past events
   pastExchangeDaysList.value = exchangeDays.value.filter((day) => {
     const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
-
-    return endDate < today && endDate >= startTimestamp && endDate <= endTimestamp;
+    return (
+      endDate < today &&
+      endDate >= startTimestamp &&
+      endDate <= endTimestamp
+    );
   });
 }
 

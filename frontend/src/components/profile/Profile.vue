@@ -28,7 +28,6 @@ export default {
   },
   computed: {
     isTrainer() {
-        console.log("this.userData?.role")
       return this.userData?.role === "ADMIN";
     },
   },

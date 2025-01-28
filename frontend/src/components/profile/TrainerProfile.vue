@@ -253,7 +253,7 @@ export default {
 
 .trainer-events {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     gap: 2rem;
     max-width: 900px;
     min-width: 600px;

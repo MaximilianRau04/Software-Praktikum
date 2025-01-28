@@ -2,29 +2,66 @@
   <div class="exchangeDayDetails">
     <div class="exchangeDayHeader">
       <h1>{{ selectedExchangeDay?.name }}</h1>
+      <button v-if="isAdmin" class="manage-button" @click="handleManage(selectedExchangeDay?.id)">
+        Verwalten
+      </button>
     </div>
+
     <div class="exchangeDayContent">
-      <div class="description">
-        <p>{{ selectedExchangeDay?.description }}</p>
+      <!-- Left Column -->
+      <div class="left-column">
+        <div class="description">
+          <p>{{ selectedExchangeDay?.description }}</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-box">
+            <div class="info-header">
+              <CalendarIcon class="icon" />
+              <h4>Termin</h4>
+            </div>
+            <div class="info-content">
+              {{ formatDateLong(selectedExchangeDay?.startDate) }}<br>
+              bis {{ formatDateLong(selectedExchangeDay?.endDate) }}
+            </div>
+          </div>
+
+          <div class="info-box">
+            <div class="info-header">
+              <LocationIcon class="icon" />
+              <h4>Ort</h4>
+            </div>
+            <div class="info-content">
+              {{ selectedExchangeDay?.location.street }} {{ selectedExchangeDay?.location.houseNumber }}<br>
+              {{ selectedExchangeDay?.location.postalCode }} {{ selectedExchangeDay?.location.city }}<br>
+              {{ selectedExchangeDay?.location.country }}
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="exchangeDayInfo">
-        <p> {{ formatDateLong(selectedExchangeDay?.startDate) }} bis {{ formatDateLong(selectedExchangeDay?.endDate) }}</p>
-        <p> {{ selectedExchangeDay?.location.street }} {{ selectedExchangeDay?.location.houseNumber }}</p>
-        <p> {{ selectedExchangeDay?.location.postalCode }} {{ selectedExchangeDay?.location.city }}, {{ selectedExchangeDay?.location.country }} </p>
+
+      <!-- Right Column (Map) -->
+      <div class="right-column">
+        <MapComponent v-if="coordinates" :coordinates="coordinates" />
       </div>
     </div>
-    <div class="scrollableEvents">
-      <h2>Events</h2>
-      <div v-for="event in events" :key="event.id" class="event-item">
-        <h3>{{ event.name }}</h3>
-        <p>{{ event.description }}</p>
+    <div class="exchangeDayHeader">
+        <h2>Events</h2>
+      </div>
+    <!-- Events Section -->
+    <div class="scrollableEventList">
+      
+      <div class="event-grid">
+        <div v-for="event in events" :key="event.id" class="event-item">
+          <EventDetails :event="event" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, onMounted, ref, watch } from "vue";
+import { defineProps, onMounted, computed, ref, watch } from "vue";
 import EventDetails from "@/components/viewExchangeDays/home/EventDetails.vue";
 import config from "@/config";
 import "@/assets/exchange-day-details.css";
@@ -34,6 +71,8 @@ import { useRouter } from "vue-router";
 import Cookies from "js-cookie";
 import { showToast, Toast } from "@/types/toasts";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import MapComponent from "../MapComponent.vue";
+import { CalendarIcon, MapPinIcon as LocationIcon } from '@heroicons/vue/24/outline';
 
 const router = useRouter();
 const selectedExchangeDay = ref<ExchangeDay | null>(null);
@@ -42,6 +81,7 @@ const props = defineProps<{ exchangeDay: ExchangeDay | null }>();
 
 const events = ref<Event[]>([]);
 const isPastExchangeDay = ref(false);
+const coordinates = ref(null);
 
 /**
  * Formats a timestamp into a human-readable date string.
@@ -70,9 +110,7 @@ function formatDateLong(timestamp: number): string {
   });
 }
 
-function getCookie(name) {
-  return Cookies.get(name);
-}
+const isAdmin = computed(() => Cookies.get('role') === 'ADMIN');
 
 /**
  * Checks if the exchange day is in the past.
@@ -152,9 +190,30 @@ async function fetchEventDetails() {
   }
 }
 
-const navigateToManageExchangeDay = (exchangeDayId) => {
+const handleManage = (exchangeDayId) => {
   router.push({ name: "manageExchangeDay", params: { exchangeDayId } });
 };
+
+const geocodeAddress = async () => {
+  const location = selectedExchangeDay.value?.location;
+  const address = `${location.street} ${location.houseNumber}, ${location.postalCode} ${location.city}, ${location.country}`;
+
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
+    );
+    const data = await response.json();
+    if (data.length > 0) {
+      coordinates.value = {
+        lat: parseFloat(data[0].lat),
+        lon: parseFloat(data[0].lon)
+      };
+    }
+  } catch (error) {
+    console.error('Geocoding error:', error);
+  }
+}
+
 
 /**
  * Watch for changes to the `exchangeDay` prop and fetch new details when it changes.
@@ -171,9 +230,18 @@ watch(
 /**
  * On component mount, fetch the details of the initial `exchangeDay` if provided.
  */
-onMounted(() => {
-  if (props.exchangeDay?.id != null) {
-    fetchExchangeDayDetails(props.exchangeDay.id);
+onMounted(async () => {
+  try {
+    if (props.exchangeDay?.id) {
+      await fetchExchangeDayDetails(props.exchangeDay.id);
+    }
+
+    if (selectedExchangeDay.value?.location) {
+      await geocodeAddress();
+    }
+  } catch (error) {
+    console.error('Mount error:', error);
+    // Add error state handling here
   }
 });
 </script>
