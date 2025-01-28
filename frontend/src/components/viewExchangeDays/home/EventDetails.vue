@@ -5,7 +5,7 @@
         <UserCircleIcon class="w-6 h-6 text-white" />
       </div>
     </div>
-    
+
     <div class="event-header-home">
       <h2>{{ event.name }}</h2>
       <div class="meta-grid">
@@ -19,7 +19,7 @@
         </div>
         <div class="meta-item">
           <MapPinIcon class="icon-small" />
-          <span class="value">{{ event.room || "-" }}</span>
+          <span class="value">{{ event.room.name || "-" }}</span>
         </div>
       </div>
     </div>
@@ -44,7 +44,7 @@ import { useRouter } from "vue-router";
 import "@/assets/event-details.css";
 import { Event } from "@/types/Event";
 import { defineProps } from "vue";
-import { 
+import {
   CalendarIcon,
   ClockIcon,
   MapPinIcon,
@@ -63,6 +63,8 @@ const organizer = ref<User | null>(null);
 const goToEvent = (eventId) => {
   router.push({ name: "EventPage", params: { eventId } });
 };
+
+
 
 /**
  * Formats a timestamp into a human-readable date string.

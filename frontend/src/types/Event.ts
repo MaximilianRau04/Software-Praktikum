@@ -1,3 +1,5 @@
+import type {Location} from "./ExchangeDay";
+
 export interface Event {
   id: number;
   name: string;
@@ -5,7 +7,17 @@ export interface Event {
   date: string;
   endTime: string;
   startTime: string;
-  room: string;
+  room: Room;
   forumThreads: object[];
   inviteOnly: boolean;
+}
+
+export interface Room{
+  name: string;
+  id: number;
+  type: string;
+  location: Location;
+  capacity: number;
+  description: string;
+  availability: number;
 }

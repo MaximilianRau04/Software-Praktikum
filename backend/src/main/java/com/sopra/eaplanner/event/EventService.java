@@ -16,9 +16,11 @@ import com.sopra.eaplanner.exchangeday.ExchangeDay;
 import com.sopra.eaplanner.exchangeday.ExchangeDayRepository;
 import com.sopra.eaplanner.exchangeday.dtos.ExchangeDayResponseDTO;
 import com.sopra.eaplanner.forumthread.ForumThreadResponseDTO;
+import com.sopra.eaplanner.locations.Location;
 import com.sopra.eaplanner.locations.LocationDTO;
 import com.sopra.eaplanner.qrcode.QRCodeService;
 import com.sopra.eaplanner.resource.ResourceItem;
+import com.sopra.eaplanner.resource.ResourceRepository;
 import com.sopra.eaplanner.resource.dtos.ResourceResponse;
 import com.sopra.eaplanner.resource.ResourceType;
 import com.sopra.eaplanner.user.User;
@@ -67,6 +69,9 @@ public class EventService {
     private TagService tagService;
 
     @Autowired
+    private ResourceRepository resourceRepository;
+
+    @Autowired
     private EventResourceRepository eventResourceRepository;
 
     public EventResponseDTO createEvent(EventRequestDTO requestBody) throws Exception {
@@ -79,6 +84,9 @@ public class EventService {
                             + exchangeDay.getStartDate() + " to " + exchangeDay.getEndDate());
         }
 
+        ResourceItem room = resourceRepository.findById(requestBody.getRoomId())
+                .orElseThrow(() -> new EntityNotFoundException("Room not found"));
+
         User eventOrganizer = userRepository.findById(requestBody.getOrganizerId())
                 .orElseThrow(() -> new EntityNotFoundException("Organizer not found."));
 
@@ -86,7 +94,8 @@ public class EventService {
                 new Event(requestBody,
                         exchangeDay,
                         eventOrganizer,
-                        tagService.mergeAndGetTagsFromRequest(requestBody.getTags())));
+                        tagService.mergeAndGetTagsFromRequest(requestBody.getTags()),
+                        room));
 
         userService.registerUserToEvent(eventOrganizer.getId(), savedEvent.getId()); // TODO: Implement proper organizer handling
         generateAndSaveQRCode(savedEvent);
@@ -275,6 +284,9 @@ public class EventService {
         ExchangeDay exchangeDay = exchangeDayRepository.findById(requestBody.getExchangeDayId())
                 .orElseThrow(() -> new EntityNotFoundException("ExchangeDay not found."));
 
+        ResourceItem room = resourceRepository.findById(requestBody.getRoomId())
+                .orElseThrow(() -> new EntityNotFoundException("Room not found"));
+
         if (isDateOutsideExchangeDay(exchangeDay, requestBody.getDate())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Event Date must be during Exchange day: "
@@ -285,7 +297,7 @@ public class EventService {
         event.setDate(requestBody.getDate());
         event.setStartTime(requestBody.getStartTime());
         event.setEndTime(requestBody.getEndTime());
-        event.setRoom(requestBody.getRoom());
+        event.setRoom(room);
         event.setDescription(requestBody.getDescription());
         event.setExchangeDay(exchangeDay);
         event.setOrganizer(userRepository.findById(requestBody.getOrganizerId())
