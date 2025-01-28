@@ -4,6 +4,37 @@
       <div class="action-buttons">
         <!-- Create Buttons -->
         <div class="create-buttons-group">
+
+          <button
+            @click="toggleLocationBox"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            Neue Location
+          </button>
+
+          <button
+            @click="toggleResourceBox"
+            class="action-button"
+            type="button"
+          >
+            <img
+              src="@/images/plus.png"
+              alt="Plus"
+              class="plus-icon"
+              width="35"
+              height="35"
+            />
+            Neue Resource
+          </button>
+
           <button
             @click="toggleExchangeDayBox"
             class="action-button"
@@ -32,34 +63,7 @@
             />
             Neuer Workshop
           </button>
-          <button
-            @click="toggleResourceBox"
-            class="action-button"
-            type="button"
-          >
-            <img
-              src="@/images/plus.png"
-              alt="Plus"
-              class="plus-icon"
-              width="35"
-              height="35"
-            />
-            Neue Resource
-          </button>
-          <button
-            @click="toggleLocationBox"
-            class="action-button"
-            type="button"
-          >
-            <img
-              src="@/images/plus.png"
-              alt="Plus"
-              class="plus-icon"
-              width="35"
-              height="35"
-            />
-            Neue Location
-          </button>
+  
         </div>
 
         <div class="update-buttons-group">
