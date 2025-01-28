@@ -86,12 +86,17 @@ function fetchAllExchangeDays() {
  * Categorizes Exchange Days into upcoming and past based on today's date.
  */
  function categorizeExchangeDays() {
-  upcomingExchangeDaysList.value = exchangeDays.value.filter((day) => {
+
+  const sortedExchangeDays = [...exchangeDays.value].sort(
+    (a, b) => a.startDate - b.startDate
+  );
+
+  upcomingExchangeDaysList.value = sortedExchangeDays.filter((day) => {
     const startDate = new Date(day.startDate).setHours(0, 0, 0, 0);
     return startDate > today;
   });
 
-  pastExchangeDaysList.value = exchangeDays.value.filter((day) => {
+  pastExchangeDaysList.value = sortedExchangeDays.filter((day) => {
     const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
     return endDate < today;
   });
