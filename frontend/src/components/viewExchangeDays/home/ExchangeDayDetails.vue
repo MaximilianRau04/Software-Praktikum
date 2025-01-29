@@ -1,7 +1,7 @@
 <template>
   <div class="exchangeDayDetails">
     <div class="exchangeDayHeader">
-      <h1>{{ selectedExchangeDay?.name }}</h1>
+      <h1>{{ selectedExchangeDay?.name }} - Exchange Day</h1>
       <button v-if="isAdmin" class="manage-button" @click="handleManage(selectedExchangeDay?.id)">
         Verwalten
       </button>
@@ -20,10 +20,11 @@
               <CalendarIcon class="icon" />
               <h4>Termin</h4>
             </div>
-            <div class="info-content">
+            <div v-if="selectedExchangeDay?.startDate !== selectedExchangeDay?.endDate" class="info-content">
               {{ formatDateLong(selectedExchangeDay?.startDate) }}<br>
               bis {{ formatDateLong(selectedExchangeDay?.endDate) }}
             </div>
+            <div v-else class="info-content">{{formatDateLong(selectedExchangeDay?.startDate)}}</div>
           </div>
 
           <div class="info-box">
@@ -46,7 +47,7 @@
       </div>
     </div>
     <div class="exchangeDayHeader">
-        <h2>Events</h2>
+        <h2>Geplante Workshops</h2>
       </div>
     <!-- Events Section -->
     <div class="scrollableEventList">
