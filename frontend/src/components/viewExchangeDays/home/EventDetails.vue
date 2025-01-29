@@ -15,7 +15,10 @@
         </div>
         <div class="meta-item">
           <ClockIcon class="icon-small" />
-          <span class="value">{{ event.startTime || "-" }} – {{ event.endTime || "-" }}</span>
+          <span class="value">
+            {{ event.startTime ? event.startTime.split(':').slice(0, 2).join(':') : '-' }} –
+            {{ event.endTime ? event.endTime.split(':').slice(0, 2).join(':') : '-' }}
+          </span>
         </div>
         <div class="meta-item">
           <MapPinIcon class="icon-small" />
@@ -57,7 +60,6 @@ import { User } from "@/types/User";
 
 const router = useRouter();
 const props = defineProps<{ event: Event }>();
-const isPastEvent = ref(false);
 const tags = ref([]);
 const organizer = ref<User | null>(null);
 const goToEvent = (eventId) => {
@@ -75,16 +77,6 @@ const goToEvent = (eventId) => {
 function formatDate(timestamp: string): string {
   const date = new Date(timestamp);
   return date.toLocaleDateString("de-DE");
-}
-
-/**
- * Checks if the event is in the past.
- */
-function checkIfPastEvent() {
-  const eventDate = new Date(props.event.date);
-  const now = new Date();
-  const currentTime = now.getTime();
-  isPastEvent.value = eventDate <= now && new Date(`${props.event.date}T${props.event.startTime}`).getTime() <= currentTime;
 }
 
 async function fetchOrganizer() {
@@ -105,12 +97,11 @@ async function fetchTags() {
   }
 }
 
-const handleTrainerClick = ()=>{
+const handleTrainerClick = () => {
   router.push({ name: "Profile", params: { username: organizer.value.username } });
 }
 
 onMounted(() => {
-  checkIfPastEvent();
   fetchOrganizer();
   fetchTags();
 });
