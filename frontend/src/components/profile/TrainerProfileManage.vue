@@ -1,5 +1,6 @@
 <template>
-    <div>
+
+    <div class="trainer-profile-manage-container">
         <!-- Back Button -->
         <button class="back-button" @click="goBack">Zurück</button>
 
@@ -23,32 +24,42 @@
                         personalisieren.
                         Diese Tags werden für andere Nutzer auf ihrem Trainerprofil angezeigt. Falls Sie ein Tag
                         einfügen wollen, das Sie noch nicht in der Auflistung sehen, so schreiben Sie dieses direkt in
-                        die Leiste rein und bestätigen es mit einem Komma.</p>
+                        die Leiste rein und drücken Eingabe.</p>
                     <div>
                         <div class="tag-container">
                             <div class="tag-wrapper">
-                                <!-- Display selected tags -->
-                                <div class="tag-chips">
-                                    <span v-for="(tag, index) in selectedTags" :key="tag.id" class="chip">
-                                        {{ tag.name }}
-                                        <button type="button" class="remove-tag" @click="removeTag(tag.id)">
-                                            &times;
-                                        </button>
-                                    </span>
-                                </div>
-
                                 <!-- Input field for tags -->
                                 <input type="text" v-model="tagInput"
-                                    placeholder="Tags eingeben und durch Komma trennen" @input="filterTags"
+                                    placeholder="Tag schreiben und mit Eingabe bestätigen" @input="filterTags"
                                     @keyup.enter="addTagFromInput" :disabled="selectedTags.length >= 5"
                                     class="tag-input" />
+
+
 
                                 <!-- Display filtered tags to choose from -->
                                 <div class="tag-list">
                                     <button v-for="tag in filteredTags" :key="tag.id" type="button" @click="addTag(tag)"
                                         :disabled="tag.selected || selectedTags.length >= 5">
+                                        <TagIcon class="icon-tag" />
                                         {{ tag.name }}
                                     </button>
+                                </div>
+
+                                <!-- Display selected tags -->
+                                <div class="tag-chips">
+                                    <span v-if="selectedTags.length > 0" v-for="(tag, index) in selectedTags"
+                                        :key="tag.id" class="chip">
+                                        {{ tag.name }}
+                                        <button type="button" class="remove-tag" @click="removeTag(tag.id)">
+                                            &times;
+                                        </button>
+                                    </span>
+                                    <span v-else class="chip impostor-button">
+                                        Hallo
+                                        <button type="button" class="remove-tag">
+                                            &times;
+                                        </button>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -82,33 +93,34 @@
                     Klicken Sie dazu auf einen Eventnamen und wählen Sie Kommentare aus, die Sie gerne auf Ihrem
                     Trainerprofil präsentieren möchten.</p>
 
-                <div v-for="event in events" :key="event.id" class="event-section">
-                    <!-- Event Button -->
-                    <button @click="toggleDropdown(event.id)" class="event-toggle"
-                        :class="{ 'active': activeEvent === event.id }" :ref="'eventButton-' + event.id">
+                <!-- Event Buttons Row -->
+                <div class="events-row">
+                    <button v-for="event in events" :key="event.id" @click="setActiveEvent(event)" class="event-button"
+                        :class="{ 'active': activeEvent?.id === event.id }">
                         {{ event.name }}
                     </button>
+                </div>
 
-                    <!-- Dropdown for Comments (Visible when event is selected) -->
-                    <div v-if="activeEvent === event.id" class="dropdown" :ref="'dropdown-' + event.id">
-                        <div class="comments-grid">
-                            <div v-for="comment in event.comments" :key="comment.id" class="comment-card">
-                                <div class="card-header">
-                                    <span class="author">{{ comment.author }}</span>
-                                    <span class="rating">⭐ {{ comment.rating.toFixed(1) }}</span>
-                                </div>
-                                <div class="card-body">
-                                    <p>{{ comment.comment }}</p>
-                                    <button @click="pinComment(comment, event.id)" class="pin-button"
-                                        :class="{ 'disabled': pinnedComments.length >= 6 }"
-                                        :disabled="pinnedComments.length >= 6">
-                                        Pin
-                                    </button>
-                                </div>
+                <!-- Fixed Comments Section -->
+                <div v-if="activeEvent && activeEvent.comments.length > 0" class="comments-section">
+                    <div class="pinned-comments-grid">
+                        <div v-for="comment in activeEvent.comments" :key="comment.id" class="pinned-comment-card">
+                            <div class="card-header">
+                                <span class="author">{{ comment.author }}</span>
+                                <span class="rating">⭐ {{ comment.rating.toFixed(1) }}</span>
+                            </div>
+                            <div class="card-body">
+                                <p class="comment-text">{{ comment.comment }}</p>
+                                <button @click="pinComment(comment, activeEvent.id)" class="pin-button"
+                                    :disabled="pinnedComments.length >= 6">
+                                    Pin
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
+                <p class="alt-description" v-else-if="activeEvent?.comments.length === 0"> Es wurden noch keine
+                    Kommentare zu diesem Event erhalten.</p>
 
                 <!-- Save Changes -->
                 <button @click="saveChanges" class="save-button">Änderungen Speichern</button>
@@ -124,8 +136,14 @@ import Cookies from "js-cookie";
 import { useRoute, useRouter } from "vue-router";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  TagIcon,
+} from "@heroicons/vue/24/outline";
 
 export default {
+    components: {
+        TagIcon,
+    },
     props: {
         trainerId: {
             type: Number,
@@ -179,23 +197,6 @@ export default {
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
-        },
-
-        toggleDropdown(eventId) {
-            this.activeEvent = this.activeEvent === eventId ? null : eventId;
-
-            this.$nextTick(() => {
-                const eventButton = this.$refs[`eventButton-${eventId}`][0];
-                const dropdown = this.$refs[`dropdown-${eventId}`][0];
-
-                if (eventButton && dropdown) {
-                    dropdown.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center',
-                        inline: 'center'
-                    });
-                }
-            });
         },
 
         pinComment(comment, eventId) {
@@ -346,6 +347,10 @@ export default {
             this.updateTagStates();
         },
 
+        setActiveEvent(event) {
+            this.activeEvent = this.activeEvent?.id === event.id ? null : event;
+        },
+
         goBack() {
             this.router.push({
                 name: "Profile",
@@ -362,6 +367,7 @@ export default {
 
 <style scoped>
 .back-button {
+    position: absolute;
     top: 6rem;
     left: 6rem;
     background-color: #009ee2;
@@ -379,6 +385,11 @@ export default {
     background-color: #007bb5;
 }
 
+.trainer-profile-manage-container {
+    height: calc(100vh - 0px);
+    overflow-y: auto;
+}
+
 .page-wrapper {
     display: flex;
     flex-direction: column;
@@ -389,31 +400,56 @@ export default {
 }
 
 .page-header {
-    text-align: center;
-    font-size: 2rem;
-    font-weight: bold;
+    font-size: 3rem;
+    font-weight: 600;
+    color: #01172F;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.8rem;
 }
 
 .section-header {
-  font-size: 2rem;
-  font-weight: 600;
-  color: #01172F;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 0.8rem;
+    font-size: 2rem;
+    font-weight: 600;
+    color: #01172F;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+    position: relative;
+    margin-top: 3rem;
+}
+
+.section-header::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #009EE2;
+    border-radius: 2px;
 }
 
 .section-description {
-  font-size: 1.1rem;
-  font-weight: 400;
-  color: #354F52;
-  max-width: 600px;
-  line-height: 1.6;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: #354F52;
+    line-height: 1.6;
+    text-align: justify;
+    margin-top: 1.2rem;
+}
+
+.alt-description {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: #354F52;
+    line-height: 1.6;
+    text-align: center;
 }
 
 .section-description strong {
-  font-weight: 600;
-  color: #009EE2;
+    font-weight: 600;
+    color: #009EE2;
 }
 
 textarea {
@@ -448,51 +484,83 @@ textarea:focus {
     background-color: #f9f9f9;
 }
 
-.event-section {
-    margin-bottom: 1rem;
-    display: inline-block;
-    margin-right: 1rem;
+.events-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
 }
 
-.event-toggle {
-    background-color: #009ee2;
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 5px;
+.event-button {
+    flex: 1 0 auto;
+    min-width: 160px;
+    max-width: 240px;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
     cursor: pointer;
-    margin-bottom: 0.5rem;
-    flex-shrink: 0;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.event-toggle:hover {
-    background-color: #007bb8;
+.event-button:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
 }
 
-.event-toggle.active {
-    background-color: #005b8d;
+.event-button.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
 }
 
-.dropdown {
+.comments-section {
+    border-top: 2px solid #eee;
+    padding-top: 2rem;
     margin-top: 1rem;
-    padding-left: 1rem;
-    border-left: 2px solid #ddd;
-    padding-bottom: 1rem;
-    display: block;
+}
+
+.comments-section h3 {
+    margin-bottom: 1.5rem;
+    color: #333;
 }
 
 .comments-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 1rem;
 }
 
-.comment-card {
-    padding: 1rem;
+.pinned-comment-card {
+    background-color: #f9f9f9;
     border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .comments-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .event-button {
+        min-width: 120px;
+        padding: 0.5rem 1rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .comments-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .card-header {
@@ -513,20 +581,6 @@ textarea:focus {
     flex-grow: 1;
     margin-bottom: 2rem;
     overflow-wrap: break-word;
-}
-
-.save-button {
-    background-color: #4caf50;
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-.save-button:hover {
-    background-color: #3e8e41;
 }
 
 .input-group {
@@ -559,7 +613,8 @@ textarea:focus {
 .tag-chips {
     display: flex;
     flex-wrap: wrap;
-    margin: 0.5rem 0;
+    margin: 1rem;
+    margin-bottom: 0px;
 }
 
 .chip {
@@ -569,6 +624,10 @@ textarea:focus {
     padding-left: 0.7rem;
     border-radius: 20px;
     margin-right: 0.5rem;
+}
+
+.impostor-button {
+    visibility: hidden;
 }
 
 .remove-tag {
@@ -606,6 +665,13 @@ textarea:focus {
     background-color: #f0f0f0;
     color: #d3d3d3;
     border: 2px solid #d3d3d3;
+}
+
+.icon-tag {
+  width: 0.75rem;
+  height: 0.75rem;
+  color: currentColor;
+  margin-right: 0.25rem;
 }
 
 .tag-input {
@@ -680,5 +746,20 @@ textarea:focus {
 
 .unpin-button:hover {
     background-color: #e63e3e;
+}
+
+.save-button {
+    background-color: #4caf50;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 50px 0;
+}
+
+.save-button:hover {
+    background-color: #3e8e41;
 }
 </style>
