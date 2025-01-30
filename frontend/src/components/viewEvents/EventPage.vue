@@ -3,7 +3,7 @@
     <!-- Back Button -->
     <div class="back-button-container">
       <button class="back-button" @click="goToEventRegistrations">
-        Zurück zur Eventregistrierung
+        Zurück zu Events
       </button>
     </div>
     <!-- Titel -->
@@ -118,7 +118,7 @@
           </div>
           <div class="info-item">
             <i class="icon-location"></i>
-            <span><strong>Raum:</strong> {{ event.room }}</span>
+            <span><strong>Raum:</strong> {{ event.room.name }}</span>
           </div>
           <div class="tag-chips">
                 <span
@@ -224,6 +224,7 @@ const event = ref<Event>({
     id: 0,
     type: "",
     location: {
+    postalCode: 0,
      id: 0,
      street: "",
      houseNumber: 0,
@@ -417,19 +418,24 @@ const openQRCode = async () => {
 /**
  * Copies the QR code link to the clipboard.
  */
-const copyToClipboard = async () => {
+ const copyToClipboard = async () => {
   if (qrCodeLink.value) {
     try {
       await navigator.clipboard.writeText(qrCodeLink.value);
       copySuccess.value = true;
-      setTimeout(() => {
-        copySuccess.value = false;
-      }, 2000);
     } catch (error) {
-      showToast(
-        new Toast("Error", `Fehler beim Kopieren`, "error", faXmark, 10),
-      );
+      const textArea = document.createElement('textarea');
+      textArea.value = qrCodeLink.value;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      copySuccess.value = true;
     }
+
+    setTimeout(() => {
+      copySuccess.value = false;
+    }, 2000);
   }
 };
 
