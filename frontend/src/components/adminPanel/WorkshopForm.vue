@@ -1,6 +1,6 @@
 <template>
   <div class="create-box">
-    <h2 class="login-header">Neuer Workshop</h2>
+    <h2 class="login-header">Neues Event</h2>
     <form @submit.prevent="onSubmit">
       <div class="input-group">
         <label for="name">Name</label>
@@ -91,7 +91,7 @@
       </div>
 
       <button type="submit" class="login-button" @click="createWorkshop">
-        Workshop erstellen
+        Event erstellen
       </button>
     </form>
   </div>

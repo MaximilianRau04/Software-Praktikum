@@ -128,7 +128,7 @@ export default {
 <style scoped>
 .manage-button {
     position: fixed;
-    top: 10%;
+    top: 24%;
     right: 20%;
     background-color: #009ee2;
     color: white;

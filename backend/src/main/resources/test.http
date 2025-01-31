@@ -205,7 +205,7 @@ Content-Type: application/json
   "description": "A day dedicated to learning Spring Boot"
 }
 ###
-GET http://localhost:8080/api/locations
+GET http://localhost:8080/api/users
 ###
 GET http://localhost:8080/api/resources/type/ROOM
 ###

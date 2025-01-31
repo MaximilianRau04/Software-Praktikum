@@ -228,6 +228,7 @@ const event = ref<Event>({
      id: 0,
      street: "",
      houseNumber: 0,
+     postalCode: 0,
      city: "",
      country: "",
     },
