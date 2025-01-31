@@ -43,6 +43,10 @@
 
       <div class="sidebar-section">
         <h3 class="sidebar-title">CSV</h3>
+        
+        <button class="sidebar-btn" @click="importExampleResources" >
+        Beispiel-Import von Resourcen
+        </button>
         <button class="sidebar-btn" @click="triggerFileUpload">
         CSV Import von Resourcen
       </button>
@@ -56,8 +60,10 @@
       <button class="sidebar-btn" @click="downloadCsvOfResources" >
         CSV Export von Resourcen
       </button>
+      
       </div>
     </div>
+
     <div class="admin-content">
       <transition name="slide-fade">
         <div class="form-wrapper" v-if="showExchangeDayBox">
@@ -139,6 +145,7 @@ import EventInviteOnlyList from "./EventInviteOnlyList.vue";
 import EventList from "./EventList.vue";
 import { showToast, Toast } from "@/types/toasts";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+
 
 const showWorkshopBox = ref(false);
 const showExchangeDayBox = ref(false);
@@ -269,10 +276,6 @@ const SelectExchangeDayToUpdate = () => {
   selectExchangeDayToUpdate.value = !selectExchangeDayToUpdate.value;
 };
 
-const areAllBoxesHidden = () => {
-  return Object.values(allForms).every((box) => !box.value);
-};
-
 /**
  * Resets all forms
  */
@@ -284,7 +287,7 @@ const resetForms = (currentForm) => {
 };
 
 /**
- * download CSV file of todos
+ * download CSV file of resources
  */
  const downloadCsvOfResources = async () => {
   try {
@@ -317,6 +320,44 @@ const resetForms = (currentForm) => {
     showToast(new Toast("Error", "CSV Download fehlgeschlagen!", "error", faXmark, 10));
   }
 };
+
+/**
+ * Import example resources from CSV
+ */
+const importExampleResources = async () => {
+  try {
+    const response = await fetch("/csv/example.csv");
+    const text = await response.text();
+    
+    const UTF8_BOM = new Uint8Array([0xEF, 0xBB, 0xBF]);
+    
+    const encoder = new TextEncoder();
+    const textBytes = encoder.encode(text);
+    
+    const combinedArray = new Uint8Array(UTF8_BOM.length + textBytes.length);
+    combinedArray.set(UTF8_BOM);
+    combinedArray.set(textBytes, UTF8_BOM.length);
+    
+    const blob = new Blob([combinedArray], {
+      type: "text/csv;charset=utf-8"
+    });
+ 
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "example.csv";
+    
+    document.body.appendChild(link);
+    link.click();
+    
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Fehler beim Download:", error);
+    alert("Der Download konnte nicht durchgeführt werden.");
+  }
+};
+
 
 
 /**
@@ -365,7 +406,6 @@ const handleFileUpload = async (event: Event) => {
 <style scoped>
 .admin-container {
   display: flex;
-  min-height: 100vh;
   background-color: white;
   padding-left: 0px;
   padding-top: 0px;

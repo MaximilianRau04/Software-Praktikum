@@ -17,7 +17,6 @@ export interface Room{
   id: number;
   type: string;
   location: Location;
-  houseNumber: number;
   capacity: number;
   description: string;
   availability: number;

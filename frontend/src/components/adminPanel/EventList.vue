@@ -191,14 +191,15 @@ const showFeedbackSummary = (eventId) => {
 }
 
 .event-details {
+  max-width: 600px;
+  margin: 10px auto;
+  padding: 15px;
   background-color: #EAEAEA;
-  border: 1px solid #01172F;
   border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1.8rem;
-  position: relative;
-  overflow: auto;
-  color: #333;
+  border: 1px solid #000000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: "Roboto", sans-serif;
+  color: #000000;
 }
 
 h2 h3 p {

@@ -224,7 +224,6 @@ const event = ref<Event>({
     id: 0,
     type: "",
     location: {
-    postalCode: 0,
      id: 0,
      street: "",
      houseNumber: 0,

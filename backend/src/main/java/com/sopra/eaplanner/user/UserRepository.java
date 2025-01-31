@@ -21,4 +21,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "GROUP BY u.id, u.username " +
             "ORDER BY totalPoints DESC")
     Page<LeaderboardEntry> findLeaderboardEntries(Pageable pageable);
+
 }
