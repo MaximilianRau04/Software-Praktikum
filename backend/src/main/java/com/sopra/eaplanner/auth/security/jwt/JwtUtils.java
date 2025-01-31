@@ -39,6 +39,9 @@ public class JwtUtils {
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .claim("userId", userPrincipal.getId())
                 .claim("roles", userPrincipal.getAuthorities())
+                .claim("firstname", userPrincipal.getFirstname())
+                .claim("lastname", userPrincipal.getLastname())
+                .claim("username", userPrincipal.getUsername())
                 .compact();
     }
 

@@ -12,6 +12,9 @@ import com.sopra.eaplanner.auth.models.role.ERole;
 import com.sopra.eaplanner.auth.models.role.Role;
 import com.sopra.eaplanner.auth.models.role.RoleRepository;
 import com.sopra.eaplanner.event.tags.TagService;
+import com.sopra.eaplanner.trainerprofile.TrainerProfile;
+import com.sopra.eaplanner.trainerprofile.TrainerProfileRepository;
+import com.sopra.eaplanner.trainerprofile.TrainerProfileService;
 import com.sopra.eaplanner.user.User;
 import com.sopra.eaplanner.user.UserRepository;
 import jakarta.servlet.http.Cookie;
@@ -57,6 +60,11 @@ public class AuthController {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private TrainerProfileService trainerProfileService;
+    @Autowired
+    private TrainerProfileRepository trainerProfileRepository;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
@@ -109,7 +117,6 @@ public class AuthController {
                         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(adminRole);
-
                         break;
                     case "TRAINER":
                         Role modRole = roleRepository.findByName(ERole.ROLE_TRAINER)
@@ -126,8 +133,18 @@ public class AuthController {
         }
 
         userLogin.setRoles(roles);
+        Set<Role> userLoginRoles = userLogin.getRoles();
+        Set<ERole> userLoginNames = userLoginRoles.stream().map(Role::getName).collect(Collectors.toSet());
+        User.Role userRole = userLoginNames.contains(ERole.ROLE_ADMIN) ? User.Role.ADMIN : User.Role.USER;
 
-        User user = new User(signUpRequest, userLogin);
+        User user = new User(signUpRequest, userLogin, userRole);
+
+        if(user.getRole() == User.Role.ADMIN){
+            TrainerProfile trainerProfile = new TrainerProfile();
+            user.setTrainerProfile(trainerProfile);
+            trainerProfile.setUser(user);
+            trainerProfileRepository.save(trainerProfile);
+        }
         user.setInterestTags(tagService.mergeAndGetTagsFromRequest(signUpRequest.getTags()));
         userLogin.setUser(user);
 

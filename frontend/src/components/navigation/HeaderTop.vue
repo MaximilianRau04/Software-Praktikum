@@ -78,6 +78,9 @@
 import { globalState } from "@/types/User";
 import Cookies from "js-cookie";
 import "@/assets/header.css";
+
+import { useAuth } from "@/util/auth";
+
 import NotificationCard from "@/components/notification/NotificationCardBase.vue";
 import EventNotificationCard from "../notification/EventNotificationCard.vue";
 import ForumNotificationCard from "../notification/ForumNotificationCard.vue";
@@ -106,6 +109,10 @@ export default {
     };
   },
   computed: {
+    currentUser() {
+      return useAuth().getUserData() || this.getFallbackUser();
+    },
+
     /**
      * Groups notifications by type.
      */
@@ -117,14 +124,13 @@ export default {
         return groups;
       }, {});
     },
+
     hasNotifications() {
       return Object.keys(this.groupedNotifications).some(
         (type) => this.groupedNotifications[type]?.length > 0,
       );
     },
-    currentUser() {
-      return globalState.user;
-    },
+
     unreadCount() {
       return Array.isArray(this.notifications)
         ? this.notifications.filter((notification) => !notification.isRead)
@@ -133,6 +139,11 @@ export default {
     },
   },
   methods: {
+    getFallbackUser() {
+      const auth = useAuth();
+      return auth.getUserData() || { id: null, username: 'Guest' };
+    },
+
     handleToggleSidebar() {
       this.toggleSidebar();
     },
@@ -140,17 +151,16 @@ export default {
       this.$router.push("/login");
     },
     logout() {
-      Cookies.remove("userId");
-      Cookies.remove("username");
-      Cookies.remove("firstname");
-      Cookies.remove("lastname");
-      Cookies.remove("role");
+      const auth = useAuth();
+      auth.clearToken();
       globalState.setUser(null);
       this.$router.push("/login");
     },
+
     toggleToRegistration() {
       this.$router.push("/register");
     },
+
     navigateToProfile() {
       if (this.currentUser.id) {
         this.$router.push(`/profile/${this.currentUser.username}`);
@@ -158,6 +168,7 @@ export default {
         this.$router.push("/login");
       }
     },
+
     toggleNotificationMenu() {
       this.showNotifications = !this.showNotifications;
     },
@@ -187,16 +198,9 @@ export default {
    * Check if user is already logged in
    */
   onMounted() {
-    const userId = Cookies.get("userId");
-    if (userId) {
-      const userData = {
-        id: userId,
-        username: Cookies.get("username"),
-        firstname: Cookies.get("firstname"),
-        lastname: Cookies.get("lastname"),
-        role: Cookies.get("role"),
-      };
-      globalState.setUser(userData);
+    const auth = useAuth();
+    if (auth.isAuthenticated) {
+      if (userData) globalState.setUser(userData);
     }
   },
 };

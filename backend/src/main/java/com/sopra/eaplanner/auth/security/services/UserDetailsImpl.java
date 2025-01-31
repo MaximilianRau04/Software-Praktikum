@@ -2,6 +2,7 @@ package com.sopra.eaplanner.auth.security.services;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sopra.eaplanner.auth.models.userlogin.UserLogin;
+import com.sopra.eaplanner.user.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,20 +21,26 @@ public class UserDetailsImpl implements UserDetails {
 
     private final String username;
 
+    private final String firstname;
+
+    private final String lastname;
+
     @JsonIgnore
     private final String password;
 
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String username, String password,
+    public UserDetailsImpl(Long id, String username, String firstname, String lastname, String password,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
+        this.firstname = firstname;
+        this.lastname = lastname;
         this.password = password;
         this.authorities = authorities;
     }
 
-    public static UserDetailsImpl build(UserLogin user) {
+    public static UserDetailsImpl build(UserLogin user, User userData) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
@@ -41,6 +48,8 @@ public class UserDetailsImpl implements UserDetails {
         return new UserDetailsImpl(
                 user.getId(),
                 user.getUsername(),
+                userData.getFirstname(),
+                userData.getLastname(),
                 user.getPassword(),
                 authorities);
     }
@@ -52,6 +61,13 @@ public class UserDetailsImpl implements UserDetails {
 
     public Long getId() {
         return id;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+    public String getLastname() {
+        return lastname;
     }
 
     @Override

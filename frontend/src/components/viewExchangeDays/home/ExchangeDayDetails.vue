@@ -111,7 +111,7 @@ function formatDateLong(timestamp: number): string {
   });
 }
 
-const isAdmin = computed(() => useAuth().isAdmin);
+const isAdmin = computed(() => useAuth().isAdmin.value);
 
 /**
  * Checks if the exchange day is in the past.

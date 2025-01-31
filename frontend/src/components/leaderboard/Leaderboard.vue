@@ -39,6 +39,7 @@ import axios from "axios";
 import config from "@/config.js";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import api from "@/util/api";
 
 export default {
   data() {
@@ -60,7 +61,7 @@ export default {
      */
     async fetchLeaderboard(page) {
       try {
-        const response = await axios.get(`${config.apiBaseUrl}/leaderboard`, {
+        const response = await api.get(`/leaderboard`, {
           params: {
             page: page - 1,
             size: this.pageSize,
@@ -72,11 +73,11 @@ export default {
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Laden des leaderboards`,
+            "Fehler",
+            `Die Rangliste konnte nicht geladen werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }

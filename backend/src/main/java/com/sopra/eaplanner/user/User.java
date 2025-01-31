@@ -50,6 +50,14 @@ public class User {
 
     private String description;
 
+    public enum Role {
+        ADMIN, USER
+    }
+
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Role must be specified")
+    private Role role;
+
     @ManyToMany(mappedBy = "registeredUsers")
     @JsonBackReference
     private Set<Event> registeredEvents = new HashSet<>();
@@ -92,11 +100,12 @@ public class User {
         this.interestTags = interestTags;
     }
 
-    public User(SignupRequest request, UserLogin userLogin) {
+    public User(SignupRequest request, UserLogin userLogin, Role role) {
         this.username = request.getUsername();
         this.firstname = request.getFirstName();
         this.lastname = request.getLastName();
         this.description = request.getBio();
+        this.role = role;
         this.userLogin = userLogin;
     }
 

@@ -7,6 +7,9 @@ interface DecodedToken {
   roles: Authority[];
   exp: number;
   userId: number;
+  username: string;
+  firstname: string;
+  lastname: string;
 }
 
 interface Authority {
@@ -72,6 +75,35 @@ export const useAuth = () => {
     }
   };
 
+  const getUsername = (): string | null => {
+    const token = getToken();
+    if (!token) return null;
+    try {
+      const decoded = jwtDecode<DecodedToken>(token);
+      return decoded.username || null;
+    } catch {
+      return null;
+    }
+  };
+
+  const getUserData = () => {
+    const token = getToken();
+    if (!token) return null;
+    
+    try {
+      const decoded = jwtDecode<DecodedToken>(token);
+      return {
+        id: decoded.userId,
+        username: decoded.username,
+        firstname: decoded.firstname,
+        lastname: decoded.lastname,
+        roles: decoded.roles?.map(roleObj => roleObj.authority) || [],
+      };
+    } catch {
+      return null;
+    }
+  };
+
   const isAuthenticated = computed(() => {
     const token = getToken();
     if (!token) return false;
@@ -90,7 +122,7 @@ export const useAuth = () => {
 
     try {
       const decoded = jwtDecode<DecodedToken>(token);
-      return Date.now() < decoded.exp * 100 && decoded.roles.some(role => role.authority === 'ROLE_ADMIN');
+      return Date.now() < decoded.exp * 1000 && decoded.roles.some(role => role.authority === 'ROLE_ADMIN');
     }catch {
       return false;
     }
@@ -103,6 +135,8 @@ export const useAuth = () => {
     getRoles,
     hasRole,
     getUserId,
+    getUsername,
+    getUserData,
     isAuthenticated,
     isAdmin,
   };

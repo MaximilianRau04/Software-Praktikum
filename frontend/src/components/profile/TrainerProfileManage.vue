@@ -26,7 +26,7 @@
                         einfügen wollen, das Sie noch nicht in der Auflistung sehen, so schreiben Sie dieses direkt in
                         die Leiste rein und drücken Eingabe.</p>
                     <div>
-                        <TagInput v-model="selectedTags" :available-tags="allTags" @new-tag="handleNewTag" />
+                        <TagInput v-if="selectedTags && allTags" v-model="selectedTags" :available-tags="allTags" :tagSelect="false" @new-tag="handleNewTag" />
                     </div>
                 </div>
 
@@ -101,6 +101,8 @@ import { useRoute, useRouter } from "vue-router";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import TagInput from "./TagInput.vue";
+import { useAuth } from "@/util/auth";
+import api from "@/util/api";
 
 export default {
     components: {
@@ -108,14 +110,19 @@ export default {
     },
     props: {
         trainerId: {
-            type: Number,
+            type: [String, Number],
             required: true,
         },
+    },
+    computed: {
+        parsedTrainerId() {
+            return Number(this.trainerId);
+        }
     },
     data() {
         return {
             router: useRouter(),
-            username: Cookies.get("username"),
+            username: useAuth().getUsername(),
             trainer: {
                 id: null,
                 userId: null,
@@ -131,13 +138,13 @@ export default {
     methods: {
         async fetchData() {
             try {
-                const trainerResponse = await axios.get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}`);
+                const trainerResponse = await api.get(`/trainerProfiles/${this.parsedTrainerId}`);
                 this.trainer = trainerResponse.data;
 
-                const commentsResponse = await axios.get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/pinned-comments`);
+                const commentsResponse = await api.get(`/trainerProfiles/${this.parsedTrainerId}/pinned-comments`);
                 this.pinnedComments = commentsResponse.data;
 
-                const eventsResponse = await axios.get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/comments-by-event`);
+                const eventsResponse = await api.get(`/trainerProfiles/${this.parsedTrainerId}/comments-by-event`);
                 this.events = eventsResponse.data.events;
 
                 const pinnedCommentIds = new Set(this.pinnedComments.map(comment => comment.id));
@@ -145,26 +152,43 @@ export default {
                 this.events.forEach(event => {
                     event.comments = event.comments.filter(comment => !pinnedCommentIds.has(comment.id));
                 });
+                
             } catch (error) {
-                console.error("Error fetching data:", error);
+                showToast(
+                        new Toast(
+                            "Fehler",
+                            `Das Trainerprofil konnte nicht geladen werden.`,
+                            "error",
+                            faXmark,
+                            5
+                        )
+                    );
             }
         },
 
         async fetchTags() {
             try {
-                const trainerTagsResponse = await axios.get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/expertiseTags`);
+                const trainerTagsResponse = await api.get(`/trainerProfiles/${this.parsedTrainerId}/expertiseTags`);
                 this.selectedTags = trainerTagsResponse.data;
 
-                const tagsResponse = await axios.get(`${config.apiBaseUrl}/tags`);
+                const tagsResponse = await api.get(`/tags`);
                 this.allTags = tagsResponse.data;
 
             } catch (error) {
-                console.error("Error fetching data:", error);
+                showToast(
+                        new Toast(
+                            "Fehler",
+                            `Die Expertise-Tags konnten nicht geladen werden.`,
+                            "error",
+                            faXmark,
+                            5
+                        )
+                    );
             }
         },
 
         handleNewTag(newTag){
-            axios.post(`${config.apiBaseUrl}/tags`, newTag)
+            api.post(`/tags`, newTag)
             .then(response => {
                 this.allTags.push(response.data);
             })
@@ -178,7 +202,7 @@ export default {
                         `Sie dürfen nur bis zu 6 Kommentare auf ihrem Trainerprofil anzeigen.`,
                         "info",
                         faXmark,
-                        10
+                        5
                     )
                 );
                 return;
@@ -202,7 +226,7 @@ export default {
 
         async saveChanges() {
             try {
-                const response = await axios.put(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}`, {
+                const response = await api.put(`/trainerProfiles/${this.parsedTrainerId}`, {
                     bio: this.trainer.bio,
                     userId: this.trainer.userId,
                 });
@@ -218,7 +242,7 @@ export default {
                     );
                 }
 
-                const responseTags = await axios.post(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/expertiseTags`, this.selectedTags.map(tag => tag.name));
+                const responseTags = await api.post(`/trainerProfiles/${this.parsedTrainerId}/expertiseTags`, this.selectedTags.map(tag => tag.name));
                 if (!responseTags.status === 200) {
                     showToast(
                         new Toast(
@@ -232,7 +256,7 @@ export default {
                 }
 
                 const pinnedIds = this.pinnedComments.map(comment => comment.id);
-                await axios.post(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/pinned-comments`, pinnedIds);
+                await api.post(`/trainerProfiles/${this.trainerId}/pinned-comments`, pinnedIds);
 
                 if (!pinnedIds.status === 200) {
                     showToast(
@@ -256,13 +280,20 @@ export default {
                     )
                 );
             } catch (error) {
-                console.error("Error saving changes:", error);
-                alert("Failed to save changes.");
+                showToast(
+                        new Toast(
+                            "Fehler",
+                            `Ihre Änderungen konnten nicht übernommen werden.`,
+                            "error",
+                            faXmark,
+                            5
+                        )
+                    );
             }
 
             this.router.push({
                 name: "Profile",
-                params: { username: Cookies.get("username") },
+                params: { username: this.username },
             });
         },
 
@@ -273,7 +304,7 @@ export default {
         goBack() {
             this.router.push({
                 name: "Profile",
-                params: { username: Cookies.get("username") },
+                params: { username: this.username },
             });
         },
 
