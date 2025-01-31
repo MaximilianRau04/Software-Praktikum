@@ -129,12 +129,19 @@
 </template>
 
 <script setup lang="ts">
+//
+
+// TODO: ADD EVENT CARDS FROM DASHBOARD
+
+//
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import config from "@/config";
 import Cookies from "js-cookie";
 import { showToast, Toast } from "@/types/toasts";
 import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
+import api from "@/util/api";
+import { useAuth } from "@/util/auth";
 
 const router = useRouter();
 const registeredEvents = ref([]);
@@ -143,6 +150,9 @@ const pendingFeedbackEvents = ref([]);
 const pastEvents = ref([]);
 const isLoading = ref(true);
 const today = new Date().toISOString();
+const auth = computed(()=>{
+  return useAuth();
+})
 
 const searchQuery = ref("");
 const userId = Cookies.get("userId");
@@ -190,17 +200,17 @@ const filteredPastEvents = computed(() =>
  */
 const fetchTagsForEvent = async (eventId) => {
   try {
-    const res = await fetch(`${config.apiBaseUrl}/events/${eventId}/tags`);
-    if (!res.ok) throw new Error("Failed to fetch tags");
-    return await res.json();
+    const response = await api.get(`${config.apiBaseUrl}/events/${eventId}/tags`);
+    if (response.status !== 200) throw new Error("Failed to fetch tags");
+    return await response.data;
   } catch (error) {
     showToast(
       new Toast(
-        "Error",
-        `Fehler beim Laden der Tags für Event ${eventId}`,
+        "Fehler",
+        `Event-Tags für Event: ${eventId} konnten nicht geladen werden.`,
         "error",
         faXmark,
-        10
+        5
       )
     );
     return [];
@@ -211,11 +221,15 @@ const fetchTagsForEvent = async (eventId) => {
  * Fetches the events for the user
  */
 const fetchEvents = async () => {
+  const userId = auth.value.getUserId();
+
   if (!userId) {
     showToast(
-      new Toast("Error", `Keine Benutzer-ID gefunden`, "error", faXmark, 10)
+      new Toast("Fehler", `Loggen Sie sich bitte ein, um auf Ihre Events zuzugreifen.`, "error", faXmark, 5)
     );
     isLoading.value = false;
+    auth.value.clearToken();
+    router.push(`/login`);
     return;
   }
 
@@ -223,20 +237,20 @@ const fetchEvents = async () => {
     isLoading.value = true;
 
     const [registeredRes, recommendedRes, feedbackRes] = await Promise.all([
-      fetch(`${config.apiBaseUrl}/users/${userId}/registeredEvents`),
-      fetch(`${config.apiBaseUrl}/users/${userId}/recommendedEvents?limit=5`),
-      fetch(`${config.apiBaseUrl}/users/${userId}/pendingFeedbackEvents`),
+      api.get(`/users/${userId}/registeredEvents`),
+      api.get(`/users/${userId}/recommendedEvents?limit=5`),
+      api.get(`/users/${userId}/pendingFeedbackEvents`),
     ]);
 
-    if (!registeredRes.ok || !recommendedRes.ok || !feedbackRes.ok) {
+    if (registeredRes.status !== 200 || recommendedRes.status !== 200 || feedbackRes.status !== 200) {
       showToast(
-        new Toast("Error", `Fehler beim Laden der Events`, "error", faXmark, 10)
+        new Toast("Fehler", `Events konnten nicht geladen werden.`, "error", faXmark, 5)
       );
     }
 
-    registeredEvents.value = await registeredRes.json();
-    recommendedEvents.value = await recommendedRes.json();
-    pendingFeedbackEvents.value = await feedbackRes.json();
+    registeredEvents.value = await registeredRes.data;
+    recommendedEvents.value = await recommendedRes.data;
+    pendingFeedbackEvents.value = await feedbackRes.data;
 
     for (const event of recommendedEvents.value) {
       event.tags = await fetchTagsForEvent(event.id);
@@ -247,7 +261,7 @@ const fetchEvents = async () => {
     );
   } catch (error) {
     showToast(
-      new Toast("Error", `Fehler beim Laden der Events`, "error", faXmark, 10)
+      new Toast("Fehler", `Events konnten nicht geladen werden.`, "error", faXmark, 5)
     );
   } finally {
     isLoading.value = false;
@@ -258,34 +272,59 @@ const goToEvent = (eventId) => {
   router.push({ name: "EventPage", params: { eventId } });
 };
 
-const goToFeedback = async (eventId) => {
-  const token = await fetchAttendanceToken(eventId);
-  if (token) {
+const goToFeedback = async (eventId: string) => {
+  const router = useRouter();
+  const auth = useAuth();
+  
+  if (!auth.isAuthenticated) {
+    router.push({
+      name: 'login',
+      query: { returnUrl: `/events/${eventId}/feedback` }
+    });
+    return;
+  }
+
+  try {
+    const isValid = await verifyFeedbackEligibility(eventId);
+    
+    if (!isValid) {
+      router.push('/home');
+      showToast(
+        new Toast("Zugriff verweigert", "Sie sind nicht berechtigt Feedback für dieses Event zu geben", "error", faXmark, 5)
+      );
+      return;
+    }
+
+    const token = await fetchAttendanceToken(eventId);
+    
     router.push({
       name: "feedback",
       params: { eventId },
-      query: { token }
+      query: { token: token }
     });
-  } else {
+  } catch (error) {
     showToast(
-      new Toast("Error", "Fehler beim Laden des Teilnahme-Tokens", "error", faXmark, 10)
+      new Toast("Error", "Fehler beim Zugriff auf Feedback-Formular", "error", faXmark, 5)
     );
   }
 };
 
-const fetchAttendanceToken = async (eventId) => {
+// New API Verification Functions
+const verifyFeedbackEligibility = async (eventId: string): Promise<boolean> => {
   try {
-    const response = await fetch(`${config.apiBaseUrl}/events/${eventId}/attendance-token`);
-    if (!response.ok) throw new Error("Failed to fetch attendance token");
-    const data = await response.json();
-    return data.attendanceToken;
+    const response = await api.get(`/events/${eventId}/feedback-eligibility`);
+    return response.data.isEligible;
   } catch (error) {
-    console.error("Error fetching attendance token:", error);
-    showToast(
-      new Toast("Error", "Fehler beim Laden des Teilnahme-Tokens", "error", faXmark, 10)
-    );
-    return null;
+    if (error.response?.status === 403) {
+      return false;
+    }
+    throw error;
   }
+};
+
+const fetchAttendanceToken = async (eventId: string): Promise<string> => {
+  const response = await api.get(`/events/${eventId}/attendance-token`);
+  return response.data.token;
 };
 
 const formatDate = (dateString) => {

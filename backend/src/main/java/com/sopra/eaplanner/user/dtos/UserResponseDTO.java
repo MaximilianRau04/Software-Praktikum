@@ -2,15 +2,13 @@ package com.sopra.eaplanner.user.dtos;
 
 import com.sopra.eaplanner.user.User;
 
-public class
-UserResponseDTO {
+public class UserResponseDTO {
 
     private Long id;
     private String username;
     private String firstname;
     private String lastname;
     private String description;
-    private User.Role role;
 
     public UserResponseDTO(User user) {
         this.id = user.getId();
@@ -18,7 +16,6 @@ UserResponseDTO {
         this.firstname = user.getFirstname();
         this.lastname = user.getLastname();
         this.description = user.getDescription();
-        this.role = user.getRole();
     }
 
     public Long getId() {
@@ -60,23 +57,14 @@ UserResponseDTO {
         this.description = description;
     }
 
-    public User.Role getRole() {
-        return role;
+    public static UserResponseDTO mockWith(Long id, String username, String firstname, String lastname) {
+        return new UserResponseDTO(id, username, firstname, lastname);
     }
 
-    public void setRole(User.Role role) {
-        this.role = role;
-    }
-
-    public static UserResponseDTO mockWith(Long id, String username, String firstname, String lastname, User.Role role) {
-        return new UserResponseDTO(id, username, firstname, lastname, role);
-    }
-
-    private UserResponseDTO(Long id, String username, String firstname, String lastname, User.Role role) {
+    private UserResponseDTO(Long id, String username, String firstname, String lastname) {
         this.id = id;
         this.username = username;
         this.firstname = firstname;
         this.lastname = lastname;
-        this.role = role;
     }
 }

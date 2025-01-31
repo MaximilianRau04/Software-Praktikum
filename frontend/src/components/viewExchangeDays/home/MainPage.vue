@@ -40,11 +40,11 @@
 import { onMounted, ref } from "vue";
 import ScrollableDivs from "@/components/viewExchangeDays/home/Scrollable.vue";
 import ExchangeDayDetails from "@/components/viewExchangeDays/home/ExchangeDayDetails.vue";
-import config from "@/config";
 import "@/assets/main.css";
 import { ExchangeDay } from "@/types/ExchangeDay";
 import { showToast, Toast } from "@/types/toasts";
 import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
+import api from "@/util/api";
 
 const exchangeDays = ref<ExchangeDay[]>([]);
 const upcomingExchangeDaysList = ref<ExchangeDay[]>([]);
@@ -57,29 +57,28 @@ const today = new Date().setHours(0, 0, 0, 0);
 /**
  * Fetches all Exchange Days from the API and categorizes them.
  */
-function fetchAllExchangeDays() {
-  fetch(`${config.apiBaseUrl}/exchange-days`)
-    .then((response) => response.json())
-    .then((data: ExchangeDay[]) => {
-      exchangeDays.value = data.map((day) => ({
-        ...day,
-        startDate: new Date(day.startDate).getTime(),
-        endDate: new Date(day.endDate).getTime(),
-      }));
+ async function fetchAllExchangeDays() {
+  try {
+    const response = await api.get<ExchangeDay[]>('/exchange-days');
+    
+    exchangeDays.value = response.data.map(day => ({
+      ...day,
+      startDate: new Date(day.startDate).getTime(),
+      endDate: new Date(day.endDate).getTime()
+    }));
 
-      categorizeExchangeDays();
-    })
-    .catch((error) =>
-      showToast(
-        new Toast(
-          "Error",
-          `Fehler beim Abrufen der Exchange Days.`,
-          "error",
-          faXmark,
-          10,
-        ),
-      ),
+    categorizeExchangeDays();
+  } catch (error) {
+    showToast(
+      new Toast(
+        "Fehler",
+        "Exchange Days konnten nicht abgerufen werden.",
+        "error",
+        faXmark,
+        5
+      )
     );
+  }
 }
 
 /**

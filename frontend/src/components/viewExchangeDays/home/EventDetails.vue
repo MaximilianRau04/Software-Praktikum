@@ -47,26 +47,29 @@ import { useRouter } from "vue-router";
 import "@/assets/event-details.css";
 import { Event } from "@/types/Event";
 import { defineProps } from "vue";
+
+import { showToast, Toast } from "@/types/toasts";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+
 import {
   CalendarIcon,
   ClockIcon,
   MapPinIcon,
-  DocumentTextIcon,
   TagIcon,
   ArrowRightCircleIcon,
   UserCircleIcon
 } from "@heroicons/vue/24/outline";
 import { User } from "@/types/User";
+import api from "@/util/api";
 
 const router = useRouter();
 const props = defineProps<{ event: Event }>();
 const tags = ref([]);
 const organizer = ref<User | null>(null);
+
 const goToEvent = (eventId) => {
   router.push({ name: "EventPage", params: { eventId } });
 };
-
-
 
 /**
  * Formats a timestamp into a human-readable date string.
@@ -81,19 +84,35 @@ function formatDate(timestamp: string): string {
 
 async function fetchOrganizer() {
   try {
-    const response = await fetch(`/api/events/${props.event.id}/organizer`);
-    organizer.value = await response.json();
+    const response = await api.get(`/events/${props.event.id}/organizer`);
+    organizer.value = await response.data;
   } catch (error) {
-    console.error("Error fetching organizer:", error);
+      showToast(
+        new Toast(
+          "Fehler",
+          `Veranstalter/in für ${props.event.name} konnte nicht geladen werden.`,
+          "error",
+          faXmark,
+          5
+        )
+      );
   }
 }
 
 async function fetchTags() {
   try {
-    const response = await fetch(`/api/events/${props.event.id}/tags`);
-    tags.value = await response.json();
+    const response = await api.get(`/events/${props.event.id}/tags`);
+    tags.value = await response.data;
   } catch (error) {
-    console.error("Error fetching organizer:", error);
+    showToast(
+        new Toast(
+          "Fehler",
+          `Event-Tags für ${props.event.name} konnten nicht geladen werden.`,
+          "error",
+          faXmark,
+          5
+        )
+      );
   }
 }
 

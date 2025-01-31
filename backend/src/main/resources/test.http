@@ -132,7 +132,7 @@ Content-Type: application/json
 GET http://localhost:8080/api/events/1/feedback
 
 ###
-POST http://localhost:8080/api/notifications/send-test-notification?userId=1
+POST http://localhost:8080/api/notifications/send-test-notification?userId=8
 ###
 GET http://localhost:8080/api/resources
 ###
@@ -210,6 +210,25 @@ GET http://localhost:8080/api/locations
 GET http://localhost:8080/api/resources/type/ROOM
 ###
 GET http://localhost:8080/api/resources/csv-downloads
+###
+POST http://localhost:8080/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "shaaas",
+  "email": "st@uni.de",
+  "password": "12345678",
+  "roles": ["user", "admin"]
+}
+###
+###
+POST http://localhost:8080/api/auth/signin
+Content-Type: application/json
+
+{
+  "username": "shaaas",
+  "password": "12345678"
+}
 ###
 
 POST http://localhost:8080/api/resources/csv-import

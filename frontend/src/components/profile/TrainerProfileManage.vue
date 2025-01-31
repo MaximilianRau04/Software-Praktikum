@@ -26,43 +26,7 @@
                         einfügen wollen, das Sie noch nicht in der Auflistung sehen, so schreiben Sie dieses direkt in
                         die Leiste rein und drücken Eingabe.</p>
                     <div>
-                        <div class="tag-container">
-                            <div class="tag-wrapper">
-                                <!-- Input field for tags -->
-                                <input type="text" v-model="tagInput"
-                                    placeholder="Tag schreiben und mit Eingabe bestätigen" @input="filterTags"
-                                    @keyup.enter="addTagFromInput" :disabled="selectedTags.length >= 5"
-                                    class="tag-input" />
-
-
-
-                                <!-- Display filtered tags to choose from -->
-                                <div class="tag-list">
-                                    <button v-for="tag in filteredTags" :key="tag.id" type="button" @click="addTag(tag)"
-                                        :disabled="tag.selected || selectedTags.length >= 5">
-                                        <TagIcon class="icon-tag" />
-                                        {{ tag.name }}
-                                    </button>
-                                </div>
-
-                                <!-- Display selected tags -->
-                                <div class="tag-chips">
-                                    <span v-if="selectedTags.length > 0" v-for="(tag, index) in selectedTags"
-                                        :key="tag.id" class="chip">
-                                        {{ tag.name }}
-                                        <button type="button" class="remove-tag" @click="removeTag(tag.id)">
-                                            &times;
-                                        </button>
-                                    </span>
-                                    <span v-else class="chip impostor-button">
-                                        Hallo
-                                        <button type="button" class="remove-tag">
-                                            &times;
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                        <TagInput v-model="selectedTags" :available-tags="allTags" @new-tag="handleNewTag" />
                     </div>
                 </div>
 
@@ -136,13 +100,11 @@ import Cookies from "js-cookie";
 import { useRoute, useRouter } from "vue-router";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
-import {
-  TagIcon,
-} from "@heroicons/vue/24/outline";
+import TagInput from "./TagInput.vue";
 
 export default {
     components: {
-        TagIcon,
+        TagInput,
     },
     props: {
         trainerId: {
@@ -161,8 +123,6 @@ export default {
             },
             allTags: [],
             selectedTags: [],
-            tagInput: "",
-            filteredTags: [],
             events: [],
             pinnedComments: [],
             activeEvent: null,
@@ -174,29 +134,40 @@ export default {
                 const trainerResponse = await axios.get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}`);
                 this.trainer = trainerResponse.data;
 
-                const trainerTagsResponse = await axios.get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/expertiseTags`);
-                this.selectedTags = trainerTagsResponse.data
+                const commentsResponse = await axios.get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/pinned-comments`);
+                this.pinnedComments = commentsResponse.data;
 
                 const eventsResponse = await axios.get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/comments-by-event`);
                 this.events = eventsResponse.data.events;
-
-                const commentsResponse = await axios.get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/pinned-comments`);
-                this.pinnedComments = commentsResponse.data;
 
                 const pinnedCommentIds = new Set(this.pinnedComments.map(comment => comment.id));
 
                 this.events.forEach(event => {
                     event.comments = event.comments.filter(comment => !pinnedCommentIds.has(comment.id));
                 });
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        },
+
+        async fetchTags() {
+            try {
+                const trainerTagsResponse = await axios.get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/expertiseTags`);
+                this.selectedTags = trainerTagsResponse.data;
 
                 const tagsResponse = await axios.get(`${config.apiBaseUrl}/tags`);
-                this.allTags = tagsResponse.data
-
-                this.updateTagStates();
+                this.allTags = tagsResponse.data;
 
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
+        },
+
+        handleNewTag(newTag){
+            axios.post(`${config.apiBaseUrl}/tags`, newTag)
+            .then(response => {
+                this.allTags.push(response.data);
+            })
         },
 
         pinComment(comment, eventId) {
@@ -295,58 +266,6 @@ export default {
             });
         },
 
-        updateTagStates() {
-            this.filteredTags = this.allTags.map(tag => ({
-                ...tag,
-                selected: this.selectedTags.some(selected => selected.id === tag.id)
-            }));
-        },
-
-        filterTags() {
-            const search = this.tagInput.toLowerCase();
-            this.filteredTags = this.allTags.filter(tag =>
-                tag.name.toLowerCase().includes(search) &&
-                !this.selectedTags.some(selected => selected.id === tag.id)
-            );
-        },
-
-        handleKeyup(event) {
-            if (event.key === ",") {
-                this.addTagFromInput();
-            }
-        },
-
-        addTagFromInput() {
-            const trimmedInput = this.tagInput.trim();
-            if (!trimmedInput) return;
-
-            let tag = this.allTags.find(tag => tag.name.toLowerCase() === trimmedInput.toLowerCase());
-            if (!tag) {
-                tag = { id: Date.now(), name: trimmedInput, selected: false };
-                this.allTags.push(tag);
-            }
-
-            if (!this.selectedTags.some(selected => selected.id === tag.id) && this.selectedTags.length < 5) {
-                this.selectedTags.push(tag);
-                this.updateTagStates();
-            }
-            this.tagInput = "";
-            this.filterTags();
-        },
-
-        addTag(tag) {
-            if (!this.selectedTags.some(selected => selected.id === tag.id) && this.selectedTags.length < 5) {
-                this.selectedTags.push(tag);
-                this.updateTagStates();
-            }
-            this.tagInput = "";
-        },
-
-        removeTag(tagId) {
-            this.selectedTags = this.selectedTags.filter(tag => tag.id !== tagId);
-            this.updateTagStates();
-        },
-
         setActiveEvent(event) {
             this.activeEvent = this.activeEvent?.id === event.id ? null : event;
         },
@@ -359,8 +278,9 @@ export default {
         },
 
     },
-    created() {
+    mounted() {
         this.fetchData();
+        this.fetchTags();
     },
 };
 </script>
@@ -590,106 +510,6 @@ textarea:focus {
 .input-group input {
     padding: 0.5rem;
     margin-right: 1rem;
-}
-
-.tag-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 750px;
-    margin: 0 auto;
-}
-
-.tag-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-}
-
-.tag-chips {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 1rem;
-    margin-bottom: 0px;
-}
-
-.chip {
-    background-color: #009ee2;
-    color: white;
-    padding-top: 0.3rem;
-    padding-left: 0.7rem;
-    border-radius: 20px;
-    margin-right: 0.5rem;
-}
-
-.impostor-button {
-    visibility: hidden;
-}
-
-.remove-tag {
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    margin-left: 0.5rem;
-}
-
-.tag-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-.tag-list button {
-    background-color: white;
-    color: #009ee2;
-    padding: 0.3rem 0.7rem;
-    border: 2px solid #009ee2;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.tag-list button:hover {
-    background-color: #009ee2;
-    color: white;
-}
-
-.tag-list button:disabled {
-    background-color: #f0f0f0;
-    color: #d3d3d3;
-    border: 2px solid #d3d3d3;
-}
-
-.icon-tag {
-  width: 0.75rem;
-  height: 0.75rem;
-  color: currentColor;
-  margin-right: 0.25rem;
-}
-
-.tag-input {
-    width: 70%;
-    max-width: 600px;
-    min-height: 50px;
-    max-height: 50px;
-    padding: 10px;
-    border-radius: 20px;
-    border: 2px solid #009ee2;
-    font-size: 16px;
-    line-height: 1.5;
-    transition: border-color 0.3s;
-}
-
-.tag-input:focus {
-    border-color: #007bb5;
-    outline: none;
 }
 
 .pinned-comments-grid {

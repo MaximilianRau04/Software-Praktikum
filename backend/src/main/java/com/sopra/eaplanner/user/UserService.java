@@ -189,15 +189,17 @@ public class UserService {
     }
 
     public UserResponseDTO createUser(UserRequestDTO requestBody) {
+        return new UserResponseDTO(userRepository.save(new User(requestBody)));
+    }
+
+    public UserResponseDTO createTrainer(UserRequestDTO requestBody) {
         User userToSave = userRepository.save(new User(requestBody));
 
-        if (userToSave.getRole() == User.Role.ADMIN) {
-            TrainerProfile trainerProfile = new TrainerProfile();
-            trainerProfile.setUser(userToSave);
-            trainerProfile.setBio("");
-            trainerProfile.setAverageRating(0.0);
-            trainerProfileRepository.save(trainerProfile);
-        }
+        TrainerProfile trainerProfile = new TrainerProfile();
+        trainerProfile.setUser(userToSave);
+        trainerProfile.setBio("");
+        trainerProfile.setAverageRating(0.0);
+        trainerProfileRepository.save(trainerProfile);
 
         return new UserResponseDTO(userToSave);
     }
@@ -215,9 +217,6 @@ public class UserService {
         if (user.getLastname() != null && !user.getLastname().isBlank()) {
             existingUser.setLastname(user.getLastname());
         }
-        if (user.getRole() != null) {
-            existingUser.setRole(user.getRole());
-        }
 
         if (existingUser.getDescription() == null) {
             existingUser.setDescription(user.getDescription());
@@ -232,7 +231,7 @@ public class UserService {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         Set<Tag> freshTags = tagService.mergeAndGetTagsFromRequest(requestBody);
-        existingUser.setInterestTagsTags(freshTags);
+        existingUser.setInterestTags(freshTags);
 
         userRepository.save(existingUser);
 

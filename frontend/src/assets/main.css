@@ -36,15 +36,16 @@ body {
 }
 
 .leftSide {
-  flex: 1 1 70%;
+  flex: 1 1 80%;
   padding: 20px;
+  padding-top: 0px;
   background-color: #fff;
   display: flex;
   flex-direction: column;
 }
 
 .rightSide {
-  flex: 1 1 30%;
+  flex: 1 1 20%;
   background-color: #f7faf9;
   display: flex;
   flex-direction: column;
@@ -82,10 +83,10 @@ body {
   text-align: center;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #3c3c5f;
+  color: #005f8c;
   background-color: white;
   padding: 10px 0;
-  border-bottom: 2px solid #009ee2; 
+  border-bottom: 2px solid #01172F; 
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
   width: 100%;
   display: block;
@@ -95,6 +96,10 @@ body {
 .past-list {
   flex-grow: 1;
   overflow-y: auto;
+}
+
+.past-list {
+  height: calc(100vh - 30vh);
 }
 
 .reset-button {

@@ -25,10 +25,6 @@ public class UserRequestDTO {
 
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    @NotNull(message = "Role must be specified")
-    private User.Role role;
-
     private Set<String> interestTags = new HashSet<>();
 
     public UserRequestDTO() {
@@ -49,22 +45,17 @@ public class UserRequestDTO {
         return description;
     }
 
-    public User.Role getRole() {
-        return role;
-    }
-
     private Set<String> getInterestTags() {
         return interestTags;
     }
 
-    public static UserRequestDTO mockWith(String username, String firstname, String lastname, User.Role role) {
-        return new UserRequestDTO(username, firstname, lastname, role);
+    public static UserRequestDTO mockWith(String username, String firstname, String lastname) {
+        return new UserRequestDTO(username, firstname, lastname);
     }
 
-    private UserRequestDTO(String username, String firstname, String lastname, User.Role role) {
+    private UserRequestDTO(String username, String firstname, String lastname) {
         this.username = username;
         this.firstname = firstname;
         this.lastname = lastname;
-        this.role = role;
     }
 }
