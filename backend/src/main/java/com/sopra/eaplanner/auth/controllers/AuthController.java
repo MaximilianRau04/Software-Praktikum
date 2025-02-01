@@ -160,7 +160,7 @@ public class AuthController {
         Set<ERole> userLoginNames = userLoginRoles.stream().map(Role::getName).collect(Collectors.toSet());
         User.Role userRole = userLoginNames.contains(ERole.ROLE_ADMIN) ? User.Role.ADMIN : User.Role.USER;
 
-        User user = new User(signUpRequest, userLogin, userRole);
+        User user = userRepository.save(new User(signUpRequest, userLogin, userRole));
 
         if (user.getRole() == User.Role.ADMIN) {
             TrainerProfile trainerProfile = new TrainerProfile();
