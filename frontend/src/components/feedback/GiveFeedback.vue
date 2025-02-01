@@ -420,7 +420,7 @@
   
           anonymousFeedback: false,
         },
-        userId: null,
+        userId: useAuth().getUserId(),
         router: useRouter(),
         auth: useAuth(),
         eventId: "",
@@ -480,7 +480,8 @@
           alert("Please login first.");
           return;
         }
-  
+        console.log(this.eventId + " eventid")
+        console.log(this.token + " token")
         if (!this.eventId || !this.token) {
           showToast(
             new Toast(
@@ -512,12 +513,9 @@
         this.feedbackData["userId"] = this.userId;
   
         try {
-          const response = await api.post(`/feedback`, {
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(this.feedbackData),
-          });
+          const response = await api.post(`/feedback`, this.feedbackData);
   
-          if (response.status !== 200) {
+          if (response.status !== 201) {
             showToast(
               new Toast(
                 "Fehler",
@@ -622,18 +620,14 @@
         });
       },
       async confirmAttendance() {
-        try {
-          const response = await api.post(`/events/${this.eventId}/attendance`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
+
+        const body = {
                 userId: useAuth().getUserId(),
                 token: this.$route.query.token
-              }),
-            }
-          );
+              }
+
+        try {
+          const response = await api.post(`/events/${this.eventId}/attendance`,body);
   
           const data = await response.data;
   
@@ -726,7 +720,7 @@
       const route = useRoute();
 
       this.eventId = route.params.eventId as string;
-      this.token = route.params.token as string;
+      this.token = this.$route.query.token;
   
       await this.verifyFeedbackEligibility();
       await this.fetchEventDetails();

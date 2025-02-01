@@ -172,7 +172,7 @@ export default {
 
 .content-area {
   height: calc(100vh - 0px);
-  overflow-y: hidden;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 

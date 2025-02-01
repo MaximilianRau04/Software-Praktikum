@@ -46,7 +46,6 @@ public class Event {
     private String name;
 
     @DateTimeFormat(pattern = "dd.MM.yyyy")
-    @FutureOrPresent(message = "Date must be in the future")
     @NotNull(message = "Date cannot be null")
     private LocalDate date;
 
@@ -175,11 +174,11 @@ public class Event {
         this.name = name;
     }
 
-    public @FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getDate() {
+    public @NotNull(message = "Date cannot be null") LocalDate getDate() {
         return date;
     }
 
-    public void setDate(@FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate date) {
+    public void setDate(@NotNull(message = "Date cannot be null") LocalDate date) {
         this.date = date;
     }
 

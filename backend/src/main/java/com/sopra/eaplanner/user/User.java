@@ -92,6 +92,9 @@ public class User {
     )
     private Set<Tag> interestTags = new HashSet<>();
 
+    @Column(nullable = false)
+    private Integer totalPoints = 0;
+
     public User(String username, String firstname, String lastname, String bio, Set<Tag> interestTags) {
         this.username = username;
         this.firstname = firstname;
@@ -114,5 +117,9 @@ public class User {
         this.firstname = user.getFirstname();
         this.lastname = user.getLastname();
         this.description = user.getDescription();
+    }
+
+    public void updateTotalPoints(){
+        this.totalPoints = this.rewards.stream().mapToInt(Reward::getPoints).sum();
     }
 }

@@ -55,12 +55,16 @@ public class JwtUtils {
     }
 
     public String getUserNameFromRequest(HttpServletRequest request) {
-        String jwt = Arrays.stream(request.getCookies())
-                .map(Cookie::getName)
-                .filter(cookieName -> cookieName.equals("jwt"))
+        Cookie cookieWithJwt = Arrays.stream(request.getCookies())
+                .filter(cookie -> cookie.getName().equals("jwt"))
                 .findFirst().orElse(null);
 
-        if(jwt == null || !validateJwtToken(jwt)) {
+        if(cookieWithJwt == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not logged in");
+        }
+
+        String jwt = cookieWithJwt.getValue();
+        if(jwt == null || !validateJwtToken(cookieWithJwt.getValue())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not logged in");
         }
 

@@ -46,12 +46,10 @@ public class ExchangeDay {
     private Long id;
 
     @DateTimeFormat(pattern = "dd.MM.yyyy")
-    @FutureOrPresent(message = "Date must be in the future")
     @NotNull(message = "Date cannot be null")
     private LocalDate startDate;
 
     @DateTimeFormat(pattern = "dd.MM.yyyy")
-    @FutureOrPresent(message = "Date must be in the future")
     @NotNull(message = "Date cannot be null")
     private LocalDate endDate;
 

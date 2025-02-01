@@ -63,26 +63,8 @@
 
       <div class="input-group">
         <label for="tags">Event Tags</label>
-        <p>Bitte wählen Sie bis zu 5 Event Tags für Ihr Event aus:</p>
-
-        <input type="text" id="tags" v-model="tagInput" placeholder="Tags eingeben und durch Komma trennen"
-          @input="filterTags" @keyup="handleKeyup" :disabled="selectedTags.length >= 5" />
-
-        <div class="tag-chips">
-          <span v-for="(tag, index) in selectedTags" :key="index" class="chip">
-            {{ tag }}
-            <button type="button" class="remove-tag" @click="removeTag(index)">
-              &times;
-            </button>
-          </span>
-        </div>
-
-        <div class="tag-list">
-          <button v-for="tag in filteredTags" :key="tag" type="button" @click="addTag(tag.name)"
-            :disabled="selectedTags.includes(tag)">
-            {{ tag.name }}
-          </button>
-        </div>
+        <TagInput v-if="selectedTags && allTags" v-model="selectedTags" :available-tags="allTags" :tagSelect="false"
+          @new-tag="handleNewTag" />
       </div>
 
       <div class="checkbox-container">
@@ -103,14 +85,17 @@ import config from "@/config";
 import Cookies from "js-cookie";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import api from "@/util/api";
+import TagInput from "../profile/TagInput.vue";
+import { useAuth } from "@/util/auth";
 
-const userId = Cookies.get("userId");
+const userId = useAuth().getUserId();
 const name = ref("");
 const exchangeDaySelect = ref("");
 const date = ref("");
 const startTime = ref("00:00");
 const endTime = ref("01:00");
-const room= ref<any>(null);
+const room = ref<any>(null);
 const description = ref("");
 const selectedExperienceLevel = ref("");
 const selectedTags = ref([]);
@@ -136,7 +121,6 @@ defineProps({
 });
 
 const emit = defineEmits(["update:showWorkshopBox"]);
-const apiUrl = `${config.apiBaseUrl}/events`;
 
 const experienceLevels = ref([]);
 const germanExperienceLevels = {
@@ -154,10 +138,10 @@ const createWorkshop = async () => {
     showToast(
       new Toast(
         "Info",
-        `Bitte wählens sie einen gültigen Exchange day aus`,
+        `Bitte wählen Sie einen gültigen Exchange day aus`,
         "info",
         faXmark,
-        10,
+        5,
       ),
     );
     return;
@@ -169,41 +153,39 @@ const createWorkshop = async () => {
   if (selectedDate < start || selectedDate > end) {
     showToast(
       new Toast(
-        "Error",
-        `Das Datum muss zwischen dem Start- und Enddatum des ausgewählten Exchange Days liegen.`,
+        "Fehler",
+        `Wählen Sie ein Datum zwischen dem Start- und Enddatum des ausgewählten Exchange Days.`,
         "error",
         faXmark,
-        10,
+        5,
       ),
     );
     return;
   }
   try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: name.value,
-        date: date.value,
-        startTime: startTime.value,
-        endTime: endTime.value,
-        roomId: room.value,
-        description: description.value,
-        exchangeDayId: exchangeDaySelect.value,
-        organizerId: userId,
-        recommendedExperience: selectedExperienceLevel.value,
-        tags: selectedTags.value,
-        resources: selectedResources.value,
-        inviteOnly: inviteOnly.value,
-      }),
-    });
-   console.log(room.value);
-    if (response.ok) {
-      const data = await response.json();
+    const workshopData = {
+      name: name.value,
+      date: date.value,
+      startTime: startTime.value,
+      endTime: endTime.value,
+      roomId: room.value,
+      description: description.value,
+      exchangeDayId: exchangeDaySelect.value,
+      organizerId: userId,
+      recommendedExperience: selectedExperienceLevel.value,
+      tags: selectedTags.value.map(t => t.name),
+      resources: selectedResources.value,
+      inviteOnly: inviteOnly.value,
+    }
+
+    const response = await api.post(`/events`, workshopData);
+
+    if (response.status === 201) {
+      const data = await response.data;
       showToast(
         new Toast(
-          "Success",
-          `Workshop erstellt: ${data.name}`,
+          "Erfolg",
+          `Der Workshop ${data.name} wurde erfolgreich angelegt.`,
           "success",
           faCheck,
           5,
@@ -213,22 +195,23 @@ const createWorkshop = async () => {
     } else {
       showToast(
         new Toast(
-          "Error",
-          `Fehler beim Erstellen des Workshops.`,
+          "Fehler",
+          `Der Workshop konnte nicht angelegt werden.`,
           "error",
           faXmark,
-          10,
+          5,
         ),
       );
     }
   } catch (error) {
+    console.error(error)
     showToast(
       new Toast(
-        "Error",
-        `Fehler beim Erstellen des Workshops.`,
+        "Fehler",
+        `Der Workshop konnte nicht angelegt werden.`,
         "error",
         faXmark,
-        10,
+        5,
       ),
     );
   }
@@ -238,6 +221,13 @@ const selectedExchangeDay = computed(() =>
   exchangeDays.value.find((day) => day.id === exchangeDaySelect.value),
 );
 
+const handleNewTag = (newTag) => {
+  api.post(`/tags`, newTag)
+    .then(response => {
+      allTags.value.push(response.data);
+    })
+};
+
 /**
  * Updates the available rooms based on the location of the selected Exchange Day.
  */
@@ -246,21 +236,19 @@ const updateFilteredRooms = async () => {
     const exchangeDayLocationId = selectedExchangeDay.value.location.id;
 
     try {
-      const response = await fetch(
-        `${config.apiBaseUrl}/resources/location/${exchangeDayLocationId}`,
-      );
+      const response = await api.get(`/resources/location/${exchangeDayLocationId}`);
 
-      if (response.ok) {
-        const rooms = await response.json();
+      if (response.status === 200) {
+        const rooms = await response.data;
         filteredRooms.value = rooms;
       } else {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Laden der Ressourcen für die Location.`,
+            "Fehler",
+            `Ressourcen für den Standort konnten nicht geladen werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
         filteredRooms.value = [];
@@ -268,11 +256,11 @@ const updateFilteredRooms = async () => {
     } catch (error) {
       showToast(
         new Toast(
-          "Error",
-          `Fehler beim Abrufen der Räume.`,
+          "Fehler",
+          `Ressourcen für den Standort konnten nicht geladen werden.`,
           "error",
           faXmark,
-          10,
+          5,
         ),
       );
       filteredRooms.value = [];
@@ -289,51 +277,6 @@ const updateSelectedExchangeDay = async () => {
   await updateFilteredRooms();
   date.value = "";
   room.value = "";
-};
-
-const handleKeyup = (event) => {
-  if (event.key === ",") {
-    addTagFromInput();
-  }
-};
-
-/**
- * Adds a tag from the input field to the selected tags.
- */
-const addTagFromInput = () => {
-  const trimmedInput = tagInput.value.trim().slice(0, -1);
-
-  if (!trimmedInput) return;
-
-  if (
-    trimmedInput &&
-    !selectedTags.value.includes(trimmedInput) &&
-    selectedTags.value.length < 5
-  ) {
-    selectedTags.value.push(trimmedInput);
-  }
-  tagInput.value = "";
-  filteredTags.value = [...allTags.value];
-};
-
-const addTag = (tag) => {
-  if (!selectedTags.value.includes(tag) && selectedTags.value.length < 5) {
-    selectedTags.value.push(tag);
-  }
-};
-
-const removeTag = (index) => {
-  selectedTags.value.splice(index, 1);
-};
-
-/**
- * Filters the tags based on the user input.
- */
-const filterTags = () => {
-  const query = tagInput.value.toLowerCase();
-  filteredTags.value = allTags.value.filter((tag) =>
-    tag.name.toLowerCase().includes(query),
-  );
 };
 
 /**
@@ -397,57 +340,54 @@ const resetWorkshopForm = () => {
 /**
  * Fetches the available rooms and exchange days when the component is mounted.
  */
- onMounted(async () => {
+onMounted(async () => {
   try {
-    const daysResponse = await fetch(`${config.apiBaseUrl}/exchange-days`);
-    const roomsResponse = await fetch(
-      `${config.apiBaseUrl}/resources/type/ROOM`,
+    const daysResponse = await api.get(`/exchange-days`);
+    const roomsResponse = await api.get(
+      `/resources/type/ROOM`,
     );
-    if (!roomsResponse.ok)
+    if (roomsResponse.status !== 200)
       showToast(
         new Toast(
-          "Error",
-          `Fehler beim Abrufen der Räume.`,
+          "Fehler",
+          `Räumlichkeiten konnten nicht geladen werden.`,
           "error",
           faXmark,
-          10,
+          5,
         ),
       );
-    availableRooms.value = await roomsResponse.json();
-    if (!daysResponse.ok)
+    availableRooms.value = await roomsResponse.data;
+    if (daysResponse.status !== 200)
       showToast(
         new Toast(
-          "Error",
-          `Fehler beim Abrufen der Exchange days.`,
+          "Fehler",
+          `Exchange Days konnten nicht geladen werden.`,
           "error",
           faXmark,
-          10,
+          5,
         ),
       );
-    exchangeDays.value = await daysResponse.json();
+    exchangeDays.value = await daysResponse.data;
 
-    const tagsResponse = await fetch(`${config.apiBaseUrl}/tags`);
-    if (!tagsResponse.ok)
+    const tagsResponse = await api.get(`/tags`);
+    if (tagsResponse.status !== 200)
       showToast(
         new Toast(
-          "Error",
-          `Fehler beim Abrufen der Tags.`,
+          "Fehler",
+          `Event-Tags konnten nicht geladen werden.`,
           "error",
           faXmark,
-          10,
+          5,
         ),
       );
-    allTags.value = await tagsResponse.json();
+    allTags.value = await tagsResponse.data;
     filteredTags.value = [...allTags.value];
 
-    const levelsResponse = await fetch(
-      `${config.apiBaseUrl}/events/experience-levels`,
-    );
-    if (levelsResponse.ok)
-    experienceLevels.value = await levelsResponse.json();
+    const levelsResponse = await api.get(`/events/experience-levels`);
+    if (levelsResponse.status === 200) experienceLevels.value = await levelsResponse.data;
   } catch (error) {
     showToast(
-      new Toast("Error", `Fehler beim Abrufen der Daten`, "error", faXmark, 10),
+      new Toast("Fehler", `Erfahrungslevel konnten nicht geladen werden.`, "error", faXmark, 5),
     );
   }
 

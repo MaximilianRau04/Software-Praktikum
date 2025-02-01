@@ -44,9 +44,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import api from "@/util/api";
 
 const name = ref("");
 const type = ref("");
@@ -59,30 +59,26 @@ const locations = ref<any[]>([]);
 const resourceTypes = ["ROOM", "EQUIPMENT", "MATERIAL"];
 const fileInput = ref<HTMLInputElement | null>(null);
 
-const apiUrl = `${config.apiBaseUrl}/resources`;
-const locationsApiUrl = `${config.apiBaseUrl}/locations`;
 const emit = defineEmits(["update:showResourceBox"]);
 
 /**
  * Creates a new resource using the form data
  */
 const createResource = async () => {
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+  const resourceData = {
         name: name.value,
         type: type.value,
         capacity: capacity.value,
         description: description.value,
         locationId: location.value.id,
         availability: availability.value,
-      }),
-    });
+      }
 
-    if (response.ok) {
-      const data = await response.json();
+  try {
+    const response = await api.post(`/resources`, resourceData);
+
+    if (response.status === 201) {
+      const data = await response.data;
       showToast(
         new Toast("Success", `Resource erfolgreich erstellt`, "success"),
       );
@@ -117,9 +113,9 @@ const resetForm = () => {
  */
 onMounted(async () => {
   try {
-    const response = await fetch(locationsApiUrl);
-    if (response.ok) {
-      const data = await response.json();
+    const response = await api.get(`/locations`);
+    if (response.status === 200) {
+      const data = await response.data;
       locations.value = data;
     } else {
       showToast(

@@ -108,9 +108,12 @@ public class UserService {
             LocalDateTime eventEndDateTime = eventDate.atTime(eventEndTime);
 
             if (eventEndDateTime.isBefore(now)) {
-                Double averageRating = event.getFeedbacks().stream()
-                        .mapToDouble(FeedbackUtil::getFeedbackRating)
-                        .sum() / event.getFeedbacks().size();
+                double averageRating = 0.0;
+                if(!event.getFeedbacks().isEmpty()){
+                    averageRating = event.getFeedbacks().stream()
+                            .mapToDouble(FeedbackUtil::getFeedbackRating)
+                            .sum() / event.getFeedbacks().size();
+                }
                 pastEvents.add(new RatedEventDTO(event, averageRating, tags));
             } else if (eventStartDateTime.isAfter(now)) {
                 futureEvents.add(new RatedEventDTO(event, 0.0, tags));

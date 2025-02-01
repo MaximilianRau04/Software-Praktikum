@@ -1,141 +1,175 @@
 <template>
-  <div class="event-header">
+  <div class="event-container">
     <!-- Back Button -->
-    <div class="back-button-container">
-      <button class="back-button" @click="goToEventRegistrations">
-        Zurück zu Events
-      </button>
-    </div>
-    <!-- Titel -->
-    <div class="header-title">
-      <h1>{{ event.name || "Eventname wird geladen..." }}</h1>
+    <button class="back-button" @click="goToEventRegistrations">
+      ← Zurück zu Events
+    </button>
+
+    <!-- Event Header -->
+    <div class="event-header">
+      <h1 class="event-title">{{ event.name || "Eventname wird geladen..." }}</h1>
+      <div class="event-meta">
+        <span class="event-date">{{ formatDate(event.date) }}</span>
+        <span class="event-time">{{ event.startTime }} - {{ event.endTime }}</span>
+      </div>
     </div>
 
-    <!-- Navigationsleiste -->
-    <nav class="tabs">
-      <a href="#" class="tab" :class="{ active: view === 'details' }" @click.prevent="showDetails">
-        Details anzeigen
-      </a>
-      <a v-if="isAlreadyRegistered || isAdmin" href="#" class="tab" :class="{ active: view === 'forum' }"
-        @click.prevent="showForum">
-        Diskussionsforum
-      </a>
-      <a href="#" class="tab" :class="{ active: view === 'users' }" @click.prevent="showUsers">
-        Angemeldete User
-      </a>
-      <a v-if="isAdmin" href="#" class="tab" :class="{ active: view === 'feedback' }" @click.prevent="openFeedback">
+    <!-- Navigation Tabs -->
+    <nav class="tabs-container">
+      <button 
+        class="tab-button"
+        :class="{ 'active-tab': view === 'details' }"
+        @click="showDetails"
+      >
+        Details
+      </button>
+      <button 
+        v-if="isAlreadyRegistered || isAdmin"
+        class="tab-button"
+        :class="{ 'active-tab': view === 'forum' }"
+        @click="showForum"
+      >
+        Forum
+      </button>
+      <button 
+        class="tab-button"
+        :class="{ 'active-tab': view === 'users' }"
+        @click="showUsers"
+      >
+        Teilnehmer
+      </button>
+      <button 
+        v-if="isAdmin"
+        class="tab-button"
+        :class="{ 'active-tab': view === 'feedback' }"
+        @click="openFeedback"
+      >
         Feedback
-      </a>
-      <a v-if="isAdmin" href="#" class="tab" :class="{ active: view === 'qr' }" @click.prevent="openQRCode">
+      </button>
+      <button 
+        v-if="isAdmin"
+        class="tab-button"
+        :class="{ 'active-tab': view === 'qr' }"
+        @click="openQRCode"
+      >
         QR-Code
-      </a>
-      <a v-if="isAlreadyRegistered" href="#" class="tab registration" :class="{ active: view === 'unregister' }"
-        @click.prevent="unregisterFromEvent">
+      </button>
+      <button 
+        v-if="isAlreadyRegistered"
+        class="tab-button danger"
+        @click="unregisterFromEvent"
+      >
         Abmelden
-      </a>
-      <a v-else href="#" class="tab registation" :class="{ active: view === 'register' }"
-        @click.prevent="registerForEvent"> Registrieren
-      </a>
+      </button>
+      <button 
+        v-else
+        class="tab-button primary"
+        @click="registerForEvent"
+      >
+        Registrieren
+      </button>
     </nav>
 
-    <!-- Details des Events -->
-    <div class="event-details-card" v-if="view === 'details'">
-      <div class="event-header">
-        <p class="event-date">
-          <i class="icon-calendar"></i><strong> {{ formatDate(event.date) }}</strong>
-        </p>
-      </div>
-      <!-- Veranstalter oben anzeigen -->
-      <div class="organizer-info" @click="goToUser(organizer.username)">
-        Veranstalter:
-        <div class="organizer-avatar" :style="{ backgroundColor: generateColor(organizer.username) }">
-          {{ getInitials(organizer.firstname, organizer.lastname) }}
+    <!-- Main Content -->
+    <div class="content-container">
+      <!-- Details Section -->
+      <div v-if="view === 'details'" class="details-card">
+        <div class="organizer-section">
+          <h3 class="section-title">Veranstalter</h3>
+          <div class="organizer-card" @click="goToUser(organizer.username)">
+            <div 
+              class="organizer-avatar"
+              :style="{ backgroundColor: generateColor(organizer.username) }"
+            >
+              {{ getInitials(organizer.firstname, organizer.lastname) }}
+            </div>
+            <div class="organizer-info">
+              <span class="organizer-name">{{ organizer.firstname }} {{ organizer.lastname }}</span>
+              <span class="organizer-username">@{{ organizer.username }}</span>
+            </div>
+          </div>
         </div>
-        <div class="organizer-details">
-          <p class="organizer-name">
-            {{ organizer.firstname }} {{ organizer.lastname }}
-          </p>
-          <p class="organizer-username">@{{ organizer.username }}</p>
-        </div>
-      </div>
 
-      <div class="event-body">
-        <div class="event-description">
-          <h2>Beschreibung</h2>
-          <p>
-            <strong>{{ event.description }}</strong>
-          </p>
+        <div class="description-section">
+          <h3 class="section-title">Beschreibung</h3>
+          <p class="description-text">{{ event.description }}</p>
         </div>
-        <div class="event-info">
-          <div class="info-item">
-            <i class="icon-time"></i>
-            <span><strong>Startzeit:</strong> {{ event.startTime }}</span>
-          </div>
-          <div class="info-item">
-            <i class="icon-time"></i>
-            <span><strong>Endzeit:</strong> {{ event.endTime }}</span>
-          </div>
-          <div class="info-item">
+
+        <div class="info-grid">
+          <div class="info-card">
             <i class="icon-location"></i>
-            <span><strong>Raum:</strong> {{ event.room.name }}</span>
+            <div class="info-content">
+              <span class="info-label">Ort</span>
+              <span class="info-value">{{ event.room.name }}</span>
+            </div>
           </div>
-          <div class="tag-chips">
-            <span v-for="(tag, index) in eventTags.slice(0, 5)" :key="tag.id" class="chip">
-              {{ tag.name }}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Forum anzeigen -->
-    <div v-if="view === 'forum'">
-      <Forum :threads="event.forumThreads" :focused-thread-id.sync="focusedThreadId" />
-    </div>
-
-    <!-- Liste der angemeldeten Benutzer -->
-    <div v-if="view === 'users'" class="user-list">
-      <div class="user-items">
-        <div v-for="user in sortedUsers" :key="user.username" class="user-item" @click="goToUser(user.username)">
-          <div class="user-avatar" :style="{ backgroundColor: generateColor(user.username) }">
-            {{ getInitials(user.firstname, user.lastname) }}
-          </div>
-          <div class="user-details">
-            <p class="user-fullname">
-              {{ user.firstname }} {{ user.lastname }}
-            </p>
-            <p class="user-username">@{{ user.username }}</p>
-            <p class="user-role">
-              {{ user.role === "ADMIN" ? "Administrator" : "Benutzer" }}
-            </p>
+          
+          <div class="tags-card">
+            <h3 class="section-title">Tags</h3>
+            <div class="tags-container">
+              <span 
+                v-for="tag in eventTags.slice(0, 5)" 
+                :key="tag.id" 
+                class="tag-chip"
+              >
+                {{ tag.name }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- QR-Code Modal -->
-    <div v-if="showQRCodeModal" class="qr-modal-overlay">
-      <div class="qr-modal">
-        <button @click="closeQRCodeModal" class="close-modal-icon" aria-label="Close QR Code Modal">
-          ✕
-        </button>
+      <!-- Forum Section -->
+      <div v-if="view === 'forum'">
+        <Forum 
+          :threads="event.forumThreads" 
+          :focused-thread-id.sync="focusedThreadId" 
+          class="forum-container"
+        />
+      </div>
 
-        <h4>QR-Code für die Anwesenheit</h4>
-        <img :src="qrCodeUrl" alt="QR Code" />
-        <div>
-          <button class="download-button" @click="copyToClipboard" :disabled="!qrCodeLink">
-            QR-Link kopieren
-          </button>
-          <p v-if="copySuccess" class="qr-success-message">
-            QR-Link wurde in die Zwischenablage kopiert!
-          </p>
+      <!-- Users Sections -->
+      <div v-if="view === 'users'" class="event-user-list">
+        <div class="event-user-items">
+          <div 
+            v-for="user in sortedUsers" 
+            :key="user.username" 
+            class="event-user-card"
+            @click="goToUser(user.username)"
+          >
+            <div 
+              class="event-user-avatar"
+              :style="{ backgroundColor: generateColor(user.username) }"
+            >
+              {{ getInitials(user.firstname, user.lastname) }}
+            </div>
+            <div class="event-user-info">
+              <p class="event-user-name">{{ user.firstname }} {{ user.lastname }}</p>
+              <p class="event-user-username">@{{ user.username }}</p>
+              <p class="event-user-role">{{ user.role === "ADMIN" ? "Administrator" : "Benutzer" }}</p>
+            </div>
+          </div>
         </div>
-        <a :href="qrCodeUrl" :download="'event-' + eventId + '-qr-code.png'">
-          <button class="download-button">QR-Code herunterladen</button>
-        </a>
+      </div>
+
+      <!-- QR Code Modal -->
+      <div v-if="showQRCodeModal" class="modal-overlay">
+        <div class="modal-content">
+          <button class="close-button" @click="closeQRCodeModal">×</button>
+          <h3>QR-Code für die Anwesenheit</h3>
+          <img :src="qrCodeUrl" alt="QR Code" class="qr-image" />
+          <div class="modal-actions">
+            <button class="action-button" @click="copyToClipboard" :disabled="!qrCodeLink">
+              Link kopieren
+            </button>
+            <a :href="qrCodeUrl" :download="`event-${eventId}-qr-code.png`">
+              <button class="action-button">Download</button>
+            </a>
+          </div>
+          <p v-if="copySuccess" class="success-message">Link kopiert!</p>
+        </div>
       </div>
     </div>
-
   </div>
 </template>
 

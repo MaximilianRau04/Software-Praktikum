@@ -226,7 +226,7 @@
         <input
           ref="fileInput"
           type="file"
-          accept=".csv"a
+          accept=".csv"
           @change="handleFileUpload"
           style="display: none"
         />
@@ -254,6 +254,7 @@ import EventInviteOnlyList from "./EventInviteOnlyList.vue";
 import EventList from "./EventList.vue";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import api from "@/util/api";
 
 const showWorkshopBox = ref(false);
 const showExchangeDayBox = ref(false);
@@ -269,7 +270,6 @@ const exchangeDays = ref([]);
 const users = ref([]);
 const experienceLevels = ref([]);
 const allTags = ref([]);
-const filteredTags = ref([]);
 const fileInput = ref<HTMLInputElement | null>(null);
 const allForms = {
   showExchangeDayBox,
@@ -294,28 +294,28 @@ const fetchData = async () => {
   try {
     const [exchangeDaysResponse, usersResponse, levelsResponse] =
       await Promise.all([
-        fetch(`${config.apiBaseUrl}/exchange-days`),
-        fetch(`${config.apiBaseUrl}/users`),
-        fetch(`${config.apiBaseUrl}/events/experience-levels`),
+        api.get(`/exchange-days`),
+        api.get(`/users`),
+        api.get(`/events/experience-levels`),
       ]);
-    if (!exchangeDaysResponse.ok) {
+    if (exchangeDaysResponse.status !== 200) {
       showToast(
         new Toast("Error", "Fehler beim Laden der Exchange Days", "error")
       );
     }
-    if (!usersResponse.ok) {
+    if (usersResponse.status !== 200) {
       showToast(new Toast("Error", "Fehler beim Laden der Benutzer", "error"));
     }
-    if (!levelsResponse.ok) {
+    if (levelsResponse.status !== 200) {
       showToast(
         new Toast("Error", "Fehler beim Laden der Erfahrungslevel", "error")
       );
     }
     fetchTags();
 
-    exchangeDays.value = await exchangeDaysResponse.json();
-    users.value = await usersResponse.json();
-    experienceLevels.value = await levelsResponse.json();
+    exchangeDays.value = await exchangeDaysResponse.data;
+    users.value = await usersResponse.data;
+    experienceLevels.value = await levelsResponse.data;
   } catch (error) {
     showToast(new Toast("Error", "Fehler beim Laden der Daten", "error"));
   }
@@ -326,11 +326,10 @@ const fetchData = async () => {
  */
 const fetchTags = async () => {
   try {
-    const response = await fetch(`${config.apiBaseUrl}/tags`);
-    if (response.ok) {
-      const tags = await response.json();
-      allTags.value = tags.map((tag) => tag.name);
-      filteredTags.value = [...allTags.value];
+    const response = await api.get(`/tags`);
+    if (response.status === 200) {
+      const tags = await response.data;
+      allTags.value = tags;
     } else {
       showToast(new Toast("Error", "Fehler beim Abrufen der Tags", "error"));
     }
@@ -402,14 +401,16 @@ const resetForms = (currentForm) => {
 /**
  * download CSV file of todos
  */
-async function downloadCsvOfResources() {
+/**
+ * Download CSV file of resources
+ */
+ async function downloadCsvOfResources() {
   try {
-    const response = await fetch(
-      `${config.apiBaseUrl}/resources/csv-downloads`
-    );
-    if (!response.ok) throw new Error("Download fehlgeschlagen!");
+    const response = await api.get('/resources/csv-downloads', {
+      responseType: 'blob'
+    });
 
-    const blob = await response.blob();
+    const blob = response.data;
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -425,15 +426,12 @@ async function downloadCsvOfResources() {
   }
 }
 
-/**
- * Trigger file input click
- */
 const triggerFileUpload = () => {
   fileInput.value?.click();
 };
 
 /**
- * Handles the file upload event and sends the CSV to the backend
+ * Handle file upload and CSV import
  */
 const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -447,16 +445,12 @@ const handleFileUpload = async (event: Event) => {
   formData.append("file", file);
 
   try {
-    const response = await fetch(`${config.apiBaseUrl}/resources/csv-import`, {
-      method: "POST",
-      body: formData,
+    await api.post('/resources/csv-import', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      responseType: 'text'
     });
-
-    const responseText = await response.text();
-
-    if (!response.ok) {
-      throw new Error(responseText || "Import fehlgeschlagen!");
-    }
 
     showToast(new Toast("Success", "CSV erfolgreich importiert!", "success"));
     await fetchData();

@@ -16,8 +16,10 @@
 import { ref, onMounted, watch } from "vue";
 import NotificationCardBase from "./NotificationCardBase.vue";
 import { useRouter } from "vue-router";
-import Cookies from "js-cookie";
+import api from "@/util/api";
 import config from "@/config";
+import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default {
   components: { NotificationCardBase },
@@ -38,16 +40,22 @@ export default {
       }
 
       try {
-        const badgeImageResponse = await fetch(
-          `${config.apiBaseUrl}/rewards/badge?type=${props.notification.context.rewardType}&currentLevel=${props.notification.context.currentLevel}`
-        );
+        const badgeImageResponse = await api.get(`/rewards/badge?type=${props.notification.context.rewardType}&currentLevel=${props.notification.context.currentLevel}`);
 
         if (!badgeImageResponse.ok) throw new Error("Badge image fetch failed");
 
         const badgeImageBlob = await badgeImageResponse.blob();
         rewardPng.value = URL.createObjectURL(badgeImageBlob);
       } catch (err) {
-        console.error("Error fetching badge image:", err);
+        showToast(
+            new Toast(
+              "Fehler",
+              `Icon der Errungenschaft konnte nicht geladen werden.`,
+              "error",
+              faXmark,
+              5,
+            ),
+          );
       }
     };
 
