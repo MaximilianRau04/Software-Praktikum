@@ -171,13 +171,7 @@
             <button type="submit" class="btn-primary">
               {{ isEditing ? "Speichern" : "Thread erstellen" }}
             </button>
-            <button
-              type="button"
-              class="btn-secondary cancel-btn"
-              @click="showModal = false"
-            >
-              Abbrechen
-            </button>
+            <button class="close-button" @click="showModal = false">×</button>
           </div>
         </form>
       </div>
@@ -186,9 +180,6 @@
 </template>
 
 <script>
-import axios from "axios";
-import Cookies from "js-cookie";
-import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import api from "@/util/api";
@@ -587,6 +578,10 @@ export default {
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
+.no-resize {
+  resize: none;
+}
+
 .thread-item:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
@@ -609,7 +604,7 @@ export default {
 
 .btn-primary,
 .btn-secondary {
-  padding: 10px 15px;
+  padding: 8px 12px;
   border-radius: 8px;
   font-size: 0.95em;
   cursor: pointer;
@@ -618,25 +613,32 @@ export default {
 }
 
 .btn-primary {
-  background-color: #007bff;
+  background-color: #009ee2;
   color: #fff;
+  margin-right: 1%;
 }
 
 .btn-primary:hover {
-  background-color: #0056b3;
+  background-color: #0180b6;
 }
 
 .btn-secondary {
-  background-color: #6c757d;
-  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.95em;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
 }
 
 .btn-secondary:hover {
-  background-color: #565e64;
+  background-color: #bbc4cb;
 }
 
 .delete-btn {
   background-color: #dc3545;
+  color: white;
 }
 
 .delete-btn:hover {
@@ -645,6 +647,7 @@ export default {
 
 .edit-btn {
   background-color: #28a745;
+  color: white;
 }
 
 .edit-btn:hover {
@@ -685,12 +688,22 @@ export default {
 }
 
 .post-item {
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem; 
   background-color: #fefefe;
   border: 1px solid #ddd;
   border-radius: 10px;
   margin-bottom: 1rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+
+.post-content-wrapper {
+  flex: 1;
+  margin-right: 1.5rem;
+  text-align: left; 
 }
 
 .post-header {
@@ -708,8 +721,10 @@ export default {
 
 .post-actions {
   display: flex;
+  flex-direction: row;
   gap: 10px;
-  margin-top: 10px;
+  min-width: fit-content;
+  align-self: flex-end
 }
 
 .input-field {
@@ -735,6 +750,17 @@ export default {
   margin-bottom: 1rem;
 }
 
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+}
+
 @media (max-width: 768px) {
   .thread-item {
     flex-direction: column;
@@ -747,6 +773,23 @@ export default {
 
   .modal-content {
     width: 95%;
+  }
+  .post-item {
+    flex-direction: column;
+  }
+  .post-content-wrapper {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+
+  .post-actions {
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .btn-secondary {
+    flex: 1;
+    text-align: center;
   }
 }
 </style>

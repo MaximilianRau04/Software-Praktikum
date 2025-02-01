@@ -19,7 +19,7 @@
         <h2>Noch keine Daten verfügbar</h2>
         <p>Bitte kommen Sie später wieder, um die Event-Zusammenfassung zu sehen.</p>
         <!-- Optional: Add retry button -->
-        <button @click="fetchData">Erneut versuchen</button>
+        <button @click="fetchData" class="back-button">Erneut versuchen</button>
       </div>
 
       <div v-else>

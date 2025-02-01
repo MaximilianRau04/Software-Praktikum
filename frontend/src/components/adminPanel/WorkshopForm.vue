@@ -63,8 +63,14 @@
 
       <div class="input-group">
         <label for="tags">Event Tags</label>
-        <TagInput v-if="selectedTags && allTags" v-model="selectedTags" :available-tags="allTags" :tagSelect="false"
-          @new-tag="handleNewTag" />
+        <TagInput 
+          v-if="selectedTags && allTags" 
+          v-model="selectedTags" 
+          :available-tags="allTags" 
+          :tagSelect="false"
+          @new-tag="handleNewTag"
+          @keydown.enter.prevent  
+        />
       </div>
 
       <div class="checkbox-container">
@@ -72,7 +78,7 @@
         <input type="checkbox" id="inviteOnly" v-model="inviteOnly" />
       </div>
 
-      <button type="submit" class="login-button" @click="createWorkshop">
+      <button type="submit" class="action-button" @click="createWorkshop">
         Event erstellen
       </button>
     </form>
@@ -81,8 +87,6 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
-import config from "@/config";
-import Cookies from "js-cookie";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import api from "@/util/api";
@@ -196,7 +200,7 @@ const createWorkshop = async () => {
       showToast(
         new Toast(
           "Fehler",
-          `Der Workshop konnte nicht angelegt werden.`,
+          `Das Event konnte nicht angelegt werden.`,
           "error",
           faXmark,
           5,
@@ -208,7 +212,7 @@ const createWorkshop = async () => {
     showToast(
       new Toast(
         "Fehler",
-        `Der Workshop konnte nicht angelegt werden.`,
+        `Das Event konnte nicht angelegt werden.`,
         "error",
         faXmark,
         5,
@@ -222,6 +226,9 @@ const selectedExchangeDay = computed(() =>
 );
 
 const handleNewTag = (newTag) => {
+  if (newTag.key === 'Enter') {
+    newTag.preventDefault();
+  }
   api.post(`/tags`, newTag)
     .then(response => {
       allTags.value.push(response.data);

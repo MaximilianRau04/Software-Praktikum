@@ -315,7 +315,7 @@ const showDetails = (eventId) => {
 }
 
 .event-details {
-  background-color: #EAEAEA;
+  background-color: #f1f5f9;
   border: 1px solid #01172F;
   border-radius: 8px;
   padding: 1rem;

@@ -51,7 +51,7 @@
         <input type="text" id="houseNumber" v-model="houseNumber" required />
       </div>
 
-      <button type="submit" class="login-button">Erstelle Location</button>
+      <button type="submit" class="action-button">Erstelle Location</button>
     </form>
   </div>
 </template>

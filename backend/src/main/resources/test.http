@@ -209,7 +209,7 @@ GET http://localhost:8080/api/users/1/pendingFeedbackEvents
 ###
 GET http://localhost:8080/api/resources/type/ROOM
 ###
-GET http://localhost:8080/api/users
+GET http://localhost:8080/api/users/1/registeredEvents
 ###
 POST http://localhost:8080/api/auth/signup
 Content-Type: application/json

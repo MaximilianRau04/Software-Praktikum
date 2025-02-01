@@ -195,7 +195,7 @@ const showFeedbackSummary = (eventId) => {
   max-width: 600px;
   margin: 10px auto;
   padding: 15px;
-  background-color: #EAEAEA;
+  background-color: #f1f5f9;
   border-radius: 8px;
   border: 1px solid #000000;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

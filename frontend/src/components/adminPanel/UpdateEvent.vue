@@ -317,7 +317,7 @@ const updateEvent = async () => {
     endTime: endTime.value,
     roomId: room.value,
     recommendedExperience: recommendedExperience.value,
-    tags: selectedTags.value,
+    tags: selectedTags.value.map(tag => tag.name),
     organizerId: organizerId.value,
     exchangeDayId: exchangeDayId.value,
   };

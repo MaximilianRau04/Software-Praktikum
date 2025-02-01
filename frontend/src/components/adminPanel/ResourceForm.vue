@@ -37,7 +37,7 @@
           </option>
         </select>
       </div>
-      <button type="submit" class="login-button">Ressource erstellen</button>
+      <button type="submit" class="action-button">Ressource erstellen</button>
     </form>
   </div>
 </template>

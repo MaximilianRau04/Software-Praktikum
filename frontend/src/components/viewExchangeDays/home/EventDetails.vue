@@ -82,6 +82,9 @@ function formatDate(timestamp: string): string {
   return date.toLocaleDateString("de-DE");
 }
 
+/**
+ * Fetches the organizer of the event.
+ */
 async function fetchOrganizer() {
   try {
     const response = await api.get(`/events/${props.event.id}/organizer`);
@@ -99,6 +102,9 @@ async function fetchOrganizer() {
   }
 }
 
+/**
+ * Fetches the tags of the event.
+ */
 async function fetchTags() {
   try {
     const response = await api.get(`/events/${props.event.id}/tags`);

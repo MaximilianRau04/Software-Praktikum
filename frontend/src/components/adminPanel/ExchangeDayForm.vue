@@ -1,7 +1,7 @@
 <template>
   <div class="create-box">
     <h2 class="login-header">Neuer Exchange Day</h2>
-    <form>
+    <form @submit.prevent="createExchangeDay">
       <div class="input-group">
         <label for="exchangeName">Name</label>
         <input type="text" id="exchangeName" v-model="exchangeName" required />
@@ -33,7 +33,7 @@
           v-model="exchangeDescription"
         />
       </div>
-      <button type="submit" class="login-button" @click="createExchangeDay">
+      <button type="submit" class="action-button">
         Exchange Day erstellen
       </button>
     </form>

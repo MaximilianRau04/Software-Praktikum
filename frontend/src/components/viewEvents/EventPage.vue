@@ -7,23 +7,27 @@
 
     <!-- Event Header -->
     <div class="event-header">
-      <h1 class="event-title">{{ event.name || "Eventname wird geladen..." }}</h1>
+      <h1 class="event-title">
+        {{ event.name || "Eventname wird geladen..." }}
+      </h1>
       <div class="event-meta">
         <span class="event-date">{{ formatDate(event.date) }}</span>
-        <span class="event-time">{{ event.startTime }} - {{ event.endTime }}</span>
+        <span class="event-date"
+          >{{ event.startTime }} - {{ event.endTime }}</span
+        >
       </div>
     </div>
 
     <!-- Navigation Tabs -->
     <nav class="tabs-container">
-      <button 
+      <button
         class="tab-button"
         :class="{ 'active-tab': view === 'details' }"
         @click="showDetails"
       >
         Details
       </button>
-      <button 
+      <button
         v-if="isAlreadyRegistered || isAdmin"
         class="tab-button"
         :class="{ 'active-tab': view === 'forum' }"
@@ -31,14 +35,14 @@
       >
         Forum
       </button>
-      <button 
+      <button
         class="tab-button"
         :class="{ 'active-tab': view === 'users' }"
         @click="showUsers"
       >
         Teilnehmer
       </button>
-      <button 
+      <button
         v-if="isAdmin"
         class="tab-button"
         :class="{ 'active-tab': view === 'feedback' }"
@@ -46,7 +50,7 @@
       >
         Feedback
       </button>
-      <button 
+      <button
         v-if="isAdmin"
         class="tab-button"
         :class="{ 'active-tab': view === 'qr' }"
@@ -54,18 +58,14 @@
       >
         QR-Code
       </button>
-      <button 
+      <button
         v-if="isAlreadyRegistered"
         class="tab-button danger"
         @click="unregisterFromEvent"
       >
         Abmelden
       </button>
-      <button 
-        v-else
-        class="tab-button primary"
-        @click="registerForEvent"
-      >
+      <button v-else class="tab-button primary" @click="registerForEvent">
         Registrieren
       </button>
     </nav>
@@ -77,53 +77,58 @@
         <div class="organizer-section">
           <h3 class="section-title">Veranstalter</h3>
           <div class="organizer-card" @click="goToUser(organizer.username)">
-            <div 
+            <div
               class="organizer-avatar"
               :style="{ backgroundColor: generateColor(organizer.username) }"
             >
               {{ getInitials(organizer.firstname, organizer.lastname) }}
             </div>
             <div class="organizer-info">
-              <span class="organizer-name">{{ organizer.firstname }} {{ organizer.lastname }}</span>
+              <span class="organizer-name"
+                >{{ organizer.firstname }} {{ organizer.lastname }}</span
+              >
               <span class="organizer-username">@{{ organizer.username }}</span>
             </div>
           </div>
         </div>
 
-        <div class="description-section">
-          <h3 class="section-title">Beschreibung</h3>
-          <p class="description-text">{{ event.description }}</p>
-        </div>
-
-        <div class="info-grid">
-          <div class="info-card">
-            <i class="icon-location"></i>
-            <div class="info-content">
-              <span class="info-label">Ort</span>
-              <span class="info-value">{{ event.room.name }}</span>
+        <div class="details-grid">
+            <div class="description-section">
+            <h3 class="section-title">Beschreibung</h3>
+            <p v-if="event.description" class="description-text">{{ event.description }}</p>
+            <p v-else class="description-text">Keine Beschreibung verfügbar.</p>
             </div>
-          </div>
-          
-          <div class="tags-card">
+
+            <div class="tags-section">
             <h3 class="section-title">Tags</h3>
             <div class="tags-container">
-              <span 
-                v-for="tag in eventTags.slice(0, 5)" 
-                :key="tag.id" 
-                class="tag-chip"
+              <span
+              v-if="eventTags.length > 0"
+              v-for="tag in eventTags.slice(0, 5)"
+              :key="tag.id"
+              class="tag-chip"
               >
-                {{ tag.name }}
+              {{ tag.name }}
               </span>
+              <p v-else class="no-tags-text">Keine Tags verfügbar.</p>
             </div>
+            </div>
+        </div>
+
+        <div class="info-card">
+          <i class="location-icon icon-location"></i>
+          <div class="info-content">
+            <span class="info-label">Ort:</span>
+            <span class="info-value">{{ event.room.name }}</span>
           </div>
         </div>
       </div>
 
       <!-- Forum Section -->
       <div v-if="view === 'forum'">
-        <Forum 
-          :threads="event.forumThreads" 
-          :focused-thread-id.sync="focusedThreadId" 
+        <Forum
+          :threads="event.forumThreads"
+          :focused-thread-id.sync="focusedThreadId"
           class="forum-container"
         />
       </div>
@@ -131,22 +136,26 @@
       <!-- Users Sections -->
       <div v-if="view === 'users'" class="event-user-list">
         <div class="event-user-items">
-          <div 
-            v-for="user in sortedUsers" 
-            :key="user.username" 
+          <div
+            v-for="user in sortedUsers"
+            :key="user.username"
             class="event-user-card"
             @click="goToUser(user.username)"
           >
-            <div 
+            <div
               class="event-user-avatar"
               :style="{ backgroundColor: generateColor(user.username) }"
             >
               {{ getInitials(user.firstname, user.lastname) }}
             </div>
             <div class="event-user-info">
-              <p class="event-user-name">{{ user.firstname }} {{ user.lastname }}</p>
+              <p class="event-user-name">
+                {{ user.firstname }} {{ user.lastname }}
+              </p>
               <p class="event-user-username">@{{ user.username }}</p>
-              <p class="event-user-role">{{ user.role === "ADMIN" ? "Administrator" : "Benutzer" }}</p>
+              <p class="event-user-role">
+                {{ user.role === "ADMIN" ? "Administrator" : "Benutzer" }}
+              </p>
             </div>
           </div>
         </div>
@@ -159,7 +168,11 @@
           <h3>QR-Code für die Anwesenheit</h3>
           <img :src="qrCodeUrl" alt="QR Code" class="qr-image" />
           <div class="modal-actions">
-            <button class="action-button" @click="copyToClipboard" :disabled="!qrCodeLink">
+            <button
+              class="action-button"
+              @click="copyToClipboard"
+              :disabled="!qrCodeLink"
+            >
               Link kopieren
             </button>
             <a :href="qrCodeUrl" :download="`event-${eventId}-qr-code.png`">
@@ -177,7 +190,6 @@
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import config from "@/config";
-import Cookies from "js-cookie";
 import { Event } from "@/types/Event";
 import Forum from "@/components/forum/Forum.vue";
 import "@/assets/event-page.css";
@@ -217,8 +229,6 @@ const organizer = ref({ username: "", id: 0, firstname: "", lastname: "" });
 const registeredUsers = ref([]);
 const sortedUsers = ref([]);
 const view = ref("details");
-const userId = Cookies.get("userId");
-const userRole = Cookies.get("role");
 const route = useRoute();
 const router = useRouter();
 const eventId = Number(route.params?.eventId);
@@ -258,8 +268,7 @@ const fetchEventDetails = async () => {
     const eventData = await response.data;
     event.value = eventData;
 
-    const organizerResponse = await api.get(`/events/${eventId}/organizer`,
-    );
+    const organizerResponse = await api.get(`/events/${eventId}/organizer`);
     const organizerData = await organizerResponse.data;
     organizer.value = organizerData;
 
@@ -271,8 +280,8 @@ const fetchEventDetails = async () => {
         `Exchange Days konnten nicht geladen werden: ${error.message}`,
         "error",
         faXmark,
-        5,
-      ),
+        5
+      )
     );
   }
 };
@@ -282,13 +291,12 @@ const fetchEventDetails = async () => {
  */
 const fetchRegisteredUsers = async () => {
   try {
-    const response = await api.get(`/events/${eventId}/registeredUsers`,
-    );
+    const response = await api.get(`/events/${eventId}/registeredUsers`);
     const userData = await response.data;
     registeredUsers.value = userData;
 
     sortedUsers.value = [...userData].sort((a, b) =>
-      a.username.localeCompare(b.username),
+      a.username.localeCompare(b.username)
     );
   } catch (error) {
     showToast(
@@ -297,8 +305,8 @@ const fetchRegisteredUsers = async () => {
         `Registrierte Nutzer konnten nicht geladen werden.`,
         "error",
         faXmark,
-        5,
-      ),
+        5
+      )
     );
   }
 };
@@ -318,8 +326,8 @@ const fetchTagsForEvent = async () => {
         `Event-Tags für Event: ${eventId} konnten nicht geladen werden.`,
         "error",
         faXmark,
-        5,
-      ),
+        5
+      )
     );
     eventTags.value = [];
   }
@@ -367,8 +375,8 @@ const openQRCode = async () => {
           `Anwesenheitstoken für Event: ${eventId} konnte nicht geladen werden.`,
           "error",
           faXmark,
-          5,
-        ),
+          5
+        )
       );
     }
 
@@ -384,8 +392,8 @@ const openQRCode = async () => {
         `Fehler beim Öffnen des QR-Codes.`,
         "error",
         faXmark,
-        10,
-      ),
+        10
+      )
     );
   }
 };
@@ -399,11 +407,11 @@ const copyToClipboard = async () => {
       await navigator.clipboard.writeText(qrCodeLink.value);
       copySuccess.value = true;
     } catch (error) {
-      const textArea = document.createElement('textarea');
+      const textArea = document.createElement("textarea");
       textArea.value = qrCodeLink.value;
       document.body.appendChild(textArea);
       textArea.select();
-      document.execCommand('copy');
+      document.execCommand("copy");
       document.body.removeChild(textArea);
       copySuccess.value = true;
     }
@@ -431,10 +439,11 @@ const openFeedback = () => {
 const unregisterFromEvent = async () => {
   try {
     const userId = useAuth().getUserId();
-    const response = await api.delete(`/users/${userId}/eventRegistration?eventId=${eventId}`,
+    const response = await api.delete(
+      `/users/${userId}/eventRegistration?eventId=${eventId}`,
       {
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
     if (response.status !== 204) {
       showToast(
@@ -443,8 +452,8 @@ const unregisterFromEvent = async () => {
           `Abmeldung fehlgeschlagen. Versuchen Sie es erneut.`,
           "error",
           faXmark,
-          5,
-        ),
+          5
+        )
       );
       return;
     }
@@ -454,8 +463,8 @@ const unregisterFromEvent = async () => {
         `Sie wurden erfolgreich von ${event.value.name} abgemeldet!`,
         "success",
         faCheck,
-        5,
-      ),
+        5
+      )
     );
     router.push("/home");
   } catch (error) {
@@ -465,8 +474,8 @@ const unregisterFromEvent = async () => {
         `Sie konnten nicht vom Event abgemeldet werden.`,
         "error",
         faXmark,
-        5,
-      ),
+        5
+      )
     );
   }
 };
@@ -478,7 +487,7 @@ const checkRegistrationStatus = async () => {
   const userId = useAuth().getUserId();
   if (!userId) {
     useAuth().clearToken();
-    router.push('/login')
+    router.push("/login");
     return;
   }
   try {
@@ -488,11 +497,11 @@ const checkRegistrationStatus = async () => {
     const registeredEvents = await response.data;
 
     isAlreadyRegistered.value = registeredEvents.some(
-      (event: { id: number }) => event.id === eventId,
+      (event: { id: number }) => event.id === eventId
     );
   } catch (error) {
     showToast(
-      new Toast("Fehler", `Fehler bei der Registrierung`, "error", faXmark, 5),
+      new Toast("Fehler", `Fehler bei der Registrierung`, "error", faXmark, 5)
     );
     isAlreadyRegistered.value = false;
   }
@@ -510,18 +519,19 @@ const registerForEvent = async () => {
 
     if (!auth.isAuthenticated) {
       router.push({
-        name: 'login',
-        query: { returnUrl: `/events/${eventId}` }
+        name: "login",
+        query: { returnUrl: `/events/${eventId}` },
       });
       return;
     }
 
-    const response = await api.post(`/users/${userId}/eventRegistration?eventId=${eventId}`,
+    const response = await api.post(
+      `/users/${userId}/eventRegistration?eventId=${eventId}`,
       {
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (response.status === 404) {
@@ -531,12 +541,18 @@ const registerForEvent = async () => {
           `Registrierung fehlgeschlagen. Bitte versuchen sie es erneut`,
           "error",
           faXmark,
-          5,
-        ),
+          5
+        )
       );
     } else if (response.status === 409) {
       showToast(
-        new Toast("Fehler", `Sie sind bereits für dieses Event registriert`, "error", faXmark, 5),
+        new Toast(
+          "Fehler",
+          `Sie sind bereits für dieses Event registriert`,
+          "error",
+          faXmark,
+          5
+        )
       );
     } else if (response.status === 201) {
       showToast(
@@ -545,8 +561,8 @@ const registerForEvent = async () => {
           `Sie wurden erfolgreich zu ${event.value.name} angemeldet!`,
           "success",
           faCheck,
-          5,
-        ),
+          5
+        )
       );
       isAlreadyRegistered.value = true;
     }
@@ -557,8 +573,8 @@ const registerForEvent = async () => {
         `Sie konnten nicht zum Event registriert werden.`,
         "error",
         faXmark,
-        5,
-      ),
+        5
+      )
     );
   }
 };

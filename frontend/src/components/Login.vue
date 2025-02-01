@@ -48,11 +48,12 @@
 
             <div class="input-group password-group">
               <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Passwort" required
-                class="auth-input" />
+              class="auth-input" />
               <button type="button" class="password-toggle" @click="showPassword = !showPassword">
-                <font-awesome-icon :icon="showPassword ? 'eye-slash' : 'eye'" class="password-icon" />
+              <font-awesome-icon :icon="showPassword ? 'eye-slash' : 'eye'" class="password-icon" />
               </button>
             </div>
+            <small class="password-info">Das Passwort muss zwischen 6 und 40 Zeichen lang sein.</small>
 
             <div class="input-group password-group">
               <input :type="showPassword ? 'text' : 'password'" v-model="passwordRepeat"

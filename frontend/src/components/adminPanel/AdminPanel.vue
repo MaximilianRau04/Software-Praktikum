@@ -300,6 +300,7 @@ const resetForms = (currentForm) => {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
+    const filename = 'resources.csv';
     link.download = filename;
     document.body.appendChild(link);
     link.click();
@@ -412,7 +413,7 @@ const handleFileUpload = async (event: Event) => {
 }
 
 .sidebar-section {
-  margin-bottom: 2rem;
+  margin-bottom: 1.7rem;
 }
 
 .sidebar-title {

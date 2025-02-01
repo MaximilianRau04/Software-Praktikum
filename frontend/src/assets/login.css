@@ -185,3 +185,10 @@
 .v-popper__arrow {
   border-color: #ddd !important;
 }
+
+small {
+  font-size: 0.75rem;
+  color: #7f8c8d;
+  display: block;
+  margin-top: -3%;
+}
