@@ -147,6 +147,9 @@ import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import '@/assets/login.css'
 
+import { showToast, Toast } from "@/types/toasts";
+import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
+
 import TagInput from './profile/TagInput.vue';
 import { Tag } from "@/types/Tag";
 
@@ -224,13 +227,30 @@ const handleRegistration = async () => {
       const response = await api.post(`/auth/signup`, userRegisterData);
 
       if (response.status === 200) {
-        console.log('Registering user:', userRegisterData);
-        router.push('/login');
+        changeToLogin();
+
+        showToast(
+        new Toast(
+          "Erfolg",
+          `Sie haben sich erfolgreich registriert. Fahren Sie mit dem Login fort.`,
+          "success",
+          faXmark,
+          5
+        )
+      );
       }
       // Add toast based on error messages from backend
 
     } catch (error) {
-      console.error('Registration failed:', error);
+      showToast(
+        new Toast(
+          "Fehler",
+          `Registrierung ist fehlgeschlagen. Versuchen Sie es später erneut.`,
+          "error",
+          faXmark,
+          5
+        )
+      );
     }
   }
 };
@@ -245,13 +265,19 @@ const handleLogin = async () => {
     const response = await api.post(`/auth/signin`, userLoginData);
     setToken(response.data.token);
     if (response.status === 200) {
-      console.log('Sign in User:', userLoginData);
       router.push('/home');
     }
     // add toast for bad credentials or not found etc.
-    console.log(response.statusText)
   } catch (error) {
-    console.error('Registration failed:', error);
+    showToast(
+        new Toast(
+          "Fehler",
+          `${error.statusText}`,
+          "error",
+          faXmark,
+          5
+        )
+      );
   }
 };
 
@@ -262,7 +288,6 @@ const changeToLogin = () => {
 };
 
 const resetForm = () => {
-  // Reset all form fields
   username.value = '';
   password.value = '';
   passwordRepeat.value = '';
