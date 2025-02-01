@@ -184,9 +184,8 @@ public class UserService {
     public Iterable<EventResponseDTO> getPendingFeedbackEvents(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
         return user.getParticipations().stream()
-                .filter(part -> part.getIsParticipationConfirmed() && !part.getFeedbackGiven())
+                .filter(part -> !part.getFeedbackGiven())
                 .map(part -> new EventResponseDTO(part.getEvent()))
                 .collect(Collectors.toSet());
     }

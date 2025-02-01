@@ -434,17 +434,25 @@ h2 h3 p {
 }
 
 .add-users-button {
-  margin-top: 10px;
-  padding: 8px 16px;
   background-color: #009EE2;
   color: white;
   border: none;
-  cursor: pointer;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
   border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  width: auto;  
 }
 
 .add-users-button:hover {
   background-color: #007bb5;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .modal-content {

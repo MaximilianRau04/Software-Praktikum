@@ -36,4 +36,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
             WHERE user_id = :userId
             """, nativeQuery = true)
     LeaderboardEntry findCurrentUserPosition(@Param("userId") Long userId);
+
 }
