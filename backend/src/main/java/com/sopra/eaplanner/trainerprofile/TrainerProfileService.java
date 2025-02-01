@@ -105,29 +105,9 @@ public class TrainerProfileService {
         return setTags.stream().map(TagResponseDTO::new).collect(Collectors.toList());
     }
 
-    public TrainerProfileResponseDTO createTrainerProfile(TrainerProfileRequestDTO request) {
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        if (user.getRole() != User.Role.ADMIN) {
-            throw new IllegalArgumentException("Only users with ADMIN role can create a trainer profile.");
-        }
-
-        TrainerProfile savedProfile = trainerProfileRepository.save(new TrainerProfile(request, user));
-
-        return new TrainerProfileResponseDTO(savedProfile);
-    }
-
     public TrainerProfileResponseDTO updateTrainerProfile(Long id, TrainerProfileRequestDTO request) {
         TrainerProfile existingProfile = trainerProfileRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Trainer Profile not found"));
-
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        if (user.getRole() != User.Role.ADMIN) {
-            throw new IllegalArgumentException("Only users with ADMIN role can update a trainer profile.");
-        }
 
         existingProfile.setBio(request.getBio());
 

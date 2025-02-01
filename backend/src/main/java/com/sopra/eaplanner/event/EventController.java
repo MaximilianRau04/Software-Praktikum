@@ -1,5 +1,6 @@
 package com.sopra.eaplanner.event;
 
+import com.sopra.eaplanner.auth.security.jwt.JwtUtils;
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.dtos.EventRequestDTO;
 import com.sopra.eaplanner.event.participation.ConfirmAttendanceDTO;
@@ -13,19 +14,25 @@ import com.sopra.eaplanner.feedback.summary.FeedbackSummaryDTO;
 import com.sopra.eaplanner.forumthread.ForumThreadResponseDTO;
 import com.sopra.eaplanner.locations.LocationDTO;
 import com.sopra.eaplanner.resource.dtos.ResourceResponse;
+import com.sopra.eaplanner.user.User;
+import com.sopra.eaplanner.user.UserRepository;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.jsoup.HttpStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * REST controller for managing events in the system.
@@ -43,6 +50,13 @@ public class EventController {
 
     @Autowired
     private FeedbackService feedbackService;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private EventRepository eventRepository;
 
     /**
      * Retrieves all events, or filters events based on a list of tags.
@@ -142,6 +156,7 @@ public class EventController {
      * @return A summary of feedback for the event.
      */
     @GetMapping("/{id}/summary")
+    @PreAuthorize("hasRole('ADMIN')")
     public FeedbackSummaryDTO getFeedbackSummary(@PathVariable Long id) {
         return feedbackService.generateFeedbackSummary(id);
     }
@@ -160,6 +175,29 @@ public class EventController {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)
                 .body(file);
+    }
+
+    /**
+     * Checks for the eligibility of a user to provide feedback for the given Event.
+     * Requires the user to be registered to the event and have their attendance confirmed.
+     *
+     * @param eventId The ID of the event to check feedback eligibility for
+     * @return A mapped true boolean if all necessary checks are passed
+     * @throws ResponseStatusException 401 if not logged in, 403 if not eligible for feedback
+     */
+    @GetMapping("/{eventId}/feedback-eligibility")
+    public ResponseEntity<?> isUserEligibleForFeedback(@PathVariable Long eventId, HttpServletRequest request) {
+        String username = jwtUtils.getUserNameFromRequest(request);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist"));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event doesn't exist"));
+
+        if (!event.getRegisteredUsers().contains(user)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not eligible");
+        }
+
+        return new ResponseEntity<>(Map.of("isEligible", true), HttpStatus.OK);
     }
 
     /**

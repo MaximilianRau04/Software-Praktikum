@@ -45,6 +45,7 @@ import { ref, onMounted, watch } from "vue";
 import { defineEmits } from "vue";
 import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
+import api from "@/util/api";
 
 const exchangeName = ref("");
 const startDate = ref("");
@@ -62,21 +63,19 @@ const locationsApiUrl = `${config.apiBaseUrl}/locations`;
  * Creates a new Exchange Day using the form data.
  */
 const createExchangeDay = async () => {
-  try {
-    const response = await fetch(exchangeApiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+  const exchangeDayData = {
         name: exchangeName.value,
         startDate: startDate.value,
         endDate: endDate.value,
         locationId: location.value.id,
         description: exchangeDescription.value,
-      }),
-    });
+      }
 
-    if (response.ok) {
-      const data = await response.json();
+  try {
+    const response = await api.post(`/exchange-days`, exchangeDayData);
+
+    if (response.status === 201) {
+      const data = await response.data;
       showToast(
         new Toast("Success", "Exchange Day erfolgreich erstellt", "success"),
       );
@@ -135,9 +134,9 @@ watch(startDate, (newStartDate) => {
 onMounted(async () => {
   setStartDateToToday();
   try {
-    const response = await fetch(locationsApiUrl);
-    if (response.ok) {
-      const data = await response.json();
+    const response = await api.get(`/locations`);
+    if (response.status === 200) {
+      const data = await response.data;
       locations.value = data;
     }
   } catch (error) {

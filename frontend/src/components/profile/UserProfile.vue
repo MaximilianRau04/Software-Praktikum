@@ -134,7 +134,10 @@
 
 <script>
 import config from "@/config";
-import Cookies from "js-cookie";
+import { useAuth } from "@/util/auth";
+
+import { showToast, Toast } from "@/types/toasts";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default {
   name: "UserProfile",
@@ -157,29 +160,28 @@ export default {
   },
   computed: {
     isOwnProfile() {
-      return Number(this.user.id) === Number(Cookies.get("userId"));
+      const auth = useAuth();
+      return Number(this.user.id) === auth.getUserId;
     },
   },
   methods: {
     async fetchProfile() {
-      if(this.user.role === 'ADMIN'){
+      const auth = useAuth();
+
+      if(auth.isAdmin.value){
         return;
       }
       try {
-        const badgesResponse = await fetch(
-          `${config.apiBaseUrl}/users/${this.user.id}/rewards`,
-        );
-        if (!badgesResponse.ok) {
+        const badgesResponse = await api.get(`/users/${this.user.id}/rewards`);
+        if (badgesResponse.status !== 200) {
           throw new Error("Badges data fetch failed");
         }
         const badgeData = await badgesResponse.json();
 
         this.badges = await Promise.all(
           badgeData.map(async (badge) => {
-            const badgeImageResponse = await fetch(
-              `${config.apiBaseUrl}/rewards/badge?type=${badge.type}&currentLevel=${badge.currentLevel}`,
-            );
-            if (!badgeImageResponse.ok) {
+            const badgeImageResponse = await api.get(`/rewards/badge?type=${badge.type}&currentLevel=${badge.currentLevel}`);
+            if (badgeImageResponse.status !== 200) {
               throw new Error("Badge image fetch failed");
             }
             const badgeImageBlob = await badgeImageResponse.blob();
@@ -192,23 +194,37 @@ export default {
           }),
         );
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        showToast(
+            new Toast(
+              "Fehler",
+              "Errungenschaften konnten nicht geladen werden.",
+              "error",
+              faXmark,
+              5
+            )
+          );
       }
     },
 
     async fetchTags() {
       try {
-        const allTagsResponse = await fetch(`${config.apiBaseUrl}/tags`);
-        const tagData = await allTagsResponse.json();
+        const allTagsResponse = await api.get(`/tags`);
+        const tagData = await allTagsResponse.data;
         this.allTags = tagData.map((tag) => tag.name);
 
-        const response = await fetch(
-          `${config.apiBaseUrl}/users/${this.user.id}/tags`,
-        );
-        const data = await response.json();
+        const response = await api.get(`/users/${this.user.id}/tags`);
+        const data = await response.data;
         this.selectedTags = data.map((tag) => tag.name);
       } catch (error) {
-        console.error("Fehler beim Laden der Tags:", error);
+        showToast(
+            new Toast(
+              "Fehler",
+              "User-Tags konnten nicht geladen werden.",
+              "error",
+              faXmark,
+              5
+            )
+          );
       }
     },
     async openEditTagsModal() {
@@ -232,8 +248,7 @@ export default {
 
     async updateTags() {
       try {
-        const response = await fetch(
-          `${config.apiBaseUrl}/users/${this.user.id}/tags`,
+        const response = await api.put(`/users/${this.user.id}/tags`,
           {
             method: "PUT",
             headers: {
@@ -247,7 +262,15 @@ export default {
         }
         this.closeEditTagsModal();
       } catch (error) {
-        console.error("Fehler beim Aktualisieren der Tags:", error);
+        showToast(
+            new Toast(
+              "Fehler",
+              "User-Tags konnten nicht aktualisiert werden.",
+              "error",
+              faXmark,
+              5
+            )
+          );
       }
     },
 
@@ -287,8 +310,7 @@ export default {
           description: this.newBio,
         };
 
-        const response = await fetch(
-          `${config.apiBaseUrl}/users/${this.user.id}`,
+        const response = await api.put(`/users/${this.user.id}`,
           {
             method: "PUT",
             headers: {
@@ -303,10 +325,26 @@ export default {
         }
         this.user.description = this.newBio;
         this.closeEditBioModal();
-        alert("Die Beschreibung wurde erfolgreich aktualisiert.");
+        showToast(
+            new Toast(
+              "Erfolg",
+              "Ihre Bio wurde erfolgreich aktualisiert.",
+              "error",
+              faXmark,
+              5
+            )
+          );
       } catch (error) {
         console.error("Fehler beim Setzen der Biography:", error);
-        alert("Die Biography konnte nicht aktualisiert werden.");
+        showToast(
+            new Toast(
+              "Fehler",
+              "Ihre Bio konnte nicht aktualisiert werden.",
+              "error",
+              faXmark,
+              5
+            )
+          );
       }
     },
   },

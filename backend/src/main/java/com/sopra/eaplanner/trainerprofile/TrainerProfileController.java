@@ -64,13 +64,6 @@ public class TrainerProfileController {
         return ResponseEntity.ok(pinnedCommentService.updatePinnedComments(trainerId, feedbackIds));
     }
 
-    @PostMapping("")
-    public ResponseEntity<TrainerProfileResponseDTO> createTrainerProfile(@Valid @RequestBody TrainerProfileRequestDTO request) {
-        TrainerProfileResponseDTO savedDTO = trainerProfileService.createTrainerProfile(request);
-        URI location = URI.create("/api/trainerProfiles/" + savedDTO.getId());
-        return ResponseEntity.created(location).body(savedDTO);
-    }
-
     @PostMapping("/{profileId}/expertiseTags")
     public ResponseEntity<List<TagResponseDTO>> postTagsToTrainerProfile(@PathVariable Long profileId, @RequestBody HashSet<String> tags){
         return ResponseEntity.ok(trainerProfileService.setExpertiseTags(profileId, tags));

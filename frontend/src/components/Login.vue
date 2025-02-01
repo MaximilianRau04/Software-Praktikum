@@ -1,166 +1,275 @@
 <template>
-  <div class="login">
-    <div class="login-box">
-      <h2 class="login-header" v-if="!isRegistered">Registrieren</h2>
-      <h2 class="login-header" v-else>Login</h2>
-      <form @submit.prevent="handleLogin">
-        <div class="input-group">
-          <label for="username">Benutzername</label>
-          <input type="text" id="username" v-model="username" required />
+  <div class="login-container">
+    <div class="auth-box" :class="{ 'register-mode': !isRegistered }">
+      <!-- Login Section -->
+      <div class="login-section" v-if="isRegistered">
+        <h2 class="auth-title">Willkommen zurück!</h2>
+        <form @submit.prevent="handleLogin">
+          <div class="input-group">
+            <input type="text" v-model="username" placeholder="Nutzername" required class="auth-input" />
+          </div>
+
+          <div class="input-group password-group">
+            <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Passwort" required
+              class="auth-input" />
+            <button type="button" class="password-toggle" @click="showPassword = !showPassword">
+              <font-awesome-icon :icon="showPassword ? 'eye-slash' : 'eye'" class="password-icon" />
+            </button>
+          </div>
+
+          <button type="submit" class="auth-button primary">
+            Einloggen
+          </button>
+        </form>
+
+        <div class="auth-switch">
+          <span>Noch keinen Account?</span>
+          <button @click="changeToLogin" class="link-button">
+            Hier Registrieren
+          </button>
+        </div>
+      </div>
+
+      <!-- Registration Section -->
+      <div class="register-section" v-else>
+        <div class="registration-steps">
+          <button class="step-dot" :class="{ active: currentStep === 1 }" @click="currentStep = 1"></button>
+          <button class="step-dot" :class="{ active: currentStep === 2 }" @click="currentStep = 2"
+            :disabled="!canProceedToStep2"></button>
         </div>
 
-        <div class="input-group" v-if="!isRegistered">
-          <label for="firstname">Vorname</label>
-          <input type="text" id="firstname" v-model="firstname" required />
+        <!-- Step 1: Basic Info -->
+        <div v-show="currentStep === 1">
+          <h2 class="auth-title">Account Erstellen</h2>
+          <form @submit.prevent="handleStep(2)">
+            <div class="input-group">
+              <input type="text" v-model="username" placeholder="Nutzername" required class="auth-input" />
+            </div>
+
+            <div class="input-group password-group">
+              <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Passwort" required
+                class="auth-input" />
+              <button type="button" class="password-toggle" @click="showPassword = !showPassword">
+                <font-awesome-icon :icon="showPassword ? 'eye-slash' : 'eye'" class="password-icon" />
+              </button>
+            </div>
+
+            <div class="input-group password-group">
+              <input :type="showPassword ? 'text' : 'password'" v-model="passwordRepeat"
+                placeholder="Passwort wiederholen" required class="auth-input" />
+              <button type="button" class="password-toggle" @click="showPassword = !showPassword">
+                <font-awesome-icon :icon="showPassword ? 'eye-slash' : 'eye'" class="password-icon" />
+              </button>
+            </div>
+
+            <div class="input-group role-selection">
+              <select v-model="role" required class="auth-select">
+                <option value="USER">Nutzer</option>
+                <option value="ADMIN">Administrator</option>
+              </select>
+              <v-tooltip>
+                <button type="button" class="info-icon">
+                  <font-awesome-icon icon="circle-question" class="icon" />
+                </button>
+                <template #popper>
+                  <div class="tooltip-content">
+                    <h4>Account Roles</h4>
+                    <p>Regular User: Basic access</p>
+                    <p>Administrator: Full system access</p>
+                  </div>
+                </template>
+              </v-tooltip>
+            </div>
+
+            <button type="submit" class="auth-button primary" :disabled="!canProceedToStep2">
+              Weiter
+            </button>
+          </form>
         </div>
 
-        <div class="input-group" v-if="!isRegistered">
-          <label for="lastname">Nachname</label>
-          <input type="text" id="lastname" v-model="lastname" required />
+        <!-- Step 2: Additional Info -->
+        <div v-show="currentStep === 2">
+          <h2 class="auth-title">Profil ergänzen</h2>
+          <form @submit.prevent="handleRegistration">
+            <div class="input-group">
+              <input type="text" v-model="firstName" placeholder="Vorname" required class="auth-input" />
+            </div>
+
+            <div class="input-group">
+              <input type="text" v-model="lastName" placeholder="Nachname" required class="auth-input" />
+            </div>
+
+            <div class="input-group">
+              <textarea v-model="bio" placeholder="Über Sie (optional)" class="auth-textarea" rows="3"></textarea>
+              <v-tooltip>
+                <button type="button" class="info-icon">
+                  <font-awesome-icon icon="circle-question" />
+                </button>
+                <template #popper>
+                  <div class="tooltip-content">
+                    Diese Informationen werden auf Ihrem Nutzerprofil angezeigt.
+                  </div>
+                </template>
+              </v-tooltip>
+            </div>
+
+            <div class="input-group">
+              <TagInput v-model="tags" :available-tags="allTags" :tagSelect="selectionOnlyTags" />
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="auth-button secondary" @click="currentStep = 1">
+                Zurück
+              </button>
+              <button type="submit" class="auth-button primary" :disabled="!isRegistrationValid">
+                Registrierung abschließen
+              </button>
+            </div>
+          </form>
         </div>
 
-        <div class="input-group" v-if="!isRegistered">
-          <label for="role">Rolle</label>
-          <select v-model="role" required>
-            <option value="USER">Benutzer</option>
-            <option value="ADMIN">Admin</option>
-          </select>
+        <div class="auth-switch">
+          <span>Bereits Registriert?</span>
+          <button @click="changeToLogin" class="link-button">
+            Hier Einloggen
+          </button>
         </div>
 
-        <button type="submit" class="login-button" v-if="!isRegistered">
-          Registrieren
-        </button>
-        <button type="submit" class="login-button" v-else>Anmelden</button>
-
-        <button
-          class="login-button"
-          v-if="!isRegistered"
-          @click="changeToLogin"
-        >
-          Bereits registriert?
-        </button>
-        <button class="login-button" v-else @click="changeToLogin">
-          Registrieren?
-        </button>
-      </form>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { globalState } from "@/types/User";
-import type { User } from "@/types/User";
-import config from "@/config.js";
-import "@/assets/login.css";
-import Cookies from "js-cookie";
-import { showToast, Toast } from "@/types/toasts";
-import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import api from "@/util/api"
+import { useAuth } from "@/util/auth";
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import '@/assets/login.css'
 
+import TagInput from './profile/TagInput.vue';
+import { Tag } from "@/types/Tag";
+
+const { setToken } = useAuth();
 const router = useRouter();
 
-const isRegistered = ref(false);
-const username = ref("");
-const firstname = ref("");
-const lastname = ref("");
-const role = ref("USER");
+const currentStep = ref(1);
+const showPassword = ref(false);
 
-const apiUrl = "http://193.196.54.172:8000/api/users";
+// Form models
+const username = ref('');
+const password = ref('');
+const passwordRepeat = ref('');
+const role = ref('USER');
+const firstName = ref('');
+const lastName = ref('');
+const bio = ref('');
+const tags = ref<Tag[]>([]);
+const allTags = ref<Tag[]>([])
+const isRegistered = ref(true);
+const selectionOnlyTags = true;
 
-/**
- * Handles the login or registration of a user.
- */
-const handleLogin = async () => {
+// Computed properties
+const canProceedToStep2 = computed(() => {
+  return (
+    username.value &&
+    password.value &&
+    password.value === passwordRepeat.value &&
+    role.value
+  );
+});
+
+const isRegistrationValid = computed(() => {
+  return (
+    firstName.value &&
+    lastName.value &&
+    canProceedToStep2.value
+  );
+});
+
+// Methods
+const fetchTags = async () => {
   try {
-    if (isRegistered.value) {
-      const response = await fetch(
-        `${config.apiBaseUrl}/users/search?username=${username.value}`,
-      );
-      if (!response.ok) throw new Error("Benutzer nicht gefunden");
-
-      const userData: User = await response.json();
-
-      if (userData && userData.id) {
-        globalState.setUser(userData);
-
-        // Set user data in cookies
-        Cookies.set("userId", userData.id, { expires: 7 });
-        Cookies.set("username", userData.username, { expires: 7 });
-        Cookies.set("firstname", userData.firstname || "", { expires: 7 });
-        Cookies.set("lastname", userData.lastname || "", { expires: 7 });
-        Cookies.set("role", userData.role || "USER", { expires: 7 });
-
-        router.push("/home");
-      } else {
-        showToast(
-          new Toast(
-            "Error",
-            `Anmeldung fehlgeschlagen. Benutzer nicht gefunden.`,
-            "error",
-            faXmark,
-            10,
-          ),
-        );
-      }
-    } else {
-      const userData: User = {
-        username: username.value,
-        firstname: firstname.value,
-        lastname: lastname.value,
-        role: role.value,
-      };
-
-      const response = await fetch(`${config.apiBaseUrl}/users`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData),
-      });
-
-      const data: User = await response.json();
-
-      if (response.ok && data.id) {
-        showToast(
-          new Toast(
-            "Success",
-            `Registrierung erfolgreich`,
-            "success",
-            faCheck,
-            10,
-          ),
-        );
-        isRegistered.value = true;
-      } else {
-        showToast(
-          new Toast(
-            "Error",
-            `Registrierung fehlgeschlagen. Bereits angemeldet?`,
-            "error",
-            faXmark,
-            10,
-          ),
-        );
-      }
-    }
+    const tagResponse = await api.get(`/tags`);
+    allTags.value = tagResponse.data;
   } catch (error) {
-    showToast(
-      new Toast(
-        "Error",
-        isRegistered.value
-          ? "Anmeldung fehlgeschlagen"
-          : "Fehler bei der Registrierung",
-        "error",
-        faXmark,
-        10,
-      ),
-    );
+    console.error('Error fetching tags:', error)
   }
 };
 
-/**
- * Changes the view between login and registration.
- */
+const handleStep = (step: number) => {
+  if (step === 2 && canProceedToStep2.value) {
+    fetchTags();
+    currentStep.value = 2;
+  }
+};
+
+const handleRegistration = async () => {
+  if (isRegistrationValid.value) {
+    try {
+      const roles = ["USER"];
+      if (role.value === "ADMIN") {
+        roles.push("ADMIN");
+      }
+      const userRegisterData = {
+        username: username.value,
+        password: password.value,
+        roles: roles,
+        firstName: firstName.value,
+        lastName: lastName.value,
+        bio: bio.value,
+        tags: tags.value.map(tag => tag.name)
+      };
+
+      const response = await api.post(`/auth/signup`, userRegisterData);
+
+      if (response.status === 200) {
+        console.log('Registering user:', userRegisterData);
+        router.push('/login');
+      }
+      // Add toast based on error messages from backend
+
+    } catch (error) {
+      console.error('Registration failed:', error);
+    }
+  }
+};
+
+const handleLogin = async () => {
+  try {
+    const userLoginData = {
+      username: username.value,
+      password: password.value,
+    };
+
+    const response = await api.post(`/auth/signin`, userLoginData);
+    setToken(response.data.token);
+    if (response.status === 200) {
+      console.log('Sign in User:', userLoginData);
+      router.push('/home');
+    }
+    // add toast for bad credentials or not found etc.
+    console.log(response.statusText)
+  } catch (error) {
+    console.error('Registration failed:', error);
+  }
+};
+
 const changeToLogin = () => {
   isRegistered.value = !isRegistered.value;
+  currentStep.value = 1;
+  resetForm();
+};
+
+const resetForm = () => {
+  // Reset all form fields
+  username.value = '';
+  password.value = '';
+  passwordRepeat.value = '';
+  role.value = 'USER';
+  firstName.value = '';
+  lastName.value = '';
+  bio.value = '';
+  tags.value = [];
 };
 </script>

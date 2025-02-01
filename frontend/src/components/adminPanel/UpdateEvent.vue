@@ -4,18 +4,9 @@
     <form @submit.prevent="updateEvent">
       <div class="input-group">
         <label for="exchangeDaySelect">ExchangeDay auswählen</label>
-        <select
-          id="exchangeDaySelect"
-          v-model="selectedExchangeDay"
-          @change="fetchEventsByExchangeDay"
-          required
-        >
+        <select id="exchangeDaySelect" v-model="selectedExchangeDay" @change="fetchEventsByExchangeDay" required>
           <option value="" disabled>Wähle einen ExchangeDay</option>
-          <option
-            v-for="exchangeDay in exchangeDays"
-            :key="exchangeDay"
-            :value="exchangeDay"
-          >
+          <option v-for="exchangeDay in exchangeDays" :key="exchangeDay" :value="exchangeDay">
             {{ exchangeDay.name }} ({{ formatDate(exchangeDay.startDate) }} -
             {{ formatDate(exchangeDay.endDate) }})
           </option>
@@ -24,13 +15,8 @@
 
       <div class="input-group">
         <label for="eventSelect">Event auswählen</label>
-        <select
-          id="eventSelect"
-          v-model="selectedEvent"
-          @change="fetchEventDetails"
-          :disabled="!selectedExchangeDay"
-          required
-        >
+        <select id="eventSelect" v-model="selectedEvent" @change="fetchEventDetails" :disabled="!selectedExchangeDay"
+          required>
           <option value="" disabled>Wähle ein Event</option>
           <option v-for="event in events" :key="event.id" :value="event.id">
             {{ event.name }}
@@ -50,14 +36,8 @@
 
       <div class="input-group">
         <label for="eventDate">Datum</label>
-        <input
-          type="date"
-          id="eventDate"
-          v-model="date"
-          :min="selectedExchangeDay?.startDate || ''"
-          :max="selectedExchangeDay?.endDate || ''"
-          required
-        />
+        <input type="date" id="eventDate" v-model="date" :min="selectedExchangeDay?.startDate || ''"
+          :max="selectedExchangeDay?.endDate || ''" required />
       </div>
 
       <div class="input-group">
@@ -74,11 +54,7 @@
         <label for="room">Raum</label>
         <select id="room" v-model="room" :disabled="!filteredRooms.length">
           <option value="" disabled>Bitte wählen Sie einen Raum</option>
-          <option
-            v-for="availableRoom in filteredRooms"
-            :key="availableRoom.id"
-            :value="availableRoom.id"
-          >
+          <option v-for="availableRoom in filteredRooms" :key="availableRoom.id" :value="availableRoom.id">
             {{ availableRoom.name }}
           </option>
         </select>
@@ -86,11 +62,7 @@
 
       <div class="input-group">
         <label for="recommendedExperience">Empfohlenes Erfahrungslevel</label>
-        <select
-          id="recommendedExperience"
-          v-model="recommendedExperience"
-          required
-        >
+        <select id="recommendedExperience" v-model="recommendedExperience" required>
           <option value="" disabled>Wähle ein Erfahrungslevel</option>
           <option v-for="level in experienceLevels" :key="level" :value="level">
             {{ level }}
@@ -103,47 +75,14 @@
         <label for="tags">Event Tags</label>
         <p>Bitte wählen Sie bis zu 5 Event Tags für Ihr Event aus:</p>
 
-        <input
-          type="text"
-          id="tags"
-          v-model="tagInput"
-          placeholder="Tags eingeben und durch Komma trennen"
-          @input="filterTags"
-          @keyup="handleKeyup"
-          :disabled="selectedTags.length >= 5"
-        />
-
-        <div class="tag-chips">
-          <span v-for="(tag, index) in selectedTags" :key="index" class="chip">
-            {{ tag }}
-            <button type="button" class="remove-tag" @click="removeTag(index)">
-              &times;
-            </button>
-          </span>
-        </div>
-
-        <div class="tag-list">
-          <button
-            v-for="tag in filteredTags"
-            :key="tag"
-            type="button"
-            @click="addTag(tag)"
-            :disabled="selectedTags.includes(tag)"
-          >
-            {{ tag }}
-          </button>
-        </div>
+        <TagInput v-if="selectedTags && allTags" v-model="selectedTags" :available-tags="allTags" :tagSelect="false"
+          @new-tag="handleNewTag" />
 
         <div class="button-group">
           <button type="submit" class="update-button">
             Event aktualisieren
           </button>
-          <button
-            type="button"
-            class="delete-button"
-            @click="deleteEvent"
-            :disabled="!selectedEvent"
-          >
+          <button type="button" class="delete-button" @click="deleteEvent" :disabled="!selectedEvent">
             Event löschen
           </button>
         </div>
@@ -156,6 +95,9 @@
 import { ref, onMounted } from "vue";
 import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
+import api from "@/util/api";
+import TagInput from "../profile/TagInput.vue";
+import { Tag } from "@/types/Tag";
 
 const emit = defineEmits(["update:selectEventToUpdate"]);
 
@@ -171,28 +113,20 @@ const exchangeDays = ref<any[]>([]);
 const events = ref<any[]>([]);
 const filteredRooms = ref<any[]>([]);
 const experienceLevels = ref<string[]>([]);
-const room= ref<any>(null);
-const selectedTags = ref<string[]>([]);
+const room = ref<any>(null);
+const selectedTags = ref<Tag[]>([]);
 const exchangeDayId = ref<number | null>(null);
-const tagInput = ref("");
-const filteredTags = ref<string[]>([]);
-const allTags = ref<string[]>([]);
+const allTags = ref<Tag[]>([]);
 const organizerId = ref<number | null>(null);
-
-const exchangeDayApiUrl = `${config.apiBaseUrl}/exchange-days`;
-const eventApiUrl = `${config.apiBaseUrl}/events`;
-const resourcesApiUrl = `${config.apiBaseUrl}/resources/type/ROOM`;
-const experienceLevelApiUrl = `${config.apiBaseUrl}/events/experience-levels`;
-const tagsApiUrl = `${config.apiBaseUrl}/tags`;
 
 /**
  * Fetches the available exchange days from the API.
  */
 const fetchExchangeDays = async () => {
   try {
-    const response = await fetch(exchangeDayApiUrl);
-    if (response.ok) {
-      const data = await response.json();
+    const response = await api.get(`/exchange-days`);
+    if (response.status === 200) {
+      const data = await response.data;
       exchangeDays.value = data;
     } else {
       showToast(
@@ -217,11 +151,11 @@ const fetchEventsByExchangeDay = async () => {
   }
 
   try {
-    const response = await fetch(
-      `${exchangeDayApiUrl}/${selectedExchangeDay.value.id}/events`,
+    const response = await api.get(
+      `/exchange-days/${selectedExchangeDay.value.id}/events`,
     );
-    if (response.ok) {
-      const data = await response.json();
+    if (response.status === 200) {
+      const data = await response.data;
       events.value = data;
       await fetchRoomsForEvent();
     } else {
@@ -239,9 +173,9 @@ const fetchEventDetails = async () => {
   if (!selectedEvent.value) return;
 
   try {
-    const response = await fetch(`${eventApiUrl}/${selectedEvent.value}`);
-    if (response.ok) {
-      const data = await response.json();
+    const response = await api.get(`/events/${selectedEvent.value}`);
+    if (response.status === 200) {
+      const data = await response.data;
       name.value = data.name;
       description.value = data.description;
       date.value = data.date;
@@ -271,15 +205,15 @@ const fetchEventDetails = async () => {
  */
 const fetchOrganizerId = async () => {
   try {
-    const response = await fetch(
-      `${eventApiUrl}/${selectedEvent.value}/organizer`,
+    const response = await api.get(
+      `/events/${selectedEvent.value}/organizer`,
     );
-    if (response.ok) {
-      const data = await response.json();
+    if (response.status === 200) {
+      const data = await response.data;
       organizerId.value = data.id;
-    } 
+    }
   } catch (error) {
-    
+
   }
 };
 
@@ -306,11 +240,11 @@ const fetchRoomsForEvent = async () => {
   }
 
   try {
-    const response = await fetch(
-      `${config.apiBaseUrl}/resources/location/${exchangeDayLocationId}`,
+    const response = await api.get(
+      `/resources/location/${exchangeDayLocationId}`,
     );
-    if (response.ok) {
-      const data = await response.json();
+    if (response.status === 200) {
+      const data = await response.data;
       filteredRooms.value = data;
     } else {
       showToast(new Toast("Error", "Fehler beim Abrufen der Räume.", "error"));
@@ -328,14 +262,14 @@ const updateFilteredRooms = async () => {
     const exchangeDayLocationId = selectedExchangeDay.value.location.id;
 
     try {
-      const response = await fetch(
-        `${config.apiBaseUrl}/resources/location/${exchangeDayLocationId}`,
+      const response = await api.get(
+        `/resources/location/${exchangeDayLocationId}`,
       );
 
-      if (response.ok) {
-        const rooms = await response.json();
+      if (response.status === 200) {
+        const rooms = await response.data;
         filteredRooms.value = rooms;
-      } 
+      }
     } catch (error) {
       showToast(
         new Toast(
@@ -356,13 +290,13 @@ const updateFilteredRooms = async () => {
  */
 const fetchExperienceLevels = async () => {
   try {
-    const response = await fetch(experienceLevelApiUrl);
-    if (response.ok) {
-      const data = await response.json();
+    const response = await api.get(`/events/experience-levels`);
+    if (response.status === 200) {
+      const data = await response.data;
       experienceLevels.value = data;
-    } 
+    }
   } catch (error) {
-    
+
   }
 };
 
@@ -389,15 +323,9 @@ const updateEvent = async () => {
   };
 
   try {
-    const response = await fetch(`${eventApiUrl}/${selectedEvent.value}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedEvent),
-    });
+    const response = await api.put(`/events/${selectedEvent.value}`, updatedEvent);
 
-    if (response.ok) {
+    if (response.status === 200) {
       showToast(
         new Toast("Success", "Event erfolgreich aktualisiert.", "success"),
       );
@@ -424,11 +352,9 @@ const deleteEvent = async () => {
 
   if (confirm("Möchten Sie dieses Event wirklich löschen?")) {
     try {
-      const response = await fetch(`${eventApiUrl}/${selectedEvent.value}`, {
-        method: "DELETE",
-      });
+      const response = await api.delete(`/events/${selectedEvent.value}`);
 
-      if (response.ok) {
+      if (response.status === 204) {
         showToast(
           new Toast("Success", "Event erfolgreich gelöscht.", "success"),
         );
@@ -456,11 +382,10 @@ const deleteEvent = async () => {
  */
 const fetchTags = async () => {
   try {
-    const response = await fetch(tagsApiUrl);
-    if (response.ok) {
-      const data = await response.json();
-      allTags.value = data.map((tag: any) => String(tag.name));
-      filterTags();
+    const response = await api.get(`/tags`);
+    if (response.status === 200) {
+      const data = await response.data;
+      allTags.value = data;
     } else {
     }
   } catch (error) {
@@ -474,78 +399,21 @@ const fetchEventTags = async () => {
   if (!selectedEvent.value) return;
 
   try {
-    const response = await fetch(`${eventApiUrl}/${selectedEvent.value}/tags`);
-    if (response.ok) {
-      const data = await response.json();
-      selectedTags.value = data.map((tag: any) => tag.name);
-      filterTags();
+    const response = await api.get(`/events/${selectedEvent.value}/tags`);
+    if (response.status === 200) {
+      const data = await response.data;
+      selectedTags.value = data;
     } else {
     }
   } catch (error) {
   }
 };
 
-/**
- * Filters tags based on the user input.
- */
-const filterTags = () => {
-  const query = tagInput.value.toLowerCase();
-  filteredTags.value = allTags.value.filter(
-    (tag) => typeof tag === "string" && tag.toLowerCase().includes(query),
-  );
-};
-
-/**
- * Adds a tag to the selected tags list.
- */
-const addTag = (tag: string) => {
-  const trimmedInput = tag.trim();
-
-  if (
-    trimmedInput &&
-    !selectedTags.value.includes(trimmedInput) &&
-    selectedTags.value.length < 5
-  ) {
-    selectedTags.value.push(trimmedInput);
-  }
-
-  tagInput.value = "";
-  filteredTags.value = [...allTags.value];
-};
-
-/**
- * Removes a tag from the selected tags list.
- */
-const removeTag = (index: number) => {
-  selectedTags.value.splice(index, 1);
-};
-
-/**
- * Handles the keyup event for adding tags.
- */
-const handleKeyup = (event) => {
-  if (event.key === ",") {
-    addTagFromInput();
-  }
-};
-
-/**
- * Adds a tag from the input field, trimming the comma.
- */
-const addTagFromInput = () => {
-  const trimmedInput = tagInput.value.trim().slice(0, -1);
-
-  if (!trimmedInput) return;
-
-  if (
-    trimmedInput &&
-    !selectedTags.value.includes(trimmedInput) &&
-    selectedTags.value.length < 5
-  ) {
-    selectedTags.value.push(trimmedInput);
-  }
-  tagInput.value = "";
-  filteredTags.value = [...allTags.value];
+const handleNewTag = (newTag) => {
+  api.post(`/tags`, newTag)
+    .then(response => {
+      allTags.value.push(response.data);
+    })
 };
 
 /**

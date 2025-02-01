@@ -1,205 +1,175 @@
 <template>
-  <div class="event-header">
+  <div class="event-container">
     <!-- Back Button -->
-    <div class="back-button-container">
-      <button class="back-button" @click="goToEventRegistrations">
-        Zurück zu Events
-      </button>
-    </div>
-    <!-- Titel -->
-    <div class="header-title">
-      <h1>{{ event.name || "Eventname wird geladen..." }}</h1>
-    </div>
-
-    <!-- Navigationsleiste -->
-    <nav class="tabs">
-      <a
-        href="#"
-        class="tab"
-        :class="{ active: view === 'details' }"
-        @click.prevent="showDetails"
-      >
-        Details anzeigen
-      </a>
-      <a
-        v-if="isAlreadyRegistered || isAdmin"
-        href="#"
-        class="tab"
-        :class="{ active: view === 'forum' }"
-        @click.prevent="showForum"
-      >
-        Diskussionsforum
-      </a>
-      <a
-        href="#"
-        class="tab"
-        :class="{ active: view === 'users' }"
-        @click.prevent="showUsers"
-      >
-        Angemeldete User
-      </a>
-      <a
-        v-if="isAdmin"
-        href="#"
-        class="tab"
-        :class="{ active: view === 'feedback' }"
-        @click.prevent="openFeedback"
-      >
-        Feedback
-      </a>
-      <a
-        v-if="isAdmin"
-        href="#"
-        class="tab"
-        :class="{ active: view === 'qr' }"
-        @click.prevent="openQRCode"
-      >
-        QR-Code
-      </a>
-      <a
-        v-if="isAlreadyRegistered"
-        href="#"
-        class="tab registration"
-        :class="{ active: view === 'unregister' }"
-        @click.prevent="unregisterFromEvent"
-      >
-        Abmelden
-      </a>
-      <a 
-        v-else
-        href="#"
-        class="tab registation"
-        :class="{ active: view === 'register' }"
-        @click.prevent="registerForEvent"
-      > Registrieren
-      </a>
-    </nav>
-
-    <!-- Details des Events -->
-    <div class="event-details-card" v-if="view === 'details'">
-      <div class="event-header">
-        <p class="event-date">
-          <i class="icon-calendar"></i
-          ><strong> {{ formatDate(event.date) }}</strong>
-        </p>
-      </div>
-      <!-- Veranstalter oben anzeigen -->
-      <div class="organizer-info" @click="goToUser(organizer.username)">
-        Veranstalter:
-        <div
-          class="organizer-avatar"
-          :style="{ backgroundColor: generateColor(organizer.username) }"
-        >
-          {{ getInitials(organizer.firstname, organizer.lastname) }}
-        </div>
-        <div class="organizer-details">
-          <p class="organizer-name">
-            {{ organizer.firstname }} {{ organizer.lastname }}
-          </p>
-          <p class="organizer-username">@{{ organizer.username }}</p>
-        </div>
-      </div>
-
-      <div class="event-body">
-        <div class="event-description">
-          <h2>Beschreibung</h2>
-          <p>
-            <strong>{{ event.description }}</strong>
-          </p>
-        </div>
-        <div class="event-info">
-          <div class="info-item">
-            <i class="icon-time"></i>
-            <span><strong>Startzeit:</strong> {{ event.startTime }}</span>
-          </div>
-          <div class="info-item">
-            <i class="icon-time"></i>
-            <span><strong>Endzeit:</strong> {{ event.endTime }}</span>
-          </div>
-          <div class="info-item">
-            <i class="icon-location"></i>
-            <span><strong>Raum:</strong> {{ event.room.name }}</span>
-          </div>
-          <div class="tag-chips">
-                <span
-                  v-for="(tag, index) in eventTags.slice(0, 5)"
-                  :key="tag.id"
-                  class="chip"
-                >
-                  {{ tag.name }}
-                </span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Forum anzeigen -->
-    <div v-if="view === 'forum'">
-      <Forum
-        :threads="event.forumThreads"
-        :focused-thread-id.sync="focusedThreadId"
-      />
-    </div>
-
-    <!-- Liste der angemeldeten Benutzer -->
-    <div v-if="view === 'users'" class="user-list">
-      <div class="user-items">
-        <div
-          v-for="user in sortedUsers"
-          :key="user.username"
-          class="user-item"
-          @click="goToUser(user.username)"
-        >
-          <div
-            class="user-avatar"
-            :style="{ backgroundColor: generateColor(user.username) }"
-          >
-            {{ getInitials(user.firstname, user.lastname) }}
-          </div>
-          <div class="user-details">
-            <p class="user-fullname">
-              {{ user.firstname }} {{ user.lastname }}
-            </p>
-            <p class="user-username">@{{ user.username }}</p>
-            <p class="user-role">
-              {{ user.role === "ADMIN" ? "Administrator" : "Benutzer" }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- QR-Code Modal -->
-<div v-if="showQRCodeModal" class="qr-modal-overlay">
-  <div class="qr-modal">
-    <button
-      @click="closeQRCodeModal"
-      class="close-modal-icon"
-      aria-label="Close QR Code Modal"
-    >
-      ✕
+    <button class="back-button" @click="goToEventRegistrations">
+      ← Zurück zu Events
     </button>
 
-    <h4>QR-Code für die Anwesenheit</h4>
-    <img :src="qrCodeUrl" alt="QR Code" />
-    <div>
-      <button
-        class="download-button"
-        @click="copyToClipboard"
-        :disabled="!qrCodeLink"
-      >
-        QR-Link kopieren
-      </button>
-      <p v-if="copySuccess" class="qr-success-message">
-        QR-Link wurde in die Zwischenablage kopiert!
-      </p>
+    <!-- Event Header -->
+    <div class="event-header">
+      <h1 class="event-title">{{ event.name || "Eventname wird geladen..." }}</h1>
+      <div class="event-meta">
+        <span class="event-date">{{ formatDate(event.date) }}</span>
+        <span class="event-time">{{ event.startTime }} - {{ event.endTime }}</span>
+      </div>
     </div>
-    <a :href="qrCodeUrl" :download="'event-' + eventId + '-qr-code.png'">
-      <button class="download-button">QR-Code herunterladen</button>
-    </a>
-  </div>
-</div>
 
+    <!-- Navigation Tabs -->
+    <nav class="tabs-container">
+      <button 
+        class="tab-button"
+        :class="{ 'active-tab': view === 'details' }"
+        @click="showDetails"
+      >
+        Details
+      </button>
+      <button 
+        v-if="isAlreadyRegistered || isAdmin"
+        class="tab-button"
+        :class="{ 'active-tab': view === 'forum' }"
+        @click="showForum"
+      >
+        Forum
+      </button>
+      <button 
+        class="tab-button"
+        :class="{ 'active-tab': view === 'users' }"
+        @click="showUsers"
+      >
+        Teilnehmer
+      </button>
+      <button 
+        v-if="isAdmin"
+        class="tab-button"
+        :class="{ 'active-tab': view === 'feedback' }"
+        @click="openFeedback"
+      >
+        Feedback
+      </button>
+      <button 
+        v-if="isAdmin"
+        class="tab-button"
+        :class="{ 'active-tab': view === 'qr' }"
+        @click="openQRCode"
+      >
+        QR-Code
+      </button>
+      <button 
+        v-if="isAlreadyRegistered"
+        class="tab-button danger"
+        @click="unregisterFromEvent"
+      >
+        Abmelden
+      </button>
+      <button 
+        v-else
+        class="tab-button primary"
+        @click="registerForEvent"
+      >
+        Registrieren
+      </button>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="content-container">
+      <!-- Details Section -->
+      <div v-if="view === 'details'" class="details-card">
+        <div class="organizer-section">
+          <h3 class="section-title">Veranstalter</h3>
+          <div class="organizer-card" @click="goToUser(organizer.username)">
+            <div 
+              class="organizer-avatar"
+              :style="{ backgroundColor: generateColor(organizer.username) }"
+            >
+              {{ getInitials(organizer.firstname, organizer.lastname) }}
+            </div>
+            <div class="organizer-info">
+              <span class="organizer-name">{{ organizer.firstname }} {{ organizer.lastname }}</span>
+              <span class="organizer-username">@{{ organizer.username }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="description-section">
+          <h3 class="section-title">Beschreibung</h3>
+          <p class="description-text">{{ event.description }}</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-card">
+            <i class="icon-location"></i>
+            <div class="info-content">
+              <span class="info-label">Ort</span>
+              <span class="info-value">{{ event.room.name }}</span>
+            </div>
+          </div>
+          
+          <div class="tags-card">
+            <h3 class="section-title">Tags</h3>
+            <div class="tags-container">
+              <span 
+                v-for="tag in eventTags.slice(0, 5)" 
+                :key="tag.id" 
+                class="tag-chip"
+              >
+                {{ tag.name }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Forum Section -->
+      <div v-if="view === 'forum'">
+        <Forum 
+          :threads="event.forumThreads" 
+          :focused-thread-id.sync="focusedThreadId" 
+          class="forum-container"
+        />
+      </div>
+
+      <!-- Users Sections -->
+      <div v-if="view === 'users'" class="event-user-list">
+        <div class="event-user-items">
+          <div 
+            v-for="user in sortedUsers" 
+            :key="user.username" 
+            class="event-user-card"
+            @click="goToUser(user.username)"
+          >
+            <div 
+              class="event-user-avatar"
+              :style="{ backgroundColor: generateColor(user.username) }"
+            >
+              {{ getInitials(user.firstname, user.lastname) }}
+            </div>
+            <div class="event-user-info">
+              <p class="event-user-name">{{ user.firstname }} {{ user.lastname }}</p>
+              <p class="event-user-username">@{{ user.username }}</p>
+              <p class="event-user-role">{{ user.role === "ADMIN" ? "Administrator" : "Benutzer" }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QR Code Modal -->
+      <div v-if="showQRCodeModal" class="modal-overlay">
+        <div class="modal-content">
+          <button class="close-button" @click="closeQRCodeModal">×</button>
+          <h3>QR-Code für die Anwesenheit</h3>
+          <img :src="qrCodeUrl" alt="QR Code" class="qr-image" />
+          <div class="modal-actions">
+            <button class="action-button" @click="copyToClipboard" :disabled="!qrCodeLink">
+              Link kopieren
+            </button>
+            <a :href="qrCodeUrl" :download="`event-${eventId}-qr-code.png`">
+              <button class="action-button">Download</button>
+            </a>
+          </div>
+          <p v-if="copySuccess" class="success-message">Link kopiert!</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -213,6 +183,8 @@ import Forum from "@/components/forum/Forum.vue";
 import "@/assets/event-page.css";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import api from "@/util/api";
+import { useAuth } from "@/util/auth";
 
 const event = ref<Event>({
   id: 0,
@@ -224,12 +196,12 @@ const event = ref<Event>({
     id: 0,
     type: "",
     location: {
-     id: 0,
-     street: "",
-     houseNumber: 0,
-     postalCode: 0,
-     city: "",
-     country: "",
+      postalCode: 0,
+      id: 0,
+      street: "",
+      houseNumber: 0,
+      city: "",
+      country: "",
     },
     capacity: 0,
     description: "",
@@ -269,37 +241,37 @@ const showForum = () => {
 };
 
 const isAdmin = computed(() => {
-  return userRole === "ADMIN";
+  const auth = useAuth();
+  return auth.isAdmin;
 });
 
 const goToEventRegistrations = () => {
-      router.push({ name: "eventRegistrations" });
-    };
+  router.push({ name: "eventRegistrations" });
+};
 
 /**
  * Fetch Event Details
  */
 const fetchEventDetails = async () => {
   try {
-    const response = await fetch(`${config.apiBaseUrl}/events/${eventId}`);
-    const eventData = await response.json();
+    const response = await api.get(`/events/${eventId}`);
+    const eventData = await response.data;
     event.value = eventData;
 
-    const organizerResponse = await fetch(
-      `${config.apiBaseUrl}/events/${eventId}/organizer`,
+    const organizerResponse = await api.get(`/events/${eventId}/organizer`,
     );
-    const organizerData = await organizerResponse.json();
+    const organizerData = await organizerResponse.data;
     organizer.value = organizerData;
 
     await fetchRegisteredUsers();
   } catch (error) {
     showToast(
       new Toast(
-        "Error",
-        `Fehler Fetchen der exchange days: ${error.message}`,
+        "Fehler",
+        `Exchange Days konnten nicht geladen werden: ${error.message}`,
         "error",
         faXmark,
-        10,
+        5,
       ),
     );
   }
@@ -310,10 +282,9 @@ const fetchEventDetails = async () => {
  */
 const fetchRegisteredUsers = async () => {
   try {
-    const response = await fetch(
-      `${config.apiBaseUrl}/events/${eventId}/registeredUsers`,
+    const response = await api.get(`/events/${eventId}/registeredUsers`,
     );
-    const userData = await response.json();
+    const userData = await response.data;
     registeredUsers.value = userData;
 
     sortedUsers.value = [...userData].sort((a, b) =>
@@ -322,11 +293,11 @@ const fetchRegisteredUsers = async () => {
   } catch (error) {
     showToast(
       new Toast(
-        "Error",
-        `Fehler beim Laden der Benutzer.`,
+        "Fehler",
+        `Registrierte Nutzer konnten nicht geladen werden.`,
         "error",
         faXmark,
-        10,
+        5,
       ),
     );
   }
@@ -335,19 +306,19 @@ const fetchRegisteredUsers = async () => {
 /*
  * Fetches the tags for a given event
  */
- const fetchTagsForEvent = async () => {
+const fetchTagsForEvent = async () => {
   try {
-    const res = await fetch(`${config.apiBaseUrl}/events/${eventId}/tags`);
-    if (!res.ok) throw new Error("Failed to fetch tags");
-    eventTags.value = await res.json();
+    const response = await api.get(`/events/${eventId}/tags`);
+    const tagData = await response.data;
+    eventTags.value = tagData;
   } catch (error) {
     showToast(
       new Toast(
-        "Error",
-        `Fehler beim Laden der Tags für Event ${eventId}`,
+        "Fehler",
+        `Event-Tags für Event: ${eventId} konnten nicht geladen werden.`,
         "error",
         faXmark,
-        10,
+        5,
       ),
     );
     eventTags.value = [];
@@ -388,16 +359,20 @@ const openQRCode = async () => {
   try {
     qrCodeUrl.value = `${config.apiBaseUrl}/events/${eventId}/qr-code`;
 
-    const response = await fetch(
-      `${config.apiBaseUrl}/events/${eventId}/attendance-token`,
-    );
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch attendance token: ${response.status} ${response.statusText}`,
+    const response = await api.get(`/events/${eventId}/attendance-token`);
+    if (response.status !== 200) {
+      showToast(
+        new Toast(
+          "Fehler",
+          `Anwesenheitstoken für Event: ${eventId} konnte nicht geladen werden.`,
+          "error",
+          faXmark,
+          5,
+        ),
       );
     }
 
-    const responseData = await response.json();
+    const responseData = await response.data;
     const attendanceToken = responseData.attendanceToken;
 
     qrCodeLink.value = `http://193.196.54.172:8000/events/${eventId}/attendance?token=${attendanceToken}`;
@@ -418,7 +393,7 @@ const openQRCode = async () => {
 /**
  * Copies the QR code link to the clipboard.
  */
- const copyToClipboard = async () => {
+const copyToClipboard = async () => {
   if (qrCodeLink.value) {
     try {
       await navigator.clipboard.writeText(qrCodeLink.value);
@@ -455,28 +430,27 @@ const openFeedback = () => {
  */
 const unregisterFromEvent = async () => {
   try {
-    const response = await fetch(
-      `${config.apiBaseUrl}/users/${userId}/eventRegistration?eventId=${eventId}`,
+    const userId = useAuth().getUserId();
+    const response = await api.delete(`/users/${userId}/eventRegistration?eventId=${eventId}`,
       {
-        method: "DELETE",
         headers: { "Content-Type": "application/json" },
       },
     );
-    if (!response.ok) {
+    if (response.status !== 204) {
       showToast(
         new Toast(
-          "Error",
-          `Anmeldung fehlgeschlagen. Bitte versuchen sie es erneut}`,
+          "Fehler",
+          `Abmeldung fehlgeschlagen. Versuchen Sie es erneut.`,
           "error",
           faXmark,
-          10,
+          5,
         ),
       );
       return;
     }
     showToast(
       new Toast(
-        "Success",
+        "Erfolg",
         `Sie wurden erfolgreich von ${event.value.name} abgemeldet!`,
         "success",
         faCheck,
@@ -487,11 +461,11 @@ const unregisterFromEvent = async () => {
   } catch (error) {
     showToast(
       new Toast(
-        "Error",
-        `Fehler bei der Abmeldung vom Event`,
+        "Fehler",
+        `Sie konnten nicht vom Event abgemeldet werden.`,
         "error",
         faXmark,
-        10,
+        5,
       ),
     );
   }
@@ -500,24 +474,25 @@ const unregisterFromEvent = async () => {
 /**
  * Checks if the user is already registered for the event.
  */
- const checkRegistrationStatus = async () => {
+const checkRegistrationStatus = async () => {
+  const userId = useAuth().getUserId();
   if (!userId) {
+    useAuth().clearToken();
+    router.push('/login')
     return;
   }
   try {
-    const response = await fetch(
-      `${config.apiBaseUrl}/users/${userId}/registeredEvents`,
-    );
-    if (!response.ok) throw new Error("Failed to fetch user data.");
+    const response = await api.get(`/users/${userId}/registeredEvents`);
+    if (response.status !== 200) throw new Error("Failed to fetch user data.");
 
-    const registeredEvents = await response.json();
+    const registeredEvents = await response.data;
 
     isAlreadyRegistered.value = registeredEvents.some(
       (event: { id: number }) => event.id === eventId,
     );
   } catch (error) {
     showToast(
-      new Toast("Error", `Fehler bei der Registreirung`, "error", faXmark, 10),
+      new Toast("Fehler", `Fehler bei der Registrierung`, "error", faXmark, 5),
     );
     isAlreadyRegistered.value = false;
   }
@@ -527,25 +502,22 @@ const unregisterFromEvent = async () => {
  * Registers the user for the event.
  * @param eventId The ID of the event to register for.
  */
- const registerForEvent = async () => {
+const registerForEvent = async () => {
   try {
-    if (!userId) {
-      showToast(
-        new Toast(
-          "Warning",
-          `Bitte melden sie sich zuvor an.`,
-          "warning",
-          faXmark,
-          10,
-        ),
-      );
+    const userId = useAuth().getUserId();
+
+    const auth = useAuth();
+
+    if (!auth.isAuthenticated) {
+      router.push({
+        name: 'login',
+        query: { returnUrl: `/events/${eventId}` }
+      });
       return;
     }
 
-    const response = await fetch(
-      `${config.apiBaseUrl}/users/${userId}/eventRegistration?eventId=${eventId}`,
+    const response = await api.post(`/users/${userId}/eventRegistration?eventId=${eventId}`,
       {
-        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -555,21 +527,21 @@ const unregisterFromEvent = async () => {
     if (response.status === 404) {
       showToast(
         new Toast(
-          "Error",
+          "Fehler",
           `Registrierung fehlgeschlagen. Bitte versuchen sie es erneut`,
           "error",
           faXmark,
-          10,
+          5,
         ),
       );
     } else if (response.status === 409) {
       showToast(
-        new Toast("Error", `Sie sin bereits registriert`, "error", faXmark, 10),
+        new Toast("Fehler", `Sie sind bereits für dieses Event registriert`, "error", faXmark, 5),
       );
-    } else if (response.ok) {
+    } else if (response.status === 201) {
       showToast(
         new Toast(
-          "Success",
+          "Erfolg",
           `Sie wurden erfolgreich zu ${event.value.name} angemeldet!`,
           "success",
           faCheck,
@@ -581,11 +553,11 @@ const unregisterFromEvent = async () => {
   } catch (error) {
     showToast(
       new Toast(
-        "Error",
-        `Fehler Fetchen der exchange days`,
+        "Fehler",
+        `Sie konnten nicht zum Event registriert werden.`,
         "error",
         faXmark,
-        10,
+        5,
       ),
     );
   }

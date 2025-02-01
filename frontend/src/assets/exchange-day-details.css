@@ -9,8 +9,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid #009ee2;
-  padding: 0 1rem 15px;
+  border-bottom: 2px solid #01172F;
+  padding: 0 1rem 10px;
   margin-bottom: 0.5rem;
 }
 
@@ -20,11 +20,21 @@
   font-weight: 700;
   margin: 0;
   flex-grow: 1;
-  text-align: center;
+  text-align: left;
+}
+
+.exchangeDayHeader h2 {
+  color: #005f8c;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-top: 1.2rem;
+  margin-bottom: 0px;
+  flex-grow: 1;
+  text-align: left;
 }
 
 .manage-button {
-  background: #009ee2;
+  background: #01172F;
   color: white;
   border: none;
   padding: 0.5rem 1.2rem;
@@ -36,7 +46,7 @@
 }
 
 .manage-button:hover {
-  background: #007eb3;
+  background: #009ee2;
 }
 
 .exchangeDayContent {
@@ -103,7 +113,7 @@
 .info-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 10px;
 }
 
@@ -138,7 +148,7 @@
 
 .event-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 15px;
   padding-right: 10px;
   margin-top: 15px;
@@ -146,11 +156,14 @@
 
 .event-details {
   position: relative;
-  background-color: #fff;
-  border: 1px solid #ddd;
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  padding: 20px;
-  min-height: 200px;
+  padding: 15px;
+  min-height: 90px;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
 }
 
 .event-details h2 {
@@ -162,21 +175,4 @@
 .event-details p {
   margin: 5px 0;
   font-size: 14px;
-}
-
-.register-button {
-  position: absolute;
-  bottom: 15px;
-  right: 15px;
-  background-color: #009ee2;
-  color: white;
-  padding: 8px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.register-button:hover {
-  background-color: #007eb3;
 }

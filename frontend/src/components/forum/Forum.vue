@@ -191,6 +191,8 @@ import Cookies from "js-cookie";
 import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import api from "@/util/api";
+import { useAuth } from "@/util/auth";
 
 export default {
   props: {
@@ -227,9 +229,9 @@ export default {
       },
       showModal: false,
       editingPost: null,
-      isAdmin: false,
+      isAdmin: useAuth().isAdmin.value,
       isEditing: false,
-      userId: Cookies.get("userId"),
+      userId: useAuth().getUserId(),
     };
   },
   methods: {
@@ -242,23 +244,23 @@ export default {
         return;
       }
       try {
-        await axios.delete(`${config.apiBaseUrl}/forumposts/${postId}`);
+        await api.delete(`/forumposts/${postId}`);
         this.fetchThreadDetail();
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Löschen des Posts`,
+            "Fehler",
+            `Der Beitrag konnte nicht gelöscht werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
       showToast(
         new Toast(
-          "Success",
-          `Post wurde erflogreich gelöscht`,
+          "Erfolg",
+          `Post wurde erfolgreich gelöscht`,
           "success",
           faCheck,
           5,
@@ -275,8 +277,8 @@ export default {
      */
     async savePostEdits() {
       try {
-        await axios.put(
-          `${config.apiBaseUrl}/forumposts/${this.editingPost.id}`,
+        await api.put(
+          `/forumposts/${this.editingPost.id}`,
           {
             content: this.editingPost.content,
             authorId: this.editingPost.author.id,
@@ -288,18 +290,18 @@ export default {
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Bearbeiten des Posts`,
+            "Fehler",
+            `Der Beitrag konnte nicht bearbeitet werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
       showToast(
         new Toast(
-          "Success",
-          `Post wurde erfolgreich bearbeitet`,
+          "Erfolg",
+          `Beitrag wurde erfolgreich bearbeitet`,
           "success",
           faCheck,
           5,
@@ -338,22 +340,22 @@ export default {
         return;
       }
       try {
-        await axios.delete(`${config.apiBaseUrl}/forumthreads/${threadId}`);
+        await api.delete(`/forumthreads/${threadId}`);
         this.fetchThreads();
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Löschen des Threads`,
+            "Fehler",
+            `Der Thread konnte nicht gelöscht werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
       showToast(
         new Toast(
-          "Success",
+          "Erfolg",
           `Thread wurde erfolgreich gelöscht`,
           "success",
           faCheck,
@@ -368,8 +370,8 @@ export default {
     async updateThread() {
       const eventId = this.$route.params.eventId;
       try {
-        await axios.put(
-          `${config.apiBaseUrl}/forumthreads/${this.currentThread.id}`,
+        await api.put(
+          `/forumthreads/${this.currentThread.id}`,
           {
             title: this.currentThread.title,
             description: this.currentThread.description,
@@ -381,17 +383,17 @@ export default {
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Bearbieten des Threads`,
+            "Fehler",
+            `Thread konnte nicht bearbeitet werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
       showToast(
         new Toast(
-          "Success",
+          "Erfolg",
           `Thread wurde erfolgreich bearbeitet`,
           "success",
           faCheck,
@@ -406,18 +408,18 @@ export default {
     async fetchThreads() {
       const eventId = this.$route.params.eventId;
       try {
-        const response = await axios.get(
-          `${config.apiBaseUrl}/events/${eventId}/forum`,
+        const response = await api.get(
+          `/events/${eventId}/forum`,
         );
         this.threads = response.data;
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim laden der Threads`,
+            "Fehler",
+            `Threads konnten nicht geladen werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
@@ -435,7 +437,7 @@ export default {
           eventId: eventId,
         };
 
-        await axios.post(`${config.apiBaseUrl}/forumthreads`, newThreadData);
+        await api.post(`/forumthreads`, newThreadData);
         this.fetchThreads();
         this.currentThread.title = "";
         this.currentThread.description = "";
@@ -443,17 +445,17 @@ export default {
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Erstellen der Threads`,
+            "Fehler",
+            `Thread konnte nicht erstellt werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
       showToast(
         new Toast(
-          "Success",
+          "Erfolg",
           `Thread wurde erfolgreich erstellt`,
           "success",
           faCheck,
@@ -476,18 +478,18 @@ export default {
      */
     async fetchThreadDetail() {
       try {
-        const response = await axios.get(
-          `${config.apiBaseUrl}/forumthreads/${this.selectedThreadId}`,
+        const response = await api.get(
+          `/forumthreads/${this.selectedThreadId}`,
         );
         this.selectedThread = response.data;
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Laden des Threads`,
+            "Fehler",
+            `Threads konnten nicht geladen werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
@@ -498,7 +500,7 @@ export default {
      */
     async createPost() {
       try {
-        const userId = Cookies.get("userId");
+        const userId = useAuth().getUserId();
 
         const newPostData = {
           content: this.newPost.content,
@@ -507,7 +509,7 @@ export default {
           anonymous: this.newPost.isAnonymous,
         };
 
-        await axios.post(`${config.apiBaseUrl}/forumposts`, newPostData);
+        await api.post(`/forumposts`, newPostData);
 
         this.fetchThreadDetail();
         this.newPost.content = "";
@@ -515,18 +517,18 @@ export default {
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Erstellen des Posts`,
+            "Fehler",
+            `Beitrag konnte nicht erstellt werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
       showToast(
         new Toast(
-          "Success",
-          `Post wurde erfolgreich erstellt`,
+          "Erfolg",
+          `Beitrag wurde erfolgreich erstellt`,
           "success",
           faCheck,
           5,
@@ -551,8 +553,8 @@ export default {
 
   mounted() {
     this.fetchThreads();
-    this.userId = Cookies.get("userId");
-    this.isAdmin = Cookies.get("role") === "ADMIN";
+    this.userId = useAuth().getUserId();
+    this.isAdmin = useAuth().isAdmin.value;
   },
 };
 </script>
