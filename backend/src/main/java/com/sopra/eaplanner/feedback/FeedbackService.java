@@ -38,6 +38,8 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -301,26 +303,43 @@ public class FeedbackService {
         User feedbackAuthor = userRepository.findById(requestBody.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback, feedbackAuthor);
-
         double sentimentScore = FeedbackUtil.getSentimentScoreFromPersonalFeedback(requestBody);
         double ratingScore = FeedbackUtil.getFeedbackRating(requestBody);
+        Feedback feedbackToSave = new Feedback(requestBody, eventForFeedback, feedbackAuthor, ratingScore);
 
         addTagWeightForFeedback(feedbackAuthor, eventForFeedback, sentimentScore, ratingScore);
 
         TrainerProfile profile = eventForFeedback.getOrganizer().getTrainerProfile();
 
-        profile.setFeedbackCount(profile.getFeedbackCount() + 1);
-        Integer feedbackCount = profile.getFeedbackCount();
-        Double currentRating = profile.getAverageRating();
-        Double newRating = (currentRating * (feedbackCount - 1) + ratingScore) / feedbackCount;
-        profile.setAverageRating(newRating);
-
         feedbackToSave.setSentiment(sentimentScore);
-
         eventParticipationService.confirmFeedback(feedbackAuthor, eventForFeedback);
 
         feedbackToSave = feedbackRepository.save(feedbackToSave);
+
+        User organizer = eventForFeedback.getOrganizer();
+        List<Feedback> allFeedbacks = feedbackRepository.findByEventOrganizer(organizer);
+
+        // Adjustable decayRate needs to be tested and agreed upon for relevance over the chosen timeframes
+        // We choose 0.02 as the basis in order to have relevant feedback data up to a couple months in the past
+        double decayRate = 0.02;
+        double totalWeightedSum = 0.0;
+        double totalWeight = 0.0;
+        LocalDateTime now = LocalDateTime.now();
+
+        // We use exponential decay for older feedback in order to keep current status of the trainers more relevant
+        // eg. some bad events 1 year ago shouldn't tank the star rating of an organizer if it got better.
+        for (Feedback feedback : allFeedbacks) {
+            long daysOld = Duration.between(feedback.getCreatedAt(), now).toDays();
+            double weight = Math.exp(-decayRate * daysOld);
+            totalWeightedSum += feedback.getRating() * weight;
+            totalWeight += weight;
+        }
+
+        double newAverage = totalWeightedSum / totalWeight;
+
+        profile.setAverageRating(newAverage);
+        profile.setFeedbackCount(allFeedbacks.size());
+
         trainerProfileRepository.save(profile);
         eventRepository.save(eventForFeedback);
         userRepository.save(feedbackAuthor);

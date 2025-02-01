@@ -144,7 +144,7 @@
 import api from "@/util/api"
 import { useAuth } from "@/util/auth";
 import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import '@/assets/login.css'
 
 import { showToast, Toast } from "@/types/toasts";
@@ -155,6 +155,7 @@ import { Tag } from "@/types/Tag";
 
 const { setToken } = useAuth();
 const router = useRouter();
+const route = useRoute();
 
 const currentStep = ref(1);
 const showPassword = ref(false);
@@ -265,7 +266,12 @@ const handleLogin = async () => {
     const response = await api.post(`/auth/signin`, userLoginData);
     setToken(response.data.token);
     if (response.status === 200) {
-      router.push('/home');
+
+      const redirectPath = Array.isArray(route.query.redirect) 
+        ? route.query.redirect[0]
+        : route.query.redirect || '/home';
+
+      router.push(redirectPath);
     }
     // add toast for bad credentials or not found etc.
   } catch (error) {

@@ -9,6 +9,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RewardService {
@@ -41,19 +42,27 @@ public class RewardService {
     }
 
     public void grantAttendancePoints(User user) {
-        for (Reward reward : user.getRewards()) {
+        List<Reward> rewardsToUpdate = user.getRewards().stream()
+                .filter(reward -> reward.getType() == Reward.Type.ATTENDER)
+                .toList();
+
+        for (Reward reward : rewardsToUpdate) {
             if (reward.getType() == Reward.Type.ATTENDER) {
                 final Integer DEFAULT_ATTENDANCE_REWARD_VALUE = 50;
                 reward.setPoints(reward.getPoints() + DEFAULT_ATTENDANCE_REWARD_VALUE);
                 updateRewardLevel(reward, Reward.ATTENDANCE_REWARD_THRESHOLDS);
                 rewardRepository.save(reward);
-                updateUserpoints(userRepository.save(user));
             }
         }
+        updateUserpoints(userRepository.save(user));
     }
 
     public void grantFeedbackGiverPoints(User user) {
-        for (Reward reward : user.getRewards()) {
+        List<Reward> rewardsToUpdate = user.getRewards().stream()
+                .filter(reward -> reward.getType() == Reward.Type.FEEDBACK_GIVER)
+                .toList();
+
+        for (Reward reward : rewardsToUpdate) {
             if (reward.getType() == Reward.Type.FEEDBACK_GIVER) {
                 final Integer DEFAULT_FEEDBACK_REWARD_VALUE = 100;
                 reward.setPoints(reward.getPoints() + DEFAULT_FEEDBACK_REWARD_VALUE);
@@ -61,6 +70,7 @@ public class RewardService {
                 rewardRepository.save(reward);
             }
         }
+        updateUserpoints(userRepository.save(user));
     }
 
     public void grantCleanSubmitterReward(User user){

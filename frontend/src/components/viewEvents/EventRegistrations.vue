@@ -135,25 +135,22 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import config from "@/config";
-import Cookies from "js-cookie";
 import { showToast, Toast } from "@/types/toasts";
 import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
 import api from "@/util/api";
 import { useAuth } from "@/util/auth";
 
 const router = useRouter();
+const auth = useAuth();
+
 const registeredEvents = ref([]);
 const recommendedEvents = ref([]);
 const pendingFeedbackEvents = ref([]);
 const pastEvents = ref([]);
 const isLoading = ref(true);
 const today = new Date().toISOString();
-const auth = computed(()=>{
-  return useAuth();
-})
 
 const searchQuery = ref("");
-const userId = Cookies.get("userId");
 
 const filteredRegisteredEvents = computed(() =>
   registeredEvents.value
@@ -198,7 +195,7 @@ const filteredPastEvents = computed(() =>
  */
 const fetchTagsForEvent = async (eventId) => {
   try {
-    const response = await api.get(`${config.apiBaseUrl}/events/${eventId}/tags`);
+    const response = await api.get(`/events/${eventId}/tags`);
     if (response.status !== 200) throw new Error("Failed to fetch tags");
     return await response.data;
   } catch (error) {
@@ -219,14 +216,14 @@ const fetchTagsForEvent = async (eventId) => {
  * Fetches the events for the user
  */
 const fetchEvents = async () => {
-  const userId = auth.value.getUserId();
+  const userId = auth.getUserId();
 
   if (!userId) {
     showToast(
       new Toast("Fehler", `Loggen Sie sich bitte ein, um auf Ihre Events zuzugreifen.`, "error", faXmark, 5)
     );
     isLoading.value = false;
-    auth.value.clearToken();
+    auth.clearToken();
     router.push(`/login`);
     return;
   }
@@ -271,10 +268,7 @@ const goToEvent = (eventId) => {
 };
 
 const goToFeedback = async (eventId: string) => {
-  const router = useRouter();
-  const auth = useAuth();
-  
-  if (!auth.isAuthenticated) {
+  if (!auth.isAuthenticated.value) {
     router.push({
       name: 'login',
       query: { returnUrl: `/events/${eventId}/feedback` }
@@ -322,7 +316,7 @@ const verifyFeedbackEligibility = async (eventId: string): Promise<boolean> => {
 
 const fetchAttendanceToken = async (eventId: string): Promise<string> => {
   const response = await api.get(`/events/${eventId}/attendance-token`);
-  return response.data.token;
+  return response.data.attendanceToken;
 };
 
 const formatDate = (dateString) => {
@@ -470,7 +464,7 @@ onMounted(() => {
   border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: 0.2s ease;
   align-self: flex-start;
 }
 
