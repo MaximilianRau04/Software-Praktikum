@@ -100,9 +100,6 @@ public class AuthController {
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
 
-        UserLogin userLogin = new UserLogin(signUpRequest.getUsername(),
-                encoder.encode(signUpRequest.getPassword()));
-
         Iterable<Role> presentRoles = roleRepository.findAll();
 
         int roleCount = 0;
@@ -155,12 +152,18 @@ public class AuthController {
             });
         }
 
+        UserLogin userLogin = new UserLogin(signUpRequest.getUsername(),
+                encoder.encode(signUpRequest.getPassword()));
+
         userLogin.setRoles(roles);
         Set<Role> userLoginRoles = userLogin.getRoles();
         Set<ERole> userLoginNames = userLoginRoles.stream().map(Role::getName).collect(Collectors.toSet());
         User.Role userRole = userLoginNames.contains(ERole.ROLE_ADMIN) ? User.Role.ADMIN : User.Role.USER;
 
-        User user = userRepository.save(new User(signUpRequest, userLogin, userRole));
+        User newUser = new User(signUpRequest, userLogin, userRole);
+        userLogin.setUser(newUser);
+
+        User user = userRepository.save(newUser);
 
         if (user.getRole() == User.Role.ADMIN) {
             TrainerProfile trainerProfile = new TrainerProfile();
