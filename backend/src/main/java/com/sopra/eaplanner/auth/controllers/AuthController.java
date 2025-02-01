@@ -103,6 +103,29 @@ public class AuthController {
         UserLogin userLogin = new UserLogin(signUpRequest.getUsername(),
                 encoder.encode(signUpRequest.getPassword()));
 
+        Iterable<Role> presentRoles = roleRepository.findAll();
+
+        int roleCount = 0;
+        for (Role role : presentRoles) {
+            roleCount++;
+        }
+
+        if (roleCount < 3) {
+            Role roleUser = new Role();
+            roleUser.setName(ERole.ROLE_USER);
+
+            Role roleAdmin = new Role();
+            roleAdmin.setName(ERole.ROLE_ADMIN);
+
+            Role roleTrainer = new Role();
+            roleTrainer.setName(ERole.ROLE_TRAINER);
+
+            roleRepository.save(roleUser);
+            roleRepository.save(roleTrainer);
+            roleRepository.save(roleAdmin);
+        }
+
+
         Set<String> strRoles = signUpRequest.getRoles();
         Set<Role> roles = new HashSet<>();
 
@@ -139,7 +162,7 @@ public class AuthController {
 
         User user = new User(signUpRequest, userLogin, userRole);
 
-        if(user.getRole() == User.Role.ADMIN){
+        if (user.getRole() == User.Role.ADMIN) {
             TrainerProfile trainerProfile = new TrainerProfile();
             user.setTrainerProfile(trainerProfile);
             trainerProfile.setUser(user);
