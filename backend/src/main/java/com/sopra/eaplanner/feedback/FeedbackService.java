@@ -341,6 +341,7 @@ public class FeedbackService {
         profile.setAverageRating(newAverage);
         profile.setFeedbackCount(allFeedbacks.size());
 
+        eventForFeedback.getFeedbacks().add(feedbackToSave);
         trainerProfileRepository.save(profile);
         eventRepository.save(eventForFeedback);
         userRepository.save(feedbackAuthor);
