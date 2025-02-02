@@ -185,7 +185,7 @@ export default {
           query: { threadId: notification.context.threadId },
         });
       } else if (notification.type === "EVENT_REMINDER") {
-        this.$router.push({ name: "EventDetails", params: { eventId: notification.context.eventId } });
+        this.$router.push({ name: "EventPage", params: { eventId: notification.context.eventId } });
       } else if (notification.type === "REWARD") {
         this.$router.push(`/profile/${this.currentUser.username}`);
       }
