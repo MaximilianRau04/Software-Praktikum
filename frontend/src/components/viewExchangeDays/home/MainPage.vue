@@ -21,7 +21,11 @@
       <div class="upcoming-section">
         <h2>Kommende Exchange Days</h2>
         <div class="scrollableEvents upcoming-list">
-          <ScrollableDivs :exchangeDays="upcomingExchangeDaysList" @select-exchange-day="selectExchangeDay" />
+          <ScrollableDivs 
+            :exchangeDays="upcomingExchangeDaysList" 
+            @select-exchange-day="selectExchangeDay" 
+            :selectedExchangeDay="selectedExchangeDay" 
+          />
         </div>
       </div>
 
@@ -29,7 +33,11 @@
       <div class="past-section">
         <h2>Vergangene Exchange Days</h2>
         <div class="scrollableEvents past-list">
-          <ScrollableDivs :exchangeDays="pastExchangeDaysList" @select-exchange-day="selectExchangeDay" />
+          <ScrollableDivs 
+            :exchangeDays="pastExchangeDaysList" 
+            @select-exchange-day="selectExchangeDay" 
+            :selectedExchangeDay="selectedExchangeDay" 
+          />
         </div>
       </div>
     </div>
@@ -57,7 +65,7 @@ const today = new Date().setHours(0, 0, 0, 0);
 /**
  * Fetches all Exchange Days from the API and categorizes them.
  */
- async function fetchAllExchangeDays() {
+async function fetchAllExchangeDays() {
   try {
     const response = await api.get<ExchangeDay[]>('/exchange-days');
     
@@ -84,7 +92,7 @@ const today = new Date().setHours(0, 0, 0, 0);
 /**
  * Categorizes Exchange Days into upcoming and past based on today's date.
  */
- function categorizeExchangeDays() {
+function categorizeExchangeDays() {
   const sortedExchangeDays = [...exchangeDays.value].sort(
     (a, b) => a.startDate - b.startDate
   );
