@@ -6,6 +6,7 @@ export interface Event {
   description: string;
   date: string;
   endTime: string;
+  exchangeDayName: string;
   startTime: string;
   room: Room;
   forumThreads: object[];

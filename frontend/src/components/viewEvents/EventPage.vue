@@ -11,9 +11,12 @@
         {{ event.name || "Eventname wird geladen..." }}
       </h1>
       <div class="event-meta">
+        <span class="event-date"
+          >{{ event.exchangeDayName }} - Exchange Day</span
+        >
         <span class="event-date">{{ formatDate(event.date) }}</span>
         <span class="event-date"
-          >{{ event.startTime }} - {{ event.endTime }}</span
+          >{{ event.startTime.slice(0, 5) }} - {{ event.endTime.slice(0, 5) }}</span
         >
       </div>
     </div>
@@ -119,6 +122,8 @@
           <i class="location-icon icon-location"></i>
           <div class="info-content">
             <span class="info-label">Ort:</span>
+            <span class="info-value">{{ event.room.location.street }} {{ event.room.location.houseNumber }}</span>
+            <span class="info-value">{{ event.room.location.postalCode }} {{ event.room.location.city }}, {{ event.room.location.country }}</span>
             <span class="info-value">{{ event.room.name }}</span>
           </div>
         </div>
@@ -203,6 +208,7 @@ const event = ref<Event>({
   name: "",
   startTime: "",
   endTime: "",
+  exchangeDayName: "",
   room: {
     name: "",
     id: 0,

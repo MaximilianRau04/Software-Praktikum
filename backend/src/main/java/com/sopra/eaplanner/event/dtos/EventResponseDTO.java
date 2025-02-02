@@ -13,6 +13,7 @@ public class EventResponseDTO {
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
+    private String exchangeDayName;
     private String name;
     private ResourceItem room;
     private String description;
@@ -41,6 +42,7 @@ public class EventResponseDTO {
         this.date = event.getDate();
         this.startTime = event.getStartTime();
         this.endTime = event.getEndTime();
+        this.exchangeDayName = event.getExchangeDay().getName();
         this.name = event.getName();
         this.room = event.getRoom();
         this.description = event.getDescription();
@@ -53,6 +55,8 @@ public class EventResponseDTO {
     }
 
     public Long getExchangeDayId(){return exchangeDayId;}
+
+    public String getExchangeDayName(){return exchangeDayName;}
 
     public LocalDate getDate() {
         return date;
@@ -91,6 +95,8 @@ public class EventResponseDTO {
     }
 
     public void setExchangeDayId(Long exchangeDayId){this.exchangeDayId = exchangeDayId;}
+
+    public void setExchangeDayName(String exchangeDayName){this.exchangeDayName = exchangeDayName;}
 
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
