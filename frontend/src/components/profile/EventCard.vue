@@ -1,63 +1,62 @@
 <template>
-    <div class="event-card">
-      <div class="header">
-        <h4 class="event-title">{{ event.name }}</h4>
-      </div>
-      <div class="date-time">
-        <span class="date">
-          {{ new Date(event.date).toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) }}
-        </span>
-        <span class="time">
-          {{
-            new Date(event.date + "T" + event.startTime).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })
-          }}
-          -
-          {{
-            new Date(event.date + "T" + event.endTime).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })
-          }}
-        </span>
-      </div>
-      <div class="event-description">
-        <p>{{ event.description }}</p>
-      </div>
-      <button v-if="showRegisterButton" class="details-btn" @click="showDetails">Details anzeigen</button>
-      <div v-if="showRating" class="rating">
-        <div
-          class="star"
-          v-for="n in Math.round(event.averageRating)"
-          :key="n"
-        ></div>
-      </div>
+  <div class="event-card">
+    <div class="header">
+      <h4 class="event-title">{{ event.name }}</h4>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    name: "EventCard",
-    props: {
-      event: {
-        type: Object,
-        required: true,
-      },
-      showRating: {
-        type: Boolean,
-        default: false,
-      },
-      showRegisterButton: {
-        type: Boolean,
-        default: false,
-      },
+    <div class="date-time">
+      <span class="date">
+        {{ new Date(event.date).toLocaleDateString("de-DE", {
+          weekday: "long", day: "numeric", month: "long", year:
+            "numeric" }) }}
+      </span>
+      <span class="time">
+        {{
+          new Date(event.date + "T" + event.startTime).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })
+        }}
+        -
+        {{
+          new Date(event.date + "T" + event.endTime).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })
+        }}
+      </span>
+    </div>
+    <div class="event-description">
+      <p>{{ event.description }}</p>
+    </div>
+    <button v-if="showRegisterButton" class="details-btn" @click="showDetails">Details anzeigen</button>
+    <div v-if="showRating" class="rating">
+      <div class="star" v-for="n in 5" :key="n" :class="{ filled: n <= Math.round(event.averageRating) }">★</div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "EventCard",
+  props: {
+    event: {
+      type: Object,
+      required: true,
     },
-    methods: {
-      showDetails() {
-        this.$router.push({ name: "EventPage", params: { eventId: this.event.id } });
-      },
+    showRating: {
+      type: Boolean,
+      default: false,
     },
-  };
-  </script>
-  
-  <style scoped>
+    showRegisterButton: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  methods: {
+    showDetails() {
+      this.$router.push({ name: "EventPage", params: { eventId: this.event.id } });
+    },
+  },
+};
+</script>
+
+<style scoped>
 .event-card {
+  position: relative;
   padding: 1rem;
   background-color: #f9f9f9;
   border: 1px solid #ddd;
@@ -98,9 +97,10 @@
   background-color: #0056b3;
 }
 
-.header {
+.header{
   display: flex;
   flex-direction: column;
+  margin-top: 10px;
 }
 
 .event-title {
@@ -147,5 +147,21 @@ hr {
 
 .date-time .time {
   color: #777;
+}
+
+.rating {
+  display: flex;
+  gap: 2px;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.star {
+  color: #ccc;
+}
+
+.star.filled {
+  color: #ffd700;
 }
 </style>
