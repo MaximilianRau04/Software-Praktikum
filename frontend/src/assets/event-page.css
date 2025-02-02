@@ -1,4 +1,3 @@
-/* Base Styles */
 .event-container {
   max-width: 1200px;
   margin: 2rem auto;
@@ -7,7 +6,6 @@
   color: #01172F;
 }
 
-/* Back Button */
 .back-button {
   background: #f3f2f2;
   border: none;
@@ -28,7 +26,6 @@
   transform: translateX(-3px);
 }
 
-/* Event Header */
 .event-header {
   text-align: center;
   margin-bottom: 3rem;
@@ -64,7 +61,6 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* Tabs Navigation */
 .tabs-container {
   display: flex;
   gap: 1rem;
@@ -112,7 +108,6 @@
   color: white;
 }
 
-/* Main Content Container */
 .content-container {
   background: white;
   border-radius: 16px;
@@ -121,7 +116,6 @@
   margin-top: 1.5rem;
 }
 
-/* Details Card */
 .details-card {
   display: grid;
   gap: 2.5rem;
@@ -130,7 +124,6 @@
   border-radius: 16px;
 }
 
-/* Organizer Section */
 .organizer-section {
   margin-bottom: 0rem;
 }
@@ -183,7 +176,6 @@
   font-weight: 500;
 }
 
-/* Details Grid Layout */
 .details-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -191,7 +183,6 @@
   margin-top: 1rem;
 }
 
-/* Description Section */
 .description-section {
   background: white;
   border-radius: 12px;
@@ -227,7 +218,6 @@
   hyphens: auto;
 }
 
-/* Tags Section */
 .tags-section {
   background: white;
   border-radius: 12px;
@@ -255,18 +245,11 @@
   gap: 0.5rem;
 }
 
-.tag-chip::before {
-  content: "#";
-  color: #009ee2;
-  font-weight: 700;
-}
-
 .tag-chip:hover {
   background: linear-gradient(135deg, #e6eeff, #d7e4ff);
   transform: translateY(-2px);
 }
 
-/* Location Info Card */
 .info-card {
   background: white;
   border: 1px solid #e3e8f1;
@@ -310,7 +293,6 @@
   font-size: 1.1rem;
 }
 
-/* Users List */
 .event-user-list {
   margin-top: 2rem;
 }
@@ -372,7 +354,6 @@
   font-weight: 500;
 }
 
-/* QR Code Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -456,7 +437,6 @@
   font-weight: 500;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .event-container {
     padding: 0 1rem;

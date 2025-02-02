@@ -192,3 +192,15 @@ small {
   display: block;
   margin-top: -3%;
 }
+
+.auth-textarea {
+  resize: none;
+  border-radius: 0.5rem;
+  padding: 5px;
+  border: 1px solid #e0e0e0;
+}
+
+.auth-textarea:focus {
+  border-color: #3498db;
+  outline: none;
+}

@@ -112,6 +112,7 @@
               :key="tag.id"
               class="tag-chip"
               >
+              <TagIcon class="icon-tag" />
               {{ tag.name }}
               </span>
               <p v-else class="no-tags-text">Keine Tags verfügbar.</p>
@@ -203,6 +204,7 @@ import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import api from "@/util/api";
 import { useAuth } from "@/util/auth";
+import { TagIcon } from "@heroicons/vue/24/outline";
 
 const event = ref<Event>({
   id: 0,
