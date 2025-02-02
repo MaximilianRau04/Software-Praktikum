@@ -1,6 +1,7 @@
 <template>
   <div class="trainer-tags" v-if="tags">
     <span v-for="(tag, index) in tags" :key="index" class="chip" :style="{ backgroundColor: getRandomColor() }">
+      <TagIcon class="icon-tag" />
       {{ tag.name }}
     </span>
   </div>
@@ -10,8 +11,11 @@
 </template>
 
 <script>
+import { TagIcon } from "@heroicons/vue/24/outline";
+
 export default {
   name: "TrainerTags",
+  components: { TagIcon },
   props: {
     tags: {
       type: Array,
@@ -59,5 +63,9 @@ export default {
 .chip:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.icon-tag {
+  color: white;
 }
 </style>

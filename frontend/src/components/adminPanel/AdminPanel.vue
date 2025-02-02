@@ -23,11 +23,11 @@
         <button @click="toggleUpdateResourceBox" class="sidebar-btn">
           <span>Ressource</span>
         </button>
-        <button @click="SelectEventToUpdate" class="sidebar-btn">
-          <span>Event</span>
-        </button>
         <button @click="SelectExchangeDayToUpdate" class="sidebar-btn">
           <span>Exchange Day</span>
+        </button>
+        <button @click="SelectEventToUpdate" class="sidebar-btn">
+          <span>Event</span>
         </button>
       </div>
 

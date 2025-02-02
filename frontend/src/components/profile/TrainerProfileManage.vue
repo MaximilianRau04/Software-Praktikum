@@ -403,6 +403,7 @@ export default {
 }
 
 textarea {
+    resize: none;
     width: 70%;
     max-width: 600px;
     min-height: 50px;

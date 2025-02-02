@@ -245,6 +245,9 @@ const today = new Date().toISOString();
 
 const searchQuery = ref("");
 
+ /**
+  * Filters the registered events based on the search query
+  */
 const filteredRegisteredEvents = computed(() =>
   registeredEvents.value
     .filter((event) => {
@@ -259,6 +262,9 @@ const filteredRegisteredEvents = computed(() =>
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
 );
 
+ /** 
+  * Filters the recommended events based on the search query
+  */
 const filteredRecommendedEvents = computed(() =>
   recommendedEvents.value
     .filter((event) =>
@@ -267,6 +273,9 @@ const filteredRecommendedEvents = computed(() =>
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
 );
 
+/** 
+  * Filters the feedback events based on the search query
+  */
 const filteredFeedbackEvents = computed(() =>
   pendingFeedbackEvents.value
     .filter((event) =>
@@ -275,6 +284,9 @@ const filteredFeedbackEvents = computed(() =>
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
 );
 
+/** 
+ * Filters the past events based on the search query
+ */
 const filteredPastEvents = computed(() =>
   pastEvents.value
     .filter((event) =>
@@ -283,7 +295,7 @@ const filteredPastEvents = computed(() =>
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
 );
 
-/*
+/** 
  * Fetches the tags for a given event
  */
 const fetchTagsForEvent = async (eventId) => {
@@ -601,14 +613,13 @@ onMounted(() => {
 }
 
 .tag {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  background: #f5f5f5;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  color: #666;
+  background: #f0f8ff;
+  color: #006699;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  border: 1px solid #006699;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
 @media (max-width: 1200px) {

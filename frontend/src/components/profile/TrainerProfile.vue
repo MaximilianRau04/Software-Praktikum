@@ -128,9 +128,9 @@ export default {
 
 <style scoped>
 .manage-button {
-    position: fixed;
-    top: 24%;
-    right: 20%;
+    position: sticky;
+    left: 78%;
+    top: 10%;
     background-color: #009ee2;
     color: white;
     border: none;
@@ -229,7 +229,6 @@ export default {
     padding: 1rem;
     border-radius: 8px;
 }
-
 .manage-button {
     background-color: #009ee2;
     color: white;
@@ -239,6 +238,8 @@ export default {
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.2s;
+    z-index: 1000;
+    right: 15%; 
 }
 
 .manage-button:hover {
