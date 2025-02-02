@@ -35,11 +35,13 @@ export default {
       type: Array,
       required: true,
     },
+    selectedExchangeDay: {
+      type: Object,
+      required: true
+    }
   },
   emits: ["select-exchange-day"],
   setup(props, { emit }) {
-    const selectedExchangeDay = ref(null);
-
     /**
      * sort exchangeDays by startDate
      */
@@ -53,8 +55,7 @@ export default {
      * select exchange day
      * @param {Object} exchangeDay - selected exchange day
      */
-     function selectExchangeDay(exchangeDay) {
-      selectedExchangeDay.value = exchangeDay;
+    function selectExchangeDay(exchangeDay) {
       emit("select-exchange-day", exchangeDay);
     }
 
@@ -71,8 +72,7 @@ export default {
     return {
       sortedExchangeDays,
       formatDate,
-      selectExchangeDay,
-      selectedExchangeDay
+      selectExchangeDay
     };
   },
 };
