@@ -850,6 +850,7 @@ export default {
 }
 
 .feedback-input textarea {
+  resize: none;
   width: 85%;
   padding: 1rem;
   border: 2px solid #eee;

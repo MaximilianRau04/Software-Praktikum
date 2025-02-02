@@ -119,7 +119,7 @@ const emit = defineEmits(["update:showUpdateResourceBox"]);
  */
 const fetchLocations = async () => {
   try {
-    const response = await api.get(`/resources`);
+    const response = await api.get(`/locations`);
     if (response.status === 200) {
       const data = await response.data;
       locations.value = data;

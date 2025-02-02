@@ -76,7 +76,9 @@
         <p>Bitte wählen Sie bis zu 5 Event Tags für Ihr Event aus:</p>
 
         <TagInput v-if="selectedTags && allTags" v-model="selectedTags" :available-tags="allTags" :tagSelect="false"
-          @new-tag="handleNewTag" />
+          @new-tag="handleNewTag" 
+          @keydown.enter.prevent  
+        />
 
         <div class="button-group">
           <button type="submit" class="update-button">
