@@ -327,8 +327,6 @@ const fetchEvents = async () => {
     const eventResponse = await api.get(`/users/${userId}/associatedEvents`)
     const events = await eventResponse.data;
 
-    console.log(events);
-
     const [registeredRes, recommendedRes, feedbackRes] = await Promise.all([
       api.get(`/users/${userId}/registeredEvents`),
       api.get(`/users/${userId}/recommendedEvents?limit=5`),
@@ -375,15 +373,16 @@ const goToEvent = (eventId) => {
  * @param {string} eventId - The ID of the event.
  */
 const goToFeedback = async (eventId: string) => {
-  if (!auth.isAuthenticated.value) {
-    router.push({
-      name: 'login',
-      query: { returnUrl: `/events/${eventId}/feedback` }
-    });
-    return;
-  }
 
   try {
+    if (!useAuth().isAuthenticated.value) {
+      router.push({
+        name: 'login',
+        query: { redirect: router.currentRoute.value.fullPath }
+      });
+      return;
+    }
+
     const isValid = await verifyFeedbackEligibility(eventId);
     
     if (!isValid) {
@@ -398,7 +397,7 @@ const goToFeedback = async (eventId: string) => {
     
     router.push({
       name: "feedback",
-      params: { eventId },
+      params: { eventId: eventId.toString() },
       query: { token: token }
     });
   } catch (error) {

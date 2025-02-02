@@ -92,7 +92,7 @@ export default [
         name: "TrainerProfileManage",
         component: TrainerProfileManage,
         props: true,
-        met: { roles: ['ROLE_ADMIN']}
+        meta: { roles: ['ROLE_ADMIN']}
       },
     ],
   },

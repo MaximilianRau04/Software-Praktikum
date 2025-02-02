@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useAuth } from './auth';
+import router from '@/router';
 
 const api = axios.create({
   baseURL: '/api',
@@ -23,7 +24,10 @@ api.interceptors.response.use(
     
     if (error.response?.status === 401) {
       clearToken();
-      window.location.href = '/login';
+      router.push({
+        name: 'login',
+        query: { redirect: window.location.pathname }
+      });
     }
     
     return Promise.reject(error);

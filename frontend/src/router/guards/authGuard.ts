@@ -8,7 +8,7 @@ export const authGuard = (to: RouteLocationNormalized, from: RouteLocationNormal
   const authRequired = !publicPages.includes(to.path);
   
   if (authRequired && !getToken()) {
-    return next('/login');
+    return next({ path: "/login", query: { redirect: to.fullPath } });
   }
   
   if (to.meta.roles) {

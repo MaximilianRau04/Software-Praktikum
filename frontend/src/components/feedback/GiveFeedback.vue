@@ -480,8 +480,6 @@ export default {
         alert("Please login first.");
         return;
       }
-      console.log(this.eventId + " eventid")
-      console.log(this.token + " token")
       if (!this.eventId || !this.token) {
         showToast(
           new Toast(
@@ -632,13 +630,14 @@ export default {
         const data = await response.data;
 
         if (response.status === 409) {
-          this.router.push('/home');
+          this.$router.push('/home');
           return;
         }
 
         if (response.status !== 200) throw new Error(data.message);
 
       } catch (error) {
+        console.error(error)
         showToast(
           new Toast(
             "Fehler",
@@ -648,7 +647,7 @@ export default {
             5
           )
         );
-        this.router.push('/home');
+        this.$router.push('/home');
       }
     },
 
@@ -675,6 +674,7 @@ export default {
     },
 
     async verifyFeedbackEligibility() {
+
       try {
         const response = await api.get(`/events/${this.eventId}/feedback-eligibility`);
 
@@ -689,7 +689,7 @@ export default {
                 5
               )
             );
-            this.router.push('/home');
+            this.$router.push('/home');
           }
           throw new Error('Authorization failed');
         }
@@ -709,7 +709,7 @@ export default {
 
   },
   async mounted() {
-    if (!this.auth.isAuthenticated) {
+    if (!this.auth.getToken()) {
       this.$router.replace({
         name: 'login',
         query: { redirect: this.$route.fullPath }

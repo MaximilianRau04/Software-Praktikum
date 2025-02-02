@@ -267,10 +267,9 @@ const handleLogin = async () => {
     const response = await api.post(`/auth/signin`, userLoginData);
     setToken(response.data.token);
     if (response.status === 200) {
-
       const redirect = route.query.redirect;
       const redirectPath = Array.isArray(redirect) ? redirect[0] : redirect || '/home';
-      router.push(redirectPath);
+      router.replace(redirectPath);
     }
     // add toast for bad credentials or not found etc.
   } catch (error) {
