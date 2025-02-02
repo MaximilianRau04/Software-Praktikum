@@ -44,7 +44,7 @@ export default {
           responseType: 'blob'
         });
 
-        if (badgeImageResponse.status !== 200) {
+        if (badgeImageResponse.status !== 204) {
           throw new Error("Badge image fetch failed");
         }
         rewardPng.value = URL.createObjectURL(badgeImageResponse.data);

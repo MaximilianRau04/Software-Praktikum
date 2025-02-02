@@ -199,7 +199,7 @@ export default {
    */
   onMounted() {
     const auth = useAuth();
-    if (auth.isAuthenticated) {
+    if (auth.isAuthenticated.value) {
       if (userData) globalState.setUser(userData);
     }
   },

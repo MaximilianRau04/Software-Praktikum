@@ -87,7 +87,7 @@ export default {
         const response = await api.get(`/notifications/unread/${userId}`);
         const unreadNotifications = response.data;
 
-        if (response.ok) {
+        if (response.status === 200) {
           this.notifications = unreadNotifications;
         }
 
