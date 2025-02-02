@@ -77,6 +77,9 @@ export default {
     watch: {
         trainer: "fetchTrainerDetails",
     },
+    mounted(){
+        this.fetchTrainerDetails();
+    },
     methods: {
         getUserIdFromCookie() {
             return useAuth().getUserId();
