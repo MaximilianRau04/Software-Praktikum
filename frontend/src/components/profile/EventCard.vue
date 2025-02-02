@@ -1,6 +1,6 @@
 <template>
   <div class="event-card">
-    <div class="header">
+    <div class="heading">
       <h4 class="event-title">{{ event.name }}</h4>
     </div>
     <div class="date-time">
@@ -57,13 +57,17 @@ export default {
 <style scoped>
 .event-card {
   position: relative;
-  padding: 1rem;
+  padding: 0rem;
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+h4{
+  margin:0;
 }
 
 .event-tags {
@@ -97,15 +101,19 @@ export default {
   background-color: #0056b3;
 }
 
-.header{
+.heading{
   display: flex;
   flex-direction: column;
-  margin-top: 10px;
+  margin-top: 10px 0 0 0;
+  padding: 0;
 }
 
 .event-title {
+  max-width: 280px;
   font-size: 1.25rem;
   font-weight: bold;
+  word-wrap: break-word;
+  hyphens: auto;
 }
 
 hr {
