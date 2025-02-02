@@ -47,16 +47,9 @@ export default {
      */
     const markAsRead = async () => {
       try {
-        const response = await api.put(`/notifications/${props.notification.id}/read`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          },
-        );
+        const response = await api.put(`/notifications/${props.notification.id}/read`);
 
-        if (!response.ok) {
+        if (response.status !== 200) {
           showToast(
             new Toast(
               "Fehler",

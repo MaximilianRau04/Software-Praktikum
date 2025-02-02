@@ -4,8 +4,8 @@
       <p>
         <span class="notification-title" @click="navigateToProfile">
           Sie haben die Errungenschaft <img v-if="rewardPng" :src="rewardPng" alt="Badge Image"
-            class="badge-image" /><strong>{{ notification.title }}</strong> 
-            erreicht. Klicken Sie hier, um sich die Errungenschaft auf Ihrem Profil anzuschauen.
+            class="badge-image" /><strong>{{ notification.title }}</strong>
+          erreicht. Klicken Sie hier, um sich die Errungenschaft auf Ihrem Profil anzuschauen.
         </span>
       </p>
     </template>
@@ -40,22 +40,24 @@ export default {
       }
 
       try {
-        const badgeImageResponse = await api.get(`/rewards/badge?type=${props.notification.context.rewardType}&currentLevel=${props.notification.context.currentLevel}`);
+        const badgeImageResponse = await api.get(`/rewards/badge?type=${props.notification.context.rewardType}&currentLevel=${props.notification.context.currentLevel}`, {
+          responseType: 'blob'
+        });
 
-        if (!badgeImageResponse.ok) throw new Error("Badge image fetch failed");
-
-        const badgeImageBlob = await badgeImageResponse.blob();
-        rewardPng.value = URL.createObjectURL(badgeImageBlob);
+        if (badgeImageResponse.status !== 200) {
+          throw new Error("Badge image fetch failed");
+        }
+        rewardPng.value = URL.createObjectURL(badgeImageResponse.data);
       } catch (err) {
         showToast(
-            new Toast(
-              "Fehler",
-              `Icon der Errungenschaft konnte nicht geladen werden.`,
-              "error",
-              faXmark,
-              5,
-            ),
-          );
+          new Toast(
+            "Fehler",
+            `Icon der Errungenschaft konnte nicht geladen werden.`,
+            "error",
+            faXmark,
+            5,
+          ),
+        );
       }
     };
 

@@ -59,6 +59,8 @@ export default {
 
 .events-column {
   flex: 1;
+  max-height: 600px;
+  overflow-y: auto;
 }
 
 .events-grid {
