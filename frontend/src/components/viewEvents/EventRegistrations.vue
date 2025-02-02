@@ -339,13 +339,7 @@ const fetchEvents = async () => {
     const eventResponse = await api.get(`/users/${userId}/associatedEvents`)
     const events = await eventResponse.data;
 
-    const [registeredRes, recommendedRes, feedbackRes] = await Promise.all([
-      api.get(`/users/${userId}/registeredEvents`),
-      api.get(`/users/${userId}/recommendedEvents?limit=5`),
-      api.get(`/users/${userId}/pendingFeedbackEvents`),
-    ]);
-
-    if (registeredRes.status !== 200 || recommendedRes.status !== 200 || feedbackRes.status !== 200) {
+    if (eventResponse.status !== 200) {
       showToast(
         new Toast("Fehler", `Events konnten nicht geladen werden.`, "error", faXmark, 5)
       );
@@ -360,9 +354,6 @@ const fetchEvents = async () => {
       event.tags = await fetchTagsForEvent(event.id);
     }
 
-    pastEvents.value = registeredEvents.value.filter(
-      (event) => new Date(event.date) <= new Date(today) && event.startTime <= new Date().toLocaleTimeString(),
-    );
   } catch (error) {
     showToast(
       new Toast("Fehler", `Events konnten nicht geladen werden.`, "error", faXmark, 5)
