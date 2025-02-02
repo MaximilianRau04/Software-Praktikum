@@ -63,9 +63,8 @@ public class UserController {
 
     @GetMapping("/{userId}/associatedEvents")
     public ResponseEntity<ParticipatedEventCollectionDTO> getAssociatedEvents(@PathVariable Long userId){
-        return ResponseEntity.ok(userService.collectAssociatedEvents());
+        return ResponseEntity.ok(userService.collectAssociatedEvents(userId));
     }
-
 
     @GetMapping("/{id}/registeredEvents")
     public Iterable<EventResponseDTO> getRegisteredEvents(@PathVariable Long id) {
