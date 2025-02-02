@@ -48,9 +48,9 @@
 
             <div class="input-group password-group">
               <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Passwort" required
-              class="auth-input" />
+                class="auth-input" />
               <button type="button" class="password-toggle" @click="showPassword = !showPassword">
-              <font-awesome-icon :icon="showPassword ? 'eye-slash' : 'eye'" class="password-icon" />
+                <font-awesome-icon :icon="showPassword ? 'eye-slash' : 'eye'" class="password-icon" />
               </button>
             </div>
             <small class="password-info">Das Passwort muss zwischen 6 und 40 Zeichen lang sein.</small>
@@ -232,14 +232,14 @@ const handleRegistration = async () => {
         changeToLogin();
 
         showToast(
-        new Toast(
-          "Erfolg",
-          `Sie haben sich erfolgreich registriert. Fahren Sie mit dem Login fort.`,
-          "success",
-          faXmark,
-          5
-        )
-      );
+          new Toast(
+            "Erfolg",
+            `Sie haben sich erfolgreich registriert. Fahren Sie mit dem Login fort.`,
+            "success",
+            faXmark,
+            5
+          )
+        );
       }
       // Add toast based on error messages from backend
 
@@ -268,23 +268,21 @@ const handleLogin = async () => {
     setToken(response.data.token);
     if (response.status === 200) {
 
-      const redirectPath = Array.isArray(route.query.redirect) 
-        ? route.query.redirect[0]
-        : route.query.redirect || '/home';
-
+      const redirect = route.query.redirect;
+      const redirectPath = Array.isArray(redirect) ? redirect[0] : redirect || '/home';
       router.push(redirectPath);
     }
     // add toast for bad credentials or not found etc.
   } catch (error) {
     showToast(
-        new Toast(
-          "Fehler",
-          `${error.statusText}`,
-          "error",
-          faXmark,
-          5
-        )
-      );
+      new Toast(
+        "Fehler",
+        `${error.statusText}`,
+        "error",
+        faXmark,
+        5
+      )
+    );
   }
 };
 

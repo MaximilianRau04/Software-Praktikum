@@ -4,8 +4,10 @@ import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.EventRepository;
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.dtos.RatedEventDTO;
+import com.sopra.eaplanner.event.participation.EventParticipation;
 import com.sopra.eaplanner.event.participation.EventParticipationDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationService;
+import com.sopra.eaplanner.event.participation.ParticipatedEventCollectionDTO;
 import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.event.tags.TagService;
@@ -56,6 +58,8 @@ public class UserService {
 
     @Autowired
     private TagService tagService;
+    @Autowired
+    private UserTagWeightService userTagWeightService;
 
     public UserResponseDTO getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
@@ -78,6 +82,35 @@ public class UserService {
             dtos.add(new UserResponseDTO(user));
         }
         return dtos;
+    }
+
+    public ParticipatedEventCollectionDTO collectAssociatedEvents(Long userId){
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        Set<EventParticipation> parts = user.getParticipations();
+
+        List<EventResponseDTO> registeredEvents = parts.stream()
+                .filter(part -> !part.getIsParticipationConfirmed() && !part.getFeedbackGiven())
+                .map(EventParticipation::getEvent)
+                .map(EventResponseDTO::new)
+                .toList();
+
+        List<EventResponseDTO> confirmedEvents = parts.stream()
+                .filter(part -> part.getIsParticipationConfirmed() && !part.getFeedbackGiven())
+                .map(EventParticipation::getEvent)
+                .map(EventResponseDTO::new)
+                .toList();
+
+        List<EventResponseDTO> completedEvents = parts.stream()
+                .filter(part -> part.getIsParticipationConfirmed() && part.getFeedbackGiven())
+                .map(EventParticipation::getEvent)
+                .map(EventResponseDTO::new)
+                .toList();
+
+        List<EventResponseDTO> recommendedEvents = userTagWeightService.recommendEvents(userId, 5);
+
+        return new ParticipatedEventCollectionDTO(registeredEvents, confirmedEvents, completedEvents, recommendedEvents);
     }
 
     public Iterable<EventResponseDTO> getRegisteredEvents(Long id) {

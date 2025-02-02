@@ -5,6 +5,7 @@ import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.EventRepository;
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationDTO;
+import com.sopra.eaplanner.event.participation.ParticipatedEventCollectionDTO;
 import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.forumpost.dtos.ForumPostResponseDTO;
@@ -59,6 +60,12 @@ public class UserController {
     public Iterable<UserResponseDTO> getAllUsers() {
         return userService.getAllUsers();
     }
+
+    @GetMapping("/{userId}/associatedEvents")
+    public ResponseEntity<ParticipatedEventCollectionDTO> getAssociatedEvents(@PathVariable Long userId){
+        return ResponseEntity.ok(userService.collectAssociatedEvents());
+    }
+
 
     @GetMapping("/{id}/registeredEvents")
     public Iterable<EventResponseDTO> getRegisteredEvents(@PathVariable Long id) {

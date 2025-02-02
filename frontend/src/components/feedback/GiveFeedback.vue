@@ -468,7 +468,7 @@ export default {
   },
   methods: {
     goBack() {
-      this.router.push({
+      this.$router.push({
         name: "EventPage",
         params: { eventId: this.eventId.toString() },
       });
@@ -710,16 +710,14 @@ export default {
   },
   async mounted() {
     if (!this.auth.isAuthenticated) {
-      this.router.replace({
+      this.$router.replace({
         name: 'login',
         query: { redirect: this.$route.fullPath }
       });
       return;
     }
 
-    const route = useRoute();
-
-    this.eventId = route.params.eventId as string;
+    this.eventId = this.$route.params.eventId as string;
     this.token = this.$route.query.token;
 
     await this.verifyFeedbackEligibility();
