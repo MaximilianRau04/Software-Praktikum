@@ -61,8 +61,9 @@
       >
         QR-Code
       </button>
+      <div v-if="isCompleted"></div>
       <button
-        v-if="isAlreadyRegistered"
+        v-else-if="isAlreadyRegistered"
         class="tab-button danger"
         @click="unregisterFromEvent"
       >
@@ -245,6 +246,7 @@ const qrCodeLink = ref("");
 const copySuccess = ref(false);
 
 const focusedThreadId = ref<number | null>(null);
+const isCompleted = ref(false);
 const isAlreadyRegistered = ref(false);
 
 const goToUser = (username: string) => {
@@ -258,7 +260,7 @@ const showForum = () => {
 
 const isAdmin = computed(() => {
   const auth = useAuth();
-  return auth.isAdmin;
+  return auth.isAdmin.value;
 });
 
 const goToEventRegistrations = () => {
@@ -497,15 +499,20 @@ const checkRegistrationStatus = async () => {
     return;
   }
   try {
-    const response = await api.get(`/users/${userId}/registeredEvents`);
+    const response = await api.get(`/participations/${userId}/${eventId}`);
     if (response.status !== 200) throw new Error("Failed to fetch user data.");
 
-    const registeredEvents = await response.data;
+    const registrationStatus = await response.data;
 
-    isAlreadyRegistered.value = registeredEvents.some(
-      (event: { id: number }) => event.id === eventId
-    );
+    isCompleted.value = registrationStatus.participationConfirmed && registrationStatus.feedbackGiven;
+    isAlreadyRegistered.value = true;
   } catch (error) {
+    if(error.response.status) {
+      console.log("here")
+      isAlreadyRegistered.value = false;
+      isCompleted.value = false;
+      return;
+    }
     showToast(
       new Toast("Fehler", `Fehler bei der Registrierung`, "error", faXmark, 5)
     );
@@ -531,14 +538,7 @@ const registerForEvent = async () => {
       return;
     }
 
-    const response = await api.post(
-      `/users/${userId}/eventRegistration?eventId=${eventId}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await api.post(`/users/${userId}/eventRegistration?eventId=${eventId}`);
 
     if (response.status === 404) {
       showToast(

@@ -1,9 +1,11 @@
 package com.sopra.eaplanner.event.participation;
 
 import com.sopra.eaplanner.event.Event;
+import com.sopra.eaplanner.event.EventRepository;
 import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.reward.RewardService;
 import com.sopra.eaplanner.user.User;
+import com.sopra.eaplanner.user.UserRepository;
 import com.sopra.eaplanner.user.UserTagWeight;
 import com.sopra.eaplanner.user.UserTagWeightRepository;
 import jakarta.persistence.EntityExistsException;
@@ -32,6 +34,10 @@ public class EventParticipationService {
 
     @Autowired
     private RewardService rewardService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private EventRepository eventRepository;
 
     /**
      * Creates a new attendance record for the user at the specified event.
@@ -130,6 +136,15 @@ public class EventParticipationService {
         if(feedbackCount >= 20){
             rewardService.grantCleanSubmitterReward(user);
         }
+    }
+
+    public EventParticipationDTO getParticipation(Long userId, Long eventId){
+        User user = userRepository.findById(userId).orElseThrow(()-> new EntityNotFoundException(" User not found "));
+        Event event = eventRepository.findById(eventId).orElseThrow(()-> new EntityNotFoundException(" Event not found "));
+
+        EventParticipation part = eventParticipationRepository.findByUserAndEvent(user, event).orElseThrow(()-> new EntityNotFoundException(" Participation not found "));
+
+        return new EventParticipationDTO(part);
     }
 
     /**

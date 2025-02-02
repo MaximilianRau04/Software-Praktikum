@@ -1,7 +1,7 @@
 <template>
   <div class="profile-container">
     <TrainerProfile
-      v-if="trainerProfileData"
+      v-if="trainerProfileData.id"
       :user="userData"
       :trainer="trainerProfileData"
     />
@@ -45,7 +45,6 @@ export default {
         }
         this.userData = await userResponse.data;
         
-
         if (this.isTrainer) {
           const trainerResponse = await api.get(`/trainerProfiles/${this.userData.id}`);
           if (trainerResponse.status !== 200) {
