@@ -74,6 +74,11 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.selected {
+  border-width: 2px;
+  border-color: #009ee2;
+}
+
 .heading {
   color: #009ee2;
   font-size: 16px;

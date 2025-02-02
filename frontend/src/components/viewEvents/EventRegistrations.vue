@@ -458,7 +458,7 @@ onMounted(() => {
   gap: 0.75rem; 
   border: 1px solid #e2e8f0;
   min-height: 80px;
-  max-height: 120px; 
+  max-height: fit-content;
   overflow: hidden;
 }
 
