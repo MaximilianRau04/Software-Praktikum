@@ -41,36 +41,10 @@ export default {
     pastEvents: {
       type: Array,
       required: true,
-      validator(value) {
-        return value.every(
-          (event) =>
-            typeof event.name === "string" &&
-            typeof event.date === "string" &&
-            typeof event.startTime === "string" &&
-            typeof event.endTime === "string" &&
-            typeof event.description === "string" &&
-            typeof event.experienceLevel === "string" &&
-            Array.isArray(event.tags) &&
-            (typeof event.averageRating === "number" ||
-              event.averageRating === undefined),
-        );
-      },
     },
     futureEvents: {
       type: Array,
       required: true,
-      validator(value) {
-        return value.every(
-          (event) =>
-            typeof event.name === "string" &&
-            typeof event.date === "string" &&
-            typeof event.startTime === "string" &&
-            typeof event.endTime === "string" &&
-            typeof event.description === "string" &&
-            typeof event.experienceLevel === "string" &&
-            Array.isArray(event.tags),
-        );
-      },
     },
   },
 };

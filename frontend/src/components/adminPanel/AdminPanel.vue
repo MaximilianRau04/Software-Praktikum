@@ -1,241 +1,133 @@
 <template>
   <div class="admin-container">
-    <div class="box">
-      <div class="action-buttons">
-        <!-- Create Buttons -->
-        <div class="create-buttons-group">
 
-          <button
-            @click="toggleLocationBox"
-            class="action-button"
-            type="button"
-          >
-            <img
-              src="@/images/plus.png"
-              alt="Plus"
-              class="plus-icon"
-              width="35"
-              height="35"
-            />
-            Neue Location
-          </button>
-
-          <button
-            @click="toggleResourceBox"
-            class="action-button"
-            type="button"
-          >
-            <img
-              src="@/images/plus.png"
-              alt="Plus"
-              class="plus-icon"
-              width="35"
-              height="35"
-            />
-            Neue Resource
-          </button>
-
-          <button
-            @click="toggleExchangeDayBox"
-            class="action-button"
-            type="button"
-          >
-            <img
-              src="@/images/plus.png"
-              alt="Plus"
-              class="plus-icon"
-              width="35"
-              height="35"
-            />
-            Neuer Exchange Day
-          </button>
-          <button
-            @click="toggleWorkshopBox"
-            class="action-button"
-            type="button"
-          >
-            <img
-              src="@/images/plus.png"
-              alt="Plus"
-              class="plus-icon"
-              width="35"
-              height="35"
-            />
-            Neuer Workshop
-          </button>
-  
-        </div>
-
-        <div class="update-buttons-group">
-          <button
-            @click="toggleUpdateResourceBox"
-            class="action-button"
-            type="button"
-          >
-            <img
-              src="@/images/plus.png"
-              alt="Plus"
-              class="plus-icon"
-              width="35"
-              height="35"
-            />
-            Ressource bearbeiten
-          </button>
-          <button
-            @click="SelectEventToUpdate"
-            class="action-button"
-            type="button"
-          >
-            <img
-              src="@/images/plus.png"
-              alt="Plus"
-              class="plus-icon"
-              width="35"
-              height="35"
-            />
-            Event bearbeiten
-          </button>
-          <button
-            @click="SelectExchangeDayToUpdate"
-            class="action-button"
-            type="button"
-          >
-            <img
-              src="@/images/plus.png"
-              alt="Plus"
-              class="plus-icon"
-              width="35"
-              height="35"
-            />
-            ExchangeDay bearbeiten
-          </button>
-          <button
-            @click="toggleEventListBox"
-            class="action-button"
-            type="button"
-          >
-            <img 
-            src="@/images/plus.png"
-            alt="List" 
-            class="plus-icon" 
-            width="35" 
-            height="35" />
-            Event Feedbacks
-          </button>
-
-          <button
-            @click="toggleEventInviteOnlyListBox"
-            class="action-button"
-            type="button"
-          >
-            <img 
-            src="@/images/plus.png"
-            alt="List" 
-            class="plus-icon" 
-            width="35" 
-            height="35" />
-            Events nur auf Einladung
-          </button>
-
-        </div>
-      </div>
-
-      <div class="form-container">
-        <!-- exchange day form -->
-        <transition name="roll">
-          <ExchangeDayForm
-            v-model:showExchangeDayBox="showExchangeDayBox"
-            :exchange-days="exchangeDays"
-            :users="users"
-            v-show="showExchangeDayBox"
-          />
-        </transition>
-
-        <!-- workshop form -->
-        <transition name="roll">
-          <WorkshopForm
-            v-model:showWorkshopBox="showWorkshopBox"
-            :exchange-days="exchangeDays"
-            :experience-levels="experienceLevels"
-            :all-tags="allTags"
-            v-show="showWorkshopBox"
-          />
-        </transition>
-
-        <!-- resource form -->
-        <transition name="roll">
-          <ResourceForm
-            v-model:showResourceBox="showResourceBox"
-            v-if="showResourceBox"
-          />
-        </transition>
-
-        <!-- location form -->
-        <transition name="roll">
-          <LocationForm
-            v-model:showLocationBox="showLocationBox"
-            v-if="showLocationBox"
-          />
-        </transition>
-
-        <!-- update Resource form -->
-        <transition name="roll">
-          <UpdateResource
-            v-model:showUpdateResourceBox="showUpdateResourceBox"
-            v-if="showUpdateResourceBox"
-          />
-        </transition>
-
-        <!-- update Event form -->
-        <transition name="roll">
-          <UpdateEvent
-            v-model:selectEventToUpdate="SelectEventToUpdate"
-            v-if="selectEventToUpdate"
-          />
-        </transition>
-
-        <!-- update Exchange Day form -->
-        <transition name="roll">
-          <UpdateExchangeDay
-            v-model:selectExchangeDayToUpdate="selectExchangeDayToUpdate"
-            v-if="selectExchangeDayToUpdate"
-          />
-        </transition>
-
-        <!-- event feedbacks -->
-        <transition name="roll">
-          <EventList
-            v-model:showEventListBox="showEventListBox"
-            v-if="showEventListBox"
-          />
-        </transition>
-
-        <!-- events invite ony -->
-        <transition name="roll">
-          <EventInviteOnlyList
-            v-model:showEventInvityOnlyListBox="showEventInviteOnlyListBox"
-            v-if="showEventInviteOnlyListBox"
-          />
-        </transition>
-
-      </div>
-      <div class="csv-actions">
-        <button  class="csv-button" @click="triggerFileUpload" v-if="areAllBoxesHidden()">
-          Ressourcen aus CSV importieren
+    <div class="admin-sidebar">
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Erstellen</h3>
+        <button @click="toggleLocationBox" class="sidebar-btn">
+          <span>Location</span>
         </button>
-        <input
-          ref="fileInput"
-          type="file"
-          accept=".csv"a
-          @change="handleFileUpload"
-          style="display: none"
-        />
-        <button class="csv-button" @click="downloadCsvOfResources"  v-if="areAllBoxesHidden()">
-          Ressourcen als CSV downloaden
+        <button @click="toggleResourceBox" class="sidebar-btn">
+          <span>Ressource</span>
+        </button>
+        <button @click="toggleExchangeDayBox" class="sidebar-btn">
+          <span>Exchange Day</span>
+        </button>
+        <button @click="toggleWorkshopBox" class="sidebar-btn">
+          <span>Event</span>
         </button>
       </div>
-  
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Bearbeiten</h3>
+        <button @click="toggleUpdateResourceBox" class="sidebar-btn">
+          <span>Ressource</span>
+        </button>
+        <button @click="SelectExchangeDayToUpdate" class="sidebar-btn">
+          <span>Exchange Day</span>
+        </button>
+        <button @click="SelectEventToUpdate" class="sidebar-btn">
+          <span>Event</span>
+        </button>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Events</h3>
+        <button @click="toggleEventListBox" class="sidebar-btn">
+          <span>Feedbacks</span>
+        </button>
+
+        <button @click="toggleEventInviteOnlyListBox" class="sidebar-btn">
+          <span>Einladungs-Events</span>
+        </button>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">CSV</h3>
+        
+        <button class="sidebar-btn" @click="importExampleResources" >
+        Beispiel-Import von Resourcen
+        </button>
+        <button class="sidebar-btn" @click="triggerFileUpload">
+        CSV Import von Resourcen
+      </button>
+      <input
+        ref="fileInput"
+        type="file"
+        accept=".csv"
+        @change="handleFileUpload"
+        style="display: none"
+      />
+      <button class="sidebar-btn" @click="downloadCsvOfResources" >
+        CSV Export von Resourcen
+      </button>
+      
+      </div>
     </div>
+
+    <div class="admin-content">
+      <transition name="slide-fade">
+        <div class="form-wrapper" v-if="showExchangeDayBox">
+          <ExchangeDayForm v-model:showExchangeDayBox="showExchangeDayBox" :exchange-days="exchangeDays" :users="users"/>
+        </div>
+      </transition>
+
+      <transition name="slide-fade">
+        <div class="form-wrapper" v-if="showWorkshopBox">
+          <WorkshopForm v-model:showWorkshopBox="showWorkshopBox" :exchange-days="exchangeDays" :experience-levels="experienceLevels" :all-tags="allTags"/>
+        </div>
+      </transition>
+
+      <transition name="slide-fade">
+        <div class="form-wrapper" v-if="showResourceBox">
+          <ResourceForm v-model:showResourceBox="showResourceBox"/>
+        </div>
+      </transition>
+
+      <transition name="slide-fade">
+        <div class="form-wrapper" v-if="showLocationBox">
+          <LocationForm v-model:showLocationBox="showLocationBox"/>
+        </div>
+      </transition>
+
+      <transition name="slide-fade">
+        <div class="form-wrapper" v-if="showUpdateResourceBox">
+          <UpdateResource v-model:showUpdateResourceBox="showUpdateResourceBox"/>
+        </div>
+      </transition>
+
+      <transition name="slide-fade">
+        <div class="form-wrapper" v-if="selectEventToUpdate">
+          <UpdateEvent v-model:selectEventToUpdate="selectEventToUpdate"/>
+        </div>
+      </transition>
+
+      <transition name="slide-fade">
+        <div class="form-wrapper" v-if="selectExchangeDayToUpdate">
+          <UpdateExchangeDay v-model:selectExchangeDayToUpdate="selectExchangeDayToUpdate"/>
+        </div>
+      </transition>
+
+      <transition name="slide-fade">
+        <div class="form-wrapper" v-if="showEventListBox">
+          <EventList v-model:showEventListBox="showEventListBox"/>
+        </div>
+      </transition>
+
+      <transition name="slide-fade">
+        <div class="form-wrapper" v-if="showEventInviteOnlyListBox">
+          <EventInviteOnlyList v-model:showEventInviteOnlyListBox="showEventInviteOnlyListBox"/>
+        </div>
+      </transition>
+    </div>
+    
+    <input
+      ref="fileInput"
+      type="file"
+      accept=".csv"
+      @change="handleFileUpload"
+      style="display: none"
+    />
   </div>
 </template>
 
@@ -254,6 +146,8 @@ import EventInviteOnlyList from "./EventInviteOnlyList.vue";
 import EventList from "./EventList.vue";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import api from "@/util/api";
+
 
 const showWorkshopBox = ref(false);
 const showExchangeDayBox = ref(false);
@@ -269,7 +163,6 @@ const exchangeDays = ref([]);
 const users = ref([]);
 const experienceLevels = ref([]);
 const allTags = ref([]);
-const filteredTags = ref([]);
 const fileInput = ref<HTMLInputElement | null>(null);
 const allForms = {
   showExchangeDayBox,
@@ -294,28 +187,28 @@ const fetchData = async () => {
   try {
     const [exchangeDaysResponse, usersResponse, levelsResponse] =
       await Promise.all([
-        fetch(`${config.apiBaseUrl}/exchange-days`),
-        fetch(`${config.apiBaseUrl}/users`),
-        fetch(`${config.apiBaseUrl}/events/experience-levels`),
+        api.get(`/exchange-days`),
+        api.get(`/users`),
+        api.get(`/events/experience-levels`),
       ]);
-    if (!exchangeDaysResponse.ok) {
+    if (exchangeDaysResponse.status !== 200) {
       showToast(
         new Toast("Error", "Fehler beim Laden der Exchange Days", "error")
       );
     }
-    if (!usersResponse.ok) {
+    if (usersResponse.status !== 200) {
       showToast(new Toast("Error", "Fehler beim Laden der Benutzer", "error"));
     }
-    if (!levelsResponse.ok) {
+    if (levelsResponse.status !== 200) {
       showToast(
         new Toast("Error", "Fehler beim Laden der Erfahrungslevel", "error")
       );
     }
     fetchTags();
 
-    exchangeDays.value = await exchangeDaysResponse.json();
-    users.value = await usersResponse.json();
-    experienceLevels.value = await levelsResponse.json();
+    exchangeDays.value = await exchangeDaysResponse.data;
+    users.value = await usersResponse.data;
+    experienceLevels.value = await levelsResponse.data;
   } catch (error) {
     showToast(new Toast("Error", "Fehler beim Laden der Daten", "error"));
   }
@@ -326,11 +219,10 @@ const fetchData = async () => {
  */
 const fetchTags = async () => {
   try {
-    const response = await fetch(`${config.apiBaseUrl}/tags`);
-    if (response.ok) {
-      const tags = await response.json();
-      allTags.value = tags.map((tag) => tag.name);
-      filteredTags.value = [...allTags.value];
+    const response = await api.get(`/tags`);
+    if (response.status === 200) {
+      const tags = await response.data;
+      allTags.value = tags;
     } else {
       showToast(new Toast("Error", "Fehler beim Abrufen der Tags", "error"));
     }
@@ -384,11 +276,6 @@ const SelectExchangeDayToUpdate = () => {
   selectExchangeDayToUpdate.value = !selectExchangeDayToUpdate.value;
 };
 
-const areAllBoxesHidden = () => {
-  return Object.values(allForms).every((box) => !box.value);
-};
-
-
 /**
  * Resets all forms
  */
@@ -399,41 +286,76 @@ const resetForms = (currentForm) => {
   }
 };
 
-/**
- * download CSV file of todos
- */
-async function downloadCsvOfResources() {
-  try {
-    const response = await fetch(
-      `${config.apiBaseUrl}/resources/csv-downloads`
-    );
-    if (!response.ok) throw new Error("Download fehlgeschlagen!");
 
-    const blob = await response.blob();
+/**
+ * Download CSV file of resources
+ */
+ async function downloadCsvOfResources() {
+  try {
+    const response = await api.get('/resources/csv-downloads', {
+      responseType: 'blob'
+    });
+
+    const blob = response.data;
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "resources.csv";
+    const filename = 'resources.csv';
+    link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
   } catch (error) {
-    showToast(
-      new Toast("Error", "CSV Download fehlgeschlagen!", "error", faXmark, 10)
-    );
+    showToast(new Toast("Error", "CSV Download fehlgeschlagen!", "error", faXmark, 10));
   }
-}
+};
 
 /**
- * Trigger file input click
+ * Import example resources from CSV
  */
+const importExampleResources = async () => {
+  try {
+    const response = await fetch("/csv/example.csv");
+    const text = await response.text();
+    
+    const UTF8_BOM = new Uint8Array([0xEF, 0xBB, 0xBF]);
+    
+    const encoder = new TextEncoder();
+    const textBytes = encoder.encode(text);
+    
+    const combinedArray = new Uint8Array(UTF8_BOM.length + textBytes.length);
+    combinedArray.set(UTF8_BOM);
+    combinedArray.set(textBytes, UTF8_BOM.length);
+    
+    const blob = new Blob([combinedArray], {
+      type: "text/csv;charset=utf-8"
+    });
+ 
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "example.csv";
+    
+    document.body.appendChild(link);
+    link.click();
+    
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Fehler beim Download:", error);
+    alert("Der Download konnte nicht durchgeführt werden.");
+  }
+};
+
+
+
 const triggerFileUpload = () => {
   fileInput.value?.click();
 };
 
 /**
- * Handles the file upload event and sends the CSV to the backend
+ * Handle file upload and CSV import
  */
 const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -447,16 +369,12 @@ const handleFileUpload = async (event: Event) => {
   formData.append("file", file);
 
   try {
-    const response = await fetch(`${config.apiBaseUrl}/resources/csv-import`, {
-      method: "POST",
-      body: formData,
+    await api.post('/resources/csv-import', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      responseType: 'text'
     });
-
-    const responseText = await response.text();
-
-    if (!response.ok) {
-      throw new Error(responseText || "Import fehlgeschlagen!");
-    }
 
     showToast(new Toast("Success", "CSV erfolgreich importiert!", "success"));
     await fetchData();
@@ -469,43 +387,84 @@ const handleFileUpload = async (event: Event) => {
 </script>
 
 <style scoped>
-.action-button {
-  margin: 5px;
+.admin-container {
+  display: flex;
+  background-color: white;
+  padding-left: 0px;
+  padding-top: 0px;
 }
 
-.create-buttons-group {
-  background-color: #e0e0e0;
-  padding: 10px;
-  border-radius: 5px;
-  margin: 0px;
+.admin-sidebar {
+  width: 250px;
+  background: #022750;
+  padding: 0px 5px 10px 20px;
+  color: white;
+  position: fixed;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
 }
 
-.update-buttons-group {
-  background-color: #e0e0e0;
-  padding: 10px;
-  border-radius: 5px;
-  margin-top: 10px;
-}
-
-.csv-actions {
+.admin-content {
+  flex: 1;
+  margin-left: 300px;
+  padding: 30px;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  margin-top: 20px;
+  align-items: center;
 }
 
-.csv-button {
-  background-color: #003e81;
-  color: white;
+.sidebar-section {
+  margin-bottom: 1.7rem;
+}
+
+.sidebar-title {
+  color: #95a5a6;
+  font-size: 0.9rem;
+  padding-left: 10px;
+  text-transform: uppercase;
+  margin: 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #2f4862;
+}
+
+.sidebar-btn {
+  width: 100%;
+  padding: 7px 20px;
+  text-align: left;
+  color: #ecf0f1;
+  background: transparent;
   border: none;
-  padding: 10px 15px;
   border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s;
 }
 
-.csv-button:hover {
-  background-color: #013368;
+.sidebar-btn:hover {
+  background: #34495e;
+  transform: translateX(5px);
+}
+
+.form-wrapper {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
 }
 </style>

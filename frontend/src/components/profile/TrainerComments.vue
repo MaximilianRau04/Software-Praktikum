@@ -38,7 +38,7 @@
         required: true,
       },
     },
-    created() {
+    mounted() {
       axios
         .get(`${config.apiBaseUrl}/trainerProfiles/${this.trainerId}/pinned-comments`)
         .then((response) => (this.pinnedComments = response.data))

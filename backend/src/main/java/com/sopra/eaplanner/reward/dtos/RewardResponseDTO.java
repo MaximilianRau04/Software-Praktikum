@@ -8,18 +8,32 @@ public class RewardResponseDTO {
 
     private Reward.Type type;
 
+    private Integer currentLevel;
+
+    private Integer pointsToNextLevel;
+
+    private Boolean levelBased;
+
     private Integer points;
 
     private Long userId;
 
-    private Integer threshold;
+    private String description;
+
 
     public RewardResponseDTO(Reward reward) {
         this.id = reward.getId();
         this.type = reward.getType();
         this.points = reward.getPoints();
         this.userId = reward.getUser().getId();
-        this.threshold = reward.getLastThreshold();
+        this.currentLevel = reward.getCurrentLevel();
+        this.levelBased = reward.isLevelBased();
+        this.description = reward.getDescription();
+
+        if (reward.isLevelBased()){
+            this.currentLevel = reward.getCurrentLevel();
+            this.pointsToNextLevel = reward.getPointsToNextLevel(reward.getType());
+        }
     }
 
     public Long getId() {
@@ -47,10 +61,29 @@ public class RewardResponseDTO {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
-    public Integer getThreshold() {
-        return threshold;
+
+    public Integer getCurrentLevel() {
+        return currentLevel;
     }
-    public void setThreshold(Integer threshold) {
-        this.threshold = threshold;
+    public void setCurrentLevel(Integer currentLevel) {
+        this.currentLevel = currentLevel;
+    }
+    public Integer getPointsToNextLevel() {
+        return pointsToNextLevel;
+    }
+    public void setPointsToNextLevel(Integer pointsToNextLevel) {
+        this.pointsToNextLevel = pointsToNextLevel;
+    }
+    public Boolean getLevelBased() {
+        return levelBased;
+    }
+    public void setLevelBased(Boolean levelBased) {
+        this.levelBased = levelBased;
+    }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

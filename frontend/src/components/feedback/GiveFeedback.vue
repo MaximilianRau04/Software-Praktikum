@@ -7,46 +7,33 @@
     <!-- Überschrift und Beschreibung -->
     <div class="survey-header">
       <h2>Feedback für {{ event.name }}</h2>
-      <p>
-        Veranstaltung vom
-        {{
-          new Date(event.date).toLocaleDateString("de-DE", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })
-        }}
-        <br />
-      </p>
+      <p>Veranstaltung vom {{ new Date(event.date).toLocaleDateString('de-DE', {
+        weekday: 'long', year: 'numeric',
+        month: 'long', day: 'numeric'
+      }) }} <br /></p>
       <div class="survey-instructions">
         <p>
-          Wir bitten Sie, diese Umfrage auszufüllen, um wertvolles Feedback zu
-          Ihrem Erlebnis bei <strong>{{ event.name }}</strong> mit
-          <strong>{{ organizer.firstname + " " + organizer.lastname }}</strong>
-          zu erhalten. Ihre Bewertungen und Kommentare tragen dazu bei, unsere
-          zukünftigen Veranstaltungen kontinuierlich zu verbessern.
+          Wir bitten Sie, diese Umfrage auszufüllen, um wertvolles Feedback zu Ihrem Erlebnis bei <strong>{{ event.name
+            }}</strong> mit <strong>{{ organizer.firstname + " " + organizer.lastname }}</strong> zu erhalten. Ihre
+          Bewertungen und Kommentare tragen dazu bei, unsere zukünftigen Veranstaltungen kontinuierlich zu verbessern.
         </p>
         <p>
-          Bitte bewerten Sie die verschiedenen Bereiche der Veranstaltung auf
-          einer Skala von 1 bis 5, wobei 5 die bestmögliche Bewertung und 1 die
-          schlechteste Bewertung darstellt.
+          Bitte bewerten Sie die verschiedenen Bereiche der Veranstaltung auf einer Skala von 1 bis 5, wobei 5 die
+          bestmögliche Bewertung und 1 die schlechteste Bewertung darstellt.
         </p>
         <p>
-          Wir laden Sie ein, Ihre Gedanken zu den Fragen „Was hat Ihnen
-          besonders gefallen?“ und „Welche Aspekte könnten verbessert werden?“
-          zu teilen. Ihre detaillierten Rückmeldungen sind für uns von großem
-          Wert.
+          Wir laden Sie ein, Ihre Gedanken zu den Fragen „Was hat Ihnen besonders gefallen?“ und „Welche Aspekte könnten
+          verbessert werden?“ zu teilen. Ihre detaillierten Rückmeldungen sind für uns von großem Wert.
         </p>
         <p>
-          Erforderliche Felder sind mit einem
-          <span class="required">*</span> markiert.
+          Erforderliche Felder sind mit einem <span class="required">*</span> markiert.
         </p>
         <p>
-          Sie haben die Möglichkeit, Ihr Feedback anonym abzugeben. Diese Option
-          finden Sie am Ende der Umfrage.
+          Sie haben die Möglichkeit, Ihr Feedback anonym abzugeben. Diese Option finden Sie am Ende der Umfrage.
         </p>
-        <p>Die Bearbeitung der Umfrage dauert etwa 5-7 Minuten.</p>
+        <p>
+          Die Bearbeitung der Umfrage dauert etwa 5-7 Minuten.
+        </p>
       </div>
     </div>
 
@@ -54,26 +41,16 @@
       <!-- Overall Section -->
       <div class="section">
         <h3 class="section-title">Gesamtbewertung</h3>
-        <div
-          v-for="(field, index) in overallFields"
-          :key="index"
-          class="feedback-row"
-          style="position: relative"
-          :ref="`field-${field.key}`"
-        >
+        <div v-for="(field, index) in overallFields" :key="index" class="feedback-row" style="position: relative;"
+          :ref="`field-${field.key}`">
           <div class="feedback-label">
             <span>{{ field.label }} <span class="required">*</span></span>
             <p class="explanation">{{ field.explanation }}</p>
             <!-- Explanation below the label -->
           </div>
           <div class="rating-group">
-            <div
-              v-for="rating in 5"
-              :key="rating"
-              class="rating-circle"
-              :class="{ selected: feedbackData[field.key] === rating }"
-              @click="updateField(field.key, rating)"
-            >
+            <div v-for="rating in 5" :key="rating" class="rating-circle"
+              :class="{ selected: feedbackData[field.key] === rating }" @click="updateField(field.key, rating)">
               {{ rating }}
             </div>
           </div>
@@ -87,26 +64,16 @@
       <!-- Content and Structure Section -->
       <div class="section">
         <h3 class="section-title">Inhalt und Struktur</h3>
-        <div
-          v-for="(field, index) in contentFields"
-          :key="index"
-          class="feedback-row"
-          style="position: relative"
-          :ref="`field-${field.key}`"
-        >
+        <div v-for="(field, index) in contentFields" :key="index" class="feedback-row" style="position: relative;"
+          :ref="`field-${field.key}`">
           <div class="feedback-label">
             <span>{{ field.label }} <span class="required">*</span></span>
             <p class="explanation">{{ field.explanation }}</p>
             <!-- Explanation below the label -->
           </div>
           <div class="rating-group">
-            <div
-              v-for="rating in 5"
-              :key="rating"
-              class="rating-circle"
-              :class="{ selected: feedbackData[field.key] === rating }"
-              @click="updateField(field.key, rating)"
-            >
+            <div v-for="rating in 5" :key="rating" class="rating-circle"
+              :class="{ selected: feedbackData[field.key] === rating }" @click="updateField(field.key, rating)">
               {{ rating }}
             </div>
           </div>
@@ -120,26 +87,16 @@
       <!-- Trainer Section -->
       <div class="section">
         <h3 class="section-title">Trainer</h3>
-        <div
-          v-for="(field, index) in trainerFields"
-          :key="index"
-          class="feedback-row"
-          style="position: relative"
-          :ref="`field-${field.key}`"
-        >
+        <div v-for="(field, index) in trainerFields" :key="index" class="feedback-row" style="position: relative;"
+          :ref="`field-${field.key}`">
           <div class="feedback-label">
             <span>{{ field.label }} <span class="required">*</span></span>
             <p class="explanation">{{ field.explanation }}</p>
             <!-- Explanation below the label -->
           </div>
           <div class="rating-group">
-            <div
-              v-for="rating in 5"
-              :key="rating"
-              class="rating-circle"
-              :class="{ selected: feedbackData[field.key] === rating }"
-              @click="updateField(field.key, rating)"
-            >
+            <div v-for="rating in 5" :key="rating" class="rating-circle"
+              :class="{ selected: feedbackData[field.key] === rating }" @click="updateField(field.key, rating)">
               {{ rating }}
             </div>
           </div>
@@ -153,26 +110,16 @@
       <!-- Participation Section -->
       <div class="section">
         <h3 class="section-title">Teilnahme</h3>
-        <div
-          v-for="(field, index) in participationFields"
-          :key="index"
-          class="feedback-row"
-          style="position: relative"
-          :ref="`field-${field.key}`"
-        >
+        <div v-for="(field, index) in participationFields" :key="index" class="feedback-row" style="position: relative;"
+          :ref="`field-${field.key}`">
           <div class="feedback-label">
             <span>{{ field.label }} <span class="required">*</span></span>
             <p class="explanation">{{ field.explanation }}</p>
             <!-- Explanation below the label -->
           </div>
           <div class="rating-group">
-            <div
-              v-for="rating in 5"
-              :key="rating"
-              class="rating-circle"
-              :class="{ selected: feedbackData[field.key] === rating }"
-              @click="updateField(field.key, rating)"
-            >
+            <div v-for="rating in 5" :key="rating" class="rating-circle"
+              :class="{ selected: feedbackData[field.key] === rating }" @click="updateField(field.key, rating)">
               {{ rating }}
             </div>
           </div>
@@ -186,26 +133,16 @@
       <!-- Equipment and Organisation Section -->
       <div class="section">
         <h3 class="section-title">Ausrüstung und Organisation</h3>
-        <div
-          v-for="(field, index) in organisationFields"
-          :key="index"
-          class="feedback-row"
-          style="position: relative"
-          :ref="`field-${field.key}`"
-        >
+        <div v-for="(field, index) in organisationFields" :key="index" class="feedback-row" style="position: relative;"
+          :ref="`field-${field.key}`">
           <div class="feedback-label">
             <span>{{ field.label }} <span class="required">*</span></span>
             <p class="explanation">{{ field.explanation }}</p>
             <!-- Explanation below the label -->
           </div>
           <div class="rating-group">
-            <div
-              v-for="rating in 5"
-              :key="rating"
-              class="rating-circle"
-              :class="{ selected: feedbackData[field.key] === rating }"
-              @click="updateField(field.key, rating)"
-            >
+            <div v-for="rating in 5" :key="rating" class="rating-circle"
+              :class="{ selected: feedbackData[field.key] === rating }" @click="updateField(field.key, rating)">
               {{ rating }}
             </div>
           </div>
@@ -219,34 +156,18 @@
       <!-- Comments Section -->
       <div class="section">
         <h3 class="section-title">Kommentare</h3>
-        <div
-          v-for="(field, index) in commentFields"
-          :key="index"
-          class="feedback-row"
-          style="position: relative"
-          :ref="`field-${field.key}`"
-        >
+        <div v-for="(field, index) in commentFields" :key="index" class="feedback-row" style="position: relative;"
+          :ref="`field-${field.key}`">
           <div class="feedback-label">
-            <span
-              >{{ field.label }}
-              <span
-                v-if="
-                  field.key === 'enjoymentComment' ||
-                  field.key === 'improvementComment'
-                "
-                ><span class="required">*</span></span
-              ></span
-            >
+            <span>{{ field.label }} <span
+                v-if="field.key === 'enjoymentComment' || field.key === 'improvementComment'"><span
+                  class="required">*</span></span></span>
             <p class="explanation">{{ field.explanation }}</p>
             <!-- Explanation below the label -->
           </div>
           <div class="feedback-input">
-            <textarea
-              :name="field.key"
-              v-model="feedbackData[field.key]"
-              :maxlength="field.maxLength"
-              rows="3"
-            ></textarea>
+            <textarea :name="field.key" v-model="feedbackData[field.key]" :maxlength="field.maxLength"
+              rows="3"></textarea>
           </div>
           <div v-if="errors[field.key]" class="comment-error">
             {{ errors[field.key] }}
@@ -258,59 +179,29 @@
       <!-- Recommendation Section -->
       <div class="section">
         <h3 class="section-title">Empfehlungen</h3>
-        <div
-          v-for="(field, index) in recommendationFields"
-          :key="index"
-          class="feedback-row"
-          style="position: relative"
-          :ref="`field-${field.key}`"
-        >
+        <div v-for="(field, index) in recommendationFields" :key="index" class="feedback-row"
+          style="position: relative;" :ref="`field-${field.key}`">
           <div class="feedback-label">
-            <span
-              >{{ field.label }}
-              <span
-                v-if="
-                  field.key === 'isEventRecommended' ||
-                  field.key === 'similarEventParticipationScore'
-                "
-                ><span class="required">*</span></span
-              ></span
-            >
+            <span>{{ field.label }} <span
+                v-if="field.key === 'isEventRecommended' || field.key === 'similarEventParticipationScore'"><span
+                  class="required">*</span></span></span>
             <p class="explanation">{{ field.explanation }}</p>
             <!-- Explanation below the label -->
           </div>
 
           <div class="feedback-input">
             <!-- Textarea for comments -->
-            <textarea
-              v-if="field.maxLength"
-              :name="field.key"
-              v-model="feedbackData[field.key]"
-              :maxLength="field.maxLength"
-              rows="3"
-            ></textarea>
+            <textarea v-if="field.maxLength" :name="field.key" v-model="feedbackData[field.key]"
+              :maxLength="field.maxLength" rows="3"></textarea>
 
             <!-- Radio buttons for boolean (isEventRecommended) -->
-            <div
-              v-else-if="field.key === 'isEventRecommended'"
-              class="boolean-options"
-            >
+            <div v-else-if="field.key === 'isEventRecommended'" class="boolean-options">
               <label>
-                <input
-                  type="radio"
-                  :name="field.key"
-                  value="true"
-                  v-model="feedbackData[field.key]"
-                />
+                <input type="radio" :name="field.key" value="true" v-model="feedbackData[field.key]" />
                 Ja
               </label>
               <label>
-                <input
-                  type="radio"
-                  :name="field.key"
-                  value="false"
-                  v-model="feedbackData[field.key]"
-                />
+                <input type="radio" :name="field.key" value="false" v-model="feedbackData[field.key]" />
                 Nein
               </label>
               <div v-if="errors.isEventRecommended" class="error-message">
@@ -320,13 +211,8 @@
 
             <div v-else-if="field.key === 'similarEventParticipationScore'">
               <div class="rating-group">
-                <div
-                  v-for="rating in 5"
-                  :key="rating"
-                  class="rating-circle"
-                  :class="{ selected: feedbackData[field.key] === rating }"
-                  @click="updateField(field.key, rating)"
-                >
+                <div v-for="rating in 5" :key="rating" class="rating-circle"
+                  :class="{ selected: feedbackData[field.key] === rating }" @click="updateField(field.key, rating)">
                   {{ rating }}
                 </div>
               </div>
@@ -351,12 +237,11 @@
 </template>
 
 <script lang="ts">
-import { onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import config from "@/config";
-import Cookies from "js-cookie";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import api from "@/util/api";
+import { useAuth } from "@/util/auth";
 
 export default {
   data() {
@@ -365,112 +250,95 @@ export default {
         {
           key: "overallScore",
           label: "Gesamteindruck",
-          explanation:
-            "Bewertung des Gesamtbildes und des Eindrucks des Workshops aus Ihrer Sicht.",
+          explanation: "Bewertung des Gesamtbildes und des Eindrucks des Workshops aus Ihrer Sicht.",
         },
         {
           key: "organisationalScore",
           label: "Organisation",
-          explanation:
-            "Bewertung der organisatorischen Abläufe und der logistischen Vorbereitung des Workshops.",
+          explanation: "Bewertung der organisatorischen Abläufe und der logistischen Vorbereitung des Workshops.",
         },
         {
           key: "relevanceScore",
           label: "Relevanz",
-          explanation:
-            "Bewertung, inwieweit der Inhalt des Workshops für die Teilnehmer relevant und nützlich war.",
+          explanation: "Bewertung, inwieweit der Inhalt des Workshops für die Teilnehmer relevant und nützlich war.",
         },
       ],
       contentFields: [
         {
           key: "understandabilityScore",
           label: "Verständlichkeit",
-          explanation:
-            "Bewertung der Klarheit und Nachvollziehbarkeit des vermittelten Inhalts während des Workshops.",
+          explanation: "Bewertung der Klarheit und Nachvollziehbarkeit des vermittelten Inhalts während des Workshops.",
         },
         {
           key: "contentDepthScore",
           label: "Inhaltliche Tiefe",
-          explanation:
-            "Bewertung, wie tiefgehend und fundiert der vermittelte Inhalt des Workshops war.",
+          explanation: "Bewertung, wie tiefgehend und fundiert der vermittelte Inhalt des Workshops war.",
         },
         {
           key: "practicalityScore",
           label: "Praktikabilität",
-          explanation:
-            "Bewertung der praktischen Anwendbarkeit und Nutzbarkeit des vermittelten Wissens im Arbeitsalltag.",
+          explanation: "Bewertung der praktischen Anwendbarkeit und Nutzbarkeit des vermittelten Wissens im Arbeitsalltag.",
         },
         {
           key: "reasonabilityScore",
           label: "Nachvollziehbarkeit",
-          explanation:
-            "Bewertung, wie gut der Inhalt des Workshops logisch und verständlich aufbereitet war.",
+          explanation: "Bewertung, wie gut der Inhalt des Workshops logisch und verständlich aufbereitet war.",
         },
       ],
       trainerFields: [
         {
           key: "competencyScore",
           label: "Kompetenz",
-          explanation:
-            "Bewertung der fachlichen Qualifikationen und Expertise des Trainers während des Workshops.",
+          explanation: "Bewertung der fachlichen Qualifikationen und Expertise des Trainers während des Workshops.",
         },
         {
           key: "presentabilityScore",
           label: "Präsentation",
-          explanation:
-            "Bewertung der Präsentationsfähigkeiten und des Auftretens des Trainers bei der Vermittlung des Inhalts.",
+          explanation: "Bewertung der Präsentationsfähigkeiten und des Auftretens des Trainers bei der Vermittlung des Inhalts.",
         },
         {
           key: "interactivityScore",
           label: "Interaktivität",
-          explanation:
-            "Bewertung des Engagements und der aktiven Einbindung der Teilnehmer durch den Trainer im Workshop.",
+          explanation: "Bewertung des Engagements und der aktiven Einbindung der Teilnehmer durch den Trainer im Workshop.",
         },
         {
           key: "timeManagementScore",
           label: "Zeitmanagement",
-          explanation:
-            "Bewertung, wie gut der Trainer den Workshop zeitlich strukturiert und die Zeit effizient genutzt hat.",
+          explanation: "Bewertung, wie gut der Trainer den Workshop zeitlich strukturiert und die Zeit effizient genutzt hat.",
         },
       ],
       participationFields: [
         {
           key: "participationScore",
           label: "Teilnahme",
-          explanation:
-            "Bewertung Ihrer eigenen Beteiligung und Aktivität während des Workshops.",
+          explanation: "Bewertung Ihrer eigenen Beteiligung und Aktivität während des Workshops.",
         },
         {
           key: "atmosphereScore",
           label: "Atmosphäre",
-          explanation:
-            "Bewertung der allgemeinen Stimmung und des Arbeitsklimas während des Workshops.",
+          explanation: "Bewertung der allgemeinen Stimmung und des Arbeitsklimas während des Workshops.",
         },
         {
           key: "networkingScore",
           label: "Networking",
-          explanation:
-            "Bewertung der Möglichkeiten, während des Workshops wertvolle Kontakte zu knüpfen und Netzwerke aufzubauen.",
+          explanation: "Bewertung der Möglichkeiten, während des Workshops wertvolle Kontakte zu knüpfen und Netzwerke aufzubauen.",
         },
       ],
       organisationFields: [
         {
           key: "equipmentScore",
           label: "Ausrüstung",
-          explanation:
-            "Bewertung der Qualität und der Angemessenheit der bereitgestellten technischen Ausstattung und Materialien.",
+          explanation: "Bewertung der Qualität und der Angemessenheit der bereitgestellten technischen Ausstattung und Materialien.",
         },
         {
           key: "comfortabilityScore",
           label: "Komfort",
-          explanation:
-            "Bewertung des Komforts und der allgemeinen Umstände, wie z. B. Sitzgelegenheiten und Raumklima, während des Workshops.",
+          explanation: "Bewertung des Komforts und der allgemeinen Umstände, wie z. B. Sitzgelegenheiten und Raumklima, während des Workshops.",
         },
         {
           key: "communicationScore",
           label: "Kommunikation",
-          explanation:
-            "Bewertung der Kommunikation und der bereitgestellten Informationen vor und während des Workshops.",
+          explanation: "Bewertung der Kommunikation und der bereitgestellten Informationen vor und während des Workshops.",
         },
       ],
       commentFields: [
@@ -478,22 +346,19 @@ export default {
           key: "enjoymentComment",
           label: "Was hat Ihnen besonders gefallen?",
           maxLength: 500,
-          explanation:
-            "Platz für Ihre Kommentare zu den Aspekten des Workshops, die Ihnen besonders positiv in Erinnerung geblieben sind.",
+          explanation: "Platz für Ihre Kommentare zu den Aspekten des Workshops, die Ihnen besonders positiv in Erinnerung geblieben sind.",
         },
         {
           key: "improvementComment",
           label: "Welche Aspekte könnten verbessert werden?",
           maxLength: 500,
-          explanation:
-            "Platz für Ihre Anregungen zu möglichen Verbesserungen und Optimierungen des Workshops.",
+          explanation: "Platz für Ihre Anregungen zu möglichen Verbesserungen und Optimierungen des Workshops.",
         },
         {
           key: "requestComment",
           label: "Haben Sie Anregungen für zukünftige Events?",
           maxLength: 500,
-          explanation:
-            "Platz für Ihre Vorschläge und Wünsche bezüglich der Gestaltung zukünftiger Workshops oder Veranstaltungen.",
+          explanation: "Platz für Ihre Vorschläge und Wünsche bezüglich der Gestaltung zukünftiger Workshops oder Veranstaltungen.",
         },
       ],
       recommendationFields: [
@@ -501,27 +366,23 @@ export default {
           key: "personalImprovementComment",
           label: "Was haben Sie persönlich gelernt?",
           maxLength: 500,
-          explanation:
-            "Platz für Ihre Kommentare dazu, welche neuen Erkenntnisse oder Fähigkeiten Sie aus dem Workshop gewonnen haben.",
+          explanation: "Platz für Ihre Kommentare dazu, welche neuen Erkenntnisse oder Fähigkeiten Sie aus dem Workshop gewonnen haben.",
         },
         {
           key: "isEventRecommended",
           label: "Würden Sie diesen Workshop empfehlen?",
-          explanation:
-            "Frage, ob Sie den Workshop aufgrund Ihrer Erfahrungen an andere Personen weiterempfehlen würden.",
+          explanation: "Frage, ob Sie den Workshop aufgrund Ihrer Erfahrungen an andere Personen weiterempfehlen würden.",
         },
         {
           key: "recommendationComment",
           label: "Warum oder warum nicht?",
           maxLength: 500,
-          explanation:
-            "Platz für Ihre Begründung, warum Sie den Workshop weiterempfehlen würden oder nicht.",
+          explanation: "Platz für Ihre Begründung, warum Sie den Workshop weiterempfehlen würden oder nicht.",
         },
         {
           key: "similarEventParticipationScore",
           label: "Teilnahme an ähnlichen Workshops in der Zukunft?",
-          explanation:
-            "Bewertung, wie wahrscheinlich es ist, dass Sie an ähnlichen Workshops oder Veranstaltungen in der Zukunft teilnehmen würden.",
+          explanation: "Bewertung, wie wahrscheinlich es ist, dass Sie an ähnlichen Workshops oder Veranstaltungen in der Zukunft teilnehmen würden.",
         },
       ],
       feedbackData: {
@@ -559,8 +420,9 @@ export default {
 
         anonymousFeedback: false,
       },
-      userId: null,
+      userId: useAuth().getUserId(),
       router: useRouter(),
+      auth: useAuth(),
       eventId: "",
       event: {
         name: "",
@@ -606,39 +468,27 @@ export default {
   },
   methods: {
     goBack() {
-      this.router.push({
+      this.$router.push({
         name: "EventPage",
         params: { eventId: this.eventId.toString() },
       });
     },
-    /**
-     * Submit the feedback form
-     */
     async submitFeedback() {
       this.isSubmitted = true;
 
       if (!this.userId) {
-        showToast(
-          new Toast(
-            "Info",
-            `Bitte loggen Sie sich zu Erst ein`,
-            "info",
-            faXmark,
-            10,
-          ),
-        );
+        alert("Please login first.");
         return;
       }
-
       if (!this.eventId || !this.token) {
         showToast(
           new Toast(
-            "Error",
-            `Ungültige Daten. Bitte scannen sie den QR-Code erneut`,
+            "Fehler",
+            "Ungültiger QR-Code, bitte scannen Sie erneut.",
             "error",
             faXmark,
-            10,
-          ),
+            5
+          )
         );
         return;
       }
@@ -646,12 +496,12 @@ export default {
       if (!this.validateFields()) {
         showToast(
           new Toast(
-            "Info",
-            `Bitte füllen Sie alle Felder aus`,
-            "info",
+            "Warnung",
+            "Bitte füllen Sie alle erforderlichen Felder aus.",
+            "warning",
             faXmark,
-            10,
-          ),
+            5
+          )
         );
         this.scrollToFirstError();
         return;
@@ -661,44 +511,40 @@ export default {
       this.feedbackData["userId"] = this.userId;
 
       try {
-        const feedbackResponse = await fetch(`${config.apiBaseUrl}/feedback`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(this.feedbackData),
-        });
+        const response = await api.post(`/feedback`, this.feedbackData);
 
-        if (!feedbackResponse.ok) {
+        if (response.status !== 201) {
           showToast(
             new Toast(
-              "Error",
-              `Fehler beim Senden des Feedbacks`,
+              "Fehler",
+              "Feedback konnte nicht abgeschickt werden.",
               "error",
               faXmark,
-              10,
-            ),
+              5
+            )
           );
           return;
         }
 
         showToast(
           new Toast(
-            "Success",
-            `Feedback erfolgreich übermittelt und Anwesenheit bestätigt!t`,
+            "Erfolg",
+            "Ihr Feedback wurde erfolgreich abgesendet.",
             "success",
-            faCheck,
-            5,
-          ),
+            faXmark,
+            5
+          )
         );
         this.$router.push("/home");
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Senden des Feedbacks`,
+            "Fehler",
+            "Ein Fehler ist aufgetreten während der Feedbackerstellung.",
             "error",
             faXmark,
-            10,
-          ),
+            5
+          )
         );
       }
     },
@@ -744,431 +590,354 @@ export default {
         });
 
         this.commentFields.slice(0, 2).forEach((field) => {
-          if (
-            !this.feedbackData[field.key] ||
-            !this.feedbackData[field.key].trim()
-          ) {
+          if (!this.feedbackData[field.key] || !this.feedbackData[field.key].trim()) {
             this.errors[field.key] = "Dieses Feld darf nicht leer sein.";
           }
         });
 
         if (this.feedbackData.isEventRecommended === null) {
-          this.errors.isEventRecommended =
-            "Bitte geben Sie an, ob Sie das Event empfehlen.";
+          this.errors.isEventRecommended = "Bitte geben Sie an, ob Sie das Event empfehlen.";
         }
 
         if (!this.feedbackData.similarEventParticipationScore) {
-          this.errors.similarEventParticipationScore =
-            "Dieses Feld ist erforderlich.";
+          this.errors.similarEventParticipationScore = "Dieses Feld ist erforderlich.";
         }
       }
 
       return Object.keys(this.errors).length === 0;
     },
-    /**
-     * Scroll to the first error field
-     */
     scrollToFirstError() {
       this.$nextTick(() => {
         const firstErrorField = Object.keys(this.errors)[0];
         if (firstErrorField) {
           const errorElement = this.$refs[`field-${firstErrorField}`][0];
-          showToast(new Toast("Error", errorElement, "error", faXmark, 10));
           if (errorElement) {
-            errorElement.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
-          } else {
-            showToast(
-              new Toast("Error", firstErrorField, "error", faXmark, 10),
-            );
+            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
         }
       });
     },
-    /**
-     * Fetch the event details and organizer information
-     */
     async confirmAttendance() {
-      try {
-        const attendanceResponse = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/attendance`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              token: this.token,
-              userId: this.userId,
-            }),
-          },
-        );
 
-        if (!attendanceResponse.ok) {
-          const errorData = await attendanceResponse.json();
-          if (
-            attendanceResponse.status === 400 &&
-            errorData.message === "User has already given Feedback."
-          ) {
-            showToast(
-              new Toast(
-                "Error",
-                `Sie haben bereits Feedback für dieses Event abgegeben. \n Sie werden nun zum Home-Screen weitergeleitet.`,
-                "error",
-                faXmark,
-                10,
-              ),
-            );
-            this.$router.push({ name: "home" });
-            return;
-          }
-          showToast(
-            new Toast(
-              "Error",
-              `Fehler beim Bestätigen der Anwesenheit`,
-              "error",
-              faXmark,
-              10,
-            ),
-          );
+      const body = {
+        userId: useAuth().getUserId(),
+        token: this.$route.query.token
+      }
+
+      try {
+        const response = await api.post(`/events/${this.eventId}/attendance`, body);
+
+        const data = await response.data;
+
+        if (response.status === 409) {
+          this.$router.push('/home');
           return;
         }
-        showToast(
-          new Toast(
-            "Success",
-            `Anwesenheit wurde erfolgreich bestätigt`,
-            "success",
-            faCheck,
-            5,
-          ),
-        );
+
+        if (response.status !== 200) throw new Error(data.message);
+
       } catch (error) {
+        console.error(error)
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Bestätigen der Anwesenheit`,
+            "Fehler",
+            "Anwesenheitsprüfung ist fehlgeschlagen.",
             "error",
             faXmark,
-            10,
-          ),
+            5
+          )
         );
+        this.$router.push('/home');
       }
     },
-    /**
-     * Fetch the event details and organizer information
-     */
+
     async fetchEventDetails() {
       try {
-        const response = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}`,
-        );
-        const eventData = await response.json();
+        const response = await api.get(`/events/${this.eventId}`);
+        const eventData = await response.data;
         this.event = eventData;
 
-        const organizerResponse = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/organizer`,
-        );
-        const organizerData = await organizerResponse.json();
+        const organizerResponse = await api.get(`/events/${this.eventId}/organizer`);
+        const organizerData = await organizerResponse.data;
         this.organizer = organizerData;
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim laden der Eventdaten`,
+            "Fehler",
+            "Event Details konnten nicht geladen werden.",
             "error",
             faXmark,
-            10,
-          ),
+            5
+          )
         );
       }
     },
+
+    async verifyFeedbackEligibility() {
+
+      try {
+        const response = await api.get(`/events/${this.eventId}/feedback-eligibility`);
+
+        if (response.status !== 200) {
+          if (response.status === 403) {
+            showToast(
+              new Toast(
+                "Zugriff verweigert",
+                "Sie sind nicht berechtigt Feedback für dieses Event zu geben",
+                "error",
+                faXmark,
+                5
+              )
+            );
+            this.$router.push('/home');
+          }
+          throw new Error('Authorization failed');
+        }
+      } catch (error) {
+        showToast(
+          new Toast(
+            "Zugriff verweigert",
+            "Sie sind nicht eingeloggt.",
+            "error",
+            faXmark,
+            5
+          )
+        );
+        this.router.push('/login');
+      }
+    },
+
   },
-  /**
-   * Fetch the event details and organizer information
-   */
-  mounted() {
-    const storedUserId = Cookies.get("userId");
-    if (storedUserId) {
-      this.userId = parseInt(storedUserId, 10);
+  async mounted() {
+    if (!this.auth.getToken()) {
+      this.$router.replace({
+        name: 'login',
+        query: { redirect: this.$route.fullPath }
+      });
+      return;
     }
 
-    if (this.userId) {
-    } else {
-      showToast(
-        new Toast("Info", `benutzer ist nicht eingeloggt`, "info", faXmark, 10),
-      );
-    }
+    this.eventId = this.$route.params.eventId as string;
+    this.token = this.$route.query.token;
 
-    const route = useRoute();
-    this.eventId = route.params.eventId as string;
-    this.token = route.query.token as string;
-
-    this.fetchEventDetails();
-
-    this.confirmAttendance();
+    await this.verifyFeedbackEligibility();
+    await this.fetchEventDetails();
+    await this.confirmAttendance();
   },
 };
 </script>
 
 <style scoped>
 .back-button {
-  position: fixed;
+  position: absolute;
   top: 5rem;
   left: 5rem;
   background-color: #009ee2;
   color: white;
   border: none;
-  border-radius: 5px;
-  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
   font-size: 1rem;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  z-index: 100;
 }
 
 .back-button:hover {
   background-color: #007bb5;
+  transform: translateY(-1px);
 }
 
 .scrollable-container {
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  height: 100%;
-  padding: 2rem;
-  background-color: #f5f5f5;
-  box-sizing: border-box;
+  padding: 4rem 1rem 2rem;
+  background-color: #f8f9ff;
+  min-height: 100vh;
+  margin: 0 auto;
 }
 
 .survey-header {
   margin-bottom: 2rem;
-  text-align: center;
+  padding: 0 1rem;
+  max-width: 900px;
+  margin: 2rem auto;
 }
 
 .survey-header h2 {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 2rem;
-}
-
-.survey-header p {
-  font-size: 1rem;
-  color: #555;
+  font-size: 1.75rem;
+  color: #01172F;
   margin-bottom: 1rem;
 }
 
 .survey-instructions {
-  background-color: rgb(255, 255, 255);
+  background: white;
   padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   font-size: 1rem;
-  color: #555;
   line-height: 1.6;
-  max-width: 800px;
-  margin: 0 auto;
-  text-align: left;
-}
-
-.survey-instructions p {
-  margin-bottom: 1rem;
-}
-
-.survey-instructions strong {
-  font-weight: bold;
-  color: #333;
-}
-
-.required {
-  color: red;
-  font-weight: bold;
 }
 
 .feedback-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
-  background-color: rgb(255, 255, 255);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  min-width: 600px;
+  background: white;
+  padding: 2rem 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   max-width: 800px;
-  width: 100%;
-  box-sizing: border-box;
-  flex-grow: 2;
+  margin: 0 auto;
+}
+
+.section {
+  margin-bottom: 2rem;
 }
 
 .section-title {
-  text-align: center;
-  margin-bottom: 1rem;
-  font-size: 2rem;
-  font-weight: bold;
-  color: #333;
+  color: #01172F;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #eee;
 }
 
 .feedback-row {
   display: flex;
-  justify-content: flex-start;
-  align-items: left;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .feedback-row {
+    flex-direction: row;
+    align-items: flex-start;
+  }
 }
 
 .feedback-label {
-  text-align: left;
-  font-size: 1rem;
-  color: #555;
-  flex: 1 0 auto;
-  min-width: 50px;
-  max-width: 500px;
-  white-space: nowrap;
+  flex: 1;
+  min-width: 250px;
 }
 
 .explanation {
-  font-size: 0.8em;
   color: #666;
-  margin-top: 5px;
-  line-height: 1.6;
-  word-wrap: break-word;
-  white-space: pre-line;
-  word-break: break-word;
-  max-width: 330px;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
 }
 
 .rating-group {
   display: flex;
-  justify-content: flex-start;
-  gap: 1rem;
-  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .rating-circle {
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #eaeaea;
+  background: #e3f2fd;
+  color: #01172F;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.3s;
+  transition: all 0.2s ease;
 }
 
 .rating-circle.selected {
-  background-color: #009ee2;
+  background: #009ee2;
   color: white;
-}
-
-.feedback-input {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
 }
 
 .feedback-input textarea {
-  width: 100%;
-  max-width: 400px;
-  min-height: 3rem;
-  padding: 0.5rem;
-  resize: none;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  font-size: 12pt;
-  background-color: #fff;
-}
-
-hr {
-  margin: auto;
-  border: none;
-  border-top: 1px solid #8d8d8d;
-}
-
-.boolean-options {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.error-message {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-25%);
-  background-color: #ffcccc;
-  color: #990000;
-  padding: 8px 12px;
+  width: 85%;
+  padding: 1rem;
+  border: 2px solid #eee;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
-  white-space: nowrap;
-  z-index: 1000;
-  pointer-events: none;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
 }
 
+.feedback-input textarea:focus {
+  border-color: #009ee2;
+  outline: none;
+}
+
+.error-message,
 .comment-error {
-  left: 20%;
-  top: 70%;
-  position: absolute;
-  transform: translateX(-25%);
-  background-color: #ffcccc;
-  color: #990000;
-  padding: 8px 12px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
-  white-space: nowrap;
-  z-index: 1000;
-  pointer-events: none;
-}
-
-.error-message::after {
-  content: "";
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 8px;
-  border-style: solid;
-  border-color: #ffcccc transparent transparent transparent;
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  position: static;
+  transform: none;
+  background: none;
+  box-shadow: none;
+  padding: 0;
 }
 
 .submit-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 2rem;
-  margin-top: auto;
+  text-align: center;
+  margin-top: 2rem;
 }
 
 .submit-button {
-  padding: 0.8rem 1.2rem;
-  font-size: 1rem;
+  background: #009ee2;
   color: white;
-  background-color: #009ee2;
   border: none;
-  border-radius: 5px;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .submit-button:hover {
-  background-color: #007bb5;
+  background: #007bb5;
+  transform: translateY(-1px);
 }
 
-.anonymous-feedback label {
-  display: flex;
-  align-items: normal;
-  font-size: 1rem;
-  color: #555;
-  cursor: pointer;
+@media (max-width: 768px) {
+  .back-button {
+    top: 5rem;
+    left: 1.7rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .survey-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+  }
+
+  .rating-circle {
+    width: 2.2rem;
+    height: 2.2rem;
+    font-size: 0.9rem;
+  }
+
+  .feedback-form {
+    padding: 1.5rem 0.5rem;
+    min-width: auto;
+  }
+
+  .feedback-label {
+    font-size: 0.95rem;
+  }
 }
 
-.anonymous-feedback input {
-  margin-right: 1rem;
+input[type="checkbox"] {
+  accent-color: #009ee2;
+  margin-right: 0.5rem;
+}
+
+.required {
+  color: #dc3545;
+  margin-left: 0.25rem;
 }
 </style>

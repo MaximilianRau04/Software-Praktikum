@@ -1,6 +1,5 @@
 .scroll-container {
-  max-height: 100vh;
-  overflow-y: auto;
+  overflow-y: hidden;
   box-sizing: border-box;
   flex: 1;
 }
@@ -72,6 +71,11 @@
 .list-item:hover {
   transform: scale(1.02);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.selected {
+  border-width: 2px;
+  border-color: #009ee2;
 }
 
 .heading {

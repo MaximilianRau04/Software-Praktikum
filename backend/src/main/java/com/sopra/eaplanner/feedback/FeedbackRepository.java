@@ -1,6 +1,10 @@
 package com.sopra.eaplanner.feedback;
 
+import com.sopra.eaplanner.user.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,7 +20,7 @@ import java.util.Optional;
  * <p>All repository methods return results wrapped in {@link Optional} or {@link List}, depending on the expected outcome.</p>
  */
 @Repository
-public interface FeedbackRepository extends CrudRepository<Feedback, Long> {
+public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
 
     /**
      * Retrieves all feedbacks associated with a specific event.
@@ -27,11 +31,11 @@ public interface FeedbackRepository extends CrudRepository<Feedback, Long> {
     List<Feedback> findByEventId(Long eventId);
 
     /**
-     * Retrieves the feedback associated with a specific trainer profile.
-     *
-     * @param trainerId the ID of the trainer profile to filter the feedback by
-     * @return an {@link Optional} containing the {@link Feedback} for the given trainer profile ID, if it exists
+     * Fetches all feedback with the passed user object that has been given through the lifecycle of the project
+     * @param organizer The user whose feedback is fetched
+     * @return A List of all Feedback that the user has received prior
      */
-    Optional<Feedback> findByTrainerProfileId(Long trainerId);
+    @Query("SELECT f FROM Feedback f WHERE f.event.organizer = :organizer")
+    List<Feedback> findByEventOrganizer(@Param("organizer") User organizer);
 
 }

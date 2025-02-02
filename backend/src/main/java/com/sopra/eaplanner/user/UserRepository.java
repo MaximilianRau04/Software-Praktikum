@@ -13,12 +13,28 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT u FROM User u WHERE u.username = :username")
-    Optional<User> findByUsername(@Param("username") String username);
+    Optional<User> findByUsername(String username);
 
-    @Query("SELECT u.id AS userId, u.username AS username, SUM(r.points) AS totalPoints " +
-            "FROM User u JOIN u.rewards r " +
-            "GROUP BY u.id, u.username " +
-            "ORDER BY totalPoints DESC")
-    Page<LeaderboardEntry> findLeaderboardEntries(Pageable pageable);
+    @Query("SELECT u.id AS userId, u.username AS username, u.totalPoints AS totalPoints " +
+            "FROM User u " +
+            "WHERE (:search IS NULL OR LOWER(u.username) LIKE LOWER(concat('%', :search, '%')))")
+    Page<LeaderboardEntry> findLeaderboardEntries(
+            @Param("search") String search,
+            Pageable pageable
+    );
+
+    @Query(value = """
+            SELECT position as rank, user_id as userId, username, total_points as totalPoints 
+            FROM (
+                SELECT 
+                    id AS user_id,
+                    username,
+                    total_points,
+                    ROW_NUMBER() OVER (ORDER BY total_points DESC) AS position
+                FROM users
+            ) AS ranked_users 
+            WHERE user_id = :userId
+            """, nativeQuery = true)
+    LeaderboardEntry findCurrentUserPosition(@Param("userId") Long userId);
+
 }

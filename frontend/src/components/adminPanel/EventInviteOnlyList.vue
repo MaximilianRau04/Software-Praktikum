@@ -81,6 +81,7 @@ import { ref, onMounted, computed } from "vue";
 import config from "@/config";
 import { useRouter } from "vue-router";
 import { showToast, Toast } from "@/types/toasts";
+import api from "@/util/api";
 
 const events = ref([]);
 const users = ref([]);
@@ -102,11 +103,11 @@ onMounted(async () => {
 
 const fetchEvents = async () => {
   try {
-    const response = await fetch(`${config.apiBaseUrl}/events`);
-    if (!response.ok) {
+    const response = await api.get(`/events`);
+    if (response.status !== 200) {
       throw new Error("Fehler beim Laden der Events");
     }
-    events.value = await response.json();
+    events.value = await response.data;
 
     for (const event of events.value) {
       event.tags = await fetchTagsForEvent(event.id);
@@ -118,9 +119,9 @@ const fetchEvents = async () => {
 
 const fetchTagsForEvent = async (eventId) => {
   try {
-    const res = await fetch(`${config.apiBaseUrl}/events/${eventId}/tags`);
-    if (!res.ok) throw new Error("Failed to fetch tags");
-    return await res.json();
+    const res = await api.get(`/events/${eventId}/tags`);
+    if (res.status !== 200) throw new Error("Failed to fetch tags");
+    return await res.data;
   } catch (error) {
     showToast(
       new Toast(
@@ -135,11 +136,11 @@ const fetchTagsForEvent = async (eventId) => {
 
 const fetchUsers = async () => {
   try {
-    const response = await fetch(`${config.apiBaseUrl}/users`);
-    if (!response.ok) {
+    const response = await api.get(`/users`);
+    if (response.status !== 200) {
       throw new Error('Fehler beim Laden der Benutzer');
     }
-    users.value = await response.json(); 
+    users.value = await response.data; 
   } catch (error) {
     showToast(new Toast("Error", "Fehler beim Laden der Benutzer", "error"));
   }
@@ -149,13 +150,11 @@ const fetchUserRegistrations = async (eventId) => {
   try {
     const registrations = await Promise.all(
       users.value.map(async (user) => {
-        const response = await fetch(
-          `${config.apiBaseUrl}/users/${user.id}/registeredEvents`
-        );
-        if (!response.ok) {
+        const response = await api.get(`/users/${user.id}/registeredEvents`);
+        if (response.status !== 200) {
           throw new Error(`Fehler bei der Überprüfung der Registrierung für ${user.username}`);
         }
-        const userEvents = await response.json();
+        const userEvents = await response.data;
         return userEvents.some((event) => event.id === eventId);
       })
     );
@@ -187,17 +186,13 @@ const toggleUserSelection = (user) => {
 };
 
 const addUsersToEvent = async () => {
+
+  const usersData = { users: selectedUsers.value }
+
   try {
     for(const user of selectedUsers.value) {
-      const response = await fetch(
-        `${config.apiBaseUrl}/users/${user.id}/eventRegistration?eventId=${eventIdForUserSelection.value}`,
-        {
-          method: "POST",
-          body: JSON.stringify({ users: selectedUsers.value }),
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      if (response.ok) {
+      const response = await api.post(`/users/${user.id}/eventRegistration?eventId=${eventIdForUserSelection.value}`,usersData);
+      if (response.status === 200) {
         showToast(
           new Toast("Success", "Benutzer erfolgreich hinzugefügt", "success")
         );
@@ -320,7 +315,7 @@ const showDetails = (eventId) => {
 }
 
 .event-details {
-  background-color: #EAEAEA;
+  background-color: #f1f5f9;
   border: 1px solid #01172F;
   border-radius: 8px;
   padding: 1rem;
@@ -439,17 +434,25 @@ h2 h3 p {
 }
 
 .add-users-button {
-  margin-top: 10px;
-  padding: 8px 16px;
   background-color: #009EE2;
   color: white;
   border: none;
-  cursor: pointer;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
   border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  width: auto;  
 }
 
 .add-users-button:hover {
   background-color: #007bb5;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .modal-content {

@@ -1,7 +1,7 @@
 <template>
   <div class="profile-container">
     <TrainerProfile
-      v-if="trainerProfileData"
+      v-if="trainerProfileData.id"
       :user="userData"
       :trainer="trainerProfileData"
     />
@@ -15,6 +15,8 @@ import UserProfile from "@/components/profile/UserProfile.vue";
 import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "@/util/auth";
+import api from "@/util/api";
 
 export default {
   name: "Profile",
@@ -22,13 +24,13 @@ export default {
   props: ["username"],
   data() {
     return {
-      userData: null,
-      trainerProfileData: null,
+      userData: {},
+      trainerProfileData: {},
     };
   },
   computed: {
     isTrainer() {
-      return this.userData?.role === "ADMIN";
+      return this.userData.role === "ADMIN";
     },
   },
   methods: {
@@ -37,45 +39,41 @@ export default {
      */
     async fetchProfile() {
       try {
-        const userResponse = await fetch(
-          `${config.apiBaseUrl}/users/search?username=${this.username}`,
-        );
-        if (!userResponse.ok) {
+        const userResponse = await api.get(`/users/search?username=${this.username}`);
+        if (userResponse.status !== 200) {
           throw new Error("User data fetch failed");
         }
-        this.userData = await userResponse.json();
+        this.userData = await userResponse.data;
         
-        if (this.userData.role === "ADMIN") {
-          const trainerResponse = await fetch(
-            `/api/trainerProfiles/${this.userData.id}`,
-          );
-          if (!trainerResponse.ok) {
+        if (this.isTrainer) {
+          const trainerResponse = await api.get(`/trainerProfiles/${this.userData.id}`);
+          if (trainerResponse.status !== 200) {
             showToast(
               new Toast(
-                "Error",
-                `Fehler beim Laden des Trainer Profils`,
+                "Fehler",
+                `Trainerprofil konnte nicht geladen werden.`,
                 "error",
                 faXmark,
-                10,
+                5,
               ),
             );
           }
-          this.trainerProfileData = await trainerResponse.json();
+          this.trainerProfileData = await trainerResponse.data;
         }
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Laden des Trainer Profils`,
-            "error",
-            faXmark,
-            10,
+            "Fehler",
+                `Trainerprofil konnte nicht geladen werden.`,
+                "error",
+                faXmark,
+                5,
           ),
         );
       }
     },
   },
-  created() {
+  mounted() {
     this.fetchProfile();
   },
 };

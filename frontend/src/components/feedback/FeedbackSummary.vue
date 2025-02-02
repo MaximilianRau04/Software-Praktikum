@@ -3,152 +3,133 @@
     <button class="back-button" @click="goBack">Zurück</button>
   </div>
 
-  <div class="feedback-summary-container">
-    <div class="event-header" :style="{
-      backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : '',
-    }">
-      <h1 class="event-title">Zusammenfassung</h1>
-    </div>
-
-    <div v-if="isLoading" class="loading">
-      <p>
-        Kein Feedback für dieses Event verfügbar. Kommen Sie gerne zu einem
-        späteren Zeitpunkt wieder.
-      </p>
-    </div>
-
-    <div v-else>
-      <!-- General Information -->
-      <div class="general-info-container" v-if="event">
-        <div class="general-info-left">
-          <h2>Event Details</h2>
-          <table>
-            <tr>
-              <td><strong>Event Name:</strong></td>
-              <td>{{ event.name || "undefined" }}</td>
-            </tr>
-            <tr>
-              <td><strong>Trainer:</strong></td>
-              <td>
-                {{
-                  organizer.firstname + " " + organizer.lastname || "undefined"
-                }}
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Datum und Uhrzeit:</strong></td>
-              <td>
-                {{
-                  new Date(event.date).toLocaleDateString("de-DE", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })
-                }}
-                <br />
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Ort:</strong></td>
-              <td>
-                {{
-                  location.street +
-                  " " +
-                  location.houseNumber +
-                  ", " +
-                  location.postalCode +
-                  " " +
-                  location.city +
-                  ", " +
-                  location.country
-                }}
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Beschreibung:</strong></td>
-              <td>
-                {{ event.description || "Keine Beschreibung vorhanden." }}
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Tags:</strong></td>
-              <td>
-                <li v-for="(tag, index) in tags" :key="index">
-                  {{ tag.name }}
-                </li>
-              </td>
-            </tr>
-          </table>
-          <button class="pdf-button" @click="generatePDF">
-            Als PDF exportieren
-          </button>
-        </div>
-
-        <div class="general-info-right">
-          <!-- Radar Chart Container -->
-          <h2>Gesamteindruck</h2>
-          <div class="chart-container">
-            <canvas id="radarChart"></canvas>
-          </div>
-        </div>
+  <div class="feedback-summary-scroll">
+    <div class="feedback-summary-container">
+      <div class="event-header" :style="{
+        backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : '',
+      }">
+        <h1 class="event-title">Zusammenfassung</h1>
       </div>
 
-      <div class="numerical-feedback">
-        <h2>Statistische Analyse</h2>
-        <div class="feedback-blocks">
-          <!-- Loop through ordered categories -->
-          <div v-for="(category, index) in categoryOrder" :key="index" class="feedback-block">
-            <h3>
-              {{
-                category.name.charAt(0).toUpperCase() + category.name.slice(1)
-              }}
-            </h3>
+      <div v-if="loading" class="loading">
+        <VueSpinner size="20" color="blue" />
+      </div>
 
-            <!-- Large scale for the category -->
-            <div class="large-scale">
-              <div class="scale">
-                <div class="scale-track">
-                  <div class="pin" :style="{ left: `${(category.data.average - 1) * 25}%` }" @mouseover="
-                    showPopup('category', index, category.data.average)
-                    " @mouseleave="hidePopup">
-                    <div v-if="
-                      popupVisible['category'] &&
-                      hoveredPinIndex['category'] === index
-                    " class="popup">
-                      Durchschnitt: {{ category.data.average.toFixed(2) }}
-                    </div>
-                  </div>
-                </div>
-                <div class="scale-labels">
-                  <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
-                </div>
-              </div>
-            </div>
+      <div v-else-if="dataUnavailable" class="no-data-container">
+        <h2>Noch keine Daten verfügbar</h2>
+        <p>Bitte kommen Sie später wieder, um die Event-Zusammenfassung zu sehen.</p>
+        <!-- Optional: Add retry button -->
+        <button @click="fetchData" class="back-button">Erneut versuchen</button>
+      </div>
 
-            <!-- Small scales for each sub-score -->
-            <div class="small-scales">
-              <div v-for="(subScore, subIndex) in getOrderedSubScores(
-                category.data.subAverages
-              )" :key="subIndex" class="small-scale">
-                <h4>
+      <div v-else>
+        <!-- General Information -->
+        <div class="general-info-container" v-if="event">
+          <div class="general-info-left">
+            <h2>Event Details</h2>
+            <table>
+              <tr>
+                <td><strong>Event Name:</strong></td>
+                <td>{{ event.name || "undefined" }}</td>
+              </tr>
+              <tr>
+                <td><strong>Trainer:</strong></td>
+                <td>
                   {{
-                    formatKey(
-                      subScore.name.charAt(0).toUpperCase() +
-                      subScore.name.slice(1)
-                    )
+                    organizer.firstname + " " + organizer.lastname || "undefined"
                   }}
-                </h4>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Datum und Uhrzeit:</strong></td>
+                <td>
+                  {{
+                    new Date(event.date).toLocaleDateString("de-DE", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })
+                  }}
+                  <br />
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Ort:</strong></td>
+                <td>
+                  {{
+                    location.street +
+                    " " +
+                    location.houseNumber +
+                    ", " +
+                    location.postalCode +
+                    " " +
+                    location.city +
+                    ", " +
+                    location.country
+                  }}
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Beschreibung:</strong></td>
+                <td>
+                  {{ event.description || "Keine Beschreibung vorhanden." }}
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Registrierte Nutzer:</strong></td>
+                <td>{{ registeredUsers }}</td>
+              </tr>
+              <tr>
+                <td><strong>abgegebene Feedbacks:</strong></td>
+                <td>{{ givenFeedback }}</td>
+              </tr>
+              <tr>
+                <td><strong>Tags:</strong></td>
+                <td>
+                  <li v-for="(tag, index) in tags" :key="index">
+                    {{ tag.name }}
+                  </li>
+                </td>
+              </tr>
+            </table>
+            <button class="pdf-button" @click="generatePDF">
+              Als PDF exportieren
+            </button>
+          </div>
+
+          <div class="general-info-right">
+            <!-- Radar Chart Container -->
+            <h2>Gesamteindruck</h2>
+            <div class="chart-container">
+              <canvas id="radarChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="numerical-feedback">
+          <h2>Statistische Analyse</h2>
+          <div class="feedback-blocks">
+            <!-- Loop through ordered categories -->
+            <div v-for="(category, index) in categoryOrder" :key="index" class="feedback-block">
+              <h3>
+                {{
+                  category.name.charAt(0).toUpperCase() + category.name.slice(1)
+                }}
+              </h3>
+
+              <!-- Large scale for the category -->
+              <div class="large-scale">
                 <div class="scale">
                   <div class="scale-track">
-                    <div class="pin" :style="{ left: `${((subScore.value - 1) / 4) * 100}%` }" @mouseover="
-                      showPopup('subScore', subIndex, subScore.value)
+                    <div class="pin" :style="{ left: `${(category.data.average - 1) * 25}%` }" @mouseover="
+                      showPopup('category', index, category.data.average)
                       " @mouseleave="hidePopup">
                       <div v-if="
-                        popupVisible['subScore'] &&
-                        hoveredPinIndex['subScore'] === subIndex
+                        popupVisible['category'] &&
+                        hoveredPinIndex['category'] === index
                       " class="popup">
-                        Unterpunktzahl: {{ subScore.value.toFixed(2) }}
+                        Durchschnitt: {{ category.data.average.toFixed(2) }}
                       </div>
                     </div>
                   </div>
@@ -157,101 +138,134 @@
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="tag-statistics" v-if="data.tagStatistics">
-        <h2>Tag Leistungsanalyse</h2>
-        <div class="tag-cards">
-          <div v-for="(statistic, tagName) in data.tagStatistics" :key="tagName" class="tag-card">
-            <div class="tag-header">
-              <div class="tag-meta">
-                <h3>{{ statistic.tag.name }}</h3>
-                <div class="engagement-score">
-                  <div class="score-dot" :style="engagementColor(statistic.averageWeight)"></div>
-                  <span>{{ formatWeight(statistic.averageWeight) }}</span>
-                </div>
-              </div>
-              <div class="participation-badges">
-                <div class="badge">
-                  👥 {{ statistic.totalVisits }}
-                  <span class="tooltip">Einzigartige Teilnehmer des Tags</span>
-                </div>
-                <div class="badge">
-                  💬 {{ statistic.totalFeedback }}
-                  <span class="tooltip">Globale Anzahl Feedback zum Tag</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="tag-metrics">
-              <div class="metric-group">
-                <h4>Feedback-Stimmung</h4>
-                <div class="sentiment-display">
-                  <div class="sentiment-face">
-                    {{ getSentimentEmoji(statistic.averageSentiment) }}
-                  </div>
-                  <div class="sentiment-bar">
-                    <div class="sentiment-fill"></div>
-                    <div class="sentiment-indicator"
-                      :style="{ left: `${((statistic.averageSentiment + 1) / 2) * 100}%` }"></div>
-                    <div class="sentiment-labels">
-                      <span>Negative</span>
-                      <span>Neutral</span>
-                      <span>Positive</span>
+              <!-- Small scales for each sub-score -->
+              <div class="small-scales">
+                <div v-for="(subScore, subIndex) in getOrderedSubScores(
+                  category.data.subAverages
+                )" :key="subIndex" class="small-scale">
+                  <h4>
+                    {{
+                      formatKey(
+                        subScore.name.charAt(0).toUpperCase() +
+                        subScore.name.slice(1)
+                      )
+                    }}
+                  </h4>
+                  <div class="scale">
+                    <div class="scale-track">
+                      <div class="pin" :style="{ left: `${((subScore.value - 1) / 4) * 100}%` }" @mouseover="
+                        showPopup('subScore', subIndex, subScore.value)
+                        " @mouseleave="hidePopup">
+                        <div v-if="
+                          popupVisible['subScore'] &&
+                          hoveredPinIndex['subScore'] === subIndex
+                        " class="popup">
+                          Unterpunktzahl: {{ subScore.value.toFixed(2) }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="scale-labels">
+                      <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
 
-              <div class="metric-group">
-                <h4>Durchschnitt</h4>
-                <div class="star-rating">
-                  <div class="stars" :style="`--rating: ${statistic.averageRating}`" aria-label="Rating"></div>
-                  <span class="rating-text">
-                    ({{ statistic.averageRating.toFixed(1) }}/5)
-                  </span>
+        <div class="tag-statistics" v-if="data.tagStatistics">
+          <h2>Tag Leistungsanalyse</h2>
+          <div class="tag-cards">
+            <div v-for="(statistic, tagName) in data.tagStatistics" :key="tagName" class="tag-card">
+              <div class="tag-header">
+                <div class="tag-meta">
+                  <h3>{{ statistic.tag.name }}</h3>
+                  <div class="engagement-score">
+                    <div class="score-dot" :style="engagementColor(statistic.averageWeight)"></div>
+                    <span>{{ formatWeight(statistic.averageWeight) }}</span>
+                  </div>
+                </div>
+                <div class="participation-badges">
+                  <div class="badge">
+                    👥 {{ statistic.totalVisits }}
+                    <span class="tooltip">Einzigartige Teilnehmer des Tags</span>
+                  </div>
+                  <div class="badge">
+                    💬 {{ statistic.totalFeedback }}
+                    <span class="tooltip">Globale Anzahl Feedback zum Tag</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="weight-visual">
-              <div class="donut-chart" :style="donutStyle(statistic.averageWeight)">
-                <span class="weight-percent">
-                  {{ Math.round(statistic.averageWeight * 100) }}%
-                </span>
+              <div class="tag-metrics">
+                <div class="metric-group">
+                  <h4>Feedback-Stimmung</h4>
+                  <div class="sentiment-display">
+                    <div class="sentiment-face">
+                      {{ getSentimentEmoji(statistic.averageSentiment) }}
+                    </div>
+                    <div class="sentiment-bar">
+                      <div class="sentiment-fill"></div>
+                      <div class="sentiment-indicator"
+                        :style="{ left: `${((statistic.averageSentiment + 1) / 2) * 100}%` }"></div>
+                      <div class="sentiment-labels">
+                        <span>Negative</span>
+                        <span>Neutral</span>
+                        <span>Positive</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="metric-group">
+                  <h4>Durchschnitt</h4>
+                  <div class="star-rating">
+                    <div class="stars" :style="`--rating: ${statistic.averageRating}`" aria-label="Rating"></div>
+                    <span class="rating-text">
+                      ({{ statistic.averageRating.toFixed(1) }}/5)
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div class="weight-labels">
-                <span>geringer Einfluss</span>
-                <span>Hoher Einfluss</span>
+
+              <div class="weight-visual">
+                <div class="donut-chart" :style="donutStyle(statistic.averageWeight)">
+                  <span class="weight-percent">
+                    {{ Math.round(statistic.averageWeight * 100) }}%
+                  </span>
+                </div>
+                <div class="weight-labels">
+                  <span>geringer Einfluss</span>
+                  <span>Hoher Einfluss</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="comments">
-        <h2>Kommentare</h2>
+        <div class="comments">
+          <h2>Kommentare</h2>
 
-        <div v-for="(categoryComments, category) in data.comments" :key="category" class="comment-category">
-          <!-- Category Title -->
-          <h3>{{ formatKey(category) }}</h3>
+          <div v-for="(categoryComments, category) in data.comments" :key="category" class="comment-category">
+            <!-- Category Title -->
+            <h3>{{ formatKey(category) }}</h3>
 
-          <!-- Card for Comments -->
-          <div v-if="categoryComments.length" class="comment-cards">
-            <div v-for="(commentObj, index) in categoryComments" :key="index" class="comment-card"
-              :style="getCardGradient(commentObj.sentiment)">
-              <p class="comment-author">
-                <strong>{{ commentObj.author || "Anonymous" }}:</strong>
-              </p>
-              <div class="comment-content">
-                <div class="comment-column">{{ commentObj.comment }}</div>
+            <!-- Card for Comments -->
+            <div v-if="categoryComments.length" class="comment-cards">
+              <div v-for="(commentObj, index) in categoryComments" :key="index" class="comment-card"
+                :style="getCardGradient(commentObj.sentiment)">
+                <p class="comment-author">
+                  <strong>{{ commentObj.author || "Anonymous" }}:</strong>
+                </p>
+                <div class="comment-content">
+                  <div class="comment-column">{{ commentObj.comment }}</div>
+                </div>
               </div>
             </div>
+            <p v-else>Es wurden keine Kommentare für diese Rubrik abgegeben.</p>
           </div>
-          <p v-else>Es wurden keine Kommentare für diese Rubrik abgegeben.</p>
         </div>
       </div>
     </div>
@@ -276,6 +290,8 @@ import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { VueSpinner } from "vue3-spinners";
+import api from "@/util/api";
 
 pdfMake.addVirtualFileSystem(pdfFonts);
 
@@ -290,7 +306,10 @@ Chart.register(
 );
 
 export default {
-  components: "TrainerTags",
+  components: {
+    TrainerTags,
+    VueSpinner,
+  },
   name: "EventSummary",
   data() {
     return {
@@ -300,6 +319,8 @@ export default {
         firstname: "",
         lastname: "",
       },
+      registeredUsers: 0,
+      givenFeedback: 0,
       location: {
         street: "",
         houseNumber: "",
@@ -308,7 +329,8 @@ export default {
       },
       data: null,
       tags: [],
-      isLoading: true,
+      dataUnavailable: false,
+      loading: true,
       error: null,
       backgroundImageUrl: null,
       averageScores: [],
@@ -356,8 +378,8 @@ export default {
     },
 
     getSentimentClass(sentiment) {
-      if (sentiment > 0.2) return 'positive';
-      if (sentiment < -0.2) return 'negative';
+      if (sentiment > 0.3) return 'positive';
+      if (sentiment < -0.3) return 'negative';
       return 'neutral';
     },
 
@@ -402,22 +424,44 @@ export default {
      */
     async fetchData() {
       try {
-        this.isLoading = true;
+        this.loading = true;
         await this.fetchEventSummary();
+
+        await Promise.all([
+          this.fetchEventDetails(),
+          this.fetchWordCloud(),
+          this.fetchEventTags(),
+          this.fetchRegisteredUsers()
+        ]);
+
         this.calculateAverages();
         this.setRadarChartLabels();
       } catch (err) {
-        showToast(
-          new Toast(
-            "Info",
-            `Noch kein feedback für dieses Event verfügbar.`,
-            "info",
-            faXmark,
-            10
-          )
-        );
+        if (this.dataUnavailable) {
+          showToast(
+            new Toast(
+              "Information",
+              "Bislang wurde noch kein Feedback zu diesem Event abgegeben. Kommen Sie bitte später wieder.",
+              "info",
+              faXmark,
+              5
+            )
+          );
+          console.error(err)
+        } else {
+          showToast(
+            new Toast(
+              "Fehler",
+              "Ein kritischer Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+              "error",
+              faXmark,
+              5
+            )
+          );
+          console.error(err)
+        }
       } finally {
-        this.isLoading = false;
+        this.loading = false;
         this.$nextTick(() => {
           this.createRadarChart();
         });
@@ -425,15 +469,44 @@ export default {
     },
 
     /**
+     * Fetches the users who have registered for the event.
+     */
+    async fetchRegisteredUsers() {
+      try {
+        const response = await api.get(`/events/${this.eventId}/registeredUsers`);
+        this.registeredUsers = response.data.length;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+      
+    /**
      * Fetches the event summary data from the API.
      */
     async fetchEventSummary() {
       try {
-        const response = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/summary`
-        );
+        const response = await api.get(`/events/${this.eventId}/summary`);
 
-        this.data = await response.json();
+        if (response.status === 204 || response.status === 400) {
+          this.dataUnavailable = true;
+          throw new Error('No feedback available');
+        }
+
+        this.givenFeedback = response.data.numericalFeedback.OVERALL.responseCount;
+        this.data = response.data;
+
+        if (response.status === 400) {
+          showToast(
+            new Toast(
+              "Information",
+              `Bislang wurde noch kein Feedback zu diesem Event abgegeben.`,
+              "info",
+              faXmark,
+              5
+            )
+          );
+
+        }
 
         this.categoryOrder = [
           { name: "GESAMT", data: this.data.numericalFeedback.OVERALL },
@@ -453,7 +526,10 @@ export default {
           { name: "ÄHNLICHKEIT", data: this.data.numericalFeedback.SIMILARITY },
         ];
       } catch (err) {
-        this.error = err.message || "An error occurred";
+        if (err.response?.status === 400 || err.response?.status === 404) {
+          this.dataUnavailable = true;
+        }
+        throw err;
       }
     },
 
@@ -462,31 +538,19 @@ export default {
      */
     async fetchEventDetails() {
       try {
-        const response = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}`
-        );
-        const eventData = await response.json();
+        if (this.dataUnavailable) return;
+
+        const response = await api.get(`/events/${this.eventId}`);
+        const eventData = await response.data;
         this.event = eventData;
 
-        const organizerResponse = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/organizer`
-        );
-        this.organizer = await organizerResponse.json();
+        const organizerResponse = await api.get(`/events/${this.eventId}/organizer`);
+        this.organizer = await organizerResponse.data;
 
-        const locationResponse = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/location`
-        );
-        this.location = await locationResponse.json();
-      } catch (error) {
-        showToast(
-          new Toast(
-            "Error",
-            `Fehler beim Laden der Eventdaten`,
-            "error",
-            faXmark,
-            10
-          )
-        );
+        const locationResponse = await api.get(`/events/${this.eventId}/location`);
+        this.location = await locationResponse.data;
+      } catch (err) {
+        throw err;
       }
     },
 
@@ -494,48 +558,45 @@ export default {
      * Fetches the word cloud image from the API.
      */
     async fetchWordCloud() {
+      if (this.dataUnavailable) return;
+
       if (!this.eventId) {
         showToast(
-          new Toast("Error", `Event ID is missing.`, "error", faXmark, 10)
+          new Toast("Fehler", `Es wurde keine Event ID gefunden. Laden Sie bitte die Seite neu.`, "error", faXmark, 5)
         );
         return;
       }
       try {
-        const response = await fetch(
-          `${config.apiBaseUrl}/events/${this.eventId}/word-cloud`
+        const response = await api.get(`/events/${this.eventId}/word-cloud`,
+          { responseType: 'blob' }
         );
-        if (!response.ok) {
+        if (response.status !== 200) {
           showToast(
             new Toast(
-              "Error",
-              `Fehler beim Laden der Word Cloud.`,
+              "Fehler",
+              `Die Word Cloud konnte nicht geladen werden.`,
               "error",
               faXmark,
-              10
+              5
             )
           );
         }
-        const blob = await response.blob();
+        const blob = await response.data;
         this.backgroundImageUrl = URL.createObjectURL(blob);
       } catch (err) {
-        showToast(
-          new Toast(
-            "Error",
-            `Fehler beim Laden der Word Cloud.`,
-            "error",
-            faXmark,
-            10
-          )
-        );
+        throw err;
       }
     },
     async fetchEventTags() {
+      if (this.dataUnavailable) return;
+
       try {
-        const tagsResponse = await fetch(`${config.apiBaseUrl}/events/${this.eventId}/tags`);
-        if (!tagsResponse.ok)
+        const tagsResponse = await api.get(`/events/${this.eventId}/tags`);
+        if (tagsResponse.status !== 200)
           throw new Error("Event Tags konnten nicht geladen werden.");
-        this.tags = await tagsResponse.json();
-      } catch (error) {
+        this.tags = await tagsResponse.data;
+      } catch (err) {
+        throw err;
       }
     },
 
@@ -588,7 +649,6 @@ export default {
               min: 0,
               max: 5,
               stepSize: 1,
-              max: 5,
               ticks: {
                 stepSize: 1,
                 callback: function (value) {
@@ -702,11 +762,11 @@ export default {
       if (!this.backgroundImageUrl) {
         showToast(
           new Toast(
-            "Error",
+            "Fehler",
             `Word Cloud Bild ist nicht verfügbar.`,
             "error",
             faXmark,
-            10
+            5
           )
         );
         return;
@@ -786,6 +846,22 @@ export default {
                       text:
                         this.event.description ||
                         "Keine Beschreibung verfügbar",
+                      style: "tableContent",
+                    },
+                  ],
+                  [
+                    { text: "Registrierte Nutzer", style: "tableHeader" },
+                    {
+                      text:
+                        this.registeredUsers || "Keine registrierten Nutzer",
+                      style: "tableContent",
+                    },
+                  ],
+                  [
+                    { text: "abgegebene Feedbacks", style: "tableHeader" },
+                    {
+                      text:
+                        this.givenFeedback || "Keine registrierten Nutzer",
                       style: "tableContent",
                     },
                   ],
@@ -908,11 +984,11 @@ export default {
       } catch (err) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Generieren der PDF`,
+            "Feler",
+            `Ein Fehler bei der Erstellung der PDF ist aufgetreten, versuchen Sie es später erneut.`,
             "error",
             faXmark,
-            10
+            5
           )
         );
       }
@@ -958,9 +1034,6 @@ export default {
   },
   mounted() {
     this.fetchData();
-    this.fetchWordCloud();
-    this.fetchEventDetails();
-    this.fetchEventTags();
   },
 };
 </script>
@@ -996,6 +1069,11 @@ export default {
 
 .back-button:hover {
   background-color: #007bb5;
+}
+
+.feedback-summary-scroll {
+  max-height: calc(100vh - 11vh);
+  overflow-y:auto;
 }
 
 .feedback-summary-container {
@@ -1541,14 +1619,12 @@ li {
   position: absolute;
   left: 0;
   right: 0;
-  background: linear-gradient(
-    to right,
-    #e74c3c 0%,
-    #e74c3c 33%,
-    #3498db 33%,
-    #3498db 66%,
-    #2ecc71 66%
-  );
+  background: linear-gradient(to right,
+      #e74c3c 0%,
+      #e74c3c 33%,
+      #3498db 33%,
+      #3498db 66%,
+      #2ecc71 66%);
 }
 
 .sentiment-indicator {
@@ -1641,16 +1717,36 @@ li {
   font-size: 1rem;
 }
 
+.no-data-container {
+  text-align: center;
+  padding: 2rem;
+  max-width: 600px;
+  margin: 2rem auto;
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.no-data-container h2 {
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+
+.no-data-container p {
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+}
+
 @media (max-width: 768px) {
   .tag-header {
     flex-direction: column;
   }
-  
+
   .sentiment-display {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .participation-badges {
     flex-wrap: wrap;
   }

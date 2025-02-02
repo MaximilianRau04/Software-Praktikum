@@ -36,6 +36,8 @@ import Cookies from "js-cookie";
 import config from "../config";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "@/util/auth";
+import api from "@/util/api";
 
 export default {
   components: {
@@ -79,13 +81,11 @@ export default {
     },
 
     async fetchUnreadNotifications() {
-      const userId = Cookies.get("userId");
+      const userId = useAuth().getUserId();
       if (!userId) return;
       try {
-        const response = await fetch(
-          `${config.apiBaseUrl}/notifications/unread/${userId}`,
-        );
-        const unreadNotifications = await response.json();
+        const response = await api.get(`/notifications/unread/${userId}`);
+        const unreadNotifications = response.data;
 
         if (response.ok) {
           this.notifications = unreadNotifications;
@@ -93,16 +93,17 @@ export default {
 
         this.fetchNotifications();
       } catch (err) {
-        showToast(
+        showToast(new Toast(
           "Error",
           "Benachrichtigungen konnten nicht geladen werden",
           "error",
-        );
+          5
+        ));
         this.notifications = [];
       }
     },
     async fetchNotifications() {
-      const userId = Cookies.get("userId");
+      const userId = useAuth().getUserId();
       if (!userId) return;
 
       const eventSource = new EventSource(
@@ -115,26 +116,18 @@ export default {
       });
 
       eventSource.onerror = (event) => {
-        showToast("Error", "Fehler mit der SSE Verbindung", "error");
+        showToast(new Toast("Error", "Fehler mit der SSE Verbindung", "error", faXmark, 5));
       };
     },
     async handleMarkAsRead(notificationId) {
       try {
-        const response = await fetch(
-          `${config.apiBaseUrl}/notifications/${notificationId}/read`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          },
-        );
+        const response = await api.put(`/notifications/${notificationId}/read`);
 
         if (!response.ok) {
           showToast(
             new Toast(
-              "Error",
-              `Fehler beim Setzen auf gelesen`,
+              "Fehler",
+              `Benachrichtung konnte nicht als gelesen gesetzt werden.`,
               "error",
               faXmark,
               10,
@@ -144,8 +137,8 @@ export default {
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler Fetchen der exchange days`,
+            "Fehler",
+            `Benachrichtung konnte nicht als gelesen gesetzt werden.`,
             "error",
             faXmark,
             10,
@@ -178,7 +171,7 @@ export default {
 }
 
 .content-area {
-  height: calc(100vh - 60px);
+  height: calc(100vh - 0px);
   overflow-y: auto;
   overflow-x: hidden;
 }

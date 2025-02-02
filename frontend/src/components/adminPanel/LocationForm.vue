@@ -51,7 +51,7 @@
         <input type="text" id="houseNumber" v-model="houseNumber" required />
       </div>
 
-      <button type="submit" class="login-button">Erstelle Location</button>
+      <button type="submit" class="action-button">Erstelle Location</button>
     </form>
   </div>
 </template>
@@ -60,6 +60,7 @@
 import { ref, onMounted } from "vue";
 import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
+import api from "@/util/api";
 
 const countries = ref<string[]>([]);
 const cities = ref<string[]>([]);
@@ -82,9 +83,9 @@ const emit = defineEmits(["update:showLocationBox"]);
  */
 const fetchCountries = async () => {
   try {
-    const response = await fetch(`${apiUrl}/countries`);
-    if (response.ok) {
-      countries.value = await response.json();
+    const response = await api.get(`/locations/countries`);
+    if (response.status === 200) {
+      countries.value = await response.data;
     }
   } catch (error) {
     showToast(new Toast("Error", "Fehler beim Abrufen der Länder", "error"));
@@ -97,9 +98,9 @@ const fetchCountries = async () => {
 const updateCities = async () => {
   if (country.value !== "custom") {
     try {
-      const response = await fetch(`${apiUrl}/cities/${country.value}`);
-      if (response.ok) {
-        cities.value = await response.json();
+      const response = await api.get(`/locations/cities/${country.value}`);
+      if (response.status === 200) {
+        cities.value = await response.data;
       }
     } catch (error) {
       showToast(new Toast("Error", "Fehler beim Abrufen der Städte", "error"));
@@ -117,21 +118,19 @@ const createLocation = async () => {
     country.value === "custom" ? customCountry.value : country.value;
   const selectedCity = city.value === "custom" ? customCity.value : city.value;
 
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+  const locationData = {
         city: selectedCity,
         postalCode: postalCode.value,
         street: street.value,
         houseNumber: houseNumber.value,
         country: selectedCountry,
-      }),
-    });
+      }
 
-    if (response.ok) {
-      const data = await response.json();
+  try {
+    const response = await api.post(`/locations`, locationData);
+
+    if (response.status === 200) {
+      const data = await response.data;
       showToast(
         new Toast("Success", "Location erfolgreich erstellt", "success"),
       );

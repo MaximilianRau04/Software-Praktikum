@@ -41,7 +41,11 @@ public class RewardService {
     }
 
     public void grantAttendancePoints(User user) {
-        for (Reward reward : user.getRewards()) {
+        List<Reward> rewardsToUpdate = user.getRewards().stream()
+                .filter(reward -> reward.getType() == Reward.Type.ATTENDER)
+                .toList();
+
+        for (Reward reward : rewardsToUpdate) {
             if (reward.getType() == Reward.Type.ATTENDER) {
                 final Integer DEFAULT_ATTENDANCE_REWARD_VALUE = 50;
                 reward.setPoints(reward.getPoints() + DEFAULT_ATTENDANCE_REWARD_VALUE);
@@ -49,10 +53,15 @@ public class RewardService {
                 rewardRepository.save(reward);
             }
         }
+        updateUserpoints(userRepository.save(user));
     }
 
     public void grantFeedbackGiverPoints(User user) {
-        for (Reward reward : user.getRewards()) {
+        List<Reward> rewardsToUpdate = user.getRewards().stream()
+                .filter(reward -> reward.getType() == Reward.Type.FEEDBACK_GIVER)
+                .toList();
+
+        for (Reward reward : rewardsToUpdate) {
             if (reward.getType() == Reward.Type.FEEDBACK_GIVER) {
                 final Integer DEFAULT_FEEDBACK_REWARD_VALUE = 100;
                 reward.setPoints(reward.getPoints() + DEFAULT_FEEDBACK_REWARD_VALUE);
@@ -60,32 +69,33 @@ public class RewardService {
                 rewardRepository.save(reward);
             }
         }
+        updateUserpoints(userRepository.save(user));
     }
 
     public void grantCleanSubmitterReward(User user){
         if(user.getRewards().stream().noneMatch(reward -> reward.getType() == Reward.Type.CLEAN_SUBMITTER)) {
-            Reward cleanSubmitter = new Reward(Reward.Type.CLEAN_SUBMITTER, 0, "Belohnung für das Besuchen und Bewerten von 20 Events und Workshops.", user , false);
+            Reward cleanSubmitter = new Reward(Reward.Type.CLEAN_SUBMITTER, 200, "Belohnung für das Besuchen und Bewerten von 20 Events und Workshops.", user , false);
             rewardNotificationService.sendRewardNotification(rewardRepository.save(cleanSubmitter));
             user.getRewards().add(cleanSubmitter);
-            userRepository.save(user);
+            updateUserpoints(userRepository.save(user));
         }
     }
 
     public void grantAllrounderReward(User user){
         if(user.getRewards().stream().noneMatch(reward -> reward.getType() == Reward.Type.ALLROUNDER)) {
-            Reward allrounder = new Reward(Reward.Type.CLEAN_SUBMITTER, 0, "Belohnung für den Besuch von Workshops in unterschiedlichen Themenbereichen.", user , false);
+            Reward allrounder = new Reward(Reward.Type.ALLROUNDER, 500, "Belohnung für den Besuch von Workshops in unterschiedlichen Themenbereichen.", user , false);
             rewardNotificationService.sendRewardNotification(rewardRepository.save(allrounder));
             user.getRewards().add(allrounder);
-            userRepository.save(user);
+            updateUserpoints(userRepository.save(user));
         }
     }
 
     public void grantSocialButterflyReward(User user){
-        if(user.getRewards().stream().noneMatch(reward -> reward.getType() == Reward.Type.ALLROUNDER)) {
-            Reward socialButterfly = new Reward(Reward.Type.CLEAN_SUBMITTER, 0, "Belohnung für die aktive Teilnahme an Forumdiskussionen in unterschiedlichen Workshops.", user , false);
+        if(user.getRewards().stream().noneMatch(reward -> reward.getType() == Reward.Type.SOCIAL_BUTTERFLY)) {
+            Reward socialButterfly = new Reward(Reward.Type.SOCIAL_BUTTERFLY, 250, "Belohnung für die aktive Teilnahme an Forumdiskussionen in unterschiedlichen Workshops.", user , false);
             rewardNotificationService.sendRewardNotification(rewardRepository.save(socialButterfly));
             user.getRewards().add(socialButterfly);
-            userRepository.save(user);
+            updateUserpoints(userRepository.save(user));
         }
     }
 
@@ -105,6 +115,11 @@ public class RewardService {
                 rewardNotificationService.sendRewardNotification(rewardRepository.save(reward));
             }
         }
+    }
+
+    private void updateUserpoints(User user){
+        user.updateTotalPoints();
+        userRepository.save(user);
     }
 
     public Resource getBadgePNG(Reward.Type type, Integer currentLevel) {

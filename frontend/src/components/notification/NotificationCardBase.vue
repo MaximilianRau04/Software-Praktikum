@@ -22,6 +22,7 @@ import { useRouter } from "vue-router";
 import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import api from "@/util/api";
 
 export default {
   props: {
@@ -46,8 +47,7 @@ export default {
      */
     const markAsRead = async () => {
       try {
-        const response = await fetch(
-          `${config.apiBaseUrl}/notifications/${props.notification.id}/read`,
+        const response = await api.put(`/notifications/${props.notification.id}/read`,
           {
             method: "PUT",
             headers: {
@@ -59,25 +59,25 @@ export default {
         if (!response.ok) {
           showToast(
             new Toast(
-              "Error",
-              `Fehler beim Setzen auf gelesen`,
+              "Fehler",
+              `Nachricht konnte nicht auf gelesen gesetzt werden.`,
               "error",
               faXmark,
-              10,
+              5,
             ),
           );
         }
         emit("mark-as-read", props.notification.id);
       } catch (error) {
         showToast(
-          new Toast(
-            "Error",
-            `Fehler Fetchen der exchange days`,
-            "error",
-            faXmark,
-            10,
-          ),
-        );
+            new Toast(
+              "Fehler",
+              `Nachricht konnte nicht auf gelesen gesetzt werden.`,
+              "error",
+              faXmark,
+              5,
+            ),
+          );
       }
     };
 

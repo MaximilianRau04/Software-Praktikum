@@ -4,8 +4,10 @@ import com.sopra.eaplanner.event.Event;
 import com.sopra.eaplanner.event.EventRepository;
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.dtos.RatedEventDTO;
+import com.sopra.eaplanner.event.participation.EventParticipation;
 import com.sopra.eaplanner.event.participation.EventParticipationDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationService;
+import com.sopra.eaplanner.event.participation.ParticipatedEventCollectionDTO;
 import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.event.tags.TagService;
@@ -29,9 +31,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class UserService {
@@ -56,6 +60,8 @@ public class UserService {
 
     @Autowired
     private TagService tagService;
+    @Autowired
+    private UserTagWeightService userTagWeightService;
 
     public UserResponseDTO getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
@@ -78,6 +84,52 @@ public class UserService {
             dtos.add(new UserResponseDTO(user));
         }
         return dtos;
+    }
+
+    public ParticipatedEventCollectionDTO collectAssociatedEvents(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        Set<EventParticipation> parts = user.getParticipations();
+
+        // Existing event lists
+        List<EventResponseDTO> registeredEvents = parts.stream()
+                .filter(part -> !part.getIsParticipationConfirmed() && !part.getFeedbackGiven())
+                .map(EventParticipation::getEvent)
+                .map(EventResponseDTO::new)
+                .toList();
+
+        List<EventResponseDTO> confirmedEvents = parts.stream()
+                .filter(part -> part.getIsParticipationConfirmed() && !part.getFeedbackGiven())
+                .map(EventParticipation::getEvent)
+                .map(EventResponseDTO::new)
+                .toList();
+
+        List<EventResponseDTO> completedEvents = parts.stream()
+                .filter(part -> part.getIsParticipationConfirmed() && part.getFeedbackGiven())
+                .map(EventParticipation::getEvent)
+                .map(EventResponseDTO::new)
+                .toList();
+
+        // Collect all existing event IDs
+        Set<Long> existingEventIds = Stream.of(registeredEvents, confirmedEvents, completedEvents)
+                .flatMap(Collection::stream)
+                .map(EventResponseDTO::getId)
+                .collect(Collectors.toSet());
+
+        // Get recommended events and filter out existing ones
+        List<EventResponseDTO> recommendedEvents = userTagWeightService.recommendEvents(userId, 25)
+                .stream()
+                .filter(event -> !existingEventIds.contains(event.getId()))
+                .limit(5)
+                .toList();
+
+        return new ParticipatedEventCollectionDTO(
+                registeredEvents,
+                confirmedEvents,
+                completedEvents,
+                recommendedEvents
+        );
     }
 
     public Iterable<EventResponseDTO> getRegisteredEvents(Long id) {
@@ -108,9 +160,12 @@ public class UserService {
             LocalDateTime eventEndDateTime = eventDate.atTime(eventEndTime);
 
             if (eventEndDateTime.isBefore(now)) {
-                Double averageRating = event.getFeedbacks().stream()
-                        .mapToDouble(FeedbackUtil::getFeedbackRating)
-                        .sum() / event.getFeedbacks().size();
+                double averageRating = 0.0;
+                if(!event.getFeedbacks().isEmpty()){
+                    averageRating = event.getFeedbacks().stream()
+                            .mapToDouble(FeedbackUtil::getFeedbackRating)
+                            .sum() / event.getFeedbacks().size();
+                }
                 pastEvents.add(new RatedEventDTO(event, averageRating, tags));
             } else if (eventStartDateTime.isAfter(now)) {
                 futureEvents.add(new RatedEventDTO(event, 0.0, tags));
@@ -181,23 +236,24 @@ public class UserService {
     public Iterable<EventResponseDTO> getPendingFeedbackEvents(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
         return user.getParticipations().stream()
-                .filter(part -> part.getIsParticipationConfirmed() && !part.getFeedbackGiven())
+                .filter(part -> !part.getFeedbackGiven())
                 .map(part -> new EventResponseDTO(part.getEvent()))
                 .collect(Collectors.toSet());
     }
 
     public UserResponseDTO createUser(UserRequestDTO requestBody) {
+        return new UserResponseDTO(userRepository.save(new User(requestBody)));
+    }
+
+    public UserResponseDTO createTrainer(UserRequestDTO requestBody) {
         User userToSave = userRepository.save(new User(requestBody));
 
-        if (userToSave.getRole() == User.Role.ADMIN) {
-            TrainerProfile trainerProfile = new TrainerProfile();
-            trainerProfile.setUser(userToSave);
-            trainerProfile.setBio("");
-            trainerProfile.setAverageRating(0.0);
-            trainerProfileRepository.save(trainerProfile);
-        }
+        TrainerProfile trainerProfile = new TrainerProfile();
+        trainerProfile.setUser(userToSave);
+        trainerProfile.setBio("");
+        trainerProfile.setAverageRating(0.0);
+        trainerProfileRepository.save(trainerProfile);
 
         return new UserResponseDTO(userToSave);
     }
@@ -215,9 +271,6 @@ public class UserService {
         if (user.getLastname() != null && !user.getLastname().isBlank()) {
             existingUser.setLastname(user.getLastname());
         }
-        if (user.getRole() != null) {
-            existingUser.setRole(user.getRole());
-        }
 
         if (existingUser.getDescription() == null) {
             existingUser.setDescription(user.getDescription());
@@ -232,7 +285,7 @@ public class UserService {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         Set<Tag> freshTags = tagService.mergeAndGetTagsFromRequest(requestBody);
-        existingUser.setInterestTagsTags(freshTags);
+        existingUser.setInterestTags(freshTags);
 
         userRepository.save(existingUser);
 

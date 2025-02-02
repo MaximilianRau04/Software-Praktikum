@@ -8,14 +8,14 @@
         <div class="header-container">
             <div class="header-content">
                 <!-- Use TrainerHeader and pass user & bio -->
-                <TrainerHeader :user="user" :bio="trainer.bio" />
+                <TrainerHeader v-if="user && trainer" :user="user" :bio="trainer.bio || 'Keine Biografie verfügbar'" />
                 <!-- Expertise Tags -->
                 <div class="tags-container">
                     <hr />
-                    <TrainerTags :tags="trainerTags" />
+                    <TrainerTags v-if="trainer.id" :tags="trainerTags" />
                 </div>
                 <div class="rating">
-                    <TrainerStarRating :averageRating="trainer.averageRating" />
+                    <TrainerStarRating v-if="trainer.averageRating" :averageRating="trainer.averageRating" />
                 </div>
             </div>
         </div>
@@ -23,7 +23,7 @@
         <!-- Comments Section -->
         <div class="comments-section">
             <div class="comments-grid">
-                <TrainerComments :trainerId="this.trainer.id" />
+                <TrainerComments v-if="trainer.id" :trainerId="trainer.id" />
             </div>
         </div>
 
@@ -44,6 +44,8 @@ import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import config from "@/config";
 import Cookies from "js-cookie";
+import { useAuth } from "@/util/auth";
+import api from "@/util/api";
 
 
 export default {
@@ -75,61 +77,60 @@ export default {
     watch: {
         trainer: "fetchTrainerDetails",
     },
+    mounted(){
+        this.fetchTrainerDetails();
+    },
     methods: {
         getUserIdFromCookie() {
-            return Number(Cookies.get("userId"));
+            return useAuth().getUserId();
         },
 
         /**
          * Fetches the tags and events for the trainer
          */
         async fetchTrainerDetails() {
+            console.log("Trainer before fetch:", this.trainer);
             try {
-                const tagsResponse = await fetch(
-                    `${config.apiBaseUrl}/trainerProfiles/${this.trainer.id}/expertiseTags`,
-                );
-                if (tagsResponse.ok) {
-                    this.trainerTags = await tagsResponse.json();
+                const tagsResponse = await api.get(`/trainerProfiles/${this.trainer.id}/expertiseTags`);
+                if (tagsResponse.status === 200) {
+                    this.trainerTags = await tagsResponse.data;
                 }
 
-                const eventResponse = await fetch(
-                    `${config.apiBaseUrl}/users/${this.trainer.userId}/hostedEvents`,
-                );
-                if (eventResponse.ok) {
-                    const eventsData = await eventResponse.json();
+                const eventResponse = await api.get(`/users/${this.trainer.userId}/hostedEvents`);
+                if (eventResponse.status === 200) {
+                    const eventsData = await eventResponse.data;
                     this.pastEvents = eventsData.pastEvents;
                     this.futureEvents = eventsData.futureEvents;
                 }
             } catch (error) {
+                console.error(error)
                 showToast(
                     new Toast(
-                        "Error",
-                        `Fehler beim Laden der Kommentare`,
+                        "Fehler",
+                        `Die Kommentare konnten nicht geladen werden.`,
                         "error",
                         faXmark,
-                        10,
+                        5,
                     ),
                 );
             }
         },
         navigateToManage() {
+            console.log("Navigating with trainerId:", this.trainer.id, "Type:", typeof this.trainer.id);
             this.$router.push({
                 name: "TrainerProfileManage",
-                params: { trainerId: Number(this.trainer.id) },
+                params: { trainerId: this.trainer.id },
             });
         },
-    },
-    created() {
-        this.fetchTrainerDetails();
     },
 };
 </script>
 
 <style scoped>
 .manage-button {
-    position: fixed;
+    position: sticky;
+    left: 78%;
     top: 10%;
-    right: 20%;
     background-color: #009ee2;
     color: white;
     border: none;
@@ -228,7 +229,6 @@ export default {
     padding: 1rem;
     border-radius: 8px;
 }
-
 .manage-button {
     background-color: #009ee2;
     color: white;
@@ -238,6 +238,8 @@ export default {
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.2s;
+    z-index: 1000;
+    right: 15%; 
 }
 
 .manage-button:hover {

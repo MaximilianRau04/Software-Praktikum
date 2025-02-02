@@ -14,7 +14,7 @@ export const globalState = reactive({
     username: null as string | null,
     firstname: null as string | null,
     lastname: null as string | null,
-    role: null as string | null,
+    roles: null as string[] | [],
   },
   setUser(user: Partial<typeof globalState.user>) {
     Object.assign(this.user, user);

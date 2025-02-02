@@ -6,6 +6,7 @@ export interface Event {
   description: string;
   date: string;
   endTime: string;
+  exchangeDayName: string;
   startTime: string;
   room: Room;
   forumThreads: object[];
@@ -17,7 +18,6 @@ export interface Room{
   id: number;
   type: string;
   location: Location;
-  houseNumber: number;
   capacity: number;
   description: string;
   availability: number;

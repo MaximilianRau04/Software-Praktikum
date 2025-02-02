@@ -1,7 +1,7 @@
 <template>
   <div class="exchangeDayDetails">
     <div class="exchangeDayHeader">
-      <h1>{{ selectedExchangeDay?.name }}</h1>
+      <h1>{{ selectedExchangeDay?.name }} - Exchange Day</h1>
       <button v-if="isAdmin" class="manage-button" @click="handleManage(selectedExchangeDay?.id)">
         Verwalten
       </button>
@@ -20,10 +20,11 @@
               <CalendarIcon class="icon" />
               <h4>Termin</h4>
             </div>
-            <div class="info-content">
+            <div v-if="selectedExchangeDay?.startDate !== selectedExchangeDay?.endDate" class="info-content">
               {{ formatDateLong(selectedExchangeDay?.startDate) }}<br>
               bis {{ formatDateLong(selectedExchangeDay?.endDate) }}
             </div>
+            <div v-else class="info-content">{{formatDateLong(selectedExchangeDay?.startDate)}}</div>
           </div>
 
           <div class="info-box">
@@ -46,7 +47,7 @@
       </div>
     </div>
     <div class="exchangeDayHeader">
-        <h2>Events</h2>
+        <h2>Geplante Workshops</h2>
       </div>
     <!-- Events Section -->
     <div class="scrollableEventList">
@@ -63,16 +64,16 @@
 <script setup lang="ts">
 import { defineProps, onMounted, computed, ref, watch } from "vue";
 import EventDetails from "@/components/viewExchangeDays/home/EventDetails.vue";
-import config from "@/config";
 import "@/assets/exchange-day-details.css";
 import { ExchangeDay } from "@/types/ExchangeDay";
 import { Event } from "@/types/Event";
 import { useRouter } from "vue-router";
-import Cookies from "js-cookie";
 import { showToast, Toast } from "@/types/toasts";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import MapComponent from "../MapComponent.vue";
 import { CalendarIcon, MapPinIcon as LocationIcon } from '@heroicons/vue/24/outline';
+import { useAuth } from "@/util/auth";
+import api from "@/util/api";
 
 const router = useRouter();
 const selectedExchangeDay = ref<ExchangeDay | null>(null);
@@ -110,7 +111,7 @@ function formatDateLong(timestamp: number): string {
   });
 }
 
-const isAdmin = computed(() => Cookies.get('role') === 'ADMIN');
+const isAdmin = computed(() => useAuth().isAdmin.value);
 
 /**
  * Checks if the exchange day is in the past.
@@ -130,19 +131,19 @@ function checkIfPastExchangeDay() {
  */
 async function fetchExchangeDayDetails(id: number) {
   try {
-    const response = await fetch(`${config.apiBaseUrl}/exchange-days/${id}`);
-    if (!response.ok)
+    const response = await api.get(`/exchange-days/${id}`);
+    if (response.status !== 200)
       showToast(
         new Toast(
-          "Error",
-          `Fehler beim Laden der Exchange days`,
+          "Fehler",
+          `Exchange Days konnten nicht geladen werden.`,
           "error",
           faXmark,
-          10
+          5
         )
       );
 
-    const data = await response.json();
+    const data = await response.data;
 
     selectedExchangeDay.value = {
       id: data.id,
@@ -155,14 +156,19 @@ async function fetchExchangeDayDetails(id: number) {
 
     checkIfPastExchangeDay();
     await fetchEventDetails();
+
+    if(selectedExchangeDay.value?.location){
+      await geocodeAddress();
+    }
+
   } catch (error) {
     showToast(
       new Toast(
-        "Error",
-        `Fehler beim Laden der exchange days`,
+        "Fehler",
+        `Exchange Days konnten nicht geladen werden.`,
         "error",
         faXmark,
-        10
+        5
       )
     );
   }
@@ -173,20 +179,27 @@ async function fetchExchangeDayDetails(id: number) {
  */
 async function fetchEventDetails() {
   try {
-    const response = await fetch(
-      `${config.apiBaseUrl}/exchange-days/${selectedExchangeDay.value.id}/events`
+    const response = await api.get(`/exchange-days/${selectedExchangeDay.value.id}/events`
     );
-    if (!response.ok) {
+    if (response.status !== 200) {
+      showToast(
+      new Toast(
+        "Fehler",
+        `Events für ${selectedExchangeDay.value.name} konnten nicht geladen werden.`,
+        "error",
+        faXmark,
+        5
+      )
+    );
       throw new Error(
         `Failed to fetch events from exchange day ${selectedExchangeDay.value.id}`
       );
     }
-    const responseData: Event[] = await response.json();
+    const responseData: Event[] = await response.data;
     events.value = responseData;
-    console.log(events.value);
   } catch (error) {
     showToast(
-      new Toast("Error", `Fehler beim Abrufen der Events.`, "error", faXmark, 10)
+      new Toast("Fehler", `Events konnten nicht abgerufen werden`, "error", faXmark, 5)
     );
   }
 }
@@ -238,11 +251,10 @@ onMounted(async () => {
     }
 
     if (selectedExchangeDay.value?.location) {
-      await geocodeAddress();
+      //await geocodeAddress();
     }
   } catch (error) {
     console.error('Mount error:', error);
-    // Add error state handling here
   }
 });
 </script>

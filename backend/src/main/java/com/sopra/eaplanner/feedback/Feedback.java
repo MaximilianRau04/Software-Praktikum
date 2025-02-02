@@ -11,6 +11,9 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 /**
  * Represents a feedback entity for an event, storing scores and comments for various categories,
@@ -123,6 +126,12 @@ public class Feedback implements FeedbackScore {
     @JsonBackReference
     private TrainerProfile trainerProfile;
 
+    @Column(nullable = false)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    private Double rating = 0.0;
+
     private Double sentiment = 0.0;
 
     private boolean enjoymentCommentPinned;
@@ -170,7 +179,7 @@ public class Feedback implements FeedbackScore {
     }
 
 
-    public Feedback(FeedbackRequestDTO feedback, Event event, User user) {
+    public Feedback(FeedbackRequestDTO feedback, Event event, User user, Double rating) {
         this.overallScore = feedback.getOverallScore();
         this.organisationalScore = feedback.getOrganisationalScore();
         this.relevanceScore = feedback.getRelevanceScore();
@@ -198,6 +207,7 @@ public class Feedback implements FeedbackScore {
         this.anonymousFeedback = feedback.isAnonymousFeedback();
         this.event = event;
         this.user = user;
+        this.rating = rating;
     }
 
     public Long getId() {
@@ -430,6 +440,14 @@ public class Feedback implements FeedbackScore {
 
     public void setTrainerProfile(TrainerProfile trainerProfile) {
         this.trainerProfile = trainerProfile;
+    }
+
+    public LocalDateTime getCreatedAt(){
+        return createdAt;
+    }
+
+    public Double getRating(){
+        return rating;
     }
 
     public boolean isEnjoymentCommentPinned() {

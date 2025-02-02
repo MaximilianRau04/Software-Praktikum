@@ -73,8 +73,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
+import api from "@/util/api";
 
 const selectedExchangeDay = ref<any | null>(null);
 const exchangeDays = ref<any[]>([]);
@@ -85,17 +85,14 @@ const startDate = ref("");
 const endDate = ref("");
 const location = ref<any>(null);
 
-const exchangeDayApiUrl = `${config.apiBaseUrl}/exchange-days`;
-const locationApiUrl = `${config.apiBaseUrl}/locations`;
-
 /**
  * Fetches a list of all ExchangeDays.
  */
 const fetchExchangeDays = async () => {
   try {
-    const response = await fetch(exchangeDayApiUrl);
-    if (response.ok) {
-      exchangeDays.value = await response.json();
+    const response = await api.get(`/exchange-days`);
+    if (response.status === 200) {
+      exchangeDays.value = await response.data;
     } else {
       showToast(
         new Toast("Error", "Fehler beim Abrufen der ExchangeDays", "error"),
@@ -113,9 +110,9 @@ const fetchExchangeDays = async () => {
  */
 const fetchLocations = async () => {
   try {
-    const response = await fetch(locationApiUrl);
-    if (response.ok) {
-      locations.value = await response.json();
+    const response = await api.get(`/locations`);
+    if (response.status === 200) {
+      locations.value = await response.data;
     } else {
       showToast(
         new Toast("Error", "Fehler beim Abrufen der Standorte", "error"),
@@ -133,11 +130,11 @@ const fetchExchangeDayDetails = async () => {
   if (!selectedExchangeDay.value) return;
 
   try {
-    const response = await fetch(
-      `${exchangeDayApiUrl}/${selectedExchangeDay.value.id}`,
+    const response = await api.get(
+      `/exchange-days/${selectedExchangeDay.value.id}`,
     );
-    if (response.ok) {
-      const data = await response.json();
+    if (response.status === 200) {
+      const data = await response.data;
       name.value = data.name;
       description.value = data.description;
       startDate.value = data.startDate;
@@ -178,16 +175,10 @@ const updateExchangeDay = async () => {
   };
 
   try {
-    const response = await fetch(
-      `${exchangeDayApiUrl}/${selectedExchangeDay.value.id}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      },
-    );
+    const response = await api.put(
+      `/exchange-days/${selectedExchangeDay.value.id}`, payload);
 
-    if (response.ok) {
+    if (response.status === 200) {
       showToast(
         new Toast("Success", "ExchangeDay erfolgreich aktualisiert", "success"),
       );
@@ -213,22 +204,18 @@ const updateExchangeDay = async () => {
  */
 const deleteExchangeDay = async () => {
   if (!selectedExchangeDay.value) {
-    showToast(new Toast("Warning", "Kein ExchangeDay ausgewählt", "warning"));
+    showToast(new Toast("Warnung", "Kein ExchangeDay ausgewählt", "warning"));
     return;
   }
 
   if (confirm("Möchten Sie diesen ExchangeDay wirklich löschen?")) {
     try {
-      const response = await fetch(
-        `${exchangeDayApiUrl}/${selectedExchangeDay.value.id}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const response = await api.delete(
+        `/exchange-days/${selectedExchangeDay.value.id}`);
 
-      if (response.ok) {
+      if (response.status === 204) {
         showToast(
-          new Toast("Success", "ExchangeDay erfolgreich gelöscht", "success"),
+          new Toast("Erfolg", "Exchange Day erfolgreich gelöscht", "success"),
         );
         selectedExchangeDay.value = null;
         name.value = "";

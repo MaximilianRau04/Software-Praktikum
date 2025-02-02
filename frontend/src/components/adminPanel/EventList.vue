@@ -53,6 +53,7 @@ import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
 import { useRouter } from "vue-router";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import api from "@/util/api";
 
 const props = defineProps({
   showEventListBox: Boolean,
@@ -73,11 +74,11 @@ onMounted(async () => {
  */
 const fetchEvents = async () => {
   try {
-    const response = await fetch(`${config.apiBaseUrl}/events`);
-    if (!response.ok) {
+    const response = await api.get(`/events`);
+    if (response.status !== 200) {
       throw new Error("Fehler beim Laden der Events");
     }
-    events.value = await response.json();
+    events.value = await response.data;
 
     for (const event of events.value) {
       event.tags = await fetchTagsForEvent(event.id);
@@ -93,9 +94,9 @@ const fetchEvents = async () => {
  */
 const fetchTagsForEvent = async (eventId) => {
   try {
-    const res = await fetch(`${config.apiBaseUrl}/events/${eventId}/tags`);
-    if (!res.ok) throw new Error("Failed to fetch tags");
-    return await res.json();
+    const res = await api.get(`/events/${eventId}/tags`);
+    if (res.status !== 200) throw new Error("Failed to fetch tags");
+    return await res.data;
   } catch (error) {
     showToast(
       new Toast(
@@ -191,14 +192,15 @@ const showFeedbackSummary = (eventId) => {
 }
 
 .event-details {
-  background-color: #EAEAEA;
-  border: 1px solid #01172F;
+  max-width: 600px;
+  margin: 10px auto;
+  padding: 15px;
+  background-color: #f1f5f9;
   border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1.8rem;
-  position: relative;
-  overflow: auto;
-  color: #333;
+  border: 1px solid #000000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: "Roboto", sans-serif;
+  color: #000000;
 }
 
 h2 h3 p {

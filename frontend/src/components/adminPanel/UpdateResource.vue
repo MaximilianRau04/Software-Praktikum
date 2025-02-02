@@ -98,6 +98,7 @@
 import { ref } from "vue";
 import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
+import api from "@/util/api";
 
 const selectedLocation = ref<number | null>(null);
 const selectedResource = ref<number | null>(null);
@@ -111,8 +112,6 @@ const resources = ref<any[]>([]);
 
 const resourceTypes = ["ROOM", "EQUIPMENT", "MATERIAL"];
 
-const apiUrl = `${config.apiBaseUrl}/resources`;
-const locationsApiUrl = `${config.apiBaseUrl}/locations`;
 const emit = defineEmits(["update:showUpdateResourceBox"]);
 
 /**
@@ -120,18 +119,18 @@ const emit = defineEmits(["update:showUpdateResourceBox"]);
  */
 const fetchLocations = async () => {
   try {
-    const response = await fetch(locationsApiUrl);
-    if (response.ok) {
-      const data = await response.json();
+    const response = await api.get(`/resources`);
+    if (response.status === 200) {
+      const data = await response.data;
       locations.value = data;
     } else {
       showToast(
-        new Toast("Error", "Fehler beim Abrufen der Locations.", "error"),
+        new Toast("Fehler", "Locations konnten nicht geladen werden.", "error"),
       );
     }
   } catch (error) {
     showToast(
-      new Toast("Error", "Fehler beim Abrufen der Locations.", "error"),
+      new Toast("Fehler", "Locations konnten nicht geladen werden.", "error"),
     );
   }
 };
@@ -146,20 +145,20 @@ const fetchResourcesByLocation = async () => {
   }
 
   try {
-    const response = await fetch(
-      `${apiUrl}/location/${selectedLocation.value}`,
+    const response = await api.get(
+      `/resources/location/${selectedLocation.value}`,
     );
-    if (response.ok) {
-      const data = await response.json();
+    if (response.status === 200) {
+      const data = await response.data;
       resources.value = data;
     } else {
       showToast(
-        new Toast("Error", "Fehler beim Abrufen der Ressourcen.", "error"),
+        new Toast("Fehler", "Ressourcen für die gewählte Location konnten nicht geladen werden.", "error"),
       );
     }
   } catch (error) {
     showToast(
-      new Toast("Error", "Fehler beim Abrufen der Ressourcen.", "error"),
+      new Toast("Fehler", "Ressourcen für die gewählte Location konnten nicht geladen werden.", "error"),
     );
   }
 };
@@ -171,9 +170,9 @@ const fetchResourceDetails = async () => {
   if (!selectedResource.value) return;
 
   try {
-    const response = await fetch(`${apiUrl}/${selectedResource.value}`);
-    if (response.ok) {
-      const data = await response.json();
+    const response = await api.get(`/resources/${selectedResource.value}`);
+    if (response.status === 200) {
+      const data = await response.data;
       name.value = data.name;
       type.value = data.type;
       description.value = data.description;
@@ -182,15 +181,15 @@ const fetchResourceDetails = async () => {
     } else {
       showToast(
         new Toast(
-          "Error",
-          "Fehler beim Abrufen der Ressourcendetails.",
+          "Fehler",
+          "Ressourcendetails konnten nicht geladen werden.",
           "error",
         ),
       );
     }
   } catch (error) {
     showToast(
-      new Toast("Error", "Fehler beim Abrufen der Ressourcendetails.", "error"),
+      new Toast("Fehler", "Ressourcendetails konnten nicht geladen werden.", "error"),
     );
   }
 };
@@ -200,7 +199,7 @@ const fetchResourceDetails = async () => {
  */
 const updateResource = async () => {
   if (!selectedResource.value) {
-    showToast(new Toast("Warning", "Keine Ressource ausgewählt.", "warning"));
+    showToast(new Toast("Warnung", "Keine Ressource ausgewählt.", "warning"));
     return;
   }
 
@@ -214,26 +213,22 @@ const updateResource = async () => {
   };
 
   try {
-    const response = await fetch(`${apiUrl}/${selectedResource.value}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedResource),
-    });
+    const response = await api.put(`/resources/${selectedResource.value}`, updatedResource);
 
-    if (response.ok) {
-      const data = await response.json();
+    if (response.status === 200) {
+      const data = await response.data;
       showToast(
-        new Toast("Success", `Ressource aktualisiert: ${data.name}`, "success"),
+        new Toast("Erfolg", `Ressource wurde aktualisiert: ${data.name}`, "success"),
       );
       resetForm();
     } else {
       showToast(
-        new Toast("Error", "Fehler beim Aktualisieren der Ressource.", "error"),
+        new Toast("Fehler", "Ressource konnte nicht aktualisiert werden.", "error"),
       );
     }
   } catch (error) {
     showToast(
-      new Toast("Error", "Fehler beim Aktualisieren der Ressource.", "error"),
+      new Toast("Fehler", "Ressource konnte nicht aktualisiert werden.", "error"),
     );
   }
 };
@@ -253,23 +248,21 @@ const deleteResource = async () => {
   if (!confirmDelete) return;
 
   try {
-    const response = await fetch(`${apiUrl}/${selectedResource.value}`, {
-      method: "DELETE",
-    });
+    const response = await api.delete(`/resources/${selectedResource.value}`);
 
-    if (response.ok) {
+    if (response.status === 200) {
       showToast(
-        new Toast("Success", "Ressource erfolgreich gelöscht.", "success"),
+        new Toast("Erfolg", "Ressource erfolgreich gelöscht.", "success"),
       );
       resetForm();
     } else {
       showToast(
-        new Toast("Error", "Fehler beim Löschen der Ressource.", "error"),
+        new Toast("Fehler", "Ressource konnte nicht gelöscht werden.", "error"),
       );
     }
   } catch (error) {
     showToast(
-      new Toast("Error", "Fehler beim Löschen der Ressource.", "error"),
+      new Toast("Fehler", "Ressource konnte nicht gelöscht werden.", "error"),
     );
   }
 };

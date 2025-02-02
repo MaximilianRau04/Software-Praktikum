@@ -1,0 +1,3 @@
+Name,Art,Beschreibung,Kapaziät,Land,Postleitzahl,Stadt,Straße,Hausnummer
+Resource1,EQUIPMENT,Some Description,100,Deutschland,12345,Berlin,Hauptstraße,1
+Resource2,ROOM,"Another ,Description!",10,Deutschland,54321,Köln,Bahnhofstraße,39

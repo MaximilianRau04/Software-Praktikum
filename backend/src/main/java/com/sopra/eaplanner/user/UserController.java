@@ -1,7 +1,11 @@
 package com.sopra.eaplanner.user;
 
+import com.sopra.eaplanner.auth.security.jwt.JwtUtils;
+import com.sopra.eaplanner.event.Event;
+import com.sopra.eaplanner.event.EventRepository;
 import com.sopra.eaplanner.event.dtos.EventResponseDTO;
 import com.sopra.eaplanner.event.participation.EventParticipationDTO;
+import com.sopra.eaplanner.event.participation.ParticipatedEventCollectionDTO;
 import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.feedback.dtos.FeedbackResponseDTO;
 import com.sopra.eaplanner.forumpost.dtos.ForumPostResponseDTO;
@@ -10,13 +14,17 @@ import com.sopra.eaplanner.trainerprofile.HostedEventsDTO;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileResponseDTO;
 import com.sopra.eaplanner.user.dtos.UserRequestDTO;
 import com.sopra.eaplanner.user.dtos.UserResponseDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -28,6 +36,15 @@ public class UserController {
 
     @Autowired
     private UserTagWeightService userTagWeightService;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
 
     @GetMapping("/search")
     public UserResponseDTO getUserByUsername(@RequestParam("username") String username) {
@@ -42,6 +59,11 @@ public class UserController {
     @GetMapping("")
     public Iterable<UserResponseDTO> getAllUsers() {
         return userService.getAllUsers();
+    }
+
+    @GetMapping("/{userId}/associatedEvents")
+    public ResponseEntity<ParticipatedEventCollectionDTO> getAssociatedEvents(@PathVariable Long userId){
+        return ResponseEntity.ok(userService.collectAssociatedEvents(userId));
     }
 
     @GetMapping("/{id}/registeredEvents")

@@ -24,12 +24,10 @@ import java.time.LocalDate;
 public class ExchangeDayRequestDTO {
 
     @DateTimeFormat(pattern = "dd.MM.yyyy")
-    @FutureOrPresent(message = "Date must be in the future")
     @NotNull(message = "Date cannot be null")
     private LocalDate startDate;
 
     @DateTimeFormat(pattern = "dd.MM.yyyy")
-    @FutureOrPresent(message = "Date must be in the future")
     @NotNull(message = "Date cannot be null")
     private LocalDate endDate;
 
@@ -46,11 +44,11 @@ public class ExchangeDayRequestDTO {
     public ExchangeDayRequestDTO() {
     }
 
-    public @FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getStartDate() {
+    public @NotNull(message = "Date cannot be null") LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setDate(@FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate startDate) {
+    public void setDate(@NotNull(message = "Date cannot be null") LocalDate startDate) {
         this.startDate = startDate;
     }
 
@@ -78,11 +76,11 @@ public class ExchangeDayRequestDTO {
         this.description = description;
     }
 
-    public @FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate getEndDate() {
+    public @NotNull(message = "Date cannot be null") LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(@FutureOrPresent(message = "Date must be in the future") @NotNull(message = "Date cannot be null") LocalDate endDate) {
+    public void setEndDate(@NotNull(message = "Date cannot be null") LocalDate endDate) {
         this.endDate = endDate;
     }
 

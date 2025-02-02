@@ -171,13 +171,7 @@
             <button type="submit" class="btn-primary">
               {{ isEditing ? "Speichern" : "Thread erstellen" }}
             </button>
-            <button
-              type="button"
-              class="btn-secondary cancel-btn"
-              @click="showModal = false"
-            >
-              Abbrechen
-            </button>
+            <button class="close-button" @click="showModal = false">×</button>
           </div>
         </form>
       </div>
@@ -186,11 +180,10 @@
 </template>
 
 <script>
-import axios from "axios";
-import Cookies from "js-cookie";
-import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import api from "@/util/api";
+import { useAuth } from "@/util/auth";
 
 export default {
   props: {
@@ -227,9 +220,9 @@ export default {
       },
       showModal: false,
       editingPost: null,
-      isAdmin: false,
+      isAdmin: useAuth().isAdmin.value,
       isEditing: false,
-      userId: Cookies.get("userId"),
+      userId: useAuth().getUserId(),
     };
   },
   methods: {
@@ -242,23 +235,23 @@ export default {
         return;
       }
       try {
-        await axios.delete(`${config.apiBaseUrl}/forumposts/${postId}`);
+        await api.delete(`/forumposts/${postId}`);
         this.fetchThreadDetail();
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Löschen des Posts`,
+            "Fehler",
+            `Der Beitrag konnte nicht gelöscht werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
       showToast(
         new Toast(
-          "Success",
-          `Post wurde erflogreich gelöscht`,
+          "Erfolg",
+          `Post wurde erfolgreich gelöscht`,
           "success",
           faCheck,
           5,
@@ -275,8 +268,8 @@ export default {
      */
     async savePostEdits() {
       try {
-        await axios.put(
-          `${config.apiBaseUrl}/forumposts/${this.editingPost.id}`,
+        await api.put(
+          `/forumposts/${this.editingPost.id}`,
           {
             content: this.editingPost.content,
             authorId: this.editingPost.author.id,
@@ -288,18 +281,18 @@ export default {
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Bearbeiten des Posts`,
+            "Fehler",
+            `Der Beitrag konnte nicht bearbeitet werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
       showToast(
         new Toast(
-          "Success",
-          `Post wurde erfolgreich bearbeitet`,
+          "Erfolg",
+          `Beitrag wurde erfolgreich bearbeitet`,
           "success",
           faCheck,
           5,
@@ -338,22 +331,22 @@ export default {
         return;
       }
       try {
-        await axios.delete(`${config.apiBaseUrl}/forumthreads/${threadId}`);
+        await api.delete(`/forumthreads/${threadId}`);
         this.fetchThreads();
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Löschen des Threads`,
+            "Fehler",
+            `Der Thread konnte nicht gelöscht werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
       showToast(
         new Toast(
-          "Success",
+          "Erfolg",
           `Thread wurde erfolgreich gelöscht`,
           "success",
           faCheck,
@@ -368,8 +361,8 @@ export default {
     async updateThread() {
       const eventId = this.$route.params.eventId;
       try {
-        await axios.put(
-          `${config.apiBaseUrl}/forumthreads/${this.currentThread.id}`,
+        await api.put(
+          `/forumthreads/${this.currentThread.id}`,
           {
             title: this.currentThread.title,
             description: this.currentThread.description,
@@ -381,17 +374,17 @@ export default {
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Bearbieten des Threads`,
+            "Fehler",
+            `Thread konnte nicht bearbeitet werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
       showToast(
         new Toast(
-          "Success",
+          "Erfolg",
           `Thread wurde erfolgreich bearbeitet`,
           "success",
           faCheck,
@@ -406,18 +399,18 @@ export default {
     async fetchThreads() {
       const eventId = this.$route.params.eventId;
       try {
-        const response = await axios.get(
-          `${config.apiBaseUrl}/events/${eventId}/forum`,
+        const response = await api.get(
+          `/events/${eventId}/forum`,
         );
         this.threads = response.data;
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim laden der Threads`,
+            "Fehler",
+            `Threads konnten nicht geladen werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
@@ -435,7 +428,7 @@ export default {
           eventId: eventId,
         };
 
-        await axios.post(`${config.apiBaseUrl}/forumthreads`, newThreadData);
+        await api.post(`/forumthreads`, newThreadData);
         this.fetchThreads();
         this.currentThread.title = "";
         this.currentThread.description = "";
@@ -443,17 +436,17 @@ export default {
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Erstellen der Threads`,
+            "Fehler",
+            `Thread konnte nicht erstellt werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
       showToast(
         new Toast(
-          "Success",
+          "Erfolg",
           `Thread wurde erfolgreich erstellt`,
           "success",
           faCheck,
@@ -476,18 +469,18 @@ export default {
      */
     async fetchThreadDetail() {
       try {
-        const response = await axios.get(
-          `${config.apiBaseUrl}/forumthreads/${this.selectedThreadId}`,
+        const response = await api.get(
+          `/forumthreads/${this.selectedThreadId}`,
         );
         this.selectedThread = response.data;
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Laden des Threads`,
+            "Fehler",
+            `Threads konnten nicht geladen werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
@@ -498,7 +491,7 @@ export default {
      */
     async createPost() {
       try {
-        const userId = Cookies.get("userId");
+        const userId = useAuth().getUserId();
 
         const newPostData = {
           content: this.newPost.content,
@@ -507,7 +500,7 @@ export default {
           anonymous: this.newPost.isAnonymous,
         };
 
-        await axios.post(`${config.apiBaseUrl}/forumposts`, newPostData);
+        await api.post(`/forumposts`, newPostData);
 
         this.fetchThreadDetail();
         this.newPost.content = "";
@@ -515,18 +508,18 @@ export default {
       } catch (error) {
         showToast(
           new Toast(
-            "Error",
-            `Fehler beim Erstellen des Posts`,
+            "Fehler",
+            `Beitrag konnte nicht erstellt werden.`,
             "error",
             faXmark,
-            10,
+            5,
           ),
         );
       }
       showToast(
         new Toast(
-          "Success",
-          `Post wurde erfolgreich erstellt`,
+          "Erfolg",
+          `Beitrag wurde erfolgreich erstellt`,
           "success",
           faCheck,
           5,
@@ -551,8 +544,8 @@ export default {
 
   mounted() {
     this.fetchThreads();
-    this.userId = Cookies.get("userId");
-    this.isAdmin = Cookies.get("role") === "ADMIN";
+    this.userId = useAuth().getUserId();
+    this.isAdmin = useAuth().isAdmin.value;
   },
 };
 </script>
@@ -585,6 +578,10 @@ export default {
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
+.no-resize {
+  resize: none;
+}
+
 .thread-item:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
@@ -607,7 +604,7 @@ export default {
 
 .btn-primary,
 .btn-secondary {
-  padding: 10px 15px;
+  padding: 8px 12px;
   border-radius: 8px;
   font-size: 0.95em;
   cursor: pointer;
@@ -616,25 +613,32 @@ export default {
 }
 
 .btn-primary {
-  background-color: #007bff;
+  background-color: #009ee2;
   color: #fff;
+  margin-right: 1%;
 }
 
 .btn-primary:hover {
-  background-color: #0056b3;
+  background-color: #0180b6;
 }
 
 .btn-secondary {
-  background-color: #6c757d;
-  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.95em;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
 }
 
 .btn-secondary:hover {
-  background-color: #565e64;
+  background-color: #bbc4cb;
 }
 
 .delete-btn {
   background-color: #dc3545;
+  color: white;
 }
 
 .delete-btn:hover {
@@ -643,6 +647,7 @@ export default {
 
 .edit-btn {
   background-color: #28a745;
+  color: white;
 }
 
 .edit-btn:hover {
@@ -683,12 +688,22 @@ export default {
 }
 
 .post-item {
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem; 
   background-color: #fefefe;
   border: 1px solid #ddd;
   border-radius: 10px;
   margin-bottom: 1rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+
+.post-content-wrapper {
+  flex: 1;
+  margin-right: 1.5rem;
+  text-align: left; 
 }
 
 .post-header {
@@ -706,8 +721,10 @@ export default {
 
 .post-actions {
   display: flex;
+  flex-direction: row;
   gap: 10px;
-  margin-top: 10px;
+  min-width: fit-content;
+  align-self: flex-end
 }
 
 .input-field {
@@ -733,6 +750,17 @@ export default {
   margin-bottom: 1rem;
 }
 
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+}
+
 @media (max-width: 768px) {
   .thread-item {
     flex-direction: column;
@@ -745,6 +773,23 @@ export default {
 
   .modal-content {
     width: 95%;
+  }
+  .post-item {
+    flex-direction: column;
+  }
+  .post-content-wrapper {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+
+  .post-actions {
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .btn-secondary {
+    flex: 1;
+    text-align: center;
   }
 }
 </style>
