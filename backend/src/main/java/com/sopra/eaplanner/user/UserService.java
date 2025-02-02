@@ -31,9 +31,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class UserService {
@@ -84,12 +86,13 @@ public class UserService {
         return dtos;
     }
 
-    public ParticipatedEventCollectionDTO collectAssociatedEvents(Long userId){
-
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+    public ParticipatedEventCollectionDTO collectAssociatedEvents(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         Set<EventParticipation> parts = user.getParticipations();
 
+        // Existing event lists
         List<EventResponseDTO> registeredEvents = parts.stream()
                 .filter(part -> !part.getIsParticipationConfirmed() && !part.getFeedbackGiven())
                 .map(EventParticipation::getEvent)
@@ -108,9 +111,25 @@ public class UserService {
                 .map(EventResponseDTO::new)
                 .toList();
 
-        List<EventResponseDTO> recommendedEvents = userTagWeightService.recommendEvents(userId, 5);
+        // Collect all existing event IDs
+        Set<Long> existingEventIds = Stream.of(registeredEvents, confirmedEvents, completedEvents)
+                .flatMap(Collection::stream)
+                .map(EventResponseDTO::getId)
+                .collect(Collectors.toSet());
 
-        return new ParticipatedEventCollectionDTO(registeredEvents, confirmedEvents, completedEvents, recommendedEvents);
+        // Get recommended events and filter out existing ones
+        List<EventResponseDTO> recommendedEvents = userTagWeightService.recommendEvents(userId, 25)
+                .stream()
+                .filter(event -> !existingEventIds.contains(event.getId()))
+                .limit(5)
+                .toList();
+
+        return new ParticipatedEventCollectionDTO(
+                registeredEvents,
+                confirmedEvents,
+                completedEvents,
+                recommendedEvents
+        );
     }
 
     public Iterable<EventResponseDTO> getRegisteredEvents(Long id) {

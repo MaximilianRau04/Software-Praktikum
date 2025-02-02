@@ -18,7 +18,4 @@ public class EventParticipationController {
     public ResponseEntity<EventParticipationDTO> getParticipation(@PathVariable("userId") Long userId, @PathVariable Long eventId) {
         return ResponseEntity.ok().body(eventParticipationService.getParticipation(userId, eventId));
     }
-
-    @GetMapping("/userId}")
-    public ResponseEntity<EventPart>
 }

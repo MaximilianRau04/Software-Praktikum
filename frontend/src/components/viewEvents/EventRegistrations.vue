@@ -324,6 +324,11 @@ const fetchEvents = async () => {
   try {
     isLoading.value = true;
 
+    const eventResponse = await api.get(`/users/${userId}/associatedEvents`)
+    const events = await eventResponse.data;
+
+    console.log(events);
+
     const [registeredRes, recommendedRes, feedbackRes] = await Promise.all([
       api.get(`/users/${userId}/registeredEvents`),
       api.get(`/users/${userId}/recommendedEvents?limit=5`),
@@ -336,9 +341,10 @@ const fetchEvents = async () => {
       );
     }
 
-    registeredEvents.value = await registeredRes.data;
-    recommendedEvents.value = await recommendedRes.data;
-    pendingFeedbackEvents.value = await feedbackRes.data;
+    registeredEvents.value = events.registeredEvents;
+    recommendedEvents.value = events.recommendedEvents;
+    pendingFeedbackEvents.value = events.confirmedEvents;
+    pastEvents.value = events.completedEvents;
 
     for (const event of recommendedEvents.value) {
       event.tags = await fetchTagsForEvent(event.id);
