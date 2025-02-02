@@ -160,8 +160,8 @@
           </div>
         </div>
 
+        <h2>Vergangene Events</h2>
         <div class="past-events-section">
-          <h2>Vergangene Events</h2>
           <div v-if="isLoading">
             <p>Loading...</p>
           </div>
@@ -523,6 +523,9 @@ onMounted(() => {
 
 .feedback-past-column {
   border-left: 4px solid #ff0000;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .events-list {
@@ -592,9 +595,13 @@ onMounted(() => {
 }
 
 .past-events-section {
-  margin-top: 2rem;
-  border-top: 1px solid #e2e8f0;
+  flex: 1;
+  overflow-y: auto;
   padding-top: 1rem;
+}
+
+h2{
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .event-tags {

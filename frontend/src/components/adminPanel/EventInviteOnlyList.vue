@@ -25,13 +25,15 @@
             </h3>
             <p>{{ event.description }}</p>
             <p>{{ formatDate(event.date) }}</p>
-            <div class="tag-chips">
+            <div class="tags-container">
               <span
-                v-for="(tag, index) in (event.tags || []).slice(0, 5)"
-                :key="tag.id"
-                class="chip"
+              v-if="event.tags.length > 0"
+              v-for="tag in event.tags.slice(0, 5)"
+              :key="tag.id"
+              class="tag-chip"
               >
-                {{ tag.name }}
+              <TagIcon class="icon-tag" />
+              {{ tag.name }}
               </span>
             </div>
             <button @click="showDetails(event.id)" class="register-button">
@@ -82,6 +84,7 @@ import config from "@/config";
 import { useRouter } from "vue-router";
 import { showToast, Toast } from "@/types/toasts";
 import api from "@/util/api";
+import { TagIcon } from "@heroicons/vue/24/outline";
 
 const events = ref([]);
 const users = ref([]);
@@ -360,30 +363,23 @@ h2 h3 p {
   color: #777;
 }
 
-.tag-chips {
+.tag-chip {
+  background: linear-gradient(135deg, #f0f5ff, #e6eeff);
+  border: 1px solid #d0ddf5;
+  color: #2f5f9e;
+  padding: 0.5rem 1.2rem;
+  border-radius: 24px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
   display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 5px;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.chip {
-  background-color: #d9f2ff;
-  padding: 6px 12px;
-  border-radius: 50px;
-  font-size: 0.9rem;
-  color: #007bff;
-  font-weight: bold;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition:
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.chip:hover {
-  background-color: #007bff;
-  color: white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+.tag-chip:hover {
+  background: linear-gradient(135deg, #e6eeff, #d7e4ff);
+  transform: translateY(-2px);
 }
 
 .modal {

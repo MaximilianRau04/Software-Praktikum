@@ -333,6 +333,18 @@ export default {
       try {
         await api.delete(`/forumthreads/${threadId}`);
         this.fetchThreads();
+
+        if (response.status === 201) {
+          showToast(
+        new Toast(
+          "Erfolg",
+          `Thread wurde erfolgreich gelöscht`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
+        }
       } catch (error) {
         showToast(
           new Toast(
@@ -344,15 +356,6 @@ export default {
           ),
         );
       }
-      showToast(
-        new Toast(
-          "Erfolg",
-          `Thread wurde erfolgreich gelöscht`,
-          "success",
-          faCheck,
-          5,
-        ),
-      );
     },
 
     /**
@@ -371,6 +374,18 @@ export default {
         );
         this.fetchThreads();
         this.showModal = false;
+
+        if (response.status === 201) {
+          showToast(
+        new Toast(
+          "Erfolg",
+          `Thread wurde erfolgreich bearbeitet`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
+        }
       } catch (error) {
         showToast(
           new Toast(
@@ -382,15 +397,6 @@ export default {
           ),
         );
       }
-      showToast(
-        new Toast(
-          "Erfolg",
-          `Thread wurde erfolgreich bearbeitet`,
-          "success",
-          faCheck,
-          5,
-        ),
-      );
     },
 
     /**
@@ -433,6 +439,17 @@ export default {
         this.currentThread.title = "";
         this.currentThread.description = "";
         this.showModal = false;
+        if (response.status === 201) {
+          showToast(
+        new Toast(
+          "Erfolg",
+          `Thread wurde erfolgreich erstellt`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
+        }
       } catch (error) {
         showToast(
           new Toast(
@@ -444,15 +461,6 @@ export default {
           ),
         );
       }
-      showToast(
-        new Toast(
-          "Erfolg",
-          `Thread wurde erfolgreich erstellt`,
-          "success",
-          faCheck,
-          5,
-        ),
-      );
     },
 
     /**
@@ -505,6 +513,17 @@ export default {
         this.fetchThreadDetail();
         this.newPost.content = "";
         this.newPost.isAnonymous = false;
+        if (response.status === 201) {
+          showToast(
+        new Toast(
+          "Erfolg",
+          `Post wurde erfolgreich erstellt`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
+        }
       } catch (error) {
         showToast(
           new Toast(
@@ -516,15 +535,6 @@ export default {
           ),
         );
       }
-      showToast(
-        new Toast(
-          "Erfolg",
-          `Beitrag wurde erfolgreich erstellt`,
-          "success",
-          faCheck,
-          5,
-        ),
-      );
     },
 
     formatDate(date) {
