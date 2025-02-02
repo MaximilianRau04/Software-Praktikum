@@ -26,7 +26,7 @@ public class Tag {
     private Long id;
 
     @NotNull(message = "Tag must contain a name")
-    @Size(min = 3, max = 25, message = "Tag name must be between 3 and 25 characters")
+    @Size(max = 25, message = "Tag name must be less than 25 characters")
     @Pattern(regexp = "^[a-z A-Z]*$", message = "Tag name must be alphabetic")
     private String name;
 

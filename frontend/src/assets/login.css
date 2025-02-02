@@ -194,6 +194,8 @@ small {
 }
 
 .auth-textarea {
+  width: 97%;
+  max-width: 400px;
   resize: none;
   border-radius: 0.5rem;
   padding: 5px;
