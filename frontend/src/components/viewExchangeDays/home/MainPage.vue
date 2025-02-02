@@ -90,8 +90,8 @@ const today = new Date().setHours(0, 0, 0, 0);
   );
 
   upcomingExchangeDaysList.value = sortedExchangeDays.filter((day) => {
-    const startDate = new Date(day.startDate).setHours(0, 0, 0, 0);
-    return startDate >= today; 
+    const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
+    return endDate >= today; 
   });
 
   pastExchangeDaysList.value = sortedExchangeDays.filter((day) => {
@@ -121,7 +121,7 @@ function filterExchangeDays() {
   upcomingExchangeDaysList.value = exchangeDays.value.filter((day) => {
     const startDate = new Date(day.startDate).setHours(0, 0, 0, 0);
     return (
-      startDate >= today && 
+      startDate > today && 
       startDate >= startTimestamp &&
       startDate <= endTimestamp
     );
@@ -131,7 +131,7 @@ function filterExchangeDays() {
   pastExchangeDaysList.value = exchangeDays.value.filter((day) => {
     const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
     return (
-      endDate < today && 
+      endDate <= today && 
       endDate >= startTimestamp &&
       endDate <= endTimestamp
     );

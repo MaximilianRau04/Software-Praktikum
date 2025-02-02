@@ -397,10 +397,11 @@ const handleFileUpload = async (event: Event) => {
 .admin-sidebar {
   width: 250px;
   background: #022750;
-  padding: 20px;
+  padding: 0px 5px 10px 20px;
   color: white;
   position: fixed;
   height: calc(100vh - 60px);
+  overflow-y: auto;
 }
 
 .admin-content {

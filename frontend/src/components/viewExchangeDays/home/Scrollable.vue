@@ -6,9 +6,10 @@
         :key="index"
         @click="selectExchangeDay(exchangeDay)"
         class="list-item"
+        :class="{ selected: exchangeDay === selectedExchangeDay }"
       >
         <h2 class="heading">{{ exchangeDay.name }}</h2>
-        <hr class=".separator-exchange" />
+        <hr class="separator-exchange" />
         <div class="details">
           <p class="date">
             {{ formatDate(exchangeDay.startDate) }} bis {{ formatDate(exchangeDay.endDate) }}
@@ -24,7 +25,7 @@
 </template>
 
 <script>
-import { computed } from "vue";
+import { ref, computed } from "vue";
 import "@/assets/scrollable.css";
 
 export default {
@@ -37,6 +38,8 @@ export default {
   },
   emits: ["select-exchange-day"],
   setup(props, { emit }) {
+    const selectedExchangeDay = ref(null);
+
     /**
      * sort exchangeDays by startDate
      */
@@ -50,7 +53,8 @@ export default {
      * select exchange day
      * @param {Object} exchangeDay - selected exchange day
      */
-    function selectExchangeDay(exchangeDay) {
+     function selectExchangeDay(exchangeDay) {
+      selectedExchangeDay.value = exchangeDay;
       emit("select-exchange-day", exchangeDay);
     }
 
@@ -68,6 +72,7 @@ export default {
       sortedExchangeDays,
       formatDate,
       selectExchangeDay,
+      selectedExchangeDay
     };
   },
 };

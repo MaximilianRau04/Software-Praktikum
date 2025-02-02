@@ -77,6 +77,14 @@
                 </td>
               </tr>
               <tr>
+                <td><strong>Registrierte Nutzer:</strong></td>
+                <td>{{ registeredUsers }}</td>
+              </tr>
+              <tr>
+                <td><strong>abgegebene Feedbacks:</strong></td>
+                <td>{{ givenFeedback }}</td>
+              </tr>
+              <tr>
                 <td><strong>Tags:</strong></td>
                 <td>
                   <li v-for="(tag, index) in tags" :key="index">
@@ -311,6 +319,8 @@ export default {
         firstname: "",
         lastname: "",
       },
+      registeredUsers: 0,
+      givenFeedback: 0,
       location: {
         street: "",
         houseNumber: "",
@@ -420,7 +430,8 @@ export default {
         await Promise.all([
           this.fetchEventDetails(),
           this.fetchWordCloud(),
-          this.fetchEventTags()
+          this.fetchEventTags(),
+          this.fetchRegisteredUsers()
         ]);
 
         this.calculateAverages();
@@ -458,6 +469,18 @@ export default {
     },
 
     /**
+     * Fetches the users who have registered for the event.
+     */
+    async fetchRegisteredUsers() {
+      try {
+        const response = await api.get(`/events/${this.eventId}/registeredUsers`);
+        this.registeredUsers = response.data.length;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+      
+    /**
      * Fetches the event summary data from the API.
      */
     async fetchEventSummary() {
@@ -469,6 +492,7 @@ export default {
           throw new Error('No feedback available');
         }
 
+        this.givenFeedback = response.data.numericalFeedback.OVERALL.responseCount;
         this.data = response.data;
 
         if (response.status === 400) {
@@ -822,6 +846,22 @@ export default {
                       text:
                         this.event.description ||
                         "Keine Beschreibung verfügbar",
+                      style: "tableContent",
+                    },
+                  ],
+                  [
+                    { text: "Registrierte Nutzer", style: "tableHeader" },
+                    {
+                      text:
+                        this.registeredUsers || "Keine registrierten Nutzer",
+                      style: "tableContent",
+                    },
+                  ],
+                  [
+                    { text: "abgegebene Feedbacks", style: "tableHeader" },
+                    {
+                      text:
+                        this.givenFeedback || "Keine registrierten Nutzer",
                       style: "tableContent",
                     },
                   ],
