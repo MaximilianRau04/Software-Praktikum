@@ -312,6 +312,7 @@ public class FeedbackService {
         TrainerProfile profile = eventForFeedback.getOrganizer().getTrainerProfile();
 
         feedbackToSave.setSentiment(sentimentScore);
+        feedbackToSave.setTrainerProfile(profile);
         eventParticipationService.confirmFeedback(feedbackAuthor, eventForFeedback);
 
         feedbackToSave = feedbackRepository.save(feedbackToSave);
