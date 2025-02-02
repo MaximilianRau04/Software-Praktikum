@@ -410,6 +410,9 @@ const fetchEventTags = async () => {
 };
 
 const handleNewTag = (newTag) => {
+  if (newTag.key === 'Enter') {
+    newTag.preventDefault();
+  }
   api.post(`/tags`, newTag)
     .then(response => {
       allTags.value.push(response.data);

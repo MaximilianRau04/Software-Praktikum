@@ -182,7 +182,9 @@ export default defineComponent({
     gap: 0.5rem;
     margin-top: 1rem;
     justify-content: center;
-    width: 100%;
+    max-height: 150px;
+    overflow-x: hidden;
+    overflow-y: auto;
     padding: 0 1rem;
 }
 
