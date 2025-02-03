@@ -85,7 +85,7 @@
         <h2>Biografie bearbeiten</h2>
         <textarea v-model="newBio" placeholder="Geben Sie Ihre neue Bio ein..."></textarea>
         <div class="modal-actions">
-          <button @click="updateBio" class="register-button">Absenden</button>
+          <button @click="updateBio" class="send-button">Absenden</button>
           <button @click="closeEditBioModal" class="register-button">Abbrechen</button>
         </div>
       </div>
@@ -358,6 +358,18 @@ export default {
   color: #4a5568;
   line-height: 1.6;
   margin-bottom: 1.5rem;
+}
+
+.send-button {
+  background-color: #007bff;
+  color: white;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
 }
 
 .register-button {

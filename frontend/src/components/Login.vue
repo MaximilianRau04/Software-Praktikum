@@ -247,7 +247,7 @@ const handleRegistration = async () => {
       showToast(
         new Toast(
           "Fehler",
-          `Registrierung ist fehlgeschlagen. Versuchen Sie es später erneut.`,
+          `Benutzer existiert bereits`,
           "error",
           faXmark,
           5
@@ -276,7 +276,7 @@ const handleLogin = async () => {
     showToast(
       new Toast(
         "Fehler",
-        `${error.statusText}`,
+        `Benutzer existiert bereits`,
         "error",
         faXmark,
         5
