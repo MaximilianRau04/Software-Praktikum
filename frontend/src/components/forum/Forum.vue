@@ -237,6 +237,17 @@ export default {
       try {
         await api.delete(`/forumposts/${postId}`);
         this.fetchThreadDetail();
+        if(response.status === 200) {
+          showToast(
+        new Toast(
+          "Erfolg",
+          `Post wurde erfolgreich gelöscht`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
+        }
       } catch (error) {
         showToast(
           new Toast(
@@ -248,15 +259,6 @@ export default {
           ),
         );
       }
-      showToast(
-        new Toast(
-          "Erfolg",
-          `Post wurde erfolgreich gelöscht`,
-          "success",
-          faCheck,
-          5,
-        ),
-      );
     },
 
     editPost(post) {
@@ -278,6 +280,17 @@ export default {
         );
         this.fetchThreadDetail();
         this.editingPost = null;
+        if(response.status === 200) {
+          showToast(
+        new Toast(
+          "Erfolg",
+          `Post wurde erfolgreich bearbeitet`,
+          "success",
+          faCheck,
+          5,
+        ),
+      );
+        }
       } catch (error) {
         showToast(
           new Toast(
@@ -289,15 +302,6 @@ export default {
           ),
         );
       }
-      showToast(
-        new Toast(
-          "Erfolg",
-          `Beitrag wurde erfolgreich bearbeitet`,
-          "success",
-          faCheck,
-          5,
-        ),
-      );
     },
 
     cancelEdit() {
@@ -334,7 +338,7 @@ export default {
         await api.delete(`/forumthreads/${threadId}`);
         this.fetchThreads();
 
-        if (response.status === 201) {
+        if (response.status === 200) {
           showToast(
         new Toast(
           "Erfolg",
@@ -375,7 +379,7 @@ export default {
         this.fetchThreads();
         this.showModal = false;
 
-        if (response.status === 201) {
+        if (response.status === 200) {
           showToast(
         new Toast(
           "Erfolg",

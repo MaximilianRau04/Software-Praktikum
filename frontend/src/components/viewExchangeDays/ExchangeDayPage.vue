@@ -581,7 +581,7 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   position: relative;
-  height: 40%;
+  height: auto;
 }
 
 .event-item:hover {

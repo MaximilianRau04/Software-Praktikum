@@ -43,7 +43,7 @@
 
               <TagInput v-model="selectedTags" :available-tags="allTags" :tagSelect="true" />
 
-              <button @click="updateTags" :disabled="selectedTags.length === 0">
+              <button @click="updateTags" :disabled="selectedTags.length === 0" class="register-button">
                 Speichern
               </button>
             </div>
@@ -85,8 +85,8 @@
         <h2>Biografie bearbeiten</h2>
         <textarea v-model="newBio" placeholder="Geben Sie Ihre neue Bio ein..."></textarea>
         <div class="modal-actions">
-          <button @click="updateBio">Absenden</button>
-          <button @click="closeEditBioModal">Abbrechen</button>
+          <button @click="updateBio" class="register-button">Absenden</button>
+          <button @click="closeEditBioModal" class="register-button">Abbrechen</button>
         </div>
       </div>
     </div>
@@ -131,6 +131,9 @@ export default {
     },
   },
   methods: {
+    /**
+     * Fetch the user's badges
+     */
     async fetchProfile() {
       if (this.user.role === 'ADMIN') return;
 
@@ -171,6 +174,9 @@ export default {
       }
     },
 
+    /**
+     * Fetch all tags and the user's selected tags
+     */
     async fetchTags() {
       try {
         const allTagsResponse = await api.get(`/tags`);
@@ -192,10 +198,18 @@ export default {
         );
       }
     },
-    async openEditTagsModal() {
-      this.isEditTagsModalOpen = true;
-      await this.fetchTags();
-    },
+
+    async openEditBioModal() {
+    this.newBio = this.user.description || "";
+    this.showEditBioModal = true;
+    this.isEditTagsModalOpen = false;
+  },
+
+  async openEditTagsModal() {
+    this.isEditTagsModalOpen = true;
+    this.showEditBioModal = false;
+    await this.fetchTags();
+  },
 
     closeEditTagsModal() {
       this.isEditTagsModalOpen = false;
@@ -211,6 +225,9 @@ export default {
       this.selectedTags.splice(index, 1);
     },
 
+    /**
+     * Update the user's tags
+     */
     async updateTags() {
       try {
         const response = await api.put(`/users/${this.user.id}/tags`, this.selectedTags.map(tag => tag.name));
@@ -246,11 +263,6 @@ export default {
     },
     hideTooltip() {
       this.tooltipBadgeId = null;
-    },
-
-    openEditBioModal() {
-      this.newBio = this.user.description || "";
-      this.showEditBioModal = true;
     },
 
     closeEditBioModal() {
@@ -348,6 +360,19 @@ export default {
   margin-bottom: 1.5rem;
 }
 
+.register-button {
+  background-color: #007bff;
+  color: white;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.register-button:hover {
+  background-color: #0056b3;
+}
+
 .edit-bio-btn,
 .edit-tags-btn {
   background: #007bff;
@@ -387,12 +412,18 @@ export default {
 }
 
 .modal-content {
+  resize: none;
   background: #fff;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
   width: 90%;
   max-width: 500px;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content textarea {
+  resize: none;
 }
 
 .badges-list {
@@ -465,7 +496,4 @@ export default {
   opacity: 0;
 }
 
-.modal-content {
-  animation: fadeIn 0.3s ease;
-}
 </style>
