@@ -237,12 +237,11 @@ export default {
       try {
         await api.delete(`/forumposts/${postId}`);
         this.fetchThreadDetail();
-
-        if (response.status === 200) {
+        if(response.status === 200) {
           showToast(
         new Toast(
           "Erfolg",
-          `Thread wurde erfolgreich gelöscht`,
+          `Post wurde erfolgreich gelöscht`,
           "success",
           faCheck,
           5,
@@ -281,12 +280,11 @@ export default {
         );
         this.fetchThreadDetail();
         this.editingPost = null;
-
-        if (response.status === 200) {
+        if(response.status === 200) {
           showToast(
         new Toast(
           "Erfolg",
-          `Thread wurde erfolgreich gelöscht`,
+          `Post wurde erfolgreich bearbeitet`,
           "success",
           faCheck,
           5,
