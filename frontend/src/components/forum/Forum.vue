@@ -235,9 +235,8 @@ export default {
         return;
       }
       try {
-        await api.delete(`/forumposts/${postId}`);
+        const response = await api.delete(`/forumposts/${postId}`);
         this.fetchThreadDetail();
-        if(response.status === 200) {
           showToast(
         new Toast(
           "Erfolg",
@@ -247,7 +246,6 @@ export default {
           5,
         ),
       );
-        }
       } catch (error) {
         showToast(
           new Toast(
@@ -270,7 +268,7 @@ export default {
      */
     async savePostEdits() {
       try {
-        await api.put(
+        const response = await api.put(
           `/forumposts/${this.editingPost.id}`,
           {
             content: this.editingPost.content,
@@ -335,10 +333,9 @@ export default {
         return;
       }
       try {
-        await api.delete(`/forumthreads/${threadId}`);
+        const response = await api.delete(`/forumthreads/${threadId}`);
         this.fetchThreads();
 
-        if (response.status === 200) {
           showToast(
         new Toast(
           "Erfolg",
@@ -348,7 +345,7 @@ export default {
           5,
         ),
       );
-        }
+
       } catch (error) {
         showToast(
           new Toast(
@@ -368,7 +365,7 @@ export default {
     async updateThread() {
       const eventId = this.$route.params.eventId;
       try {
-        await api.put(
+        const response = await api.put(
           `/forumthreads/${this.currentThread.id}`,
           {
             title: this.currentThread.title,
@@ -438,7 +435,7 @@ export default {
           eventId: eventId,
         };
 
-        await api.post(`/forumthreads`, newThreadData);
+        const response = await api.post(`/forumthreads`, newThreadData);
         this.fetchThreads();
         this.currentThread.title = "";
         this.currentThread.description = "";
@@ -455,6 +452,7 @@ export default {
       );
         }
       } catch (error) {
+        console.error(error);
         showToast(
           new Toast(
             "Fehler",
@@ -512,7 +510,7 @@ export default {
           anonymous: this.newPost.isAnonymous,
         };
 
-        await api.post(`/forumposts`, newPostData);
+        const response = await api.post(`/forumposts`, newPostData);
 
         this.fetchThreadDetail();
         this.newPost.content = "";
@@ -529,6 +527,7 @@ export default {
       );
         }
       } catch (error) {
+        console.error(error);
         showToast(
           new Toast(
             "Fehler",
