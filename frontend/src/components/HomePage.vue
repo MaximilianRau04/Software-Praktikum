@@ -123,7 +123,7 @@ export default {
       try {
         const response = await api.put(`/notifications/${notificationId}/read`);
 
-        if (!response.ok) {
+        if (response.status !== 204) {
           showToast(
             new Toast(
               "Fehler",

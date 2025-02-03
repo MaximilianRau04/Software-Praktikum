@@ -3,14 +3,12 @@
   background-color: #01172F;
   overflow: hidden;
   transition: width 300ms ease-in-out;
+  width: 65px;
+  flex-shrink: 0;
 }
 
 .sidebar-visible {
-  width: 250px !important;
-}
-
-.sidebar-close {
-  width: 65px !important;
+  width: 200px !important;
 }
 
 .content {

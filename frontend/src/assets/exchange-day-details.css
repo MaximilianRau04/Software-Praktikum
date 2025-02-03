@@ -148,10 +148,10 @@
 
 .event-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
   gap: 15px;
-  padding-right: 10px;
   margin-top: 15px;
+  width: 100%;
 }
 
 .event-details {
