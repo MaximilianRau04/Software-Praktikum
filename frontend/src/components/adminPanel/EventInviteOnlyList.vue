@@ -1,12 +1,7 @@
 <template>
   <div class="event-page">
     <div class="search-bar-container">
-      <input
-        type="text"
-        v-model="searchTerm"
-        placeholder="Suche nach Events..."
-        class="search-bar"
-      />
+      <input type="text" v-model="searchTerm" placeholder="Suche nach Events..." class="search-bar" />
     </div>
     <div class="event-columns">
       <div class="event-column list-left">
@@ -15,25 +10,16 @@
           Keine Events gefunden
         </div>
         <div v-else>
-          <div
-            v-for="event in filteredEvents"
-            :key="event.id"
-            class="event-details"
-          >
+          <div v-for="event in filteredEvents" :key="event.id" class="event-details">
             <h3>
               <strong>{{ event.name }}</strong>
             </h3>
             <p>{{ event.description }}</p>
             <p>{{ formatDate(event.date) }}</p>
             <div class="tags-container">
-              <span
-              v-if="event.tags.length > 0"
-              v-for="tag in event.tags.slice(0, 5)"
-              :key="tag.id"
-              class="tag-chip"
-              >
-              <TagIcon class="icon-tag" />
-              {{ tag.name }}
+              <span v-if="event.tags.length > 0" v-for="tag in event.tags.slice(0, 5)" :key="tag.id" class="tag-chip">
+                <TagIcon class="icon-tag" />
+                {{ tag.name }}
               </span>
             </div>
             <button @click="showDetails(event.id)" class="register-button">
@@ -48,34 +34,26 @@
     </div>
 
     <!-- Modal für Benutzerauswahl -->
-<div v-if="isModalOpen" class="modal">
-  <div class="modal-content">
-    <button
-      @click="closeModal"
-      class="close-modal-icon"
-      aria-label="Close User Selection Modal"
-    >
-      ✕
-    </button>
+    <div v-if="isModalOpen" class="modal">
+      <div class="modal-content">
+        <button @click="closeModal" class="close-modal-icon" aria-label="Close User Selection Modal">
+          ✕
+        </button>
 
-    <h3>Benutzer auswählen</h3>
-    <ul>
-      <li
-        v-for="user in filteredUsers"
-        :key="user.id"
-        @click="toggleUserSelection(user)"
-        :class="{ selected: selectedUsers.includes(user) }"
-      >
-        {{ user.username }}
-      </li>
-    </ul>
+        <h3>Benutzer auswählen</h3>
+        <ul>
+          <li v-for="user in filteredUsers" :key="user.id" @click="toggleUserSelection(user)"
+            :class="{ selected: selectedUsers.includes(user) }">
+            {{ user.username }}
+          </li>
+        </ul>
 
-    <button @click="addUsersToEvent" class="confirm-button">
-      Benutzer hinzufügen
-    </button>
+        <button @click="addUsersToEvent" class="confirm-button">
+          Benutzer hinzufügen
+        </button>
+      </div>
+    </div>
   </div>
-</div>
-</div>
 </template>
 
 <script setup lang="ts">
@@ -97,7 +75,7 @@ const registeredUsers = ref([]);
 const filteredUsers = computed(() => {
   return users.value.filter(
     (user) => !registeredUsers.value.some(regUser => regUser.id === user.id)
-  );
+  )
 });
 
 onMounted(async () => {
@@ -110,7 +88,11 @@ const fetchEvents = async () => {
     if (response.status !== 200) {
       throw new Error("Fehler beim Laden der Events");
     }
-    events.value = await response.data;
+    events.value = await response.data.map(event => ({
+      ...event,
+      description: event.description,
+      date: event.date
+    }));
 
     for (const event of events.value) {
       event.tags = await fetchTagsForEvent(event.id);
@@ -132,7 +114,7 @@ const fetchTagsForEvent = async (eventId) => {
         `Fehler beim Laden der Tags für Event ${eventId}`,
         "error"
       )
-    );
+    )
     return [];
   }
 };
@@ -143,7 +125,7 @@ const fetchUsers = async () => {
     if (response.status !== 200) {
       throw new Error('Fehler beim Laden der Benutzer');
     }
-    users.value = await response.data; 
+    users.value = await response.data;
   } catch (error) {
     showToast(new Toast("Error", "Fehler beim Laden der Benutzer", "error"));
   }
@@ -155,7 +137,7 @@ const fetchUserRegistrations = async (eventId) => {
       users.value.map(async (user) => {
         const response = await api.get(`/users/${user.id}/registeredEvents`);
         if (response.status !== 200) {
-          throw new Error(`Fehler bei der Überprüfung der Registrierung für ${user.username}`);
+          showToast(new Toast("Fehler", `Fehler bei der Überprüfung der Registrierung für ${user.username}`, "error"));
         }
         const userEvents = await response.data;
         return userEvents.some((event) => event.id === eventId);
@@ -164,7 +146,7 @@ const fetchUserRegistrations = async (eventId) => {
 
     registeredUsers.value = users.value.filter((user, index) => registrations[index]);
   } catch (error) {
-    showToast(new Toast("Error", "Fehler beim Überprüfen der Registrierungen", "error"));
+    showToast(new Toast("Fehler", "Fehler beim Überprüfen der Registrierungen", "error"));
   }
 };
 
@@ -177,7 +159,7 @@ const openUserModal = async (eventId) => {
 
 const closeModal = () => {
   isModalOpen.value = false;
-  selectedUsers.value = []; 
+  selectedUsers.value = [];
 };
 
 const toggleUserSelection = (user) => {
@@ -193,22 +175,22 @@ const addUsersToEvent = async () => {
   const usersData = { users: selectedUsers.value }
 
   try {
-    for(const user of selectedUsers.value) {
-      const response = await api.post(`/users/${user.id}/eventRegistration?eventId=${eventIdForUserSelection.value}`,usersData);
-      if (response.status === 200) {
+    for (const user of selectedUsers.value) {
+      const response = await api.post(`/users/${user.id}/eventRegistration?eventId=${eventIdForUserSelection.value}`, usersData);
+      if (response.status === 201) {
         showToast(
-          new Toast("Success", "Benutzer erfolgreich hinzugefügt", "success")
+          new Toast("Erfolg", "Benutzer erfolgreich hinzugefügt", "success")
         );
         closeModal();
       } else {
         showToast(
-          new Toast("Error", "Fehler beim Hinzufügen der Benutzer", "error")
+          new Toast("Fehler", "Fehler beim Hinzufügen der Benutzer", "error")
         );
       }
     }
   } catch (error) {
     showToast(
-      new Toast("Error", "Fehler beim Hinzufügen der Benutzer", "error")
+      new Toast("Fehler", "Fehler beim Hinzufügen der Benutzer", "error")
     );
   }
 };
@@ -328,8 +310,9 @@ const showDetails = (eventId) => {
   color: #333;
 }
 
-h2 h3 p {
-  margin: 0.5rem;
+h3 {
+  margin: 0;
+  padding: 0;
 }
 
 .register-button {
@@ -419,7 +402,8 @@ h2 h3 p {
   background-color: #d3d3d3;
 }
 
-.confirm-button, .cancel-button {
+.confirm-button,
+.cancel-button {
   padding: 10px 20px;
   margin-top: 10px;
   cursor: pointer;
@@ -440,14 +424,12 @@ h2 h3 p {
   transition:
     background-color 0.2s ease,
     box-shadow 0.2s ease;
-  position: absolute;
-  bottom: 0.5rem;
-  left: 0.5rem;
-  width: auto;  
+  margin-top: 10px;
+  width: fit-content;
 }
 
 .add-users-button:hover {
-  background-color: #007bb5;
+  background-color: #0056b3;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -474,5 +456,4 @@ h2 h3 p {
 .close-modal-icon:hover {
   color: #ff0000;
 }
-
 </style>

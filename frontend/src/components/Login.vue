@@ -274,7 +274,7 @@ const handleLogin = async () => {
     setToken(response.data.token);
     if (response.status === 200) {
       const redirect = route.query.redirect;
-      const redirectPath = Array.isArray(redirect) ? redirect[0] : redirect || '/home';
+      const redirectPath = '/home';
       router.replace(redirectPath);
       showToast(
         new Toast(
