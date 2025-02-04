@@ -53,15 +53,18 @@
                 <font-awesome-icon :icon="showPassword ? 'eye-slash' : 'eye'" class="password-icon" />
               </button>
             </div>
-            <small class="password-info">Das Passwort muss zwischen 6 und 40 Zeichen lang sein.</small>
+            <small v-if="password.length > 40 || password.length < 6" class="error-message">Das Passwort muss mindestens
+              6 und höchstens 40 Zeichen lang sein.</small>
 
             <div class="input-group password-group">
               <input :type="showPassword ? 'text' : 'password'" v-model="passwordRepeat"
-                placeholder="Passwort wiederholen" required class="auth-input" />
+                placeholder="Passwort wiederholen" required class="auth-input"
+                :class="{ 'input-error': passwordMismatch }" />
               <button type="button" class="password-toggle" @click="showPassword = !showPassword">
                 <font-awesome-icon :icon="showPassword ? 'eye-slash' : 'eye'" class="password-icon" />
               </button>
             </div>
+            <small v-if="passwordMismatch" class=" error-message">Die Passwörter stimmen nicht überein.</small>
 
             <div class="input-group role-selection">
               <select v-model="role" required class="auth-select">
@@ -184,6 +187,10 @@ const canProceedToStep2 = computed(() => {
   );
 });
 
+const passwordMismatch = computed(() => {
+  return password.value !== passwordRepeat.value && passwordRepeat.value.length > 0;
+});
+
 const isRegistrationValid = computed(() => {
   return (
     firstName.value &&
@@ -229,8 +236,6 @@ const handleRegistration = async () => {
       const response = await api.post(`/auth/signup`, userRegisterData);
 
       if (response.status === 200) {
-        changeToLogin();
-
         showToast(
           new Toast(
             "Erfolg",
@@ -240,15 +245,16 @@ const handleRegistration = async () => {
             5
           )
         );
+
+        changeToLogin();
       }
       // Add toast based on error messages from backend
-
     } catch (error) {
       showToast(
         new Toast(
-          "Fehler",
-          `Benutzer existiert bereits`,
-          "error",
+          "Warnung",
+          `Registrierung fehlgeschlagen. Der Benutzer existiert bereits.`,
+          "warning",
           faXmark,
           5
         )
@@ -270,13 +276,21 @@ const handleLogin = async () => {
       const redirect = route.query.redirect;
       const redirectPath = Array.isArray(redirect) ? redirect[0] : redirect || '/home';
       router.replace(redirectPath);
+      showToast(
+        new Toast(
+          "Erfolg",
+          `Erfolreich eingeloggt!`,
+          "success",
+          faXmark,
+          5
+        )
+      );
     }
-    // add toast for bad credentials or not found etc.
   } catch (error) {
     showToast(
       new Toast(
         "Fehler",
-        `Benutzer existiert bereits`,
+        `${error.response.data.message || 'Login fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.'}`,
         "error",
         faXmark,
         5

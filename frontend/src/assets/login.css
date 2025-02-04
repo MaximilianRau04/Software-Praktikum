@@ -10,7 +10,7 @@
   background: white;
   padding: 2rem;
   border-radius: 1rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
   transition: all 0.3s ease;
@@ -177,7 +177,7 @@
   background: white !important;
   color: #333 !important;
   border: 1px solid #ddd !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
   padding: 12px !important;
   border-radius: 6px !important;
 }
@@ -205,4 +205,9 @@ small {
 .auth-textarea:focus {
   border-color: #3498db;
   outline: none;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 7px;
 }
