@@ -15,24 +15,51 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
-    @Query("SELECT u.id AS userId, u.username AS username, u.totalPoints AS totalPoints " +
-            "FROM User u " +
-            "WHERE (:search IS NULL OR LOWER(u.username) LIKE LOWER(concat('%', :search, '%')))")
+    @Query(value = """
+        SELECT position AS rank, user_id AS userId, username, total_points AS totalPoints
+        FROM (
+            SELECT
+                id AS user_id,
+                username,
+                total_points,
+                ROW_NUMBER() OVER (
+                    ORDER BY
+                        CASE 
+                            WHEN total_points > 0 THEN total_points 
+                            ELSE 0
+                        END DESC,
+                        username ASC
+                ) AS position
+            FROM users
+        ) AS ranked_users
+        WHERE (:search IS NULL OR LOWER(username) LIKE LOWER(CONCAT('%', :search, '%')))
+        """, nativeQuery = true)
     Page<LeaderboardEntry> findLeaderboardEntries(
             @Param("search") String search,
             Pageable pageable
     );
 
+
     @Query(value = """
-            SELECT position as rank, user_id as userId, username, total_points as totalPoints 
+            SELECT position AS rank, user_id AS userId, username, total_points AS totalPoints
             FROM (
-                SELECT 
+                SELECT
                     id AS user_id,
                     username,
                     total_points,
-                    ROW_NUMBER() OVER (ORDER BY total_points DESC) AS position
+                    ROW_NUMBER() OVER (
+                        ORDER BY
+                            CASE
+                                WHEN total_points > 0 THEN total_points
+                                ELSE NULL
+                            END DESC,
+                            CASE
+                                WHEN total_points = 0 THEN username
+                                ELSE NULL
+                            END ASC
+                    ) AS position
                 FROM users
-            ) AS ranked_users 
+            ) AS ranked_users
             WHERE user_id = :userId
             """, nativeQuery = true)
     LeaderboardEntry findCurrentUserPosition(@Param("userId") Long userId);

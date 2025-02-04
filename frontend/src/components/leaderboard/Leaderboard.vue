@@ -30,18 +30,21 @@
         </div>
 
         <div v-else class="leaderboard-entries">
-          <div v-for="(entry, index) in leaderboard" :key="entry.userId" class="leaderboard-card" :class="{
+          <div v-for="entry in sortedLeaderboard" :key="entry.userId" class="leaderboard-card" :class="{
             'current-user': entry.userId === currentUserPosition?.userId,
-            'podium-1': index === 0,
-            'podium-2': index === 1,
-            'podium-3': index === 2
+            'podium-1': entry.rank === 1,
+            'podium-2': entry.rank === 2,
+            'podium-3': entry.rank === 3
           }">
+
+
             <div class="entry-rank">
-              <span v-if="index < 3" class="trophy-icon">
-                {{ ['🥇', '🥈', '🥉'][index] }}
-              </span>
-              {{ (currentPage - 1) * pageSize + index + 1 }}
+              <span v-if="entry.rank === 1" class="trophy-icon">🥇</span>
+              <span v-else-if="entry.rank === 2" class="trophy-icon">🥈</span>
+              <span v-else-if="entry.rank === 3" class="trophy-icon">🥉</span>
+              {{ entry.rank }}
             </div>
+
 
             <div class="entry-user clickable-username" @click="goToProfile(entry.username)">
               <span class="username">{{ entry.username }}</span>
@@ -104,19 +107,18 @@ export default {
           params: {
             page: page - 1,
             size: this.pageSize,
-            search: this.searchQuery,
-            sort: this.sortAsc ? 'asc' : 'desc'
+            search: this.searchQuery
           }
         });
 
-        this.leaderboard = response.data.content;
+        this.leaderboard = response.data.content.map((entry) => ({
+          ...entry,
+          rank: entry.rank
+        }));
+
+
         this.currentPage = page;
         this.hasMore = !response.data.last;
-
-        this.leaderboard = response.data.content.map((entry, index) => ({
-          ...entry,
-          rank: entry.rank || (page - 1) * this.pageSize + index + 1
-        }));
 
       } catch (error) {
         showToast(new Toast("Error", "Failed to load leaderboard", "error", faXmark, 5));
@@ -150,6 +152,15 @@ export default {
       this.fetchLeaderboard(1);
     }
   },
+  computed: {
+    sortedLeaderboard() {
+      return [...this.leaderboard].sort((a, b) =>
+        this.sortAsc ? b.rank - a.rank : a.rank - b.rank
+      );
+    }
+
+  }
+  ,
   async mounted() {
     await this.fetchLeaderboard(this.currentPage);
     await this.fetchCurrentUserPosition();
