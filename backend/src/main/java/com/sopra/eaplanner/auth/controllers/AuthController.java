@@ -11,12 +11,12 @@ import com.sopra.eaplanner.auth.security.services.UserDetailsImpl;
 import com.sopra.eaplanner.auth.models.role.ERole;
 import com.sopra.eaplanner.auth.models.role.Role;
 import com.sopra.eaplanner.auth.models.role.RoleRepository;
+import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.event.tags.TagService;
 import com.sopra.eaplanner.trainerprofile.TrainerProfile;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileRepository;
 import com.sopra.eaplanner.trainerprofile.TrainerProfileService;
-import com.sopra.eaplanner.user.User;
-import com.sopra.eaplanner.user.UserRepository;
+import com.sopra.eaplanner.user.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -62,9 +62,10 @@ public class AuthController {
     private TagService tagService;
 
     @Autowired
-    private TrainerProfileService trainerProfileService;
-    @Autowired
     private TrainerProfileRepository trainerProfileRepository;
+
+    @Autowired
+    private UserTagWeightRepository userTagWeightRepository;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
@@ -163,8 +164,19 @@ public class AuthController {
         User newUser = new User(signUpRequest, userLogin, userRole);
         userLogin.setUser(newUser);
 
-        User user = userRepository.save(newUser);
+        Set<Tag> userTags = tagService.mergeAndGetTagsFromRequest(signUpRequest.getTags());
+        Set<UserTagWeight> freshTags = new HashSet<>();
 
+        for (Tag tag : userTags) {
+            UserTagWeight utw = new UserTagWeight(newUser, tag);
+            freshTags.add(utw);
+
+        }
+
+        newUser.setTagWeights(freshTags);
+
+        User user = userRepository.save(newUser);
+        userTagWeightRepository.saveAll(freshTags);
         if (user.getRole() == User.Role.ADMIN) {
             TrainerProfile trainerProfile = new TrainerProfile();
             user.setTrainerProfile(trainerProfile);
