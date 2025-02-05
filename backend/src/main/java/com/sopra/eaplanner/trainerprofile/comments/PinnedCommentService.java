@@ -35,7 +35,8 @@ public class PinnedCommentService {
                 pinnedComment.getFeedback().getId(),
                 pinnedComment.getFeedback().getEvent().getId(),
                 pinnedComment.getFeedback().getEnjoymentComment(),
-                pinnedComment.getFeedback().getUser().getFirstname() + " " + pinnedComment.getFeedback().getUser().getLastname(),
+
+                pinnedComment.getFeedback().isAnonymousFeedback()? "Anonym": pinnedComment.getFeedback().getUser().getFirstname() + " " + pinnedComment.getFeedback().getUser().getLastname(),
                 pinnedComment.getFeedback().getEvent().getName(),
                 FeedbackUtil.getFeedbackRating(pinnedComment.getFeedback()))).toList();
     }

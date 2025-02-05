@@ -285,7 +285,7 @@ const handleLogin = async () => {
       showToast(
         new Toast(
           "Erfolg",
-          `Erfolreich eingeloggt!`,
+          `Erfolgreich eingeloggt!`,
           "success",
           faXmark,
           5

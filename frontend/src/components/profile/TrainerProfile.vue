@@ -77,7 +77,7 @@ export default {
     watch: {
         trainer: "fetchTrainerDetails",
     },
-    mounted(){
+    mounted() {
         this.fetchTrainerDetails();
     },
     methods: {
@@ -89,7 +89,6 @@ export default {
          * Fetches the tags and events for the trainer
          */
         async fetchTrainerDetails() {
-            console.log("Trainer before fetch:", this.trainer);
             try {
                 const tagsResponse = await api.get(`/trainerProfiles/${this.trainer.id}/expertiseTags`);
                 if (tagsResponse.status === 200) {
@@ -116,7 +115,6 @@ export default {
             }
         },
         navigateToManage() {
-            console.log("Navigating with trainerId:", this.trainer.id, "Type:", typeof this.trainer.id);
             this.$router.push({
                 name: "TrainerProfileManage",
                 params: { trainerId: this.trainer.id },
@@ -229,6 +227,7 @@ export default {
     padding: 1rem;
     border-radius: 8px;
 }
+
 .manage-button {
     background-color: #009ee2;
     color: white;
@@ -239,7 +238,7 @@ export default {
     font-size: 1rem;
     transition: background-color 0.2s;
     z-index: 1000;
-    right: 15%; 
+    right: 15%;
 }
 
 .manage-button:hover {

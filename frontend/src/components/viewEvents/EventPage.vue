@@ -510,7 +510,6 @@ const checkRegistrationStatus = async () => {
     isAlreadyRegistered.value = true;
   } catch (error) {
     if(error.response.status) {
-      console.log("here")
       isAlreadyRegistered.value = false;
       isCompleted.value = false;
       return;

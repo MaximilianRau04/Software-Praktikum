@@ -46,7 +46,7 @@ export default {
         this.userData = await userResponse.data;
         
         if (this.isTrainer) {
-          const trainerResponse = await api.get(`/trainerProfiles/${this.userData.id}`);
+          const trainerResponse = await api.get(`/users/${this.userData.id}/trainerProfile`);
           if (trainerResponse.status !== 200) {
             showToast(
               new Toast(

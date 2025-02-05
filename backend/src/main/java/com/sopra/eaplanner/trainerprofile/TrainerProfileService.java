@@ -5,7 +5,6 @@ import com.sopra.eaplanner.event.EventRepository;
 import com.sopra.eaplanner.event.tags.Tag;
 import com.sopra.eaplanner.event.tags.TagResponseDTO;
 import com.sopra.eaplanner.event.tags.TagService;
-import com.sopra.eaplanner.feedback.Feedback;
 import com.sopra.eaplanner.feedback.FeedbackRepository;
 import com.sopra.eaplanner.feedback.FeedbackService;
 import com.sopra.eaplanner.feedback.FeedbackUtil;
@@ -52,8 +51,8 @@ public class TrainerProfileService {
     }
 
     public TrainerProfileResponseDTO getTrainerProfileById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
-
+        TrainerProfile trainer = trainerProfileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        User user = trainer.getUser();
         if(user.getTrainerProfile() == null){
             throw new EntityNotFoundException("Trainer profile not set for this user");
         }
@@ -66,8 +65,9 @@ public class TrainerProfileService {
     }
 
     public TrainerCommentResponseDTO getReceivedComments(Long trainerId) {
+        TrainerProfile trainerProfile = trainerProfileRepository.findById(trainerId).orElseThrow(() -> new EntityNotFoundException("Trainer Profile not found"));
 
-        List<Event> events = eventRepository.findAllEventsOfOrganizer(trainerId);
+        List<Event> events = eventRepository.findAllEventsOfOrganizer(trainerProfile.getUser().getId());
 
         List<EventWithCommentsDTO> preparedEvents = events.stream()
                 // Mapping events to the required dTO
