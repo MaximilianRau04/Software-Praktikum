@@ -26,7 +26,8 @@
                         einfügen wollen, das Sie noch nicht in der Auflistung sehen, so schreiben Sie dieses direkt in
                         die Leiste rein und drücken Eingabe.</p>
                     <div>
-                        <TagInput v-if="selectedTags && allTags" v-model="selectedTags" :available-tags="allTags" :tagSelect="false" @new-tag="handleNewTag" />
+                        <TagInput v-if="selectedTags && allTags" v-model="selectedTags" :available-tags="allTags"
+                            :tagSelect="false" @new-tag="handleNewTag" />
                     </div>
                 </div>
 
@@ -94,9 +95,6 @@
 </template>
 
 <script>
-import axios from "axios";
-import config from "@/config";
-import Cookies from "js-cookie";
 import { useRoute, useRouter } from "vue-router";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -152,17 +150,17 @@ export default {
                 this.events.forEach(event => {
                     event.comments = event.comments.filter(comment => !pinnedCommentIds.has(comment.id));
                 });
-                
+
             } catch (error) {
                 showToast(
-                        new Toast(
-                            "Fehler",
-                            `Das Trainerprofil konnte nicht geladen werden.`,
-                            "error",
-                            faXmark,
-                            5
-                        )
-                    );
+                    new Toast(
+                        "Fehler",
+                        `Das Trainerprofil konnte nicht geladen werden.`,
+                        "error",
+                        faXmark,
+                        5
+                    )
+                );
             }
         },
 
@@ -176,22 +174,22 @@ export default {
 
             } catch (error) {
                 showToast(
-                        new Toast(
-                            "Fehler",
-                            `Die Expertise-Tags konnten nicht geladen werden.`,
-                            "error",
-                            faXmark,
-                            5
-                        )
-                    );
+                    new Toast(
+                        "Fehler",
+                        `Die Expertise-Tags konnten nicht geladen werden.`,
+                        "error",
+                        faXmark,
+                        5
+                    )
+                );
             }
         },
 
-        handleNewTag(newTag){
+        handleNewTag(newTag) {
             api.post(`/tags`, newTag)
-            .then(response => {
-                this.allTags.push(response.data);
-            })
+                .then(response => {
+                    this.allTags.push(response.data);
+                })
         },
 
         pinComment(comment, eventId) {
@@ -281,14 +279,14 @@ export default {
                 );
             } catch (error) {
                 showToast(
-                        new Toast(
-                            "Fehler",
-                            `Ihre Änderungen konnten nicht übernommen werden.`,
-                            "error",
-                            faXmark,
-                            5
-                        )
-                    );
+                    new Toast(
+                        "Fehler",
+                        `Ihre Änderungen konnten nicht übernommen werden.`,
+                        "error",
+                        faXmark,
+                        5
+                    )
+                );
             }
 
             this.router.push({
