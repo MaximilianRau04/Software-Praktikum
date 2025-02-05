@@ -296,8 +296,15 @@ const resetForms = (currentForm) => {
       responseType: 'blob'
     });
 
-    const blob = response.data;
-    const url = window.URL.createObjectURL(blob);
+    const blob = new Blob([response.data], { 
+      type: 'text/csv;charset=UTF-8'
+    });
+
+    const blobWithBOM = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), blob], {
+      type: 'text/csv;charset=UTF-8'
+    });
+
+    const url = window.URL.createObjectURL(blobWithBOM);
     const link = document.createElement("a");
     link.href = url;
     const filename = 'resources.csv';
