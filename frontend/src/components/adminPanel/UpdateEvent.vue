@@ -257,37 +257,6 @@ const fetchRoomsForEvent = async () => {
 };
 
 /**
- * Updates the available rooms based on the location of the selected Exchange Day.
- */
-const updateFilteredRooms = async () => {
-  if (selectedExchangeDay.value) {
-    const exchangeDayLocationId = selectedExchangeDay.value.location.id;
-
-    try {
-      const response = await api.get(
-        `/resources/location/${exchangeDayLocationId}`,
-      );
-
-      if (response.status === 200) {
-        const rooms = await response.data;
-        filteredRooms.value = rooms;
-      }
-    } catch (error) {
-      showToast(
-        new Toast(
-          "Error",
-          "Fehler beim Laden der Ressourcen für die Location.",
-          "error",
-        ),
-      );
-      filteredRooms.value = [];
-    }
-  } else {
-    filteredRooms.value = [];
-  }
-};
-
-/**
  * Fetches the available experience levels for events.
  */
 const fetchExperienceLevels = async () => {

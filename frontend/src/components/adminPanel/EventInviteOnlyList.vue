@@ -1,7 +1,31 @@
 <template>
   <div class="event-page">
     <div class="search-bar-container">
-      <input type="text" v-model="searchTerm" placeholder="Suche nach Events..." class="search-bar" />
+      <input
+        type="text"
+        v-model="searchTerm"
+        placeholder="Suche nach Events..."
+        class="search-bar"
+      />
+    </div>
+    <div class="input-group">
+      <label for="exchangeDaySelect">ExchangeDay auswählen</label>
+      <select
+        id="exchangeDaySelect"
+        v-model="selectedExchangeDay"
+        @change="handleExchangeDayChange"
+        class="exchange-day-select"
+      >
+        <option :value="null">Alle Events</option>
+        <option
+          v-for="exchangeDay in exchangeDays"
+          :key="exchangeDay.id"
+          :value="exchangeDay"
+        >
+          {{ exchangeDay.name }} ({{ formatDate(exchangeDay.startDate) }} -
+          {{ formatDate(exchangeDay.endDate) }})
+        </option>
+      </select>
     </div>
     <div class="event-columns">
       <div class="event-column list-left">
@@ -10,14 +34,23 @@
           Keine Events gefunden
         </div>
         <div v-else>
-          <div v-for="event in filteredEvents" :key="event.id" class="event-details">
+          <div
+            v-for="event in filteredEvents"
+            :key="event.id"
+            class="event-details"
+          >
             <h3>
               <strong>{{ event.name }}</strong>
             </h3>
             <p>{{ event.description }}</p>
             <p>{{ formatDate(event.date) }}</p>
             <div class="tags-container">
-              <span v-if="event.tags.length > 0" v-for="tag in event.tags.slice(0, 5)" :key="tag.id" class="tag-chip">
+              <span
+                v-if="event.tags.length > 0"
+                v-for="tag in event.tags.slice(0, 5)"
+                :key="tag.id"
+                class="tag-chip"
+              >
                 <TagIcon class="icon-tag" />
                 {{ tag.name }}
               </span>
@@ -36,14 +69,22 @@
     <!-- Modal für Benutzerauswahl -->
     <div v-if="isModalOpen" class="modal">
       <div class="modal-content">
-        <button @click="closeModal" class="close-modal-icon" aria-label="Close User Selection Modal">
+        <button
+          @click="closeModal"
+          class="close-modal-icon"
+          aria-label="Close User Selection Modal"
+        >
           ✕
         </button>
 
         <h3>Benutzer auswählen</h3>
         <ul>
-          <li v-for="user in filteredUsers" :key="user.id" @click="toggleUserSelection(user)"
-            :class="{ selected: selectedUsers.includes(user) }">
+          <li
+            v-for="user in filteredUsers"
+            :key="user.id"
+            @click="toggleUserSelection(user)"
+            :class="{ selected: selectedUsers.includes(user) }"
+          >
             {{ user.username }}
           </li>
         </ul>
@@ -74,24 +115,30 @@ const router = useRouter();
 const registeredUsers = ref([]);
 const filteredUsers = computed(() => {
   return users.value.filter(
-    (user) => !registeredUsers.value.some(regUser => regUser.id === user.id)
-  )
+    (user) => !registeredUsers.value.some((regUser) => regUser.id === user.id)
+  );
 });
+const exchangeDays = ref([]);
+const selectedExchangeDay = ref(null);
 
 onMounted(async () => {
   await fetchEvents();
+  await fetchExchangeDays();
 });
 
+/**
+ * Fetches a list of all events.
+ */
 const fetchEvents = async () => {
   try {
     const response = await api.get(`/events`);
     if (response.status !== 200) {
       throw new Error("Fehler beim Laden der Events");
     }
-    events.value = await response.data.map(event => ({
+    events.value = await response.data.map((event) => ({
       ...event,
       description: event.description,
-      date: event.date
+      date: event.date,
     }));
 
     for (const event of events.value) {
@@ -102,6 +149,63 @@ const fetchEvents = async () => {
   }
 };
 
+/**
+ * Fetches a list of all ExchangeDays.
+ */
+const fetchExchangeDays = async () => {
+  try {
+    const response = await api.get(`/exchange-days`);
+    if (response.status === 200) {
+      exchangeDays.value = await response.data;
+    } else {
+      throw new Error("Fehler beim Abrufen der ExchangeDays");
+    }
+  } catch (error) {
+    showToast(
+      new Toast("Error", "Fehler beim Abrufen der ExchangeDays.", "error")
+    );
+  }
+};
+
+/**
+ * Fetches the details of the selected ExchangeDay.
+ */
+const handleExchangeDayChange = async () => {
+  if (selectedExchangeDay.value) {
+    await fetchEventsByExchangeDay();
+  } else {
+    await fetchEvents();
+  }
+};
+
+/**
+ * Fetches events for the selected ExchangeDay.
+ */
+const fetchEventsByExchangeDay = async () => {
+  try {
+    const response = await api.get(
+      `/exchange-days/${selectedExchangeDay.value.id}/events`
+    );
+    if (response.status === 200) {
+      events.value = await response.data;
+
+      await Promise.all(
+        events.value.map(async (event) => {
+          event.tags = await fetchTagsForEvent(event.id);
+        })
+      );
+    } else {
+      throw new Error("Fehler beim Abrufen der Events für den ExchangeDay");
+    }
+  } catch (error) {
+    showToast(new Toast("Error", "Fehler beim Abrufen der Events.", "error"));
+  }
+};
+
+/**
+ * Fetches tags for a specific event.
+ * @param eventId The ID of the event.
+ */
 const fetchTagsForEvent = async (eventId) => {
   try {
     const res = await api.get(`/events/${eventId}/tags`);
@@ -114,16 +218,19 @@ const fetchTagsForEvent = async (eventId) => {
         `Fehler beim Laden der Tags für Event ${eventId}`,
         "error"
       )
-    )
+    );
     return [];
   }
 };
 
+/**
+ * Fetches a list of all users.
+ */
 const fetchUsers = async () => {
   try {
     const response = await api.get(`/users`);
     if (response.status !== 200) {
-      throw new Error('Fehler beim Laden der Benutzer');
+      throw new Error("Fehler beim Laden der Benutzer");
     }
     users.value = await response.data;
   } catch (error) {
@@ -131,22 +238,36 @@ const fetchUsers = async () => {
   }
 };
 
+/**
+ * Fetches the registrations of all users for a specific event.
+ * @param eventId The ID of the event.
+ */
 const fetchUserRegistrations = async (eventId) => {
   try {
     const registrations = await Promise.all(
       users.value.map(async (user) => {
         const response = await api.get(`/users/${user.id}/registeredEvents`);
         if (response.status !== 200) {
-          showToast(new Toast("Fehler", `Fehler bei der Überprüfung der Registrierung für ${user.username}`, "error"));
+          showToast(
+            new Toast(
+              "Fehler",
+              `Fehler bei der Überprüfung der Registrierung für ${user.username}`,
+              "error"
+            )
+          );
         }
         const userEvents = await response.data;
         return userEvents.some((event) => event.id === eventId);
       })
     );
 
-    registeredUsers.value = users.value.filter((user, index) => registrations[index]);
+    registeredUsers.value = users.value.filter(
+      (user, index) => registrations[index]
+    );
   } catch (error) {
-    showToast(new Toast("Fehler", "Fehler beim Überprüfen der Registrierungen", "error"));
+    showToast(
+      new Toast("Fehler", "Fehler beim Überprüfen der Registrierungen", "error")
+    );
   }
 };
 
@@ -170,13 +291,17 @@ const toggleUserSelection = (user) => {
   }
 };
 
+/**
+ * Adds the selected users to the selected event.
+ */
 const addUsersToEvent = async () => {
-
-  const usersData = { users: selectedUsers.value }
-
+  const usersData = { users: selectedUsers.value };
   try {
     for (const user of selectedUsers.value) {
-      const response = await api.post(`/users/${user.id}/eventRegistration?eventId=${eventIdForUserSelection.value}`, usersData);
+      const response = await api.post(
+        `/users/${user.id}/eventRegistration?eventId=${eventIdForUserSelection.value}`,
+        usersData
+      );
       if (response.status === 201) {
         showToast(
           new Toast("Erfolg", "Benutzer erfolgreich hinzugefügt", "success")
@@ -220,7 +345,6 @@ const showDetails = (eventId) => {
   router.push(`/events/${eventId}`);
 };
 </script>
-
 
 <style scoped>
 .event-page {
@@ -301,7 +425,7 @@ const showDetails = (eventId) => {
 
 .event-details {
   background-color: #f1f5f9;
-  border: 1px solid #01172F;
+  border: 1px solid #01172f;
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1.8rem;
@@ -316,7 +440,7 @@ h3 {
 }
 
 .register-button {
-  background-color: #009EE2;
+  background-color: #009ee2;
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;
@@ -395,7 +519,7 @@ h3 {
 
 .modal-content li.selected {
   background-color: #f0f0f0;
-  border: 2px solid #009EE2;
+  border: 2px solid #009ee2;
 }
 
 .modal-content li:hover {
@@ -407,14 +531,14 @@ h3 {
   padding: 10px 20px;
   margin-top: 10px;
   cursor: pointer;
-  background-color: #009EE2;
+  background-color: #009ee2;
   color: white;
   border: none;
   border-radius: 8px;
 }
 
 .add-users-button {
-  background-color: #009EE2;
+  background-color: #009ee2;
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;

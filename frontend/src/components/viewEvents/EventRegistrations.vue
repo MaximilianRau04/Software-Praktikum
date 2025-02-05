@@ -9,6 +9,25 @@
       />
     </div>
 
+    <div class="input-group">
+      <label for="exchangeDaySelect">Exchange Day auswählen</label>
+      <select
+        id="exchangeDaySelect"
+        v-model="selectedExchangeDay"
+        @change="handleExchangeDayChange"
+        class="exchange-day-select"
+      >
+        <option :value="null">Alle Events</option>
+        <option
+          v-for="exchangeDay in exchangeDays"
+          :key="exchangeDay.id"
+          :value="exchangeDay"
+        >
+          {{ exchangeDay.name }} ({{ formatDate(exchangeDay.startDate) }} -
+          {{ formatDate(exchangeDay.endDate) }})
+        </option>
+      </select>
+    </div>
     <div class="events-columns-container">
       <!-- Left Column -->
       <div class="events-column registered-events-column">
@@ -28,7 +47,6 @@
             :key="event.id"
             class="event-details"
           >
-
             <div class="event-header-home">
               <h2>{{ event.name }}</h2>
               <div class="meta-grid">
@@ -39,8 +57,17 @@
                 <div class="meta-item">
                   <ClockIcon class="icon-small" />
                   <span class="value">
-                    {{ event.startTime ? event.startTime.split(':').slice(0, 2).join(':') : '-' }} –
-                    {{ event.endTime ? event.endTime.split(':').slice(0, 2).join(':') : '-' }}
+                    {{
+                      event.startTime
+                        ? event.startTime.split(":").slice(0, 2).join(":")
+                        : "-"
+                    }}
+                    –
+                    {{
+                      event.endTime
+                        ? event.endTime.split(":").slice(0, 2).join(":")
+                        : "-"
+                    }}
                   </span>
                 </div>
                 <div class="meta-item">
@@ -68,7 +95,8 @@
           v-else-if="filteredRecommendedEvents.length === 0"
           class="empty-state-message"
         >
-          Nehmen Sie an Workshops teil und geben Sie Feedback, damit wir Ihnen Vorschläge für interessante Workshops machen können.
+          Nehmen Sie an Workshops teil und geben Sie Feedback, damit wir Ihnen
+          Vorschläge für interessante Workshops machen können.
         </div>
         <div v-else class="events-list">
           <div
@@ -76,7 +104,6 @@
             :key="event.id"
             class="event-details"
           >
-
             <div class="event-header-home">
               <h2>{{ event.name }}</h2>
               <div class="meta-grid">
@@ -87,8 +114,17 @@
                 <div class="meta-item">
                   <ClockIcon class="icon-small" />
                   <span class="value">
-                    {{ event.startTime ? event.startTime.split(':').slice(0, 2).join(':') : '-' }} –
-                    {{ event.endTime ? event.endTime.split(':').slice(0, 2).join(':') : '-' }}
+                    {{
+                      event.startTime
+                        ? event.startTime.split(":").slice(0, 2).join(":")
+                        : "-"
+                    }}
+                    –
+                    {{
+                      event.endTime
+                        ? event.endTime.split(":").slice(0, 2).join(":")
+                        : "-"
+                    }}
                   </span>
                 </div>
                 <div class="meta-item">
@@ -131,7 +167,6 @@
             :key="event.id"
             class="event-details"
           >
-
             <div class="event-header-home">
               <h2>{{ event.name }}</h2>
               <div class="meta-grid">
@@ -142,8 +177,17 @@
                 <div class="meta-item">
                   <ClockIcon class="icon-small" />
                   <span class="value">
-                    {{ event.startTime ? event.startTime.split(':').slice(0, 2).join(':') : '-' }} –
-                    {{ event.endTime ? event.endTime.split(':').slice(0, 2).join(':') : '-' }}
+                    {{
+                      event.startTime
+                        ? event.startTime.split(":").slice(0, 2).join(":")
+                        : "-"
+                    }}
+                    –
+                    {{
+                      event.endTime
+                        ? event.endTime.split(":").slice(0, 2).join(":")
+                        : "-"
+                    }}
                   </span>
                 </div>
                 <div class="meta-item">
@@ -165,16 +209,18 @@
           <div v-if="isLoading">
             <p>Loading...</p>
           </div>
-          <div v-else-if="filteredPastEvents.length === 0" class="empty-state-message">
+          <div
+            v-else-if="filteredPastEvents.length === 0"
+            class="empty-state-message"
+          >
             Keine vergangenen Events
           </div>
           <div v-else class="events-list">
             <div
               v-for="event in filteredPastEvents"
-              :key="event.id" 
+              :key="event.id"
               class="event-details"
             >
-
               <div class="event-header-home">
                 <h2>{{ event.name }}</h2>
                 <div class="meta-grid">
@@ -185,8 +231,17 @@
                   <div class="meta-item">
                     <ClockIcon class="icon-small" />
                     <span class="value">
-                      {{ event.startTime ? event.startTime.split(':').slice(0, 2).join(':') : '-' }} –
-                      {{ event.endTime ? event.endTime.split(':').slice(0, 2).join(':') : '-' }}
+                      {{
+                        event.startTime
+                          ? event.startTime.split(":").slice(0, 2).join(":")
+                          : "-"
+                      }}
+                      –
+                      {{
+                        event.endTime
+                          ? event.endTime.split(":").slice(0, 2).join(":")
+                          : "-"
+                      }}
                     </span>
                   </div>
                   <div class="meta-item">
@@ -209,11 +264,6 @@
 </template>
 
 <script setup lang="ts">
-//
-
-// TODO: ADD EVENT CARDS FROM DASHBOARD
-
-//
 import { ref, computed, onMounted } from "vue";
 import type { User } from "@/types/User";
 import { Event } from "@/types/Event";
@@ -224,14 +274,14 @@ import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
 import api from "@/util/api";
 import { useAuth } from "@/util/auth";
 import "@/assets/event-details.css";
-import { 
-  UserCircleIcon, 
-  CalendarIcon, 
-  ClockIcon, 
-  MapPinIcon, 
-  TagIcon, 
-  ArrowRightCircleIcon 
-} from '@heroicons/vue/24/outline'
+import {
+  UserCircleIcon,
+  CalendarIcon,
+  ClockIcon,
+  MapPinIcon,
+  TagIcon,
+  ArrowRightCircleIcon,
+} from "@heroicons/vue/24/outline";
 
 const router = useRouter();
 const auth = useAuth();
@@ -242,60 +292,56 @@ const pendingFeedbackEvents = ref([]);
 const pastEvents = ref([]);
 const isLoading = ref(true);
 const today = new Date().toISOString();
+const exchangeDaySelect = ref("");
+const exchangeDays = ref([]);
+const selectedExchangeDay = ref(null);
 
 const searchQuery = ref("");
 
- /**
-  * Filters the registered events based on the search query
-  */
-const filteredRegisteredEvents = computed(() =>
-  registeredEvents.value
-    .filter((event) => {
-      const eventDate = new Date(event.date);
-      const [hours, minutes] = event.startTime.split(':').map(Number);
-      eventDate.setHours(hours, minutes, 0, 0);
-      return eventDate > new Date();
-    })
-    .filter((event) =>
-      event.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-    )
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
-);
-
- /** 
-  * Filters the recommended events based on the search query
-  */
-const filteredRecommendedEvents = computed(() =>
-  recommendedEvents.value
-    .filter((event) =>
-      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
-    )
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
-);
-
-/** 
-  * Filters the feedback events based on the search query
-  */
-const filteredFeedbackEvents = computed(() =>
-  pendingFeedbackEvents.value
-    .filter((event) =>
-      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
-    )
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
-);
-
-/** 
- * Filters the past events based on the search query
+/**
+ * Filters the registered events based on the search query
  */
-const filteredPastEvents = computed(() =>
-  pastEvents.value
-    .filter((event) =>
-      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
-    )
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
-);
+ const filterEventsByExchangeDay = (events) => {
+  if (!selectedExchangeDay.value) return events;
+  
+  return events.filter(event => 
+    event.exchangeDayId === selectedExchangeDay.value.id
+  );
+};
 
-/** 
+const filteredRegisteredEvents = computed(() => {
+  let filtered = filterEventsByExchangeDay(registeredEvents.value);
+  return filtered
+    .filter(event => event.name.toLowerCase().includes(searchQuery.value.toLowerCase()))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+});
+
+const filteredRecommendedEvents = computed(() => {
+  let filtered = filterEventsByExchangeDay(recommendedEvents.value);
+  return filtered
+    .filter(event => event.name.toLowerCase().includes(searchQuery.value.toLowerCase()))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+});
+
+const filteredFeedbackEvents = computed(() => {
+  let filtered = filterEventsByExchangeDay(pendingFeedbackEvents.value);
+  return filtered
+    .filter(event => event.name.toLowerCase().includes(searchQuery.value.toLowerCase()))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+});
+
+const filteredPastEvents = computed(() => {
+  let filtered = filterEventsByExchangeDay(pastEvents.value);
+  return filtered
+    .filter(event => event.name.toLowerCase().includes(searchQuery.value.toLowerCase()))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+});
+
+const handleExchangeDayChange = async () => {
+  await fetchEvents();
+};
+
+/**
  * Fetches the tags for a given event
  */
 const fetchTagsForEvent = async (eventId) => {
@@ -320,12 +366,18 @@ const fetchTagsForEvent = async (eventId) => {
 /*
  * Fetches the events for the user
  */
-const fetchEvents = async () => {
+ const fetchEvents = async () => {
   const userId = auth.getUserId();
 
   if (!userId) {
     showToast(
-      new Toast("Fehler", `Loggen Sie sich bitte ein, um auf Ihre Events zuzugreifen.`, "error", faXmark, 5)
+      new Toast(
+        "Fehler",
+        `Loggen Sie sich bitte ein, um auf Ihre Events zuzugreifen.`,
+        "error",
+        faXmark,
+        5
+      )
     );
     isLoading.value = false;
     auth.clearToken();
@@ -336,27 +388,36 @@ const fetchEvents = async () => {
   try {
     isLoading.value = true;
 
-    const eventResponse = await api.get(`/users/${userId}/associatedEvents`)
-    const events = await eventResponse.data;
-
-    if (eventResponse.status !== 200) {
-      showToast(
-        new Toast("Fehler", `Events konnten nicht geladen werden.`, "error", faXmark, 5)
-      );
+    let url = `/users/${userId}/associatedEvents`;
+    if (selectedExchangeDay.value) {
+      url += `?exchangeDayId=${selectedExchangeDay.value.id}`;
     }
 
-    registeredEvents.value = events.registeredEvents;
-    recommendedEvents.value = events.recommendedEvents;
-    pendingFeedbackEvents.value = events.confirmedEvents;
-    pastEvents.value = events.completedEvents;
+    const eventResponse = await api.get(url);
+    
+    if (eventResponse.status !== 200) {
+      throw new Error('Events konnten nicht geladen werden.');
+    }
+
+    const events = await eventResponse.data;
+    
+    registeredEvents.value = events.registeredEvents || [];
+    recommendedEvents.value = events.recommendedEvents || [];
+    pendingFeedbackEvents.value = events.confirmedEvents || [];
+    pastEvents.value = events.completedEvents || [];
 
     for (const event of recommendedEvents.value) {
       event.tags = await fetchTagsForEvent(event.id);
     }
-
   } catch (error) {
     showToast(
-      new Toast("Fehler", `Events konnten nicht geladen werden.`, "error", faXmark, 5)
+      new Toast(
+        "Fehler",
+        `Events konnten nicht geladen werden.`,
+        "error",
+        faXmark,
+        5
+      )
     );
   } finally {
     isLoading.value = false;
@@ -376,36 +437,68 @@ const goToEvent = (eventId) => {
  * @param {string} eventId - The ID of the event.
  */
 const goToFeedback = async (eventId: string) => {
-
   try {
     if (!useAuth().isAuthenticated.value) {
       router.push({
-        name: 'login',
-        query: { redirect: router.currentRoute.value.fullPath }
+        name: "login",
+        query: { redirect: router.currentRoute.value.fullPath },
       });
       return;
     }
 
     const isValid = await verifyFeedbackEligibility(eventId);
-    
+
     if (!isValid) {
-      router.push('/home');
+      router.push("/home");
       showToast(
-        new Toast("Zugriff verweigert", "Sie sind nicht berechtigt Feedback für dieses Event zu geben", "error", faXmark, 5)
+        new Toast(
+          "Zugriff verweigert",
+          "Sie sind nicht berechtigt Feedback für dieses Event zu geben",
+          "error",
+          faXmark,
+          5
+        )
       );
       return;
     }
 
     const token = await fetchAttendanceToken(eventId);
-    
+
     router.push({
       name: "feedback",
       params: { eventId: eventId.toString() },
-      query: { token: token }
+      query: { token: token },
     });
   } catch (error) {
     showToast(
-      new Toast("Error", "Fehler beim Zugriff auf Feedback-Formular", "error", faXmark, 5)
+      new Toast(
+        "Error",
+        "Fehler beim Zugriff auf Feedback-Formular",
+        "error",
+        faXmark,
+        5
+      )
+    );
+  }
+};
+
+/**
+ * Fetches the available exchange days from the API.
+ */
+const fetchExchangeDays = async () => {
+  try {
+    const response = await api.get(`/exchange-days`);
+    if (response.status === 200) {
+      const data = await response.data;
+      exchangeDays.value = data;
+    } else {
+      showToast(
+        new Toast("Error", "Fehler beim Abrufen der ExchangeDays.", "error")
+      );
+    }
+  } catch (error) {
+    showToast(
+      new Toast("Error", "Fehler beim Abrufen der ExchangeDays.", "error")
     );
   }
 };
@@ -440,12 +533,13 @@ const formatDate = (dateString) => {
 
 onMounted(() => {
   fetchEvents();
+  fetchExchangeDays();
 });
 </script>
 
 <style scoped>
 .event-dashboard {
-  padding: 2rem;
+  padding: 1rem;
   max-width: 1200px;
   max-height: 90%;
   margin: 0 auto;
@@ -460,10 +554,10 @@ onMounted(() => {
   background: white;
   border-radius: 8px;
   padding: 1rem;
-  margin-bottom: 1rem; 
+  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem; 
+  gap: 0.75rem;
   border: 1px solid #e2e8f0;
   min-height: 80px;
   max-height: fit-content;
@@ -472,26 +566,25 @@ onMounted(() => {
 
 .event-search-container {
   position: relative;
-  margin-bottom: 0.5rem;
   width: 94%;
 }
 
 .event-search-input {
   width: 100%;
-  padding: 1rem 1rem 1rem 3rem;
+  padding: 0.5rem 0rem 0.5rem 1rem;
   border: 2px solid #e2e8f0;
   border-radius: 8px;
   font-size: 1rem;
-  background: white url('~@/assets/search-icon.svg') no-repeat 1rem center;
+  background: white url("~@/assets/search-icon.svg") no-repeat 1rem center;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .events-columns-container {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr; 
-  gap: 1rem; 
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
   min-height: 0;
 }
 
@@ -501,7 +594,7 @@ onMounted(() => {
   flex-direction: column;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   padding: 1rem;
 }
@@ -600,8 +693,16 @@ onMounted(() => {
   padding-top: 1rem;
 }
 
-h2{
+h2 {
   border-bottom: 1px solid #e2e8f0;
+}
+
+.exchange-day-select {
+  width: 95.5%;
+}
+
+.input-group{
+  margin:0;
 }
 
 .event-tags {
@@ -627,4 +728,3 @@ h2{
   }
 }
 </style>
-

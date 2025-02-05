@@ -177,7 +177,6 @@ const allTags = ref<Tag[]>([])
 const isRegistered = ref(true);
 const selectionOnlyTags = true;
 
-// Computed properties
 const canProceedToStep2 = computed(() => {
   return (
     username.value &&
@@ -199,7 +198,9 @@ const isRegistrationValid = computed(() => {
   );
 });
 
-// Methods
+/**
+ * Fetch all tags from the backend
+ */
 const fetchTags = async () => {
   try {
     const tagResponse = await api.get(`/tags`);
@@ -216,6 +217,9 @@ const handleStep = (step: number) => {
   }
 };
 
+/**
+ * Handle registration of a new user
+ */
 const handleRegistration = async () => {
   if (isRegistrationValid.value) {
     try {
@@ -248,7 +252,6 @@ const handleRegistration = async () => {
 
         changeToLogin();
       }
-      // Add toast based on error messages from backend
     } catch (error) {
       showToast(
         new Toast(
@@ -263,6 +266,9 @@ const handleRegistration = async () => {
   }
 };
 
+/**
+ * Handle login of an existing user
+ */
 const handleLogin = async () => {
   try {
     const userLoginData = {
