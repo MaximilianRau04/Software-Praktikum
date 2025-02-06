@@ -33,7 +33,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
             FROM users
         ) AS ranked_users
         WHERE (:search IS NULL OR LOWER(username) LIKE LOWER(CONCAT('%', :search, '%')))
-        """, nativeQuery = true)
+        """,
+            countQuery = """
+        SELECT COUNT(*) 
+        FROM users
+        WHERE (:search IS NULL OR LOWER(username) LIKE LOWER(CONCAT('%', :search, '%')))
+        """,
+            nativeQuery = true)
     Page<LeaderboardEntry> findLeaderboardEntries(
             @Param("search") String search,
             Pageable pageable
