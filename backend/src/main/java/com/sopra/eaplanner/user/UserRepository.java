@@ -16,29 +16,25 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
 
     @Query(value = """
-        SELECT position AS rank, user_id AS userId, username, total_points AS totalPoints
-        FROM (
-            SELECT
-                id AS user_id,
-                username,
-                total_points,
-                ROW_NUMBER() OVER (
-                    ORDER BY
-                        CASE 
-                            WHEN total_points > 0 THEN total_points 
-                            ELSE 0
-                        END DESC,
-                        username ASC
-                ) AS position
-            FROM users
-        ) AS ranked_users
-        WHERE (:search IS NULL OR LOWER(username) LIKE LOWER(CONCAT('%', :search, '%')))
-        """,
+            SELECT position AS rank, user_id AS userId, username, total_points AS totalPoints
+            FROM (
+                SELECT
+                    id AS user_id,
+                    username,
+                    total_points,
+                    RANK() OVER (
+                        ORDER BY total_points DESC, username ASC
+                    ) AS position
+                FROM users
+            ) AS ranked_users
+            WHERE (:search IS NULL OR LOWER(username) LIKE LOWER(CONCAT('%', :search, '%')))
+            ORDER BY rank ASC
+            """,
             countQuery = """
-        SELECT COUNT(*) 
-        FROM users
-        WHERE (:search IS NULL OR LOWER(username) LIKE LOWER(CONCAT('%', :search, '%')))
-        """,
+                    SELECT COUNT(*) 
+                    FROM users
+                    WHERE (:search IS NULL OR LOWER(username) LIKE LOWER(CONCAT('%', :search, '%')))
+                    """,
             nativeQuery = true)
     Page<LeaderboardEntry> findLeaderboardEntries(
             @Param("search") String search,
