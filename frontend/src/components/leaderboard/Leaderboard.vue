@@ -3,17 +3,25 @@
     <!-- Current User Position Banner -->
     <div v-if="currentUserPosition" class="current-user-banner">
       <div class="banner-content">
-        <span class="banner-rank">Dein Rang: #{{ currentUserPosition.rank }}</span>
+        <span class="banner-rank"
+          >Dein Rang: #{{ currentUserPosition.rank }}</span
+        >
         <span class="banner-username">{{ currentUserPosition.username }}</span>
-        <span class="banner-points">{{ currentUserPosition.totalPoints }} Punkte</span>
+        <span class="banner-points"
+          >{{ currentUserPosition.totalPoints }} Punkte</span
+        >
       </div>
     </div>
 
     <div class="leaderboard-header">
       <h1>🏆 Rangliste</h1>
       <div class="leaderboard-controls">
-        <input v-model="searchQuery" placeholder="Nutzer suchen..." @input="handleSearch" class="search-input" />
-  
+        <input
+          v-model="searchQuery"
+          placeholder="Nutzer suchen..."
+          @input="handleSearch"
+          class="search-input"
+        />
       </div>
     </div>
 
@@ -28,14 +36,17 @@
         </div>
 
         <div v-else class="leaderboard-entries">
-          <div v-for="entry in sortedLeaderboard" :key="entry.userId" class="leaderboard-card" :class="{
-            'current-user': entry.userId === currentUserPosition?.userId,
-            'podium-1': entry.rank === 1,
-            'podium-2': entry.rank === 2,
-            'podium-3': entry.rank === 3
-          }">
-
-
+          <div
+            v-for="entry in sortedLeaderboard"
+            :key="entry.userId"
+            class="leaderboard-card"
+            :class="{
+              'current-user': entry.userId === currentUserPosition?.userId,
+              'podium-1': entry.rank === 1,
+              'podium-2': entry.rank === 2,
+              'podium-3': entry.rank === 3,
+            }"
+          >
             <div class="entry-rank">
               <span v-if="entry.rank === 1" class="trophy-icon">🥇</span>
               <span v-else-if="entry.rank === 2" class="trophy-icon">🥈</span>
@@ -43,28 +54,39 @@
               {{ entry.rank }}
             </div>
 
-
-            <div class="entry-user clickable-username" @click="goToProfile(entry.username)">
+            <div
+              class="entry-user clickable-username"
+              @click="goToProfile(entry.username)"
+            >
               <span class="username">{{ entry.username }}</span>
-              <span v-if="entry.userId === currentUserPosition?.userId" class="you-badge">
+              <span
+                v-if="entry.userId === currentUserPosition?.userId"
+                class="you-badge"
+              >
                 (Du)
               </span>
             </div>
 
-            <div class="entry-points">
-              {{ entry.totalPoints }} Punkte
-            </div>
+            <div class="entry-points">{{ entry.totalPoints }} Punkte</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="leaderboard-pagination">
-      <button @click="fetchLeaderboard(currentPage - 1)" :disabled="currentPage === 1" class="pagination-button">
+      <button
+        @click="fetchLeaderboard(currentPage - 1)"
+        :disabled="currentPage === 1"
+        class="pagination-button"
+      >
         Zurück
       </button>
       <span class="page-indicator">Seite {{ currentPage }}</span>
-      <button @click="fetchLeaderboard(currentPage + 1)" :disabled="!hasMore" class="pagination-button">
+      <button
+        @click="fetchLeaderboard(currentPage + 1)"
+        :disabled="!hasMore"
+        class="pagination-button"
+      >
         Weiter
       </button>
     </div>
@@ -86,7 +108,7 @@ export default {
       currentPage: 1,
       pageSize: 10,
       hasMore: false,
-      searchQuery: '',
+      searchQuery: "",
       sortAsc: false,
       currentUser: null,
       currentUserEntry: null,
@@ -106,35 +128,36 @@ export default {
             page: page - 1,
             size: this.pageSize,
             search: this.searchQuery,
-            sort: this.sortAsc ? "asc" : "desc"
-          }
+            sort: this.sortAsc ? "asc" : "desc",
+          },
         });
 
-      this.leaderboard = response.data.content
-      .map(entry => ({ ...entry, rank: entry.rank }))
-      .sort((a, b) => a.rank - b.rank);
+        this.leaderboard = response.data.content
+          .map((entry) => ({ ...entry, rank: entry.rank }))
+          .sort((a, b) => a.rank - b.rank);
 
-
-      this.currentPage = page;
-      this.hasMore = !response.data.last;
-
+        this.currentPage = page;
+        this.hasMore = !response.data.last;
       } catch (error) {
-        showToast(new Toast("Error", "Failed to load leaderboard", "error", faXmark, 5));
+        showToast(
+          new Toast("Error", "Failed to load leaderboard", "error", faXmark, 5),
+        );
       }
     },
 
     async fetchCurrentUserPosition() {
       try {
-        const response = await api.get('/leaderboard/current-position');
+        const response = await api.get("/leaderboard/current-position");
         this.currentUserPosition = response.data;
 
-        const userPage = Math.ceil(this.currentUserPosition.rank / this.pageSize);
+        const userPage = Math.ceil(
+          this.currentUserPosition.rank / this.pageSize,
+        );
         if (userPage !== this.currentPage) {
           this.fetchLeaderboard(userPage);
         }
-
       } catch (error) {
-        console.error('Could not fetch current user position');
+        console.error("Could not fetch current user position");
       }
     },
 
@@ -148,30 +171,28 @@ export default {
     toggleSortOrder() {
       this.sortAsc = !this.sortAsc;
       this.fetchLeaderboard(1);
-    }
+    },
   },
   computed: {
     sortedLeaderboard() {
       return [...this.leaderboard].sort((a, b) =>
-        this.sortAsc ? b.rank - a.rank : a.rank - b.rank
+        this.sortAsc ? b.rank - a.rank : a.rank - b.rank,
       );
-    }
-
-  }
-  ,
+    },
+  },
   async mounted() {
     await this.fetchLeaderboard(this.currentPage);
     await this.fetchCurrentUserPosition();
 
     this.currentUser = useAuth().getUserData();
-  }
+  },
 };
 </script>
 
 <style scoped>
 .current-user-banner {
   background: #e3f2fd;
-  border: 2px solid #2196F3;
+  border: 2px solid #2196f3;
   border-radius: 8px;
   margin-bottom: 1.5rem;
   padding: 1rem;
@@ -186,7 +207,7 @@ export default {
 
 .banner-rank {
   font-weight: 600;
-  color: #1976D2;
+  color: #1976d2;
 }
 
 .banner-username {
@@ -195,7 +216,7 @@ export default {
 }
 
 .banner-points {
-  background: #2196F3;
+  background: #2196f3;
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 16px;
@@ -204,11 +225,11 @@ export default {
 
 .current-user .entry-user {
   font-weight: 600;
-  color: #1976D2;
+  color: #1976d2;
 }
 
 .current-user .entry-points {
-  color: #1976D2;
+  color: #1976d2;
   font-weight: 600;
 }
 
@@ -246,13 +267,13 @@ export default {
 
 .search-input:focus {
   outline: none;
-  border-color: #2196F3;
+  border-color: #2196f3;
   box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
 }
 
 .sort-button {
   padding: 1rem 1.5rem;
-  background: #2196F3;
+  background: #2196f3;
   color: white;
   border: none;
   border-radius: 8px;
@@ -261,7 +282,7 @@ export default {
 }
 
 .sort-button:hover {
-  background: #1976D2;
+  background: #1976d2;
 }
 
 .leaderboard-entries {
@@ -291,7 +312,7 @@ export default {
 
 .entry-rank {
   font-weight: 600;
-  color: #2196F3;
+  color: #2196f3;
   min-width: 50px;
   text-align: center;
 }
@@ -315,7 +336,7 @@ export default {
 
 .you-badge {
   background: #e3f2fd;
-  color: #1976D2;
+  color: #1976d2;
   padding: 0.25rem 0.75rem;
   border-radius: 16px;
   font-size: 0.9rem;
@@ -329,23 +350,35 @@ export default {
 }
 
 .podium-1 {
-  border-left: 4px solid #FFD700;
-  background: linear-gradient(90deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0) 100%);
+  border-left: 4px solid #ffd700;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 215, 0, 0.05) 0%,
+    rgba(255, 215, 0, 0) 100%
+  );
 }
 
 .podium-2 {
-  border-left: 4px solid #C0C0C0;
-  background: linear-gradient(90deg, rgba(192, 192, 192, 0.05) 0%, rgba(192, 192, 192, 0) 100%);
+  border-left: 4px solid #c0c0c0;
+  background: linear-gradient(
+    90deg,
+    rgba(192, 192, 192, 0.05) 0%,
+    rgba(192, 192, 192, 0) 100%
+  );
 }
 
 .podium-3 {
-  border-left: 4px solid #CD7F32;
-  background: linear-gradient(90deg, rgba(205, 127, 50, 0.05) 0%, rgba(205, 127, 50, 0) 100%);
+  border-left: 4px solid #cd7f32;
+  background: linear-gradient(
+    90deg,
+    rgba(205, 127, 50, 0.05) 0%,
+    rgba(205, 127, 50, 0) 100%
+  );
 }
 
 .current-user {
   background-color: #f5faff;
-  border-color: #2196F3;
+  border-color: #2196f3;
 }
 
 .empty-state-message {
@@ -368,7 +401,7 @@ export default {
 
 .pagination-button {
   padding: 0.75rem 1.5rem;
-  background: #2196F3;
+  background: #2196f3;
   color: white;
   border: none;
   border-radius: 6px;
@@ -382,7 +415,7 @@ export default {
 }
 
 .active-sort {
-  background-color: #1976D2 !important;
+  background-color: #1976d2 !important;
   color: white !important;
 }
 

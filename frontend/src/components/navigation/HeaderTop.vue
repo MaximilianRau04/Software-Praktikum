@@ -141,7 +141,7 @@ export default {
   methods: {
     getFallbackUser() {
       const auth = useAuth();
-      return auth.getUserData() || { id: null, username: 'Guest' };
+      return auth.getUserData() || { id: null, username: "Guest" };
     },
 
     handleToggleSidebar() {
@@ -185,7 +185,10 @@ export default {
           query: { threadId: notification.context.threadId },
         });
       } else if (notification.type === "EVENT_REMINDER") {
-        this.$router.push({ name: "EventPage", params: { eventId: notification.context.eventId } });
+        this.$router.push({
+          name: "EventPage",
+          params: { eventId: notification.context.eventId },
+        });
       } else if (notification.type === "REWARD") {
         this.$router.push(`/profile/${this.currentUser.username}`);
       }

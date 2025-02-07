@@ -9,7 +9,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid #01172F;
+  border-bottom: 2px solid #01172f;
   padding: 0 1rem 10px;
   margin-bottom: 0.5rem;
 }
@@ -34,7 +34,7 @@
 }
 
 .manage-button {
-  background: #01172F;
+  background: #01172f;
   color: white;
   border: none;
   padding: 0.5rem 1.2rem;
@@ -72,7 +72,7 @@
   background: #f8f9fa;
   padding-left: 1rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   font-size: 0.95rem;
   line-height: 1.4;
   color: #444;
@@ -97,11 +97,11 @@
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: relative; 
+  position: relative;
 }
 
 .info-box:first-child::after {
-  content: '';
+  content: "";
   position: absolute;
   right: -8px;
   top: 15%;

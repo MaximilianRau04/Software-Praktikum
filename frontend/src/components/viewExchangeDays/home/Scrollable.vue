@@ -12,10 +12,12 @@
         <hr class="separator-exchange" />
         <div class="details">
           <p class="date">
-            {{ formatDate(exchangeDay.startDate) }} bis {{ formatDate(exchangeDay.endDate) }}
+            {{ formatDate(exchangeDay.startDate) }} bis
+            {{ formatDate(exchangeDay.endDate) }}
           </p>
           <p class="location">
-            {{ exchangeDay.location.street }} {{ exchangeDay.location.houseNumber }},<br />
+            {{ exchangeDay.location.street }}
+            {{ exchangeDay.location.houseNumber }},<br />
             {{ exchangeDay.location.city }}, {{ exchangeDay.location.country }}
           </p>
         </div>
@@ -37,8 +39,8 @@ export default {
     },
     selectedExchangeDay: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   emits: ["select-exchange-day"],
   setup(props, { emit }) {
@@ -72,7 +74,7 @@ export default {
     return {
       sortedExchangeDays,
       formatDate,
-      selectExchangeDay
+      selectExchangeDay,
     };
   },
 };

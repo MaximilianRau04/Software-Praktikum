@@ -2,7 +2,10 @@
   <div class="home-container">
     <!-- left side for details -->
     <div class="leftSide">
-      <ExchangeDayDetails v-if="selectedExchangeDay" :exchangeDay="selectedExchangeDay" />
+      <ExchangeDayDetails
+        v-if="selectedExchangeDay"
+        :exchangeDay="selectedExchangeDay"
+      />
     </div>
 
     <!-- right side for scrollables -->
@@ -10,10 +13,22 @@
       <!-- Date Filter / Datepicker bleibt fixiert -->
       <div class="date-filter">
         <div class="date-picker-container">
-          <input type="date" id="date-picker-from" v-model="selectedDateFrom" @change="filterExchangeDays" />
+          <input
+            type="date"
+            id="date-picker-from"
+            v-model="selectedDateFrom"
+            @change="filterExchangeDays"
+          />
           <span class="date-range-separator">bis</span>
-          <input type="date" id="date-picker-to" v-model="selectedDateTo" @change="filterExchangeDays" />
-          <button type="button" @click="resetDateFilters" class="reset-button">✕</button>
+          <input
+            type="date"
+            id="date-picker-to"
+            v-model="selectedDateTo"
+            @change="filterExchangeDays"
+          />
+          <button type="button" @click="resetDateFilters" class="reset-button">
+            ✕
+          </button>
         </div>
       </div>
 
@@ -21,10 +36,10 @@
       <div class="upcoming-section">
         <h2>Kommende Exchange Days</h2>
         <div class="scrollableEvents upcoming-list">
-          <ScrollableDivs 
-            :exchangeDays="upcomingExchangeDaysList" 
-            @select-exchange-day="selectExchangeDay" 
-            :selectedExchangeDay="selectedExchangeDay" 
+          <ScrollableDivs
+            :exchangeDays="upcomingExchangeDaysList"
+            @select-exchange-day="selectExchangeDay"
+            :selectedExchangeDay="selectedExchangeDay"
           />
         </div>
       </div>
@@ -33,10 +48,10 @@
       <div class="past-section">
         <h2>Vergangene Exchange Days</h2>
         <div class="scrollableEvents past-list">
-          <ScrollableDivs 
-            :exchangeDays="pastExchangeDaysList" 
-            @select-exchange-day="selectExchangeDay" 
-            :selectedExchangeDay="selectedExchangeDay" 
+          <ScrollableDivs
+            :exchangeDays="pastExchangeDaysList"
+            @select-exchange-day="selectExchangeDay"
+            :selectedExchangeDay="selectedExchangeDay"
           />
         </div>
       </div>
@@ -67,12 +82,12 @@ const today = new Date().setHours(0, 0, 0, 0);
  */
 async function fetchAllExchangeDays() {
   try {
-    const response = await api.get<ExchangeDay[]>('/exchange-days');
-    
-    exchangeDays.value = response.data.map(day => ({
+    const response = await api.get<ExchangeDay[]>("/exchange-days");
+
+    exchangeDays.value = response.data.map((day) => ({
       ...day,
       startDate: new Date(day.startDate).getTime(),
-      endDate: new Date(day.endDate).getTime()
+      endDate: new Date(day.endDate).getTime(),
     }));
 
     categorizeExchangeDays();
@@ -83,8 +98,8 @@ async function fetchAllExchangeDays() {
         "Exchange Days konnten nicht abgerufen werden.",
         "error",
         faXmark,
-        5
-      )
+        5,
+      ),
     );
   }
 }
@@ -94,12 +109,12 @@ async function fetchAllExchangeDays() {
  */
 function categorizeExchangeDays() {
   const sortedExchangeDays = [...exchangeDays.value].sort(
-    (a, b) => a.startDate - b.startDate
+    (a, b) => a.startDate - b.startDate,
   );
 
   upcomingExchangeDaysList.value = sortedExchangeDays.filter((day) => {
     const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
-    return endDate >= today; 
+    return endDate >= today;
   });
 
   pastExchangeDaysList.value = sortedExchangeDays.filter((day) => {
@@ -129,7 +144,7 @@ function filterExchangeDays() {
   upcomingExchangeDaysList.value = exchangeDays.value.filter((day) => {
     const startDate = new Date(day.startDate).setHours(0, 0, 0, 0);
     return (
-      startDate > today && 
+      startDate > today &&
       startDate >= startTimestamp &&
       startDate <= endTimestamp
     );
@@ -139,9 +154,7 @@ function filterExchangeDays() {
   pastExchangeDaysList.value = exchangeDays.value.filter((day) => {
     const endDate = new Date(day.endDate).setHours(0, 0, 0, 0);
     return (
-      endDate <= today && 
-      endDate >= startTimestamp &&
-      endDate <= endTimestamp
+      endDate <= today && endDate >= startTimestamp && endDate <= endTimestamp
     );
   });
 }

@@ -176,7 +176,9 @@ const updateExchangeDay = async () => {
 
   try {
     const response = await api.put(
-      `/exchange-days/${selectedExchangeDay.value.id}`, payload);
+      `/exchange-days/${selectedExchangeDay.value.id}`,
+      payload,
+    );
 
     if (response.status === 200) {
       showToast(
@@ -211,7 +213,8 @@ const deleteExchangeDay = async () => {
   if (confirm("Möchten Sie diesen ExchangeDay wirklich löschen?")) {
     try {
       const response = await api.delete(
-        `/exchange-days/${selectedExchangeDay.value.id}`);
+        `/exchange-days/${selectedExchangeDay.value.id}`,
+      );
 
       if (response.status === 204) {
         showToast(

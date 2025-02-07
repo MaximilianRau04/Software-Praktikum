@@ -3,9 +3,15 @@
     <template #message>
       <p>
         <span class="notification-title" @click="navigateToProfile">
-          Sie haben die Errungenschaft <img v-if="rewardPng" :src="rewardPng" alt="Badge Image"
-            class="badge-image" /><strong>{{ notification.title }}</strong>
-          erreicht. Klicken Sie hier, um sich die Errungenschaft auf Ihrem Profil anzuschauen.
+          Sie haben die Errungenschaft
+          <img
+            v-if="rewardPng"
+            :src="rewardPng"
+            alt="Badge Image"
+            class="badge-image"
+          /><strong>{{ notification.title }}</strong>
+          erreicht. Klicken Sie hier, um sich die Errungenschaft auf Ihrem
+          Profil anzuschauen.
         </span>
       </p>
     </template>
@@ -29,8 +35,8 @@ export default {
     const rewardPng = ref(null);
 
     const navigateToProfile = () => {
-      emit('closeNoti', props.notification);
-      emit('mark-as-read', props.notification.id);
+      emit("closeNoti", props.notification);
+      emit("mark-as-read", props.notification.id);
     };
 
     const fetchBadgePng = async () => {
@@ -40,9 +46,12 @@ export default {
       }
 
       try {
-        const badgeImageResponse = await api.get(`/rewards/badge?type=${props.notification.context.rewardType}&currentLevel=${props.notification.context.currentLevel}`, {
-          responseType: 'blob'
-        });
+        const badgeImageResponse = await api.get(
+          `/rewards/badge?type=${props.notification.context.rewardType}&currentLevel=${props.notification.context.currentLevel}`,
+          {
+            responseType: "blob",
+          },
+        );
 
         if (badgeImageResponse.status !== 200) {
           throw new Error("Badge image fetch failed");
@@ -67,7 +76,7 @@ export default {
     watch(() => props.notification, fetchBadgePng, { deep: true });
 
     return { rewardPng, navigateToProfile };
-  }
+  },
 };
 </script>
 

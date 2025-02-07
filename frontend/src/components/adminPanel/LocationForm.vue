@@ -119,12 +119,12 @@ const createLocation = async () => {
   const selectedCity = city.value === "custom" ? customCity.value : city.value;
 
   const locationData = {
-        city: selectedCity,
-        postalCode: postalCode.value,
-        street: street.value,
-        houseNumber: houseNumber.value,
-        country: selectedCountry,
-      }
+    city: selectedCity,
+    postalCode: postalCode.value,
+    street: street.value,
+    houseNumber: houseNumber.value,
+    country: selectedCountry,
+  };
 
   try {
     const response = await api.post(`/locations`, locationData);

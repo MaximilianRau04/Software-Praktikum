@@ -20,32 +20,32 @@ export const useAuth = () => {
   const { cookies } = useCookies();
 
   const getToken = (): string | null => {
-    return cookies.get('jwt');
+    return cookies.get("jwt");
   };
 
   const setToken = (token: string): void => {
     const decoded = jwtDecode<DecodedToken>(token);
     const cookieConfig = {
       expires: new Date(decoded.exp * 1000),
-      path: '/',
-      domain: '',
+      path: "/",
+      domain: "",
       secure: false,
-      sameSite: 'Strict' as const
+      sameSite: "Strict" as const,
     };
-    
+
     cookies.set(
-      'jwt',
+      "jwt",
       token,
       cookieConfig.expires,
       cookieConfig.path,
       cookieConfig.domain,
       cookieConfig.secure,
-      cookieConfig.sameSite
+      cookieConfig.sameSite,
     );
   };
 
   const clearToken = (): void => {
-    cookies.remove('jwt');
+    cookies.remove("jwt");
   };
 
   const getRoles = (): string[] => {
@@ -53,7 +53,7 @@ export const useAuth = () => {
     if (!token) return [];
     try {
       const decoded = jwtDecode<DecodedToken>(token);
-      return decoded.roles?.map(roleObj => roleObj.authority) || [];
+      return decoded.roles?.map((roleObj) => roleObj.authority) || [];
     } catch {
       return [];
     }
@@ -89,7 +89,7 @@ export const useAuth = () => {
   const getUserData = () => {
     const token = getToken();
     if (!token) return null;
-    
+
     try {
       const decoded = jwtDecode<DecodedToken>(token);
       return {
@@ -97,7 +97,7 @@ export const useAuth = () => {
         username: decoded.username,
         firstname: decoded.firstname,
         lastname: decoded.lastname,
-        roles: decoded.roles?.map(roleObj => roleObj.authority) || [],
+        roles: decoded.roles?.map((roleObj) => roleObj.authority) || [],
       };
     } catch {
       return null;
@@ -107,7 +107,7 @@ export const useAuth = () => {
   const isAuthenticated = computed(() => {
     const token = getToken();
     if (!token) return false;
-    
+
     try {
       const decoded = jwtDecode<DecodedToken>(token);
       return Date.now() < decoded.exp * 1000;
@@ -122,8 +122,11 @@ export const useAuth = () => {
 
     try {
       const decoded = jwtDecode<DecodedToken>(token);
-      return Date.now() < decoded.exp * 1000 && decoded.roles.some(role => role.authority === 'ROLE_ADMIN');
-    }catch {
+      return (
+        Date.now() < decoded.exp * 1000 &&
+        decoded.roles.some((role) => role.authority === "ROLE_ADMIN")
+      );
+    } catch {
       return false;
     }
   });

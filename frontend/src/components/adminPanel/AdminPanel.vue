@@ -1,6 +1,5 @@
 <template>
   <div class="admin-container">
-
     <div class="admin-sidebar">
       <div class="sidebar-section">
         <h3 class="sidebar-title">Erstellen</h3>
@@ -44,83 +43,97 @@
 
       <div class="sidebar-section">
         <h3 class="sidebar-title">CSV</h3>
-        
-        <button class="sidebar-btn" @click="importExampleResources" >
-        Beispiel-Import von Resourcen
+
+        <button class="sidebar-btn" @click="importExampleResources">
+          Beispiel-Import von Resourcen
         </button>
         <button class="sidebar-btn" @click="triggerFileUpload">
-        CSV Import von Resourcen
-      </button>
-      <input
-        ref="fileInput"
-        type="file"
-        accept=".csv"
-        @change="handleFileUpload"
-        style="display: none"
-      />
-      <button class="sidebar-btn" @click="downloadCsvOfResources" >
-        CSV Export von Resourcen
-      </button>
-      
+          CSV Import von Resourcen
+        </button>
+        <input
+          ref="fileInput"
+          type="file"
+          accept=".csv"
+          @change="handleFileUpload"
+          style="display: none"
+        />
+        <button class="sidebar-btn" @click="downloadCsvOfResources">
+          CSV Export von Resourcen
+        </button>
       </div>
     </div>
 
     <div class="admin-content">
       <transition name="slide-fade">
         <div class="form-wrapper" v-if="showExchangeDayBox">
-          <ExchangeDayForm v-model:showExchangeDayBox="showExchangeDayBox" :exchange-days="exchangeDays" :users="users"/>
+          <ExchangeDayForm
+            v-model:showExchangeDayBox="showExchangeDayBox"
+            :exchange-days="exchangeDays"
+            :users="users"
+          />
         </div>
       </transition>
 
       <transition name="slide-fade">
         <div class="form-wrapper" v-if="showWorkshopBox">
-          <WorkshopForm v-model:showWorkshopBox="showWorkshopBox" :exchange-days="exchangeDays" :experience-levels="experienceLevels" :all-tags="allTags"/>
+          <WorkshopForm
+            v-model:showWorkshopBox="showWorkshopBox"
+            :exchange-days="exchangeDays"
+            :experience-levels="experienceLevels"
+            :all-tags="allTags"
+          />
         </div>
       </transition>
 
       <transition name="slide-fade">
         <div class="form-wrapper" v-if="showResourceBox">
-          <ResourceForm v-model:showResourceBox="showResourceBox"/>
+          <ResourceForm v-model:showResourceBox="showResourceBox" />
         </div>
       </transition>
 
       <transition name="slide-fade">
         <div class="form-wrapper" v-if="showLocationBox">
-          <LocationForm v-model:showLocationBox="showLocationBox"/>
+          <LocationForm v-model:showLocationBox="showLocationBox" />
         </div>
       </transition>
 
       <transition name="slide-fade">
         <div class="form-wrapper" v-if="showUpdateResourceBox">
-          <UpdateResource v-model:showUpdateResourceBox="showUpdateResourceBox"/>
+          <UpdateResource
+            v-model:showUpdateResourceBox="showUpdateResourceBox"
+          />
         </div>
       </transition>
 
       <transition name="slide-fade">
         <div class="form-wrapper" v-if="selectEventToUpdate">
-          <UpdateEvent v-model:selectEventToUpdate="selectEventToUpdate"/>
+          <UpdateEvent v-model:selectEventToUpdate="selectEventToUpdate" />
         </div>
       </transition>
 
       <transition name="slide-fade">
         <div class="form-wrapper" v-if="selectExchangeDayToUpdate">
-          <UpdateExchangeDay v-model:selectExchangeDayToUpdate="selectExchangeDayToUpdate"/>
+          <UpdateExchangeDay
+            v-model:selectExchangeDayToUpdate="selectExchangeDayToUpdate"
+          />
         </div>
       </transition>
 
       <transition name="slide-fade">
         <div class="form-wrapper" v-if="showEventListBox">
-          <EventList v-model:showEventListBox="showEventListBox"/>
+          <EventList v-model:showEventListBox="showEventListBox" />
         </div>
       </transition>
 
       <transition name="slide-fade">
         <div class="form-wrapper" v-if="showEventInviteOnlyListBox">
-          <EventInviteOnlyList v-model:showEventInviteOnlyListBox="showEventInviteOnlyListBox"/>
+          <EventInviteOnlyList
+            v-model:showEventInviteOnlyListBox="showEventInviteOnlyListBox"
+          />
         </div>
       </transition>
     </div>
-    
+
     <input
       ref="fileInput"
       type="file"
@@ -147,7 +160,6 @@ import EventList from "./EventList.vue";
 import { showToast, Toast } from "@/types/toasts";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import api from "@/util/api";
-
 
 const showWorkshopBox = ref(false);
 const showExchangeDayBox = ref(false);
@@ -193,7 +205,7 @@ const fetchData = async () => {
       ]);
     if (exchangeDaysResponse.status !== 200) {
       showToast(
-        new Toast("Error", "Fehler beim Laden der Exchange Days", "error")
+        new Toast("Error", "Fehler beim Laden der Exchange Days", "error"),
       );
     }
     if (usersResponse.status !== 200) {
@@ -201,7 +213,7 @@ const fetchData = async () => {
     }
     if (levelsResponse.status !== 200) {
       showToast(
-        new Toast("Error", "Fehler beim Laden der Erfahrungslevel", "error")
+        new Toast("Error", "Fehler beim Laden der Erfahrungslevel", "error"),
       );
     }
     fetchTags();
@@ -286,37 +298,38 @@ const resetForms = (currentForm) => {
   }
 };
 
-
 /**
  * Download CSV file of resources
  */
- async function downloadCsvOfResources() {
+async function downloadCsvOfResources() {
   try {
-    const response = await api.get('/resources/csv-downloads', {
-      responseType: 'blob'
+    const response = await api.get("/resources/csv-downloads", {
+      responseType: "blob",
     });
 
-    const blob = new Blob([response.data], { 
-      type: 'text/csv;charset=UTF-8'
+    const blob = new Blob([response.data], {
+      type: "text/csv;charset=UTF-8",
     });
 
-    const blobWithBOM = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), blob], {
-      type: 'text/csv;charset=UTF-8'
+    const blobWithBOM = new Blob([new Uint8Array([0xef, 0xbb, 0xbf]), blob], {
+      type: "text/csv;charset=UTF-8",
     });
 
     const url = window.URL.createObjectURL(blobWithBOM);
     const link = document.createElement("a");
     link.href = url;
-    const filename = 'resources.csv';
+    const filename = "resources.csv";
     link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
   } catch (error) {
-    showToast(new Toast("Error", "CSV Download fehlgeschlagen!", "error", faXmark, 10));
+    showToast(
+      new Toast("Error", "CSV Download fehlgeschlagen!", "error", faXmark, 10),
+    );
   }
-};
+}
 
 /**
  * Import example resources from CSV
@@ -325,28 +338,28 @@ const importExampleResources = async () => {
   try {
     const response = await fetch("/csv/example.csv");
     const text = await response.text();
-    
-    const UTF8_BOM = new Uint8Array([0xEF, 0xBB, 0xBF]);
-    
+
+    const UTF8_BOM = new Uint8Array([0xef, 0xbb, 0xbf]);
+
     const encoder = new TextEncoder();
     const textBytes = encoder.encode(text);
-    
+
     const combinedArray = new Uint8Array(UTF8_BOM.length + textBytes.length);
     combinedArray.set(UTF8_BOM);
     combinedArray.set(textBytes, UTF8_BOM.length);
-    
+
     const blob = new Blob([combinedArray], {
-      type: "text/csv;charset=utf-8"
+      type: "text/csv;charset=utf-8",
     });
- 
+
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
     link.download = "example.csv";
-    
+
     document.body.appendChild(link);
     link.click();
-    
+
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
   } catch (error) {
@@ -354,8 +367,6 @@ const importExampleResources = async () => {
     alert("Der Download konnte nicht durchgeführt werden.");
   }
 };
-
-
 
 const triggerFileUpload = () => {
   fileInput.value?.click();
@@ -376,11 +387,11 @@ const handleFileUpload = async (event: Event) => {
   formData.append("file", file);
 
   try {
-    await api.post('/resources/csv-import', formData, {
+    await api.post("/resources/csv-import", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
+        "Content-Type": "multipart/form-data",
       },
-      responseType: 'text'
+      responseType: "text",
     });
 
     showToast(new Toast("Success", "CSV erfolgreich importiert!", "success"));

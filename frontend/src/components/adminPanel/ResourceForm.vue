@@ -66,13 +66,13 @@ const emit = defineEmits(["update:showResourceBox"]);
  */
 const createResource = async () => {
   const resourceData = {
-        name: name.value,
-        type: type.value,
-        capacity: capacity.value,
-        description: description.value,
-        locationId: location.value.id,
-        availability: availability.value,
-      }
+    name: name.value,
+    type: type.value,
+    capacity: capacity.value,
+    description: description.value,
+    locationId: location.value.id,
+    availability: availability.value,
+  };
 
   try {
     const response = await api.post(`/resources`, resourceData);
@@ -127,4 +127,3 @@ onMounted(async () => {
   }
 });
 </script>
-

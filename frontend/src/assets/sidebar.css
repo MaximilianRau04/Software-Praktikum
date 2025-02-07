@@ -1,6 +1,6 @@
 .sidebar {
   height: 100vh;
-  background-color: #01172F;
+  background-color: #01172f;
   overflow: hidden;
   transition: width 300ms ease-in-out;
   width: 65px;
@@ -17,7 +17,7 @@
   flex-direction: column;
   justify-content: space-between;
   height: calc(100vh - 3rem);
-  background-color: #01172F;
+  background-color: #01172f;
 }
 
 .menu {

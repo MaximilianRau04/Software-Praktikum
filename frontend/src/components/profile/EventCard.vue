@@ -5,26 +5,46 @@
     </div>
     <div class="date-time">
       <span class="date">
-        {{ new Date(event.date).toLocaleDateString("de-DE", {
-          weekday: "long", day: "numeric", month: "long", year:
-            "numeric" }) }}
+        {{
+          new Date(event.date).toLocaleDateString("de-DE", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })
+        }}
       </span>
       <span class="time">
         {{
-          new Date(event.date + "T" + event.startTime).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })
+          new Date(event.date + "T" + event.startTime).toLocaleTimeString(
+            "de-DE",
+            { hour: "2-digit", minute: "2-digit" },
+          )
         }}
         -
         {{
-          new Date(event.date + "T" + event.endTime).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })
+          new Date(event.date + "T" + event.endTime).toLocaleTimeString(
+            "de-DE",
+            { hour: "2-digit", minute: "2-digit" },
+          )
         }}
       </span>
     </div>
     <div class="event-description">
       <p>{{ event.description }}</p>
     </div>
-    <button v-if="showRegisterButton" class="details-btn" @click="showDetails">Details anzeigen</button>
+    <button v-if="showRegisterButton" class="details-btn" @click="showDetails">
+      Details anzeigen
+    </button>
     <div v-if="showRating" class="rating">
-      <div class="star" v-for="n in 5" :key="n" :class="{ filled: n <= Math.round(event.averageRating) }">★</div>
+      <div
+        class="star"
+        v-for="n in 5"
+        :key="n"
+        :class="{ filled: n <= Math.round(event.averageRating) }"
+      >
+        ★
+      </div>
     </div>
   </div>
 </template>
@@ -48,7 +68,10 @@ export default {
   },
   methods: {
     showDetails() {
-      this.$router.push({ name: "EventPage", params: { eventId: this.event.id } });
+      this.$router.push({
+        name: "EventPage",
+        params: { eventId: this.event.id },
+      });
     },
   },
 };
@@ -66,8 +89,8 @@ export default {
   gap: 0.5rem;
 }
 
-h4{
-  margin:0;
+h4 {
+  margin: 0;
 }
 
 .event-tags {
@@ -101,7 +124,7 @@ h4{
   background-color: #0056b3;
 }
 
-.heading{
+.heading {
   display: flex;
   flex-direction: column;
   margin-top: 10px 0 0 0;

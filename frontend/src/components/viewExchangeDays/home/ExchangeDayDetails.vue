@@ -2,7 +2,11 @@
   <div class="exchangeDayDetails">
     <div class="exchangeDayHeader">
       <h1>{{ selectedExchangeDay?.name }} - Exchange Day</h1>
-      <button v-if="isAdmin" class="manage-button" @click="handleManage(selectedExchangeDay?.id)">
+      <button
+        v-if="isAdmin"
+        class="manage-button"
+        @click="handleManage(selectedExchangeDay?.id)"
+      >
         Verwalten
       </button>
     </div>
@@ -20,11 +24,18 @@
               <CalendarIcon class="icon" />
               <h4>Termin</h4>
             </div>
-            <div v-if="selectedExchangeDay?.startDate !== selectedExchangeDay?.endDate" class="info-content">
-              {{ formatDateLong(selectedExchangeDay?.startDate) }}<br>
+            <div
+              v-if="
+                selectedExchangeDay?.startDate !== selectedExchangeDay?.endDate
+              "
+              class="info-content"
+            >
+              {{ formatDateLong(selectedExchangeDay?.startDate) }}<br />
               bis {{ formatDateLong(selectedExchangeDay?.endDate) }}
             </div>
-            <div v-else class="info-content">{{formatDateLong(selectedExchangeDay?.startDate)}}</div>
+            <div v-else class="info-content">
+              {{ formatDateLong(selectedExchangeDay?.startDate) }}
+            </div>
           </div>
 
           <div class="info-box">
@@ -33,8 +44,10 @@
               <h4>Ort</h4>
             </div>
             <div class="info-content">
-              {{ selectedExchangeDay?.location.street }} {{ selectedExchangeDay?.location.houseNumber }}<br>
-              {{ selectedExchangeDay?.location.postalCode }} {{ selectedExchangeDay?.location.city }}<br>
+              {{ selectedExchangeDay?.location.street }}
+              {{ selectedExchangeDay?.location.houseNumber }}<br />
+              {{ selectedExchangeDay?.location.postalCode }}
+              {{ selectedExchangeDay?.location.city }}<br />
               {{ selectedExchangeDay?.location.country }}
             </div>
           </div>
@@ -47,11 +60,10 @@
       </div>
     </div>
     <div class="exchangeDayHeader">
-        <h2>Geplante Workshops</h2>
-      </div>
+      <h2>Geplante Workshops</h2>
+    </div>
     <!-- Events Section -->
     <div class="scrollableEventList">
-      
       <div class="event-grid">
         <div v-for="event in events" :key="event.id" class="event-item">
           <EventDetails :event="event" />
@@ -71,7 +83,10 @@ import { useRouter } from "vue-router";
 import { showToast, Toast } from "@/types/toasts";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import MapComponent from "../MapComponent.vue";
-import { CalendarIcon, MapPinIcon as LocationIcon } from '@heroicons/vue/24/outline';
+import {
+  CalendarIcon,
+  MapPinIcon as LocationIcon,
+} from "@heroicons/vue/24/outline";
 import { useAuth } from "@/util/auth";
 import api from "@/util/api";
 
@@ -139,8 +154,8 @@ async function fetchExchangeDayDetails(id: number) {
           `Exchange Days konnten nicht geladen werden.`,
           "error",
           faXmark,
-          5
-        )
+          5,
+        ),
       );
 
     const data = await response.data;
@@ -157,10 +172,9 @@ async function fetchExchangeDayDetails(id: number) {
     checkIfPastExchangeDay();
     await fetchEventDetails();
 
-    if(selectedExchangeDay.value?.location){
+    if (selectedExchangeDay.value?.location) {
       await geocodeAddress();
     }
-
   } catch (error) {
     showToast(
       new Toast(
@@ -168,8 +182,8 @@ async function fetchExchangeDayDetails(id: number) {
         `Exchange Days konnten nicht geladen werden.`,
         "error",
         faXmark,
-        5
-      )
+        5,
+      ),
     );
   }
 }
@@ -179,27 +193,34 @@ async function fetchExchangeDayDetails(id: number) {
  */
 async function fetchEventDetails() {
   try {
-    const response = await api.get(`/exchange-days/${selectedExchangeDay.value.id}/events`
+    const response = await api.get(
+      `/exchange-days/${selectedExchangeDay.value.id}/events`,
     );
     if (response.status !== 200) {
       showToast(
-      new Toast(
-        "Fehler",
-        `Events für ${selectedExchangeDay.value.name} konnten nicht geladen werden.`,
-        "error",
-        faXmark,
-        5
-      )
-    );
+        new Toast(
+          "Fehler",
+          `Events für ${selectedExchangeDay.value.name} konnten nicht geladen werden.`,
+          "error",
+          faXmark,
+          5,
+        ),
+      );
       throw new Error(
-        `Failed to fetch events from exchange day ${selectedExchangeDay.value.id}`
+        `Failed to fetch events from exchange day ${selectedExchangeDay.value.id}`,
       );
     }
     const responseData: Event[] = await response.data;
     events.value = responseData;
   } catch (error) {
     showToast(
-      new Toast("Fehler", `Events konnten nicht abgerufen werden`, "error", faXmark, 5)
+      new Toast(
+        "Fehler",
+        `Events konnten nicht abgerufen werden`,
+        "error",
+        faXmark,
+        5,
+      ),
     );
   }
 }
@@ -214,20 +235,19 @@ const geocodeAddress = async () => {
 
   try {
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`,
     );
     const data = await response.json();
     if (data.length > 0) {
       coordinates.value = {
         lat: parseFloat(data[0].lat),
-        lon: parseFloat(data[0].lon)
+        lon: parseFloat(data[0].lon),
       };
     }
   } catch (error) {
-    console.error('Geocoding error:', error);
+    console.error("Geocoding error:", error);
   }
-}
-
+};
 
 /**
  * Watch for changes to the `exchangeDay` prop and fetch new details when it changes.
@@ -238,7 +258,7 @@ watch(
     if (newId !== oldId && newId != null) {
       fetchExchangeDayDetails(newId);
     }
-  }
+  },
 );
 
 /**
@@ -254,7 +274,7 @@ onMounted(async () => {
       //await geocodeAddress();
     }
   } catch (error) {
-    console.error('Mount error:', error);
+    console.error("Mount error:", error);
   }
 });
 </script>

@@ -5,9 +5,14 @@
 
   <div class="feedback-summary-scroll">
     <div class="feedback-summary-container">
-      <div class="event-header" :style="{
-        backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : '',
-      }">
+      <div
+        class="event-header"
+        :style="{
+          backgroundImage: backgroundImageUrl
+            ? `url(${backgroundImageUrl})`
+            : '',
+        }"
+      >
         <h1 class="event-title">Zusammenfassung</h1>
       </div>
 
@@ -17,7 +22,9 @@
 
       <div v-else-if="dataUnavailable" class="no-data-container">
         <h2>Noch keine Daten verfügbar</h2>
-        <p>Bitte kommen Sie später wieder, um die Event-Zusammenfassung zu sehen.</p>
+        <p>
+          Bitte kommen Sie später wieder, um die Event-Zusammenfassung zu sehen.
+        </p>
         <!-- Optional: Add retry button -->
         <button @click="fetchData" class="back-button">Erneut versuchen</button>
       </div>
@@ -36,7 +43,8 @@
                 <td><strong>Trainer:</strong></td>
                 <td>
                   {{
-                    organizer.firstname + " " + organizer.lastname || "undefined"
+                    organizer.firstname + " " + organizer.lastname ||
+                    "undefined"
                   }}
                 </td>
               </tr>
@@ -111,7 +119,11 @@
           <h2>Statistische Analyse</h2>
           <div class="feedback-blocks">
             <!-- Loop through ordered categories -->
-            <div v-for="(category, index) in categoryOrder" :key="index" class="feedback-block">
+            <div
+              v-for="(category, index) in categoryOrder"
+              :key="index"
+              class="feedback-block"
+            >
               <h3>
                 {{
                   category.name.charAt(0).toUpperCase() + category.name.slice(1)
@@ -122,51 +134,75 @@
               <div class="large-scale">
                 <div class="scale">
                   <div class="scale-track">
-                    <div class="pin" :style="{ left: `${(category.data.average - 1) * 25}%` }" @mouseover="
-                      showPopup('category', index, category.data.average)
-                      " @mouseleave="hidePopup">
-                      <div v-if="
-                        popupVisible['category'] &&
-                        hoveredPinIndex['category'] === index
-                      " class="popup">
+                    <div
+                      class="pin"
+                      :style="{ left: `${(category.data.average - 1) * 25}%` }"
+                      @mouseover="
+                        showPopup('category', index, category.data.average)
+                      "
+                      @mouseleave="hidePopup"
+                    >
+                      <div
+                        v-if="
+                          popupVisible['category'] &&
+                          hoveredPinIndex['category'] === index
+                        "
+                        class="popup"
+                      >
                         Durchschnitt: {{ category.data.average.toFixed(2) }}
                       </div>
                     </div>
                   </div>
                   <div class="scale-labels">
-                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                    <span>1</span><span>2</span><span>3</span><span>4</span
+                    ><span>5</span>
                   </div>
                 </div>
               </div>
 
               <!-- Small scales for each sub-score -->
               <div class="small-scales">
-                <div v-for="(subScore, subIndex) in getOrderedSubScores(
-                  category.data.subAverages
-                )" :key="subIndex" class="small-scale">
+                <div
+                  v-for="(subScore, subIndex) in getOrderedSubScores(
+                    category.data.subAverages,
+                  )"
+                  :key="subIndex"
+                  class="small-scale"
+                >
                   <h4>
                     {{
                       formatKey(
                         subScore.name.charAt(0).toUpperCase() +
-                        subScore.name.slice(1)
+                          subScore.name.slice(1),
                       )
                     }}
                   </h4>
                   <div class="scale">
                     <div class="scale-track">
-                      <div class="pin" :style="{ left: `${((subScore.value - 1) / 4) * 100}%` }" @mouseover="
-                        showPopup('subScore', subIndex, subScore.value)
-                        " @mouseleave="hidePopup">
-                        <div v-if="
-                          popupVisible['subScore'] &&
-                          hoveredPinIndex['subScore'] === subIndex
-                        " class="popup">
+                      <div
+                        class="pin"
+                        :style="{
+                          left: `${((subScore.value - 1) / 4) * 100}%`,
+                        }"
+                        @mouseover="
+                          showPopup('subScore', subIndex, subScore.value)
+                        "
+                        @mouseleave="hidePopup"
+                      >
+                        <div
+                          v-if="
+                            popupVisible['subScore'] &&
+                            hoveredPinIndex['subScore'] === subIndex
+                          "
+                          class="popup"
+                        >
                           Unterpunktzahl: {{ subScore.value.toFixed(2) }}
                         </div>
                       </div>
                     </div>
                     <div class="scale-labels">
-                      <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                      <span>1</span><span>2</span><span>3</span><span>4</span
+                      ><span>5</span>
                     </div>
                   </div>
                 </div>
@@ -178,19 +214,28 @@
         <div class="tag-statistics" v-if="data.tagStatistics">
           <h2>Tag Leistungsanalyse</h2>
           <div class="tag-cards">
-            <div v-for="(statistic, tagName) in data.tagStatistics" :key="tagName" class="tag-card">
+            <div
+              v-for="(statistic, tagName) in data.tagStatistics"
+              :key="tagName"
+              class="tag-card"
+            >
               <div class="tag-header">
                 <div class="tag-meta">
                   <h3>{{ statistic.tag.name }}</h3>
                   <div class="engagement-score">
-                    <div class="score-dot" :style="engagementColor(statistic.averageWeight)"></div>
+                    <div
+                      class="score-dot"
+                      :style="engagementColor(statistic.averageWeight)"
+                    ></div>
                     <span>{{ formatWeight(statistic.averageWeight) }}</span>
                   </div>
                 </div>
                 <div class="participation-badges">
                   <div class="badge">
                     👥 {{ statistic.totalVisits }}
-                    <span class="tooltip">Einzigartige Teilnehmer des Tags</span>
+                    <span class="tooltip"
+                      >Einzigartige Teilnehmer des Tags</span
+                    >
                   </div>
                   <div class="badge">
                     💬 {{ statistic.totalFeedback }}
@@ -208,8 +253,12 @@
                     </div>
                     <div class="sentiment-bar">
                       <div class="sentiment-fill"></div>
-                      <div class="sentiment-indicator"
-                        :style="{ left: `${((statistic.averageSentiment + 1) / 2) * 100}%` }"></div>
+                      <div
+                        class="sentiment-indicator"
+                        :style="{
+                          left: `${((statistic.averageSentiment + 1) / 2) * 100}%`,
+                        }"
+                      ></div>
                       <div class="sentiment-labels">
                         <span>Negative</span>
                         <span>Neutral</span>
@@ -222,7 +271,11 @@
                 <div class="metric-group">
                   <h4>Durchschnitt</h4>
                   <div class="star-rating">
-                    <div class="stars" :style="`--rating: ${statistic.averageRating}`" aria-label="Rating"></div>
+                    <div
+                      class="stars"
+                      :style="`--rating: ${statistic.averageRating}`"
+                      aria-label="Rating"
+                    ></div>
                     <span class="rating-text">
                       ({{ statistic.averageRating.toFixed(1) }}/5)
                     </span>
@@ -231,7 +284,10 @@
               </div>
 
               <div class="weight-visual">
-                <div class="donut-chart" :style="donutStyle(statistic.averageWeight)">
+                <div
+                  class="donut-chart"
+                  :style="donutStyle(statistic.averageWeight)"
+                >
                   <span class="weight-percent">
                     {{ Math.round(statistic.averageWeight * 100) }}%
                   </span>
@@ -248,14 +304,22 @@
         <div class="comments">
           <h2>Kommentare</h2>
 
-          <div v-for="(categoryComments, category) in data.comments" :key="category" class="comment-category">
+          <div
+            v-for="(categoryComments, category) in data.comments"
+            :key="category"
+            class="comment-category"
+          >
             <!-- Category Title -->
             <h3>{{ formatKey(category) }}</h3>
 
             <!-- Card for Comments -->
             <div v-if="categoryComments.length" class="comment-cards">
-              <div v-for="(commentObj, index) in categoryComments" :key="index" class="comment-card"
-                :style="getCardGradient(commentObj.sentiment)">
+              <div
+                v-for="(commentObj, index) in categoryComments"
+                :key="index"
+                class="comment-card"
+                :style="getCardGradient(commentObj.sentiment)"
+              >
                 <p class="comment-author">
                   <strong>{{ commentObj.author || "Anonymous" }}:</strong>
                 </p>
@@ -302,7 +366,7 @@ Chart.register(
   PointElement,
   Filler,
   Legend,
-  Tooltip
+  Tooltip,
 );
 
 export default {
@@ -378,9 +442,9 @@ export default {
     },
 
     getSentimentClass(sentiment) {
-      if (sentiment > 0.3) return 'positive';
-      if (sentiment < -0.3) return 'negative';
-      return 'neutral';
+      if (sentiment > 0.3) return "positive";
+      if (sentiment < -0.3) return "negative";
+      return "neutral";
     },
 
     formatWeight(weight) {
@@ -390,16 +454,16 @@ export default {
     engagementColor(weight) {
       const hue = 210; // Blue base
       const saturation = 70;
-      const lightness = 50 - (weight * 20);
+      const lightness = 50 - weight * 20;
       return {
-        backgroundColor: `hsl(${hue}, ${saturation}%, ${lightness}%)`
+        backgroundColor: `hsl(${hue}, ${saturation}%, ${lightness}%)`,
       };
     },
 
     getSentimentEmoji(sentiment) {
-      if (sentiment > 0.3) return '😊';
-      if (sentiment > -0.3) return '😐';
-      return '😞';
+      if (sentiment > 0.3) return "😊";
+      if (sentiment > -0.3) return "😐";
+      return "😞";
     },
 
     sentimentBarStyle(sentiment) {
@@ -408,14 +472,14 @@ export default {
         width: `${percentage}%`,
         left: `${Math.max(0, percentage - 50)}%`,
         background: `linear-gradient(to right, 
-        ${sentiment > 0 ? '#e74c3c' : '#3498db'}, 
-        ${sentiment > 0 ? '#2ecc71' : '#3498db'})`
+        ${sentiment > 0 ? "#e74c3c" : "#3498db"}, 
+        ${sentiment > 0 ? "#2ecc71" : "#3498db"})`,
       };
     },
 
     donutStyle(weight) {
       return {
-        '--percentage': weight * 100
+        "--percentage": weight * 100,
       };
     },
 
@@ -431,7 +495,7 @@ export default {
           this.fetchEventDetails(),
           this.fetchWordCloud(),
           this.fetchEventTags(),
-          this.fetchRegisteredUsers()
+          this.fetchRegisteredUsers(),
         ]);
 
         this.calculateAverages();
@@ -444,10 +508,10 @@ export default {
               "Bislang wurde noch kein Feedback zu diesem Event abgegeben. Kommen Sie bitte später wieder.",
               "info",
               faXmark,
-              5
-            )
+              5,
+            ),
           );
-          console.error(err)
+          console.error(err);
         } else {
           showToast(
             new Toast(
@@ -455,10 +519,10 @@ export default {
               "Ein kritischer Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
               "error",
               faXmark,
-              5
-            )
+              5,
+            ),
           );
-          console.error(err)
+          console.error(err);
         }
       } finally {
         this.loading = false;
@@ -473,13 +537,15 @@ export default {
      */
     async fetchRegisteredUsers() {
       try {
-        const response = await api.get(`/events/${this.eventId}/registeredUsers`);
+        const response = await api.get(
+          `/events/${this.eventId}/registeredUsers`,
+        );
         this.registeredUsers = response.data.length;
       } catch (err) {
         console.error(err);
       }
     },
-      
+
     /**
      * Fetches the event summary data from the API.
      */
@@ -489,10 +555,11 @@ export default {
 
         if (response.status === 204 || response.status === 400) {
           this.dataUnavailable = true;
-          throw new Error('No feedback available');
+          throw new Error("No feedback available");
         }
 
-        this.givenFeedback = response.data.numericalFeedback.OVERALL.responseCount;
+        this.givenFeedback =
+          response.data.numericalFeedback.OVERALL.responseCount;
         this.data = response.data;
 
         if (response.status === 400) {
@@ -502,10 +569,9 @@ export default {
               `Bislang wurde noch kein Feedback zu diesem Event abgegeben.`,
               "info",
               faXmark,
-              5
-            )
+              5,
+            ),
           );
-
         }
 
         this.categoryOrder = [
@@ -544,10 +610,14 @@ export default {
         const eventData = await response.data;
         this.event = eventData;
 
-        const organizerResponse = await api.get(`/events/${this.eventId}/organizer`);
+        const organizerResponse = await api.get(
+          `/events/${this.eventId}/organizer`,
+        );
         this.organizer = await organizerResponse.data;
 
-        const locationResponse = await api.get(`/events/${this.eventId}/location`);
+        const locationResponse = await api.get(
+          `/events/${this.eventId}/location`,
+        );
         this.location = await locationResponse.data;
       } catch (err) {
         throw err;
@@ -562,14 +632,20 @@ export default {
 
       if (!this.eventId) {
         showToast(
-          new Toast("Fehler", `Es wurde keine Event ID gefunden. Laden Sie bitte die Seite neu.`, "error", faXmark, 5)
+          new Toast(
+            "Fehler",
+            `Es wurde keine Event ID gefunden. Laden Sie bitte die Seite neu.`,
+            "error",
+            faXmark,
+            5,
+          ),
         );
         return;
       }
       try {
-        const response = await api.get(`/events/${this.eventId}/word-cloud`,
-          { responseType: 'blob' }
-        );
+        const response = await api.get(`/events/${this.eventId}/word-cloud`, {
+          responseType: "blob",
+        });
         if (response.status !== 200) {
           showToast(
             new Toast(
@@ -577,8 +653,8 @@ export default {
               `Die Word Cloud konnte nicht geladen werden.`,
               "error",
               faXmark,
-              5
-            )
+              5,
+            ),
           );
         }
         const blob = await response.data;
@@ -766,8 +842,8 @@ export default {
             `Word Cloud Bild ist nicht verfügbar.`,
             "error",
             faXmark,
-            5
-          )
+            5,
+          ),
         );
         return;
       }
@@ -860,8 +936,7 @@ export default {
                   [
                     { text: "abgegebene Feedbacks", style: "tableHeader" },
                     {
-                      text:
-                        this.givenFeedback || "Keine registrierten Nutzer",
+                      text: this.givenFeedback || "Keine registrierten Nutzer",
                       style: "tableContent",
                     },
                   ],
@@ -988,8 +1063,8 @@ export default {
             `Ein Fehler bei der Erstellung der PDF ist aufgetreten, versuchen Sie es später erneut.`,
             "error",
             faXmark,
-            5
-          )
+            5,
+          ),
         );
       }
     },
@@ -1073,7 +1148,7 @@ export default {
 
 .feedback-summary-scroll {
   max-height: calc(100vh - 11vh);
-  overflow-y:auto;
+  overflow-y: auto;
 }
 
 .feedback-summary-container {
@@ -1425,7 +1500,7 @@ li {
   padding: 1.5rem;
   background: #f8f9fa;
   border-radius: 8px;
-  border-left: 4px solid #009EE2;
+  border-left: 4px solid #009ee2;
 }
 
 .tag-header {
@@ -1436,7 +1511,7 @@ li {
 }
 
 .weight-badge {
-  background: #01172F;
+  background: #01172f;
   color: white;
   padding: 0.3rem 0.8rem;
   border-radius: 20px;
@@ -1463,7 +1538,7 @@ li {
 .metric-value {
   font-weight: 600;
   font-size: 1.1rem;
-  color: #01172F;
+  color: #01172f;
 }
 
 .sentiment {
@@ -1490,7 +1565,7 @@ li {
 
 .rating-fill {
   height: 100%;
-  background: #009EE2;
+  background: #009ee2;
   transition: width 0.3s ease;
 }
 
@@ -1505,8 +1580,8 @@ li {
 }
 
 .tag-statistics h2 {
-  color: #01172F;
-  border-bottom: 2px solid #009EE2;
+  color: #01172f;
+  border-bottom: 2px solid #009ee2;
   padding-bottom: 0.5rem;
 }
 
@@ -1530,14 +1605,14 @@ li {
   align-items: center;
   gap: 0.5rem;
   font-weight: 600;
-  color: #01172F;
+  color: #01172f;
 }
 
 .score-dot {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #009EE2;
+  background: #009ee2;
   animation: pulse 2s infinite;
 }
 
@@ -1583,7 +1658,7 @@ li {
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  background: #01172F;
+  background: #01172f;
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 4px;
@@ -1619,19 +1694,21 @@ li {
   position: absolute;
   left: 0;
   right: 0;
-  background: linear-gradient(to right,
-      #e74c3c 0%,
-      #e74c3c 33%,
-      #3498db 33%,
-      #3498db 66%,
-      #2ecc71 66%);
+  background: linear-gradient(
+    to right,
+    #e74c3c 0%,
+    #e74c3c 33%,
+    #3498db 33%,
+    #3498db 66%,
+    #2ecc71 66%
+  );
 }
 
 .sentiment-indicator {
   position: absolute;
   height: 100%;
   width: 2px;
-  background: #01172F;
+  background: #01172f;
   transform: translateX(-50%);
   z-index: 2;
 }
@@ -1662,9 +1739,13 @@ li {
 }
 
 .stars::before {
-  content: '★★★★★';
+  content: "★★★★★";
   letter-spacing: 2px;
-  background: linear-gradient(90deg, #009EE2 var(--percent), #e9ecef var(--percent));
+  background: linear-gradient(
+    90deg,
+    #009ee2 var(--percent),
+    #e9ecef var(--percent)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -1680,8 +1761,7 @@ li {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: conic-gradient(#009EE2 calc(var(--percentage) * 1%),
-      #e9ecef 0);
+  background: conic-gradient(#009ee2 calc(var(--percentage) * 1%), #e9ecef 0);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1691,7 +1771,7 @@ li {
 
 .weight-percent {
   font-weight: 700;
-  color: #01172F;
+  color: #01172f;
   font-size: 1.2rem;
 }
 
@@ -1713,7 +1793,7 @@ li {
 
 .metric-group h4 {
   margin-bottom: 1rem;
-  color: #01172F;
+  color: #01172f;
   font-size: 1rem;
 }
 

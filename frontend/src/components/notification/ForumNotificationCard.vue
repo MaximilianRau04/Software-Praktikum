@@ -23,8 +23,8 @@ export default {
     const router = useRouter();
 
     const navigateToForumPost = () => {
-      emit('closeNoti', props.notification);
-      emit('mark-as-read', props.notification.id);
+      emit("closeNoti", props.notification);
+      emit("mark-as-read", props.notification.id);
     };
 
     return { navigateToForumPost };

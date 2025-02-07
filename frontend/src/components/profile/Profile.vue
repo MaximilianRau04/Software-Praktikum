@@ -39,14 +39,18 @@ export default {
      */
     async fetchProfile() {
       try {
-        const userResponse = await api.get(`/users/search?username=${this.username}`);
+        const userResponse = await api.get(
+          `/users/search?username=${this.username}`,
+        );
         if (userResponse.status !== 200) {
           throw new Error("User data fetch failed");
         }
         this.userData = await userResponse.data;
-        
+
         if (this.isTrainer) {
-          const trainerResponse = await api.get(`/users/${this.userData.id}/trainerProfile`);
+          const trainerResponse = await api.get(
+            `/users/${this.userData.id}/trainerProfile`,
+          );
           if (trainerResponse.status !== 200) {
             showToast(
               new Toast(
@@ -64,10 +68,10 @@ export default {
         showToast(
           new Toast(
             "Fehler",
-                `Trainerprofil konnte nicht geladen werden.`,
-                "error",
-                faXmark,
-                5,
+            `Trainerprofil konnte nicht geladen werden.`,
+            "error",
+            faXmark,
+            5,
           ),
         );
       }

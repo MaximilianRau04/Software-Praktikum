@@ -301,39 +301,47 @@ const searchQuery = ref("");
 /**
  * Filters the registered events based on the search query
  */
- const filterEventsByExchangeDay = (events) => {
+const filterEventsByExchangeDay = (events) => {
   if (!selectedExchangeDay.value) return events;
-  
-  return events.filter(event => 
-    event.exchangeDayId === selectedExchangeDay.value.id
+
+  return events.filter(
+    (event) => event.exchangeDayId === selectedExchangeDay.value.id,
   );
 };
 
 const filteredRegisteredEvents = computed(() => {
   let filtered = filterEventsByExchangeDay(registeredEvents.value);
   return filtered
-    .filter(event => event.name.toLowerCase().includes(searchQuery.value.toLowerCase()))
+    .filter((event) =>
+      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    )
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 });
 
 const filteredRecommendedEvents = computed(() => {
   let filtered = filterEventsByExchangeDay(recommendedEvents.value);
   return filtered
-    .filter(event => event.name.toLowerCase().includes(searchQuery.value.toLowerCase()))
+    .filter((event) =>
+      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    )
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 });
 
 const filteredFeedbackEvents = computed(() => {
   let filtered = filterEventsByExchangeDay(pendingFeedbackEvents.value);
   return filtered
-    .filter(event => event.name.toLowerCase().includes(searchQuery.value.toLowerCase()))
+    .filter((event) =>
+      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    )
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 });
 
 const filteredPastEvents = computed(() => {
   let filtered = filterEventsByExchangeDay(pastEvents.value);
   return filtered
-    .filter(event => event.name.toLowerCase().includes(searchQuery.value.toLowerCase()))
+    .filter((event) =>
+      event.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    )
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 });
 
@@ -356,8 +364,8 @@ const fetchTagsForEvent = async (eventId) => {
         `Event-Tags für Event: ${eventId} konnten nicht geladen werden.`,
         "error",
         faXmark,
-        5
-      )
+        5,
+      ),
     );
     return [];
   }
@@ -366,7 +374,7 @@ const fetchTagsForEvent = async (eventId) => {
 /*
  * Fetches the events for the user
  */
- const fetchEvents = async () => {
+const fetchEvents = async () => {
   const userId = auth.getUserId();
 
   if (!userId) {
@@ -376,8 +384,8 @@ const fetchTagsForEvent = async (eventId) => {
         `Loggen Sie sich bitte ein, um auf Ihre Events zuzugreifen.`,
         "error",
         faXmark,
-        5
-      )
+        5,
+      ),
     );
     isLoading.value = false;
     auth.clearToken();
@@ -394,13 +402,13 @@ const fetchTagsForEvent = async (eventId) => {
     }
 
     const eventResponse = await api.get(url);
-    
+
     if (eventResponse.status !== 200) {
-      throw new Error('Events konnten nicht geladen werden.');
+      throw new Error("Events konnten nicht geladen werden.");
     }
 
     const events = await eventResponse.data;
-    
+
     registeredEvents.value = events.registeredEvents || [];
     recommendedEvents.value = events.recommendedEvents || [];
     pendingFeedbackEvents.value = events.confirmedEvents || [];
@@ -416,8 +424,8 @@ const fetchTagsForEvent = async (eventId) => {
         `Events konnten nicht geladen werden.`,
         "error",
         faXmark,
-        5
-      )
+        5,
+      ),
     );
   } finally {
     isLoading.value = false;
@@ -456,8 +464,8 @@ const goToFeedback = async (eventId: string) => {
           "Sie sind nicht berechtigt Feedback für dieses Event zu geben",
           "error",
           faXmark,
-          5
-        )
+          5,
+        ),
       );
       return;
     }
@@ -476,8 +484,8 @@ const goToFeedback = async (eventId: string) => {
         "Fehler beim Zugriff auf Feedback-Formular",
         "error",
         faXmark,
-        5
-      )
+        5,
+      ),
     );
   }
 };
@@ -493,12 +501,12 @@ const fetchExchangeDays = async () => {
       exchangeDays.value = data;
     } else {
       showToast(
-        new Toast("Error", "Fehler beim Abrufen der ExchangeDays.", "error")
+        new Toast("Error", "Fehler beim Abrufen der ExchangeDays.", "error"),
       );
     }
   } catch (error) {
     showToast(
-      new Toast("Error", "Fehler beim Abrufen der ExchangeDays.", "error")
+      new Toast("Error", "Fehler beim Abrufen der ExchangeDays.", "error"),
     );
   }
 };
@@ -701,8 +709,8 @@ h2 {
   width: 95.5%;
 }
 
-.input-group{
-  margin:0;
+.input-group {
+  margin: 0;
 }
 
 .event-tags {

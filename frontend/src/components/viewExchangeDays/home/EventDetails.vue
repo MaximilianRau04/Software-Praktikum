@@ -16,8 +16,17 @@
         <div class="meta-item">
           <ClockIcon class="icon-small" />
           <span class="value">
-            {{ event.startTime ? event.startTime.split(':').slice(0, 2).join(':') : '-' }} –
-            {{ event.endTime ? event.endTime.split(':').slice(0, 2).join(':') : '-' }}
+            {{
+              event.startTime
+                ? event.startTime.split(":").slice(0, 2).join(":")
+                : "-"
+            }}
+            –
+            {{
+              event.endTime
+                ? event.endTime.split(":").slice(0, 2).join(":")
+                : "-"
+            }}
           </span>
         </div>
         <div class="meta-item">
@@ -57,7 +66,7 @@ import {
   MapPinIcon,
   TagIcon,
   ArrowRightCircleIcon,
-  UserCircleIcon
+  UserCircleIcon,
 } from "@heroicons/vue/24/outline";
 import { User } from "@/types/User";
 import api from "@/util/api";
@@ -90,15 +99,15 @@ async function fetchOrganizer() {
     const response = await api.get(`/events/${props.event.id}/organizer`);
     organizer.value = await response.data;
   } catch (error) {
-      showToast(
-        new Toast(
-          "Fehler",
-          `Veranstalter/in für ${props.event.name} konnte nicht geladen werden.`,
-          "error",
-          faXmark,
-          5
-        )
-      );
+    showToast(
+      new Toast(
+        "Fehler",
+        `Veranstalter/in für ${props.event.name} konnte nicht geladen werden.`,
+        "error",
+        faXmark,
+        5,
+      ),
+    );
   }
 }
 
@@ -111,20 +120,23 @@ async function fetchTags() {
     tags.value = await response.data;
   } catch (error) {
     showToast(
-        new Toast(
-          "Fehler",
-          `Event-Tags für ${props.event.name} konnten nicht geladen werden.`,
-          "error",
-          faXmark,
-          5
-        )
-      );
+      new Toast(
+        "Fehler",
+        `Event-Tags für ${props.event.name} konnten nicht geladen werden.`,
+        "error",
+        faXmark,
+        5,
+      ),
+    );
   }
 }
 
 const handleTrainerClick = () => {
-  router.push({ name: "Profile", params: { username: organizer.value.username } });
-}
+  router.push({
+    name: "Profile",
+    params: { username: organizer.value.username },
+  });
+};
 
 onMounted(() => {
   fetchOrganizer();

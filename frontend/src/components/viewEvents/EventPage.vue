@@ -16,7 +16,8 @@
         >
         <span class="event-date">{{ formatDate(event.date) }}</span>
         <span class="event-date"
-          >{{ event.startTime.slice(0, 5) }} - {{ event.endTime.slice(0, 5) }}</span
+          >{{ event.startTime.slice(0, 5) }} -
+          {{ event.endTime.slice(0, 5) }}</span
         >
       </div>
     </div>
@@ -97,35 +98,44 @@
         </div>
 
         <div class="details-grid">
-            <div class="description-section">
+          <div class="description-section">
             <h3 class="section-title">Beschreibung</h3>
-            <p v-if="event.description" class="description-text">{{ event.description }}</p>
+            <p v-if="event.description" class="description-text">
+              {{ event.description }}
+            </p>
             <p v-else class="description-text">Keine Beschreibung verfügbar.</p>
-            </div>
+          </div>
 
-            <div class="tags-section">
+          <div class="tags-section">
             <h3 class="section-title">Tags</h3>
             <div class="tags-container">
               <span
-              v-if="eventTags.length > 0"
-              v-for="tag in eventTags.slice(0, 5)"
-              :key="tag.id"
-              class="tag-chip"
+                v-if="eventTags.length > 0"
+                v-for="tag in eventTags.slice(0, 5)"
+                :key="tag.id"
+                class="tag-chip"
               >
-              <TagIcon class="icon-tag" />
-              {{ tag.name }}
+                <TagIcon class="icon-tag" />
+                {{ tag.name }}
               </span>
               <p v-else class="no-tags-text">Keine Tags verfügbar.</p>
             </div>
-            </div>
+          </div>
         </div>
 
         <div class="info-card">
           <i class="location-icon icon-location"></i>
           <div class="info-content">
             <span class="info-label">Ort:</span>
-            <span class="info-value">{{ event.room.location.street }} {{ event.room.location.houseNumber }}</span>
-            <span class="info-value">{{ event.room.location.postalCode }} {{ event.room.location.city }}, {{ event.room.location.country }}</span>
+            <span class="info-value"
+              >{{ event.room.location.street }}
+              {{ event.room.location.houseNumber }}</span
+            >
+            <span class="info-value"
+              >{{ event.room.location.postalCode }}
+              {{ event.room.location.city }},
+              {{ event.room.location.country }}</span
+            >
             <span class="info-value">{{ event.room.name }}</span>
           </div>
         </div>
@@ -290,8 +300,8 @@ const fetchEventDetails = async () => {
         `Exchange Days konnten nicht geladen werden: ${error.message}`,
         "error",
         faXmark,
-        5
-      )
+        5,
+      ),
     );
   }
 };
@@ -306,7 +316,7 @@ const fetchRegisteredUsers = async () => {
     registeredUsers.value = userData;
 
     sortedUsers.value = [...userData].sort((a, b) =>
-      a.username.localeCompare(b.username)
+      a.username.localeCompare(b.username),
     );
   } catch (error) {
     showToast(
@@ -315,8 +325,8 @@ const fetchRegisteredUsers = async () => {
         `Registrierte Nutzer konnten nicht geladen werden.`,
         "error",
         faXmark,
-        5
-      )
+        5,
+      ),
     );
   }
 };
@@ -336,8 +346,8 @@ const fetchTagsForEvent = async () => {
         `Event-Tags für Event: ${eventId} konnten nicht geladen werden.`,
         "error",
         faXmark,
-        5
-      )
+        5,
+      ),
     );
     eventTags.value = [];
   }
@@ -385,8 +395,8 @@ const openQRCode = async () => {
           `Anwesenheitstoken für Event: ${eventId} konnte nicht geladen werden.`,
           "error",
           faXmark,
-          5
-        )
+          5,
+        ),
       );
     }
 
@@ -402,8 +412,8 @@ const openQRCode = async () => {
         `Fehler beim Öffnen des QR-Codes.`,
         "error",
         faXmark,
-        10
-      )
+        10,
+      ),
     );
   }
 };
@@ -453,7 +463,7 @@ const unregisterFromEvent = async () => {
       `/users/${userId}/eventRegistration?eventId=${eventId}`,
       {
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
     if (response.status !== 204) {
       showToast(
@@ -462,8 +472,8 @@ const unregisterFromEvent = async () => {
           `Abmeldung fehlgeschlagen. Versuchen Sie es erneut.`,
           "error",
           faXmark,
-          5
-        )
+          5,
+        ),
       );
       return;
     }
@@ -473,8 +483,8 @@ const unregisterFromEvent = async () => {
         `Sie wurden erfolgreich von ${event.value.name} abgemeldet!`,
         "success",
         faCheck,
-        5
-      )
+        5,
+      ),
     );
     router.push("/home");
   } catch (error) {
@@ -484,8 +494,8 @@ const unregisterFromEvent = async () => {
         `Sie konnten nicht vom Event abgemeldet werden.`,
         "error",
         faXmark,
-        5
-      )
+        5,
+      ),
     );
   }
 };
@@ -506,16 +516,18 @@ const checkRegistrationStatus = async () => {
 
     const registrationStatus = await response.data;
 
-    isCompleted.value = registrationStatus.participationConfirmed && registrationStatus.feedbackGiven;
+    isCompleted.value =
+      registrationStatus.participationConfirmed &&
+      registrationStatus.feedbackGiven;
     isAlreadyRegistered.value = true;
   } catch (error) {
-    if(error.response.status) {
+    if (error.response.status) {
       isAlreadyRegistered.value = false;
       isCompleted.value = false;
       return;
     }
     showToast(
-      new Toast("Fehler", `Fehler bei der Registrierung`, "error", faXmark, 5)
+      new Toast("Fehler", `Fehler bei der Registrierung`, "error", faXmark, 5),
     );
     isAlreadyRegistered.value = false;
   }
@@ -539,7 +551,9 @@ const registerForEvent = async () => {
       return;
     }
 
-    const response = await api.post(`/users/${userId}/eventRegistration?eventId=${eventId}`);
+    const response = await api.post(
+      `/users/${userId}/eventRegistration?eventId=${eventId}`,
+    );
 
     if (response.status === 404) {
       showToast(
@@ -548,8 +562,8 @@ const registerForEvent = async () => {
           `Registrierung fehlgeschlagen. Bitte versuchen sie es erneut`,
           "error",
           faXmark,
-          5
-        )
+          5,
+        ),
       );
     } else if (response.status === 409) {
       showToast(
@@ -558,8 +572,8 @@ const registerForEvent = async () => {
           `Sie sind bereits für dieses Event registriert`,
           "error",
           faXmark,
-          5
-        )
+          5,
+        ),
       );
     } else if (response.status === 201) {
       showToast(
@@ -568,8 +582,8 @@ const registerForEvent = async () => {
           `Sie wurden erfolgreich zu ${event.value.name} angemeldet!`,
           "success",
           faCheck,
-          5
-        )
+          5,
+        ),
       );
       isAlreadyRegistered.value = true;
     }
@@ -580,8 +594,8 @@ const registerForEvent = async () => {
         `Sie konnten nicht zum Event registriert werden.`,
         "error",
         faXmark,
-        5
-      )
+        5,
+      ),
     );
   }
 };

@@ -16,7 +16,11 @@
             <p v-else>Noch keine Biografie hinzugefügt.</p>
 
             <!-- Edit Bio Button -->
-            <button v-if="isOwnProfile" class="edit-bio-btn" @click="openEditBioModal">
+            <button
+              v-if="isOwnProfile"
+              class="edit-bio-btn"
+              @click="openEditBioModal"
+            >
               Bio bearbeiten
             </button>
           </div>
@@ -24,13 +28,21 @@
           <!-- Display User Tags -->
           <div>
             <div class="tag-chips" v-if="selectedTags.length > 0">
-              <span v-for="(tag, index) in selectedTags" :key="index" class="chip">
+              <span
+                v-for="(tag, index) in selectedTags"
+                :key="index"
+                class="chip"
+              >
                 {{ tag.name }}
               </span>
             </div>
 
             <!-- Edit Tags Button -->
-            <button v-if="isOwnProfile" class="edit-tags-btn" @click="openEditTagsModal">
+            <button
+              v-if="isOwnProfile"
+              class="edit-tags-btn"
+              @click="openEditTagsModal"
+            >
               Tags bearbeiten
             </button>
           </div>
@@ -41,9 +53,17 @@
               <span class="close-btn" @click="closeEditTagsModal">&times;</span>
               <h3>Bearbeite Tags</h3>
 
-              <TagInput v-model="selectedTags" :available-tags="allTags" :tagSelect="true" />
+              <TagInput
+                v-model="selectedTags"
+                :available-tags="allTags"
+                :tagSelect="true"
+              />
 
-              <button @click="updateTags" :disabled="selectedTags.length === 0" class="register-button">
+              <button
+                @click="updateTags"
+                :disabled="selectedTags.length === 0"
+                class="register-button"
+              >
                 Speichern
               </button>
             </div>
@@ -54,8 +74,13 @@
       <!-- Right Side: Badges Section -->
       <div class="profile-right">
         <div v-if="badges.length > 0" class="badges-list">
-          <div v-for="badge in badges" :key="badge.id" class="badge-item" @mouseover="showTooltip(badge.id)"
-            @mouseleave="hideTooltip">
+          <div
+            v-for="badge in badges"
+            :key="badge.id"
+            class="badge-item"
+            @mouseover="showTooltip(badge.id)"
+            @mouseleave="hideTooltip"
+          >
             <img :src="badge.imageUrl" :alt="badge.type" class="badge-icon" />
             <div v-if="tooltipBadgeId === badge.id" class="badge-tooltip">
               <h3>{{ translateBadgeType(badge.type) }}</h3>
@@ -82,12 +107,17 @@
     <!-- Modal zum Bearbeiten der Bio -->
     <div v-if="showEditBioModal" class="modal">
       <div class="modal-content">
-      <h2>Biografie bearbeiten</h2>
-      <textarea v-model="newBio" placeholder="Geben Sie Ihre neue Bio ein..."></textarea>
-      <div class="modal-actions">
-        <button @click="updateBio" class="send-button">Absenden</button>
-        <button @click="closeEditBioModal" class="register-button">Abbrechen</button>
-      </div>
+        <h2>Biografie bearbeiten</h2>
+        <textarea
+          v-model="newBio"
+          placeholder="Geben Sie Ihre neue Bio ein..."
+        ></textarea>
+        <div class="modal-actions">
+          <button @click="updateBio" class="send-button">Absenden</button>
+          <button @click="closeEditBioModal" class="register-button">
+            Abbrechen
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -135,7 +165,7 @@ export default {
      * Fetch the user's badges
      */
     async fetchProfile() {
-      if (this.user.role === 'ADMIN') return;
+      if (this.user.role === "ADMIN") return;
 
       try {
         const badgesResponse = await api.get(`/users/${this.user.id}/rewards`);
@@ -146,9 +176,12 @@ export default {
 
         this.badges = await Promise.all(
           badgeData.map(async (badge) => {
-            const badgeImageResponse = await api.get(`/rewards/badge?type=${badge.type}&currentLevel=${badge.currentLevel}`, {
-              responseType: 'blob'
-            });
+            const badgeImageResponse = await api.get(
+              `/rewards/badge?type=${badge.type}&currentLevel=${badge.currentLevel}`,
+              {
+                responseType: "blob",
+              },
+            );
             if (badgeImageResponse.status !== 200) {
               throw new Error("Badge image fetch failed");
             }
@@ -161,15 +194,15 @@ export default {
           }),
         );
       } catch (error) {
-        console.error(error)
+        console.error(error);
         showToast(
           new Toast(
             "Fehler",
             "Errungenschaften konnten nicht geladen werden.",
             "error",
             faXmark,
-            5
-          )
+            5,
+          ),
         );
       }
     },
@@ -193,23 +226,23 @@ export default {
             "User-Tags konnten nicht geladen werden.",
             "error",
             faXmark,
-            5
-          )
+            5,
+          ),
         );
       }
     },
 
     async openEditBioModal() {
-    this.newBio = this.user.description || "";
-    this.showEditBioModal = true;
-    this.isEditTagsModalOpen = false;
-  },
+      this.newBio = this.user.description || "";
+      this.showEditBioModal = true;
+      this.isEditTagsModalOpen = false;
+    },
 
-  async openEditTagsModal() {
-    this.isEditTagsModalOpen = true;
-    this.showEditBioModal = false;
-    await this.fetchTags();
-  },
+    async openEditTagsModal() {
+      this.isEditTagsModalOpen = true;
+      this.showEditBioModal = false;
+      await this.fetchTags();
+    },
 
     closeEditTagsModal() {
       this.isEditTagsModalOpen = false;
@@ -230,7 +263,10 @@ export default {
      */
     async updateTags() {
       try {
-        const response = await api.put(`/users/${this.user.id}/tags`, this.selectedTags.map(tag => tag.name));
+        const response = await api.put(
+          `/users/${this.user.id}/tags`,
+          this.selectedTags.map((tag) => tag.name),
+        );
         if (response.status !== 200) {
           throw new Error("Fehler beim Aktualisieren der Tags");
         }
@@ -242,8 +278,8 @@ export default {
             "User-Tags konnten nicht aktualisiert werden.",
             "error",
             faXmark,
-            5
-          )
+            5,
+          ),
         );
       }
     },
@@ -292,8 +328,8 @@ export default {
             "Ihre Bio wurde erfolgreich aktualisiert.",
             "success",
             faXmark,
-            5
-          )
+            5,
+          ),
         );
       } catch (error) {
         showToast(
@@ -302,8 +338,8 @@ export default {
             "Ihre Bio konnte nicht aktualisiert werden.",
             "error",
             faXmark,
-            5
-          )
+            5,
+          ),
         );
       }
     },
@@ -440,10 +476,10 @@ export default {
 
 .modal-content textarea {
   resize: none;
-  padding: 0.5rem 1rem; 
-  width: 50%; 
-  height: 100px; 
-  box-sizing: border-box; 
+  padding: 0.5rem 1rem;
+  width: 50%;
+  height: 100px;
+  box-sizing: border-box;
 }
 
 .badges-list {
@@ -515,5 +551,4 @@ export default {
 .modal-leave-to {
   opacity: 0;
 }
-
 </style>

@@ -111,7 +111,7 @@ const fetchEvents = async () => {
     await Promise.all(
       events.value.map(async (event) => {
         event.tags = await fetchTagsForEvent(event.id);
-      })
+      }),
     );
   } catch (error) {
     showToast(new Toast("Error", "Fehler beim Laden der Events", "error"));
@@ -130,7 +130,7 @@ const fetchExchangeDays = async () => {
     }
   } catch (error) {
     showToast(
-      new Toast("Error", "Fehler beim Abrufen der ExchangeDays.", "error")
+      new Toast("Error", "Fehler beim Abrufen der ExchangeDays.", "error"),
     );
   }
 };
@@ -150,7 +150,7 @@ const fetchEventsByExchangeDay = async () => {
   isLoading.value = true;
   try {
     const response = await api.get(
-      `/exchange-days/${selectedExchangeDay.value.id}/events`
+      `/exchange-days/${selectedExchangeDay.value.id}/events`,
     );
     if (response.status === 200) {
       events.value = await response.data;
@@ -158,7 +158,7 @@ const fetchEventsByExchangeDay = async () => {
       await Promise.all(
         events.value.map(async (event) => {
           event.tags = await fetchTagsForEvent(event.id);
-        })
+        }),
       );
     } else {
       throw new Error("Fehler beim Abrufen der Events für den ExchangeDay");

@@ -115,7 +115,7 @@ const router = useRouter();
 const registeredUsers = ref([]);
 const filteredUsers = computed(() => {
   return users.value.filter(
-    (user) => !registeredUsers.value.some((regUser) => regUser.id === user.id)
+    (user) => !registeredUsers.value.some((regUser) => regUser.id === user.id),
   );
 });
 const exchangeDays = ref([]);
@@ -162,7 +162,7 @@ const fetchExchangeDays = async () => {
     }
   } catch (error) {
     showToast(
-      new Toast("Error", "Fehler beim Abrufen der ExchangeDays.", "error")
+      new Toast("Error", "Fehler beim Abrufen der ExchangeDays.", "error"),
     );
   }
 };
@@ -184,7 +184,7 @@ const handleExchangeDayChange = async () => {
 const fetchEventsByExchangeDay = async () => {
   try {
     const response = await api.get(
-      `/exchange-days/${selectedExchangeDay.value.id}/events`
+      `/exchange-days/${selectedExchangeDay.value.id}/events`,
     );
     if (response.status === 200) {
       events.value = await response.data;
@@ -192,7 +192,7 @@ const fetchEventsByExchangeDay = async () => {
       await Promise.all(
         events.value.map(async (event) => {
           event.tags = await fetchTagsForEvent(event.id);
-        })
+        }),
       );
     } else {
       throw new Error("Fehler beim Abrufen der Events für den ExchangeDay");
@@ -216,8 +216,8 @@ const fetchTagsForEvent = async (eventId) => {
       new Toast(
         "Error",
         `Fehler beim Laden der Tags für Event ${eventId}`,
-        "error"
-      )
+        "error",
+      ),
     );
     return [];
   }
@@ -252,21 +252,25 @@ const fetchUserRegistrations = async (eventId) => {
             new Toast(
               "Fehler",
               `Fehler bei der Überprüfung der Registrierung für ${user.username}`,
-              "error"
-            )
+              "error",
+            ),
           );
         }
         const userEvents = await response.data;
         return userEvents.some((event) => event.id === eventId);
-      })
+      }),
     );
 
     registeredUsers.value = users.value.filter(
-      (user, index) => registrations[index]
+      (user, index) => registrations[index],
     );
   } catch (error) {
     showToast(
-      new Toast("Fehler", "Fehler beim Überprüfen der Registrierungen", "error")
+      new Toast(
+        "Fehler",
+        "Fehler beim Überprüfen der Registrierungen",
+        "error",
+      ),
     );
   }
 };
@@ -300,22 +304,22 @@ const addUsersToEvent = async () => {
     for (const user of selectedUsers.value) {
       const response = await api.post(
         `/users/${user.id}/eventRegistration?eventId=${eventIdForUserSelection.value}`,
-        usersData
+        usersData,
       );
       if (response.status === 201) {
         showToast(
-          new Toast("Erfolg", "Benutzer erfolgreich hinzugefügt", "success")
+          new Toast("Erfolg", "Benutzer erfolgreich hinzugefügt", "success"),
         );
         closeModal();
       } else {
         showToast(
-          new Toast("Fehler", "Fehler beim Hinzufügen der Benutzer", "error")
+          new Toast("Fehler", "Fehler beim Hinzufügen der Benutzer", "error"),
         );
       }
     }
   } catch (error) {
     showToast(
-      new Toast("Fehler", "Fehler beim Hinzufügen der Benutzer", "error")
+      new Toast("Fehler", "Fehler beim Hinzufügen der Benutzer", "error"),
     );
   }
 };
@@ -337,7 +341,7 @@ const filteredEvents = computed(() => {
         (event.description &&
           event.description
             .toLowerCase()
-            .includes(searchTerm.value.toLowerCase())))
+            .includes(searchTerm.value.toLowerCase()))),
   );
 });
 

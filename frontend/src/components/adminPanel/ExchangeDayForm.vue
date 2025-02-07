@@ -64,12 +64,12 @@ const locationsApiUrl = `${config.apiBaseUrl}/locations`;
  */
 const createExchangeDay = async () => {
   const exchangeDayData = {
-        name: exchangeName.value,
-        startDate: startDate.value,
-        endDate: endDate.value,
-        locationId: location.value.id,
-        description: exchangeDescription.value,
-      }
+    name: exchangeName.value,
+    startDate: startDate.value,
+    endDate: endDate.value,
+    locationId: location.value.id,
+    description: exchangeDescription.value,
+  };
 
   try {
     const response = await api.post(`/exchange-days`, exchangeDayData);

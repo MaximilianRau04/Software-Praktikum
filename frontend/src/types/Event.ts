@@ -1,4 +1,4 @@
-import type {Location} from "./ExchangeDay";
+import type { Location } from "./ExchangeDay";
 
 export interface Event {
   id: number;
@@ -13,7 +13,7 @@ export interface Event {
   inviteOnly: boolean;
 }
 
-export interface Room{
+export interface Room {
   name: string;
   id: number;
   type: string;

@@ -1,158 +1,162 @@
 <template>
   <div class="event-container">
-  <!-- Event Header -->
-  <div class="event-header">
-    <h1 class="event-title">
-      {{ exchangeDay.name || "Exchange Day Name wird geladen..." }}
-    </h1>
-    <div class="event-meta">
-      <span class="event-date"
-        >{{ formatDate(exchangeDay.startDate) }} bis
-        {{ formatDate(exchangeDay.endDate) }}</span
-      >
-    </div>
-  </div>
-
-  <nav class="tabs-container">
-    <button
-      class="tab-button"
-      :class="{ 'active-tab': view === 'details' }"
-      @click="showDetails"
-    >
-      Details
-    </button>
-    <button
-      class="tab-button"
-      :class="{ 'active-tab': view === 'events' }"
-      @click="showEvents"
-    >
-      Events
-    </button>
-  </nav>
-
-  <div class="main-content">
-    <div class="content-wrapper" v-if="view === 'events'">
-      <!-- left side: resources -->
-      <div class="resources-sidebar">
-        <h3>Verfügbare Ressourcen</h3>
-        <div class="search-container">
-          <input
-        type="text"
-        class="search-bar"
-        placeholder="Ressourcen suchen..."
-        v-model="resourceSearchQuery"
-          />
-        </div>
-        <ul class="resources-list" v-if="filteredResources.length > 0">
-          <li
-        v-for="resource in filteredResources"
-        :key="resource.id"
-        class="resource-item"
-        draggable="true"
-        @dragstart="startDrag(resource)"
-          >
-        <div class="resource-info">
-          <span>{{ resource.name }} ({{ resource.type }})</span>
-          <span class="resource-capacity">
-            Verfügbar:{{ resource.capacity }}
-          </span>
-        </div>
-        <div class="quantity-controls">
-          <button
-            @click.stop="decreaseQuantity(resource)"
-            :disabled="(resourceQuantities[resource.id] || 1) <= 1"
-          >
-            −
-          </button>
-          <input
-            type="number"
-            :value="resourceQuantities[resource.id] || 1"
-            @input="updateQuantity(resource, $event)"
-            min="1"
-            :max="resource.capacity"
-            class="quantity-input"
-          />
-          <button
-            @click.stop="increaseQuantity(resource)"
-            :disabled="
-          (resourceQuantities[resource.id] || 1) >= resource.capacity
-            "
-          >
-            +
-          </button>
-        </div>
-          </li>
-        </ul>
-        <p v-else>Keine Ressourcen verfügbar.</p>
-      </div>
-
-      <!-- right side: events -->
-      <div class="events-container">
-        <h2>Events an diesem Exchange Day</h2>
-        <div
-          v-for="event in filteredEvents"
-          :key="event.id"
-          class="event-item"
-          @drop="dropResource(event.id)"
-          @dragover.prevent
+    <!-- Event Header -->
+    <div class="event-header">
+      <h1 class="event-title">
+        {{ exchangeDay.name || "Exchange Day Name wird geladen..." }}
+      </h1>
+      <div class="event-meta">
+        <span class="event-date"
+          >{{ formatDate(exchangeDay.startDate) }} bis
+          {{ formatDate(exchangeDay.endDate) }}</span
         >
-          <div class="event-data">
-            <h3>{{ event.name }}</h3>
-            <p>{{ formatDate(event.date) }}</p>
-            <p>{{ event.description }}</p>
-          </div>
-
-          <!-- assigned resources -->
-          <div class="assigned-resources">
-            <h4
-              @click="toggleResourceDropdown(event.id)"
-              class="dropdown-header"
-            >
-              Zugewiesene Ressourcen
-              <span>{{ openDropdowns[event.id] ? "▲" : "▼" }}</span>
-            </h4>
-            <ul v-if="openDropdowns[event.id]" class="dropdown-content">
-              <li v-if="!event.resources || event.resources.length === 0">
-                Keine Ressourcen zugewiesen.
-              </li>
-              <li v-for="resource in event.resources" :key="resource.id">
-                {{ resource.name }} ({{ resource.type }}), Menge:
-                {{ resource.quantity }}
-              </li>
-            </ul>
-          </div>
-        </div>
       </div>
     </div>
 
-    <div class="content-container">
-      <!-- details of the exchange day -->
-      <div v-if="view === 'details'" class="details-card">
-        <div class="details-grid">
-          <div class="description-section">
-            <h3 class="section-title">Beschreibung</h3>
-            <p v-if="exchangeDay.description" class="description-text">{{ exchangeDay.description }}</p>
-            <p v-else class="description-text">Keine Beschreibung verfügbar.</p>
+    <nav class="tabs-container">
+      <button
+        class="tab-button"
+        :class="{ 'active-tab': view === 'details' }"
+        @click="showDetails"
+      >
+        Details
+      </button>
+      <button
+        class="tab-button"
+        :class="{ 'active-tab': view === 'events' }"
+        @click="showEvents"
+      >
+        Events
+      </button>
+    </nav>
+
+    <div class="main-content">
+      <div class="content-wrapper" v-if="view === 'events'">
+        <!-- left side: resources -->
+        <div class="resources-sidebar">
+          <h3>Verfügbare Ressourcen</h3>
+          <div class="search-container">
+            <input
+              type="text"
+              class="search-bar"
+              placeholder="Ressourcen suchen..."
+              v-model="resourceSearchQuery"
+            />
           </div>
+          <ul class="resources-list" v-if="filteredResources.length > 0">
+            <li
+              v-for="resource in filteredResources"
+              :key="resource.id"
+              class="resource-item"
+              draggable="true"
+              @dragstart="startDrag(resource)"
+            >
+              <div class="resource-info">
+                <span>{{ resource.name }} ({{ resource.type }})</span>
+                <span class="resource-capacity">
+                  Verfügbar:{{ resource.capacity }}
+                </span>
+              </div>
+              <div class="quantity-controls">
+                <button
+                  @click.stop="decreaseQuantity(resource)"
+                  :disabled="(resourceQuantities[resource.id] || 1) <= 1"
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  :value="resourceQuantities[resource.id] || 1"
+                  @input="updateQuantity(resource, $event)"
+                  min="1"
+                  :max="resource.capacity"
+                  class="quantity-input"
+                />
+                <button
+                  @click.stop="increaseQuantity(resource)"
+                  :disabled="
+                    (resourceQuantities[resource.id] || 1) >= resource.capacity
+                  "
+                >
+                  +
+                </button>
+              </div>
+            </li>
+          </ul>
+          <p v-else>Keine Ressourcen verfügbar.</p>
         </div>
 
-        <div class="info-card">
-          <i class="location-icon icon-location"></i>
-          <div class="info-content">
-            <span class="info-label">Ort:</span>
-            <span class="info-value"
-              >{{ exchangeDay.location.country }},
-              {{ exchangeDay.location.postalCode }},
-              {{ exchangeDay.location.city }},
-              {{ exchangeDay.location.street }},
-              {{ exchangeDay.location.houseNumber }}</span
-            >
+        <!-- right side: events -->
+        <div class="events-container">
+          <h2>Events an diesem Exchange Day</h2>
+          <div
+            v-for="event in filteredEvents"
+            :key="event.id"
+            class="event-item"
+            @drop="dropResource(event.id)"
+            @dragover.prevent
+          >
+            <div class="event-data">
+              <h3>{{ event.name }}</h3>
+              <p>{{ formatDate(event.date) }}</p>
+              <p>{{ event.description }}</p>
+            </div>
+
+            <!-- assigned resources -->
+            <div class="assigned-resources">
+              <h4
+                @click="toggleResourceDropdown(event.id)"
+                class="dropdown-header"
+              >
+                Zugewiesene Ressourcen
+                <span>{{ openDropdowns[event.id] ? "▲" : "▼" }}</span>
+              </h4>
+              <ul v-if="openDropdowns[event.id]" class="dropdown-content">
+                <li v-if="!event.resources || event.resources.length === 0">
+                  Keine Ressourcen zugewiesen.
+                </li>
+                <li v-for="resource in event.resources" :key="resource.id">
+                  {{ resource.name }} ({{ resource.type }}), Menge:
+                  {{ resource.quantity }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-container">
+        <!-- details of the exchange day -->
+        <div v-if="view === 'details'" class="details-card">
+          <div class="details-grid">
+            <div class="description-section">
+              <h3 class="section-title">Beschreibung</h3>
+              <p v-if="exchangeDay.description" class="description-text">
+                {{ exchangeDay.description }}
+              </p>
+              <p v-else class="description-text">
+                Keine Beschreibung verfügbar.
+              </p>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <i class="location-icon icon-location"></i>
+            <div class="info-content">
+              <span class="info-label">Ort:</span>
+              <span class="info-value"
+                >{{ exchangeDay.location.country }},
+                {{ exchangeDay.location.postalCode }},
+                {{ exchangeDay.location.city }},
+                {{ exchangeDay.location.street }},
+                {{ exchangeDay.location.houseNumber }}</span
+              >
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
 <script setup lang="ts">
@@ -200,32 +204,30 @@ const goToEvent = (eventId) => {
 /**
  * Filters the available resources based on the search query.
  */
- const filteredResources = computed(() =>
+const filteredResources = computed(() =>
   availableResources.value.filter((resource) => {
     const isValidType =
       resource.type.toLowerCase() === "material" ||
       resource.type.toLowerCase() === "equipment";
-    const matchesSearch =
-      resource.name
-        .toLowerCase()
-        .includes(resourceSearchQuery.value.toLowerCase());
+    const matchesSearch = resource.name
+      .toLowerCase()
+      .includes(resourceSearchQuery.value.toLowerCase());
     const sameLocation =
       exchangeDay.value.location &&
       resource.location &&
       resource.location.city === exchangeDay.value.location.city;
-      
-    return isValidType && matchesSearch && sameLocation;
-  })
-);
 
+    return isValidType && matchesSearch && sameLocation;
+  }),
+);
 
 /**
  * Filters the events based on the search query.
  */
 const filteredEvents = computed(() =>
   events.value.filter((event) =>
-    event.name.toLowerCase().includes(eventSearchQuery.value.toLowerCase())
-  )
+    event.name.toLowerCase().includes(eventSearchQuery.value.toLowerCase()),
+  ),
 );
 
 /**
@@ -243,14 +245,14 @@ const fetchExchangeDayDetails = async () => {
           `Exchange-Days konnten nicht geladen werden`,
           "error",
           faXmark,
-          5
-        )
+          5,
+        ),
       ),
     ];
   exchangeDay.value = data;
 
   const eventsResponse = await api.get(
-    `/exchange-days/${exchangeDayId}/events`
+    `/exchange-days/${exchangeDayId}/events`,
   );
   const eventsData = await eventsResponse.data;
 
@@ -262,8 +264,8 @@ const fetchExchangeDayDetails = async () => {
           `Exchange-Days konnten nicht geladen werden`,
           "error",
           faXmark,
-          5
-        )
+          5,
+        ),
       ),
     ];
   events.value = eventsData;
@@ -282,8 +284,8 @@ const fetchResources = async () => {
           `Ressourcen konnten nicht geladen werden.`,
           "error",
           faXmark,
-          5
-        )
+          5,
+        ),
       ),
     ];
 
@@ -356,13 +358,13 @@ const fetchEventResources = async (eventId) => {
           `Ressourcen konnten nicht geladen werden`,
           "error",
           faXmark,
-          5
-        )
+          5,
+        ),
       );
     }
 
     const updatedEventIndex = events.value.findIndex(
-      (event) => event.id === eventId
+      (event) => event.id === eventId,
     );
     if (updatedEventIndex !== -1) {
       events.value[updatedEventIndex].resources = resourcesData.map((res) => ({
@@ -374,7 +376,7 @@ const fetchEventResources = async (eventId) => {
     }
   } catch (error) {
     showToast(
-      new Toast("Error", `Fehler Fetchen der ressourcen`, "error", faXmark, 10)
+      new Toast("Error", `Fehler Fetchen der ressourcen`, "error", faXmark, 10),
     );
   }
 };
@@ -390,8 +392,8 @@ const dropResource = async (eventId) => {
         `Es wurde keine Ressource ausgewählt`,
         "error",
         faXmark,
-        5
-      )
+        5,
+      ),
     );
     return;
   }
@@ -407,8 +409,8 @@ const dropResource = async (eventId) => {
         `Maximale Kapazität überschritten: ${draggedResource.value.capacity}`,
         "error",
         faXmark,
-        5
-      )
+        5,
+      ),
     );
     return;
   }
@@ -422,7 +424,7 @@ const dropResource = async (eventId) => {
       },
       {
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
     if (response.status !== 200) {
       showToast(
@@ -431,8 +433,8 @@ const dropResource = async (eventId) => {
           `Zuweisung konnte nicht getroffen werden`,
           "error",
           faXmark,
-          5
-        )
+          5,
+        ),
       );
       return;
     }
@@ -443,8 +445,8 @@ const dropResource = async (eventId) => {
         `Sie haben ${quantity} mal ${draggedResource.value.name} zugewiesen`,
         "success",
         faCheck,
-        5
-      )
+        5,
+      ),
     );
     await fetchEventResources(eventId);
 
@@ -462,8 +464,8 @@ const dropResource = async (eventId) => {
         `Zuweisung konnte nicht durchgeführt werden`,
         "error",
         faXmark,
-        5
-      )
+        5,
+      ),
     );
   }
 };
@@ -527,7 +529,9 @@ onMounted(async () => {
   border: 1px solid #2196f3;
   border-radius: 8px;
   background-color: #fff;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .search-bar:focus {
@@ -548,7 +552,10 @@ onMounted(async () => {
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .resource-item:hover {

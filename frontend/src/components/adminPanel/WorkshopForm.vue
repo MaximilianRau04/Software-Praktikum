@@ -9,11 +9,20 @@
 
       <div class="input-group">
         <label for="exchangeDaySelect">Exchange Day</label>
-        <select id="exchangeDaySelect" v-model="exchangeDaySelect" @change="updateSelectedExchangeDay" required>
+        <select
+          id="exchangeDaySelect"
+          v-model="exchangeDaySelect"
+          @change="updateSelectedExchangeDay"
+          required
+        >
           <option value="" disabled>
             Bitte wählen Sie einen Exchange Day aus
           </option>
-          <option v-for="exchangeDay in exchangeDays" :key="exchangeDay.id" :value="exchangeDay.id">
+          <option
+            v-for="exchangeDay in exchangeDays"
+            :key="exchangeDay.id"
+            :value="exchangeDay.id"
+          >
             {{ exchangeDay.name }}
           </option>
         </select>
@@ -21,8 +30,15 @@
 
       <div class="input-group">
         <label for="date">Datum</label>
-        <input type="date" id="date" v-model="date" :min="selectedExchangeDay?.startDate || ''"
-          :max="selectedExchangeDay?.endDate || ''" :disabled="!exchangeDaySelect" required />
+        <input
+          type="date"
+          id="date"
+          v-model="date"
+          :min="selectedExchangeDay?.startDate || ''"
+          :max="selectedExchangeDay?.endDate || ''"
+          :disabled="!exchangeDaySelect"
+          required
+        />
       </div>
 
       <div class="input-group">
@@ -38,7 +54,11 @@
         <label for="room">Raum</label>
         <select id="room" v-model="room" :disabled="!filteredRooms.length">
           <option value="" disabled>Bitte wählen Sie einen Raum</option>
-          <option v-for="availableRoom in filteredRooms" :key="availableRoom.id" :value="availableRoom.id">
+          <option
+            v-for="availableRoom in filteredRooms"
+            :key="availableRoom.id"
+            :value="availableRoom.id"
+          >
             {{ availableRoom.name }}
           </option>
         </select>
@@ -63,13 +83,13 @@
 
       <div class="input-group">
         <label for="tags">Event Tags</label>
-        <TagInput 
-          v-if="selectedTags && allTags" 
-          v-model="selectedTags" 
-          :available-tags="allTags" 
+        <TagInput
+          v-if="selectedTags && allTags"
+          v-model="selectedTags"
+          :available-tags="allTags"
           :tagSelect="false"
           @new-tag="handleNewTag"
-          @keydown.enter.prevent  
+          @keydown.enter.prevent
         />
       </div>
 
@@ -177,10 +197,10 @@ const createWorkshop = async () => {
       exchangeDayId: exchangeDaySelect.value,
       organizerId: userId,
       recommendedExperience: selectedExperienceLevel.value,
-      tags: selectedTags.value.map(t => t.name),
+      tags: selectedTags.value.map((t) => t.name),
       resources: selectedResources.value,
       inviteOnly: inviteOnly.value,
-    }
+    };
 
     const response = await api.post(`/events`, workshopData);
 
@@ -208,7 +228,7 @@ const createWorkshop = async () => {
       );
     }
   } catch (error) {
-    console.error(error)
+    console.error(error);
     showToast(
       new Toast(
         "Fehler",
@@ -226,13 +246,12 @@ const selectedExchangeDay = computed(() =>
 );
 
 const handleNewTag = (newTag) => {
-  if (newTag.key === 'Enter') {
+  if (newTag.key === "Enter") {
     newTag.preventDefault();
   }
-  api.post(`/tags`, newTag)
-    .then(response => {
-      allTags.value.push(response.data);
-    })
+  api.post(`/tags`, newTag).then((response) => {
+    allTags.value.push(response.data);
+  });
 };
 
 /**
@@ -243,7 +262,9 @@ const updateFilteredRooms = async () => {
     const exchangeDayLocationId = selectedExchangeDay.value.location.id;
 
     try {
-      const response = await api.get(`/resources/location/${exchangeDayLocationId}`);
+      const response = await api.get(
+        `/resources/location/${exchangeDayLocationId}`,
+      );
 
       if (response.status === 200) {
         const rooms = await response.data;
@@ -350,9 +371,7 @@ const resetWorkshopForm = () => {
 onMounted(async () => {
   try {
     const daysResponse = await api.get(`/exchange-days`);
-    const roomsResponse = await api.get(
-      `/resources/type/ROOM`,
-    );
+    const roomsResponse = await api.get(`/resources/type/ROOM`);
     if (roomsResponse.status !== 200)
       showToast(
         new Toast(
@@ -391,10 +410,17 @@ onMounted(async () => {
     filteredTags.value = [...allTags.value];
 
     const levelsResponse = await api.get(`/events/experience-levels`);
-    if (levelsResponse.status === 200) experienceLevels.value = await levelsResponse.data;
+    if (levelsResponse.status === 200)
+      experienceLevels.value = await levelsResponse.data;
   } catch (error) {
     showToast(
-      new Toast("Fehler", `Erfahrungslevel konnten nicht geladen werden.`, "error", faXmark, 5),
+      new Toast(
+        "Fehler",
+        `Erfahrungslevel konnten nicht geladen werden.`,
+        "error",
+        faXmark,
+        5,
+      ),
     );
   }
 
@@ -458,7 +484,7 @@ watch(startTime, (newStartTime) => {
 .checkbox-container input[type="checkbox"] {
   transform: scale(1.5);
   margin-left: 10px;
-  accent-color: #009EE2;
+  accent-color: #009ee2;
 }
 
 button.login-button {

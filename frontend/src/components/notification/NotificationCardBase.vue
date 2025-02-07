@@ -47,7 +47,9 @@ export default {
      */
     const markAsRead = async () => {
       try {
-        const response = await api.put(`/notifications/${props.notification.id}/read`);
+        const response = await api.put(
+          `/notifications/${props.notification.id}/read`,
+        );
 
         if (response.status !== 204) {
           showToast(
@@ -63,14 +65,14 @@ export default {
         emit("mark-as-read", props.notification.id);
       } catch (error) {
         showToast(
-            new Toast(
-              "Fehler",
-              `Nachricht konnte nicht auf gelesen gesetzt werden.`,
-              "error",
-              faXmark,
-              5,
-            ),
-          );
+          new Toast(
+            "Fehler",
+            `Nachricht konnte nicht auf gelesen gesetzt werden.`,
+            "error",
+            faXmark,
+            5,
+          ),
+        );
       }
     };
 

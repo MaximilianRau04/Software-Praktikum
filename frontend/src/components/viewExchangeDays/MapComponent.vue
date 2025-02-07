@@ -3,15 +3,15 @@
 </template>
 
 <script>
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 export default {
-  props: ['coordinates'],
+  props: ["coordinates"],
   data() {
     return {
       map: null,
-      marker: null
+      marker: null,
     };
   },
   mounted() {
@@ -26,23 +26,23 @@ export default {
       if (this.map && newCoords) {
         this.updateMap(newCoords);
       }
-    }
+    },
   },
   methods: {
     initMap() {
       try {
         this.map = L.map(this.$refs.mapContainer).setView(
-          [this.coordinates.lat, this.coordinates.lon], 
-          15
+          [this.coordinates.lat, this.coordinates.lon],
+          15,
         );
-        
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap contributors'
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "© OpenStreetMap contributors",
         }).addTo(this.map);
 
         this.createMarker(this.coordinates);
       } catch (error) {
-        console.error('Map init error:', error);
+        console.error("Map init error:", error);
       }
     },
     updateMap(newCoords) {
@@ -55,17 +55,16 @@ export default {
     },
     createMarker(coords) {
       if (!this.map) return;
-      
-      this.marker = L.marker([coords.lat, coords.lon])
-        .addTo(this.map);
-    }
+
+      this.marker = L.marker([coords.lat, coords.lon]).addTo(this.map);
+    },
   },
   beforeUnmount() {
     if (this.map) {
       this.map.remove();
       this.map = null;
     }
-  }
+  },
 };
 </script>
 

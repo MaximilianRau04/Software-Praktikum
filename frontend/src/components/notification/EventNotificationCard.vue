@@ -32,8 +32,8 @@ export default {
       }),
     );
     const navigateToEvent = () => {
-      emit('closeNoti', props.notification);
-      emit('mark-as-read', props.notification.id);
+      emit("closeNoti", props.notification);
+      emit("mark-as-read", props.notification.id);
     };
 
     return { timeUntilEvent, navigateToEvent };

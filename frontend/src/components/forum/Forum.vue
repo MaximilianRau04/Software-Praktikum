@@ -12,37 +12,39 @@
       </button>
 
       <div class="thread-list">
-  <div
-    v-for="thread in threads"
-    :key="thread.threadId"
-    class="thread-item"
-  >
-    <!-- Thread Inhalt -->
-    <div class="thread-content" @click="selectThread(thread.threadId)">
-      <h3>{{ thread.title }}</h3>
-      <p class="thread-description">{{ truncate(thread.description, 100) }}</p>
-      <div class="thread-meta">
-        <span>{{ thread.forumPosts?.length || 0 }} Antworten</span>
-      </div>
-    </div>
+        <div
+          v-for="thread in threads"
+          :key="thread.threadId"
+          class="thread-item"
+        >
+          <!-- Thread Inhalt -->
+          <div class="thread-content" @click="selectThread(thread.threadId)">
+            <h3>{{ thread.title }}</h3>
+            <p class="thread-description">
+              {{ truncate(thread.description, 100) }}
+            </p>
+            <div class="thread-meta">
+              <span>{{ thread.forumPosts?.length || 0 }} Antworten</span>
+            </div>
+          </div>
 
-    <!-- Buttons für Admin -->
-    <div v-if="isAdmin" class="thread-actions" @click.stop>
-      <button
-        class="btn-secondary edit-btn"
-        @click.stop="prepareEditThread(thread)"
-      >
-        Bearbeiten
-      </button>
-      <button
-        class="btn-secondary delete-btn"
-        @click.stop="deleteThread(thread.threadId)"
-      >
-        Löschen
-      </button>
-    </div>
-  </div>
-</div>
+          <!-- Buttons für Admin -->
+          <div v-if="isAdmin" class="thread-actions" @click.stop>
+            <button
+              class="btn-secondary edit-btn"
+              @click.stop="prepareEditThread(thread)"
+            >
+              Bearbeiten
+            </button>
+            <button
+              class="btn-secondary delete-btn"
+              @click.stop="deleteThread(thread.threadId)"
+            >
+              Löschen
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Thread Detail View -->
@@ -237,15 +239,15 @@ export default {
       try {
         const response = await api.delete(`/forumposts/${postId}`);
         this.fetchThreadDetail();
-          showToast(
-        new Toast(
-          "Erfolg",
-          `Post wurde erfolgreich gelöscht`,
-          "success",
-          faCheck,
-          5,
-        ),
-      );
+        showToast(
+          new Toast(
+            "Erfolg",
+            `Post wurde erfolgreich gelöscht`,
+            "success",
+            faCheck,
+            5,
+          ),
+        );
       } catch (error) {
         showToast(
           new Toast(
@@ -268,26 +270,23 @@ export default {
      */
     async savePostEdits() {
       try {
-        const response = await api.put(
-          `/forumposts/${this.editingPost.id}`,
-          {
-            content: this.editingPost.content,
-            authorId: this.editingPost.author.id,
-            forumThreadId: this.selectedThreadId,
-          },
-        );
+        const response = await api.put(`/forumposts/${this.editingPost.id}`, {
+          content: this.editingPost.content,
+          authorId: this.editingPost.author.id,
+          forumThreadId: this.selectedThreadId,
+        });
         this.fetchThreadDetail();
         this.editingPost = null;
-        if(response.status === 200) {
+        if (response.status === 200) {
           showToast(
-        new Toast(
-          "Erfolg",
-          `Post wurde erfolgreich bearbeitet`,
-          "success",
-          faCheck,
-          5,
-        ),
-      );
+            new Toast(
+              "Erfolg",
+              `Post wurde erfolgreich bearbeitet`,
+              "success",
+              faCheck,
+              5,
+            ),
+          );
         }
       } catch (error) {
         showToast(
@@ -336,16 +335,15 @@ export default {
         const response = await api.delete(`/forumthreads/${threadId}`);
         this.fetchThreads();
 
-          showToast(
-        new Toast(
-          "Erfolg",
-          `Thread wurde erfolgreich gelöscht`,
-          "success",
-          faCheck,
-          5,
-        ),
-      );
-
+        showToast(
+          new Toast(
+            "Erfolg",
+            `Thread wurde erfolgreich gelöscht`,
+            "success",
+            faCheck,
+            5,
+          ),
+        );
       } catch (error) {
         showToast(
           new Toast(
@@ -378,14 +376,14 @@ export default {
 
         if (response.status === 200) {
           showToast(
-        new Toast(
-          "Erfolg",
-          `Thread wurde erfolgreich bearbeitet`,
-          "success",
-          faCheck,
-          5,
-        ),
-      );
+            new Toast(
+              "Erfolg",
+              `Thread wurde erfolgreich bearbeitet`,
+              "success",
+              faCheck,
+              5,
+            ),
+          );
         }
       } catch (error) {
         showToast(
@@ -406,9 +404,7 @@ export default {
     async fetchThreads() {
       const eventId = this.$route.params.eventId;
       try {
-        const response = await api.get(
-          `/events/${eventId}/forum`,
-        );
+        const response = await api.get(`/events/${eventId}/forum`);
         this.threads = response.data;
       } catch (error) {
         showToast(
@@ -442,14 +438,14 @@ export default {
         this.showModal = false;
         if (response.status === 200) {
           showToast(
-        new Toast(
-          "Erfolg",
-          `Thread wurde erfolgreich erstellt`,
-          "success",
-          faCheck,
-          5,
-        ),
-      );
+            new Toast(
+              "Erfolg",
+              `Thread wurde erfolgreich erstellt`,
+              "success",
+              faCheck,
+              5,
+            ),
+          );
         }
       } catch (error) {
         console.error(error);
@@ -517,14 +513,14 @@ export default {
         this.newPost.isAnonymous = false;
         if (response.status === 200) {
           showToast(
-        new Toast(
-          "Erfolg",
-          `Post wurde erfolgreich erstellt`,
-          "success",
-          faCheck,
-          5,
-        ),
-      );
+            new Toast(
+              "Erfolg",
+              `Post wurde erfolgreich erstellt`,
+              "success",
+              faCheck,
+              5,
+            ),
+          );
         }
       } catch (error) {
         console.error(error);
@@ -569,7 +565,7 @@ export default {
   margin: 0 auto;
   padding: 1.5rem;
   overflow-y: auto;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
 }
 
 .thread-list {
@@ -588,7 +584,9 @@ export default {
   border-radius: 12px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .no-resize {
@@ -622,7 +620,9 @@ export default {
   font-size: 0.95em;
   cursor: pointer;
   border: none;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .btn-primary {
@@ -703,7 +703,7 @@ export default {
 .post-item {
   display: flex;
   flex-direction: column;
-  padding: 1.5rem; 
+  padding: 1.5rem;
   background-color: #fefefe;
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -712,11 +712,10 @@ export default {
   position: relative;
 }
 
-
 .post-content-wrapper {
   flex: 1;
   margin-right: 1.5rem;
-  text-align: left; 
+  text-align: left;
 }
 
 .post-header {
@@ -737,7 +736,7 @@ export default {
   flex-direction: row;
   gap: 10px;
   min-width: fit-content;
-  align-self: flex-end
+  align-self: flex-end;
 }
 
 .input-field {
@@ -806,4 +805,3 @@ export default {
   }
 }
 </style>
-

@@ -4,9 +4,18 @@
     <form @submit.prevent="updateEvent">
       <div class="input-group">
         <label for="exchangeDaySelect">ExchangeDay auswählen</label>
-        <select id="exchangeDaySelect" v-model="selectedExchangeDay" @change="fetchEventsByExchangeDay" required>
+        <select
+          id="exchangeDaySelect"
+          v-model="selectedExchangeDay"
+          @change="fetchEventsByExchangeDay"
+          required
+        >
           <option value="" disabled>Wähle einen ExchangeDay</option>
-          <option v-for="exchangeDay in exchangeDays" :key="exchangeDay" :value="exchangeDay">
+          <option
+            v-for="exchangeDay in exchangeDays"
+            :key="exchangeDay"
+            :value="exchangeDay"
+          >
             {{ exchangeDay.name }} ({{ formatDate(exchangeDay.startDate) }} -
             {{ formatDate(exchangeDay.endDate) }})
           </option>
@@ -15,8 +24,13 @@
 
       <div class="input-group">
         <label for="eventSelect">Event auswählen</label>
-        <select id="eventSelect" v-model="selectedEvent" @change="fetchEventDetails" :disabled="!selectedExchangeDay"
-          required>
+        <select
+          id="eventSelect"
+          v-model="selectedEvent"
+          @change="fetchEventDetails"
+          :disabled="!selectedExchangeDay"
+          required
+        >
           <option value="" disabled>Wähle ein Event</option>
           <option v-for="event in events" :key="event.id" :value="event.id">
             {{ event.name }}
@@ -36,8 +50,14 @@
 
       <div class="input-group">
         <label for="eventDate">Datum</label>
-        <input type="date" id="eventDate" v-model="date" :min="selectedExchangeDay?.startDate || ''"
-          :max="selectedExchangeDay?.endDate || ''" required />
+        <input
+          type="date"
+          id="eventDate"
+          v-model="date"
+          :min="selectedExchangeDay?.startDate || ''"
+          :max="selectedExchangeDay?.endDate || ''"
+          required
+        />
       </div>
 
       <div class="input-group">
@@ -54,7 +74,11 @@
         <label for="room">Raum</label>
         <select id="room" v-model="room" :disabled="!filteredRooms.length">
           <option value="" disabled>Bitte wählen Sie einen Raum</option>
-          <option v-for="availableRoom in filteredRooms" :key="availableRoom.id" :value="availableRoom.id">
+          <option
+            v-for="availableRoom in filteredRooms"
+            :key="availableRoom.id"
+            :value="availableRoom.id"
+          >
             {{ availableRoom.name }}
           </option>
         </select>
@@ -62,7 +86,11 @@
 
       <div class="input-group">
         <label for="recommendedExperience">Empfohlenes Erfahrungslevel</label>
-        <select id="recommendedExperience" v-model="recommendedExperience" required>
+        <select
+          id="recommendedExperience"
+          v-model="recommendedExperience"
+          required
+        >
           <option value="" disabled>Wähle ein Erfahrungslevel</option>
           <option v-for="level in experienceLevels" :key="level" :value="level">
             {{ level }}
@@ -75,16 +103,25 @@
         <label for="tags">Event Tags</label>
         <p>Bitte wählen Sie bis zu 5 Event Tags für Ihr Event aus:</p>
 
-        <TagInput v-if="selectedTags && allTags" v-model="selectedTags" :available-tags="allTags" :tagSelect="false"
-          @new-tag="handleNewTag" 
-          @keydown.enter.prevent  
+        <TagInput
+          v-if="selectedTags && allTags"
+          v-model="selectedTags"
+          :available-tags="allTags"
+          :tagSelect="false"
+          @new-tag="handleNewTag"
+          @keydown.enter.prevent
         />
 
         <div class="button-group">
           <button type="submit" class="update-button">
             Event aktualisieren
           </button>
-          <button type="button" class="delete-button" @click="deleteEvent" :disabled="!selectedEvent">
+          <button
+            type="button"
+            class="delete-button"
+            @click="deleteEvent"
+            :disabled="!selectedEvent"
+          >
             Event löschen
           </button>
         </div>
@@ -207,16 +244,12 @@ const fetchEventDetails = async () => {
  */
 const fetchOrganizerId = async () => {
   try {
-    const response = await api.get(
-      `/events/${selectedEvent.value}/organizer`,
-    );
+    const response = await api.get(`/events/${selectedEvent.value}/organizer`);
     if (response.status === 200) {
       const data = await response.data;
       organizerId.value = data.id;
     }
-  } catch (error) {
-
-  }
+  } catch (error) {}
 };
 
 /**
@@ -266,9 +299,7 @@ const fetchExperienceLevels = async () => {
       const data = await response.data;
       experienceLevels.value = data;
     }
-  } catch (error) {
-
-  }
+  } catch (error) {}
 };
 
 /**
@@ -288,13 +319,16 @@ const updateEvent = async () => {
     endTime: endTime.value,
     roomId: room.value,
     recommendedExperience: recommendedExperience.value,
-    tags: selectedTags.value.map(tag => tag.name),
+    tags: selectedTags.value.map((tag) => tag.name),
     organizerId: organizerId.value,
     exchangeDayId: exchangeDayId.value,
   };
 
   try {
-    const response = await api.put(`/events/${selectedEvent.value}`, updatedEvent);
+    const response = await api.put(
+      `/events/${selectedEvent.value}`,
+      updatedEvent,
+    );
 
     if (response.status === 200) {
       showToast(
@@ -359,8 +393,7 @@ const fetchTags = async () => {
       allTags.value = data;
     } else {
     }
-  } catch (error) {
-  }
+  } catch (error) {}
 };
 
 /**
@@ -376,18 +409,16 @@ const fetchEventTags = async () => {
       selectedTags.value = data;
     } else {
     }
-  } catch (error) {
-  }
+  } catch (error) {}
 };
 
 const handleNewTag = (newTag) => {
-  if (newTag.key === 'Enter') {
+  if (newTag.key === "Enter") {
     newTag.preventDefault();
   }
-  api.post(`/tags`, newTag)
-    .then(response => {
-      allTags.value.push(response.data);
-    })
+  api.post(`/tags`, newTag).then((response) => {
+    allTags.value.push(response.data);
+  });
 };
 
 /**

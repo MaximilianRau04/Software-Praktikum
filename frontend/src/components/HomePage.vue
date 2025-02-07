@@ -93,12 +93,14 @@ export default {
 
         this.fetchNotifications();
       } catch (err) {
-        showToast(new Toast(
-          "Error",
-          "Benachrichtigungen konnten nicht geladen werden",
-          "error",
-          5
-        ));
+        showToast(
+          new Toast(
+            "Error",
+            "Benachrichtigungen konnten nicht geladen werden",
+            "error",
+            5,
+          ),
+        );
         this.notifications = [];
       }
     },
@@ -116,7 +118,15 @@ export default {
       });
 
       eventSource.onerror = (event) => {
-        showToast(new Toast("Error", "Fehler mit der SSE Verbindung", "error", faXmark, 5));
+        showToast(
+          new Toast(
+            "Error",
+            "Fehler mit der SSE Verbindung",
+            "error",
+            faXmark,
+            5,
+          ),
+        );
       };
     },
     async handleMarkAsRead(notificationId) {

@@ -1,6 +1,11 @@
 <template>
   <div class="trainer-tags" v-if="tags">
-    <span v-for="(tag, index) in tags" :key="index" class="chip" :style="{ backgroundColor: getRandomColor() }">
+    <span
+      v-for="(tag, index) in tags"
+      :key="index"
+      class="chip"
+      :style="{ backgroundColor: getRandomColor() }"
+    >
       <TagIcon class="icon-tag" />
       {{ tag.name }}
     </span>

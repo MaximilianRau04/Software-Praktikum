@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useAuth } from '@/util/auth';
+import { useAuth } from "@/util/auth";
 
 const props = defineProps({
   role: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const { hasRole } = useAuth();
@@ -14,7 +14,6 @@ const { hasRole } = useAuth();
 <template>
   <div>
     <slot v-if="hasRole(role)" />
-    <template v-else>
-    </template>
+    <template v-else> </template>
   </div>
 </template>

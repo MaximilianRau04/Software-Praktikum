@@ -153,12 +153,20 @@ const fetchResourcesByLocation = async () => {
       resources.value = data;
     } else {
       showToast(
-        new Toast("Fehler", "Ressourcen für die gewählte Location konnten nicht geladen werden.", "error"),
+        new Toast(
+          "Fehler",
+          "Ressourcen für die gewählte Location konnten nicht geladen werden.",
+          "error",
+        ),
       );
     }
   } catch (error) {
     showToast(
-      new Toast("Fehler", "Ressourcen für die gewählte Location konnten nicht geladen werden.", "error"),
+      new Toast(
+        "Fehler",
+        "Ressourcen für die gewählte Location konnten nicht geladen werden.",
+        "error",
+      ),
     );
   }
 };
@@ -189,7 +197,11 @@ const fetchResourceDetails = async () => {
     }
   } catch (error) {
     showToast(
-      new Toast("Fehler", "Ressourcendetails konnten nicht geladen werden.", "error"),
+      new Toast(
+        "Fehler",
+        "Ressourcendetails konnten nicht geladen werden.",
+        "error",
+      ),
     );
   }
 };
@@ -213,22 +225,37 @@ const updateResource = async () => {
   };
 
   try {
-    const response = await api.put(`/resources/${selectedResource.value}`, updatedResource);
+    const response = await api.put(
+      `/resources/${selectedResource.value}`,
+      updatedResource,
+    );
 
     if (response.status === 200) {
       const data = await response.data;
       showToast(
-        new Toast("Erfolg", `Ressource wurde aktualisiert: ${data.name}`, "success"),
+        new Toast(
+          "Erfolg",
+          `Ressource wurde aktualisiert: ${data.name}`,
+          "success",
+        ),
       );
       resetForm();
     } else {
       showToast(
-        new Toast("Fehler", "Ressource konnte nicht aktualisiert werden.", "error"),
+        new Toast(
+          "Fehler",
+          "Ressource konnte nicht aktualisiert werden.",
+          "error",
+        ),
       );
     }
   } catch (error) {
     showToast(
-      new Toast("Fehler", "Ressource konnte nicht aktualisiert werden.", "error"),
+      new Toast(
+        "Fehler",
+        "Ressource konnte nicht aktualisiert werden.",
+        "error",
+      ),
     );
   }
 };

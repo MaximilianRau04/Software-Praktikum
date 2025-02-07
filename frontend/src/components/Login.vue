@@ -6,20 +6,36 @@
         <h2 class="auth-title">Willkommen zurück!</h2>
         <form @submit.prevent="handleLogin">
           <div class="input-group">
-            <input type="text" v-model="username" placeholder="Nutzername" required class="auth-input" />
+            <input
+              type="text"
+              v-model="username"
+              placeholder="Nutzername"
+              required
+              class="auth-input"
+            />
           </div>
 
           <div class="input-group password-group">
-            <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Passwort" required
-              class="auth-input" />
-            <button type="button" class="password-toggle" @click="showPassword = !showPassword">
-              <font-awesome-icon :icon="showPassword ? 'eye-slash' : 'eye'" class="password-icon" />
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              v-model="password"
+              placeholder="Passwort"
+              required
+              class="auth-input"
+            />
+            <button
+              type="button"
+              class="password-toggle"
+              @click="showPassword = !showPassword"
+            >
+              <font-awesome-icon
+                :icon="showPassword ? 'eye-slash' : 'eye'"
+                class="password-icon"
+              />
             </button>
           </div>
 
-          <button type="submit" class="auth-button primary">
-            Einloggen
-          </button>
+          <button type="submit" class="auth-button primary">Einloggen</button>
         </form>
 
         <div class="auth-switch">
@@ -33,9 +49,17 @@
       <!-- Registration Section -->
       <div class="register-section" v-else>
         <div class="registration-steps">
-          <button class="step-dot" :class="{ active: currentStep === 1 }" @click="currentStep = 1"></button>
-          <button class="step-dot" :class="{ active: currentStep === 2 }" @click="currentStep = 2"
-            :disabled="!canProceedToStep2"></button>
+          <button
+            class="step-dot"
+            :class="{ active: currentStep === 1 }"
+            @click="currentStep = 1"
+          ></button>
+          <button
+            class="step-dot"
+            :class="{ active: currentStep === 2 }"
+            @click="currentStep = 2"
+            :disabled="!canProceedToStep2"
+          ></button>
         </div>
 
         <!-- Step 1: Basic Info -->
@@ -43,28 +67,64 @@
           <h2 class="auth-title">Account Erstellen</h2>
           <form @submit.prevent="handleStep(2)">
             <div class="input-group">
-              <input type="text" v-model="username" placeholder="Nutzername" required class="auth-input" />
+              <input
+                type="text"
+                v-model="username"
+                placeholder="Nutzername"
+                required
+                class="auth-input"
+              />
             </div>
 
             <div class="input-group password-group">
-              <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Passwort" required
-                class="auth-input" />
-              <button type="button" class="password-toggle" @click="showPassword = !showPassword">
-                <font-awesome-icon :icon="showPassword ? 'eye-slash' : 'eye'" class="password-icon" />
+              <input
+                :type="showPassword ? 'text' : 'password'"
+                v-model="password"
+                placeholder="Passwort"
+                required
+                class="auth-input"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                @click="showPassword = !showPassword"
+              >
+                <font-awesome-icon
+                  :icon="showPassword ? 'eye-slash' : 'eye'"
+                  class="password-icon"
+                />
               </button>
             </div>
-            <small v-if="password.length > 40 || password.length < 6" class="error-message">Das Passwort muss mindestens
-              6 und höchstens 40 Zeichen lang sein.</small>
+            <small
+              v-if="password.length > 40 || password.length < 6"
+              class="error-message"
+              >Das Passwort muss mindestens 6 und höchstens 40 Zeichen lang
+              sein.</small
+            >
 
             <div class="input-group password-group">
-              <input :type="showPassword ? 'text' : 'password'" v-model="passwordRepeat"
-                placeholder="Passwort wiederholen" required class="auth-input"
-                :class="{ 'input-error': passwordMismatch }" />
-              <button type="button" class="password-toggle" @click="showPassword = !showPassword">
-                <font-awesome-icon :icon="showPassword ? 'eye-slash' : 'eye'" class="password-icon" />
+              <input
+                :type="showPassword ? 'text' : 'password'"
+                v-model="passwordRepeat"
+                placeholder="Passwort wiederholen"
+                required
+                class="auth-input"
+                :class="{ 'input-error': passwordMismatch }"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                @click="showPassword = !showPassword"
+              >
+                <font-awesome-icon
+                  :icon="showPassword ? 'eye-slash' : 'eye'"
+                  class="password-icon"
+                />
               </button>
             </div>
-            <small v-if="passwordMismatch" class=" error-message">Die Passwörter stimmen nicht überein.</small>
+            <small v-if="passwordMismatch" class="error-message"
+              >Die Passwörter stimmen nicht überein.</small
+            >
 
             <div class="input-group role-selection">
               <select v-model="role" required class="auth-select">
@@ -85,7 +145,11 @@
               </v-tooltip>
             </div>
 
-            <button type="submit" class="auth-button primary" :disabled="!canProceedToStep2">
+            <button
+              type="submit"
+              class="auth-button primary"
+              :disabled="!canProceedToStep2"
+            >
               Weiter
             </button>
           </form>
@@ -96,15 +160,32 @@
           <h2 class="auth-title">Profil ergänzen</h2>
           <form @submit.prevent="handleRegistration">
             <div class="input-group">
-              <input type="text" v-model="firstName" placeholder="Vorname" required class="auth-input" />
+              <input
+                type="text"
+                v-model="firstName"
+                placeholder="Vorname"
+                required
+                class="auth-input"
+              />
             </div>
 
             <div class="input-group">
-              <input type="text" v-model="lastName" placeholder="Nachname" required class="auth-input" />
+              <input
+                type="text"
+                v-model="lastName"
+                placeholder="Nachname"
+                required
+                class="auth-input"
+              />
             </div>
 
             <div class="input-group">
-              <textarea v-model="bio" placeholder="Über Sie (optional)" class="auth-textarea" rows="3"></textarea>
+              <textarea
+                v-model="bio"
+                placeholder="Über Sie (optional)"
+                class="auth-textarea"
+                rows="3"
+              ></textarea>
               <v-tooltip>
                 <button type="button" class="info-icon">
                   <font-awesome-icon icon="circle-question" />
@@ -118,14 +199,26 @@
             </div>
 
             <div class="input-group">
-              <TagInput v-model="tags" :available-tags="allTags" :tagSelect="selectionOnlyTags" />
+              <TagInput
+                v-model="tags"
+                :available-tags="allTags"
+                :tagSelect="selectionOnlyTags"
+              />
             </div>
 
             <div class="form-actions">
-              <button type="button" class="auth-button secondary" @click="currentStep = 1">
+              <button
+                type="button"
+                class="auth-button secondary"
+                @click="currentStep = 1"
+              >
                 Zurück
               </button>
-              <button type="submit" class="auth-button primary" :disabled="!isRegistrationValid">
+              <button
+                type="submit"
+                class="auth-button primary"
+                :disabled="!isRegistrationValid"
+              >
                 Registrierung abschließen
               </button>
             </div>
@@ -138,23 +231,22 @@
             Hier Einloggen
           </button>
         </div>
-
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import api from "@/util/api"
+import api from "@/util/api";
 import { useAuth } from "@/util/auth";
-import { ref, computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import '@/assets/login.css'
+import { ref, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import "@/assets/login.css";
 
 import { showToast, Toast } from "@/types/toasts";
 import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
 
-import TagInput from './profile/TagInput.vue';
+import TagInput from "./profile/TagInput.vue";
 import { Tag } from "@/types/Tag";
 
 const { setToken } = useAuth();
@@ -165,15 +257,15 @@ const currentStep = ref(1);
 const showPassword = ref(false);
 
 // Form models
-const username = ref('');
-const password = ref('');
-const passwordRepeat = ref('');
-const role = ref('USER');
-const firstName = ref('');
-const lastName = ref('');
-const bio = ref('');
+const username = ref("");
+const password = ref("");
+const passwordRepeat = ref("");
+const role = ref("USER");
+const firstName = ref("");
+const lastName = ref("");
+const bio = ref("");
 const tags = ref<Tag[]>([]);
-const allTags = ref<Tag[]>([])
+const allTags = ref<Tag[]>([]);
 const isRegistered = ref(true);
 const selectionOnlyTags = true;
 
@@ -187,15 +279,13 @@ const canProceedToStep2 = computed(() => {
 });
 
 const passwordMismatch = computed(() => {
-  return password.value !== passwordRepeat.value && passwordRepeat.value.length > 0;
+  return (
+    password.value !== passwordRepeat.value && passwordRepeat.value.length > 0
+  );
 });
 
 const isRegistrationValid = computed(() => {
-  return (
-    firstName.value &&
-    lastName.value &&
-    canProceedToStep2.value
-  );
+  return firstName.value && lastName.value && canProceedToStep2.value;
 });
 
 /**
@@ -206,7 +296,7 @@ const fetchTags = async () => {
     const tagResponse = await api.get(`/tags`);
     allTags.value = tagResponse.data;
   } catch (error) {
-    console.error('Error fetching tags:', error)
+    console.error("Error fetching tags:", error);
   }
 };
 
@@ -234,7 +324,7 @@ const handleRegistration = async () => {
         firstName: firstName.value,
         lastName: lastName.value,
         bio: bio.value,
-        tags: tags.value.map(tag => tag.name)
+        tags: tags.value.map((tag) => tag.name),
       };
 
       const response = await api.post(`/auth/signup`, userRegisterData);
@@ -246,8 +336,8 @@ const handleRegistration = async () => {
             `Sie haben sich erfolgreich registriert. Fahren Sie mit dem Login fort.`,
             "success",
             faXmark,
-            5
-          )
+            5,
+          ),
         );
 
         changeToLogin();
@@ -259,8 +349,8 @@ const handleRegistration = async () => {
           `Registrierung fehlgeschlagen. Der Benutzer existiert bereits.`,
           "warning",
           faXmark,
-          5
-        )
+          5,
+        ),
       );
     }
   }
@@ -280,27 +370,21 @@ const handleLogin = async () => {
     setToken(response.data.token);
     if (response.status === 200) {
       const redirect = route.query.redirect;
-      const redirectPath = '/home';
+      const redirectPath = "/home";
       router.replace(redirectPath);
       showToast(
-        new Toast(
-          "Erfolg",
-          `Erfolgreich eingeloggt!`,
-          "success",
-          faXmark,
-          5
-        )
+        new Toast("Erfolg", `Erfolgreich eingeloggt!`, "success", faXmark, 5),
       );
     }
   } catch (error) {
     showToast(
       new Toast(
         "Fehler",
-        `${error.response.data.message || 'Login fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.'}`,
+        `${error.response.data.message || "Login fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben."}`,
         "error",
         faXmark,
-        5
-      )
+        5,
+      ),
     );
   }
 };
@@ -312,13 +396,13 @@ const changeToLogin = () => {
 };
 
 const resetForm = () => {
-  username.value = '';
-  password.value = '';
-  passwordRepeat.value = '';
-  role.value = 'USER';
-  firstName.value = '';
-  lastName.value = '';
-  bio.value = '';
+  username.value = "";
+  password.value = "";
+  passwordRepeat.value = "";
+  role.value = "USER";
+  firstName.value = "";
+  lastName.value = "";
+  bio.value = "";
   tags.value = [];
 };
 </script>

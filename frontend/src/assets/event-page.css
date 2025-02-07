@@ -2,8 +2,8 @@
   max-width: 1200px;
   margin: 2rem auto;
   padding: 0 1.5rem;
-  font-family: 'Roboto', sans-serif;
-  color: #01172F;
+  font-family: "Roboto", sans-serif;
+  color: #01172f;
 }
 
 .back-button {
@@ -36,7 +36,7 @@
 
 .event-title {
   font-size: 2.5rem;
-  color: #01172F;
+  color: #01172f;
   margin-bottom: 1rem;
   font-weight: 700;
   letter-spacing: -0.5px;
@@ -73,9 +73,9 @@
 .tab-button {
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  border: 2px solid #01172F;
+  border: 2px solid #01172f;
   background: none;
-  color: #01172F;
+  color: #01172f;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 500;
@@ -85,13 +85,13 @@
 }
 
 .tab-button:hover {
-  background-color: #01172F;
+  background-color: #01172f;
   color: white;
   transform: translateY(-2px);
 }
 
 .tab-button.active-tab {
-  background-color: #01172F;
+  background-color: #01172f;
   color: white;
   box-shadow: 0 4px 12px rgba(1, 23, 47, 0.2);
 }
@@ -166,7 +166,7 @@
 
 .organizer-name {
   font-weight: 700;
-  color: #01172F;
+  color: #01172f;
   font-size: 1.1rem;
 }
 
@@ -191,7 +191,7 @@
 }
 
 .section-title {
-  color: #01172F;
+  color: #01172f;
   font-size: 1.4rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
@@ -338,7 +338,7 @@
 
 .event-user-name {
   font-weight: 600;
-  color: #01172F;
+  color: #01172f;
   margin-bottom: 0.25rem;
 }
 
@@ -392,7 +392,7 @@
 }
 
 .close-button:hover {
-  color: #01172F;
+  color: #01172f;
 }
 
 .qr-image {
