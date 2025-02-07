@@ -329,4 +329,8 @@ h2 h3 p {
   background: linear-gradient(135deg, #e6eeff, #d7e4ff);
   transform: translateY(-2px);
 }
+
+.tags-container {
+  width: 60%;
+}
 </style>

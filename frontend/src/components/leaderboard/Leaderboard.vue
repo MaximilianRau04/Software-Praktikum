@@ -13,9 +13,7 @@
       <h1>🏆 Rangliste</h1>
       <div class="leaderboard-controls">
         <input v-model="searchQuery" placeholder="Nutzer suchen..." @input="handleSearch" class="search-input" />
-        <button @click="toggleSortOrder" class="sort-button" :class="{ 'active-sort': true }">
-          {{ sortAsc ? '⬆ Aufsteigend' : '⬇ Absteigend' }}
-        </button>
+  
       </div>
     </div>
 
@@ -107,18 +105,18 @@ export default {
           params: {
             page: page - 1,
             size: this.pageSize,
-            search: this.searchQuery
+            search: this.searchQuery,
+            sort: this.sortAsc ? "asc" : "desc"
           }
         });
 
-        this.leaderboard = response.data.content.map((entry) => ({
-          ...entry,
-          rank: entry.rank
-        }));
+      this.leaderboard = response.data.content
+      .map(entry => ({ ...entry, rank: entry.rank }))
+      .sort((a, b) => a.rank - b.rank);
 
 
-        this.currentPage = page;
-        this.hasMore = !response.data.last;
+      this.currentPage = page;
+      this.hasMore = !response.data.last;
 
       } catch (error) {
         showToast(new Toast("Error", "Failed to load leaderboard", "error", faXmark, 5));

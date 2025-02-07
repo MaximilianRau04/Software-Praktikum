@@ -82,12 +82,12 @@
     <!-- Modal zum Bearbeiten der Bio -->
     <div v-if="showEditBioModal" class="modal">
       <div class="modal-content">
-        <h2>Biografie bearbeiten</h2>
-        <textarea v-model="newBio" placeholder="Geben Sie Ihre neue Bio ein..."></textarea>
-        <div class="modal-actions">
-          <button @click="updateBio" class="send-button">Absenden</button>
-          <button @click="closeEditBioModal" class="register-button">Abbrechen</button>
-        </div>
+      <h2>Biografie bearbeiten</h2>
+      <textarea v-model="newBio" placeholder="Geben Sie Ihre neue Bio ein..."></textarea>
+      <div class="modal-actions">
+        <button @click="updateBio" class="send-button">Absenden</button>
+        <button @click="closeEditBioModal" class="register-button">Abbrechen</button>
+      </div>
       </div>
     </div>
   </div>
@@ -361,7 +361,7 @@ export default {
 }
 
 .send-button {
-  background-color: #007bff;
+  background-color: #009ee2;
   color: white;
   padding: 0.5rem;
   border: none;
@@ -373,7 +373,7 @@ export default {
 }
 
 .register-button {
-  background-color: #007bff;
+  background-color: #009ee2;
   color: white;
   padding: 0.5rem;
   border: none;
@@ -382,12 +382,12 @@ export default {
 }
 
 .register-button:hover {
-  background-color: #0056b3;
+  background-color: #027cb0;
 }
 
 .edit-bio-btn,
 .edit-tags-btn {
-  background: #007bff;
+  background: #009ee2;
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -399,9 +399,13 @@ export default {
   gap: 0.5rem;
 }
 
+.edit-bio-btn {
+  margin-bottom: 1rem;
+}
+
 .edit-bio-btn:hover,
 .edit-tags-btn:hover {
-  background: #0056b3;
+  background: #027cb0;
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -436,6 +440,10 @@ export default {
 
 .modal-content textarea {
   resize: none;
+  padding: 0.5rem 1rem; 
+  width: 50%; 
+  height: 100px; 
+  box-sizing: border-box; 
 }
 
 .badges-list {

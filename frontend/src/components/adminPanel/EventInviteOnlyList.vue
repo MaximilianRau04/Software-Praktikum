@@ -580,4 +580,8 @@ h3 {
 .close-modal-icon:hover {
   color: #ff0000;
 }
+
+.tags-container {
+  width: 60%;
+}
 </style>
