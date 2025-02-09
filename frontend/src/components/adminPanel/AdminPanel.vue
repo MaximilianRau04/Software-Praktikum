@@ -145,7 +145,7 @@
 </template>
 
 <script setup lang="ts">
-import "@/assets/event-planning.css";
+import "@/assets/adminPanel/event-planning.css";
 import { ref, onMounted } from "vue";
 import config from "@/config";
 import WorkshopForm from "@/components/adminPanel/WorkshopForm.vue";

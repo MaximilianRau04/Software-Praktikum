@@ -45,7 +45,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { showToast, Toast } from "@/types/toasts";
-import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import api from "@/util/api";
 
 const name = ref("");

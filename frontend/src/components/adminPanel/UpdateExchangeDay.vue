@@ -75,6 +75,7 @@
 import { ref, onMounted } from "vue";
 import { showToast, Toast } from "@/types/toasts";
 import api from "@/util/api";
+import "@/assets/adminPanel/event-list.css";
 
 const selectedExchangeDay = ref<any | null>(null);
 const exchangeDays = ref<any[]>([]);
@@ -256,35 +257,3 @@ onMounted(async () => {
   await fetchLocations();
 });
 </script>
-
-<style scoped>
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.update-button {
-  background-color: #009ee2;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.delete-button {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.delete-button:disabled {
-  background-color: #e0e0e0;
-  color: #6c757d;
-  cursor: not-allowed;
-}
-</style>

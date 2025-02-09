@@ -69,13 +69,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from "vue";
-import config from "@/config";
+import { ref, onMounted, computed } from "vue";
 import { showToast, Toast } from "@/types/toasts";
 import { useRouter } from "vue-router";
-import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import api from "@/util/api";
 import { TagIcon } from "@heroicons/vue/24/outline";
+import "@/assets/adminPanel/event-list.css";
 
 defineProps({
   showEventListBox: Boolean,
@@ -215,122 +214,3 @@ const showFeedbackSummary = (eventId: number): void => {
   router.push(`/feedback/${eventId}`);
 };
 </script>
-
-<style scoped>
-.event-page {
-  padding: 20px;
-  background: #f9f9f9;
-  max-height: 90%;
-}
-
-.search-bar-container {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.search-bar {
-  width: 80%;
-  max-width: 600px;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.search-bar:focus {
-  border-color: #007bff;
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
-  outline: none;
-}
-
-.event-columns {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  overflow: auto;
-}
-
-.event-column {
-  flex: 1;
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: auto;
-}
-
-.event-details {
-  max-width: 600px;
-  margin: 10px auto;
-  padding: 15px;
-  background-color: #f1f5f9;
-  border-radius: 8px;
-  border: 1px solid #000000;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-family: "Roboto", sans-serif;
-  color: #000000;
-}
-
-h2 h3 p {
-  margin: 0.5rem;
-}
-
-.register-button {
-  background-color: #009ee2;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
-  position: absolute;
-  bottom: 0.5rem;
-  right: 0.5rem;
-}
-
-.register-button:hover {
-  background-color: #0056b3;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.register-button:disabled {
-  background-color: #ccc;
-}
-
-.empty-state {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #777;
-}
-
-.tag-chip {
-  background: linear-gradient(135deg, #f0f5ff, #e6eeff);
-  border: 1px solid #d0ddf5;
-  color: #2f5f9e;
-  padding: 0.5rem 1.2rem;
-  border-radius: 24px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.tag-chip:hover {
-  background: linear-gradient(135deg, #e6eeff, #d7e4ff);
-  transform: translateY(-2px);
-}
-
-.tags-container {
-  width: 60%;
-}
-</style>

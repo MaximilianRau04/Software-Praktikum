@@ -96,9 +96,9 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
 import api from "@/util/api";
+import "@/assets/adminPanel/event-list.css";
 
 const selectedLocation = ref<number | null>(null);
 const selectedResource = ref<number | null>(null);
@@ -313,59 +313,3 @@ const resetForm = () => {
  */
 fetchLocations();
 </script>
-
-<style scoped>
-input[type="checkbox"] {
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border: 2px solid #ddd;
-  border-radius: 4px;
-  background-color: #f9f9f9;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-input[type="checkbox"]:checked {
-  background-color: #4aa3ff;
-  border-color: #4aa3ff;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3E%3Cpath d='M13.78 4.22a.75.75 0 0 1 0 1.06l-7 7a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 70%;
-}
-
-input[type="checkbox"]:hover {
-  border-color: #007bff;
-}
-
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.update-button {
-  background-color: #009ee2;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.delete-button {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.delete-button:disabled {
-  background-color: #e0e0e0;
-  color: #6c757d;
-  cursor: not-allowed;
-}
-</style>

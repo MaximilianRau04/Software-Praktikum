@@ -132,11 +132,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import config from "@/config";
 import { showToast, Toast } from "@/types/toasts";
 import api from "@/util/api";
 import TagInput from "../profile/TagInput.vue";
 import { Tag } from "@/types/Tag";
+import "@/assets/adminPanel/update-form.css";
 
 const emit = defineEmits(["update:selectEventToUpdate"]);
 
@@ -435,74 +435,3 @@ onMounted(() => {
   fetchTags();
 });
 </script>
-
-<style scoped>
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.update-button {
-  background-color: #009ee2;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.delete-button {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.delete-button:disabled {
-  background-color: #e0e0e0;
-  color: #6c757d;
-  cursor: not-allowed;
-}
-
-.tag-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-.chip {
-  background-color: #e0e0e0;
-  padding: 5px 10px;
-  border-radius: 15px;
-  display: flex;
-  align-items: center;
-}
-
-.remove-tag {
-  background: none;
-  border: none;
-  color: red;
-  cursor: pointer;
-  margin-left: 5px;
-}
-
-.tag-list button {
-  background-color: #f0f0f0;
-  border: none;
-  padding: 5px 10px;
-  margin: 5px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.tag-list button:disabled {
-  background-color: #ccc;
-}
-
-.tag-list {
-  margin-bottom: 20px;
-}
-</style>
